@@ -1,0 +1,81 @@
+export default defineAppConfig({
+  pages: [
+    'pages/login/index',
+    'pages/home/index',
+    'pages/category/index',
+    'pages/cart/index',
+    'pages/mine/index',
+  ],
+  subPackages: [
+    {
+      root: 'pagesCustomer',
+      pages: [
+        'goods/detail',
+        'goods/list',
+        'customize/index',
+        'customize/preview',
+        'theme/index',
+        'order/confirm',
+        'order/list',
+        'order/detail',
+        'member/index',
+        'member/points',
+        'member/level',
+        'member/signin',
+        'address/list',
+        'address/edit',
+        'favorite/index',
+      ],
+    },
+    {
+      root: 'pagesMerchant',
+      pages: [
+        'dashboard/index',
+        'order/list',
+        'order/detail',
+        'goods/list',
+        'goods/edit',
+        'verify/index',
+        'shop/setting',
+      ],
+    },
+  ],
+  window: {
+    backgroundTextStyle: 'light',
+    navigationBarBackgroundColor: '#fff',
+    navigationBarTitleText: '梵宇花店',
+    navigationBarTextStyle: 'black',
+  },
+  tabBar: {
+    color: '#999',
+    selectedColor: '#e53935',
+    backgroundColor: '#fff',
+    borderStyle: 'black',
+    list: [
+      {
+        pagePath: 'pages/home/index',
+        text: '首页',
+        iconPath: 'images/tab/home.png',
+        selectedIconPath: 'images/tab/home-active.png',
+      },
+      {
+        pagePath: 'pages/category/index',
+        text: '分类',
+        iconPath: 'images/tab/category.png',
+        selectedIconPath: 'images/tab/category-active.png',
+      },
+      {
+        pagePath: 'pages/cart/index',
+        text: '购物车',
+        iconPath: 'images/tab/cart.png',
+        selectedIconPath: 'images/tab/cart-active.png',
+      },
+      {
+        pagePath: 'pages/mine/index',
+        text: '我的',
+        iconPath: 'images/tab/mine.png',
+        selectedIconPath: 'images/tab/mine-active.png',
+      },
+    ],
+  },
+})
