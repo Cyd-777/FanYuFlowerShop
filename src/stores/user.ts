@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { UserRole } from '@/utils/constants'
+import { UserRole, STORAGE_KEYS } from '@/utils/constants'
 import { getCachedRole, hasToken, login as authLogin } from '@/services/auth'
 
 export const useUserStore = defineStore('user', () => {
-  const openid = ref('')
+  const openid = ref(wx.getStorageSync(STORAGE_KEYS.Token) || '')
   const role = ref<UserRole | null>(getCachedRole())
   const isLoggedIn = ref(hasToken())
 

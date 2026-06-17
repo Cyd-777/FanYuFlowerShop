@@ -1,6 +1,6 @@
 <template>
   <view class="login-page">
-    <image class="logo" src="/images/logo.png" mode="aspectFit" />
+    <view class="logo">🌷</view>
     <view class="title">梵宇花店</view>
     <view class="desc">每一束花，都是一次心动</view>
     <nut-button
@@ -12,25 +12,46 @@
     >
       微信一键登录
     </nut-button>
+    <view class="tip" v-if="errorMsg">{{ errorMsg }}</view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { navigateToHome } from '@/services/auth'
+import { navigateToHome, hasToken, getCachedRole } from '@/services/auth'
 
 const loading = ref(false)
+const errorMsg = ref('')
 const userStore = useUserStore()
+
+onMounted(() => {
+  try {
+    if (hasToken()) {
+      const role = getCachedRole()
+      if (role) navigateToHome(role)
+    }
+  } catch (err) {
+    console.error('[login] auto redirect failed:', err)
+  }
+})
 
 async function handleLogin() {
   if (loading.value) return
   loading.value = true
+  errorMsg.value = ''
   try {
     const { role } = await userStore.doLogin()
     navigateToHome(role)
-  } catch (err) {
-    wx.showToast({ title: '登录失败，请重试', icon: 'none' })
+  } catch (err: any) {
+    console.error('[login] failed:', err)
+    const msg = err?.message || err?.errMsg || '登录失败，请重试'
+    errorMsg.value = msg
+    wx.showModal({
+      title: '登录失败',
+      content: msg,
+      showCancel: false,
+    })
   } finally {
     loading.value = false
   }
@@ -50,6 +71,10 @@ async function handleLogin() {
   width: 160rpx;
   height: 160rpx;
   border-radius: 32rpx;
+  font-size: 100rpx;
+  line-height: 160rpx;
+  text-align: center;
+  background: #fff;
 }
 .title {
   margin-top: 32rpx;
@@ -64,10 +89,20 @@ async function handleLogin() {
 }
 .login-btn {
   position: fixed;
-  bottom: 120rpx;
+  bottom: 160rpx;
   left: 64rpx;
   right: 64rpx;
   width: auto;
   border-radius: 48rpx;
+}
+.tip {
+  position: fixed;
+  bottom: 80rpx;
+  left: 64rpx;
+  right: 64rpx;
+  font-size: 24rpx;
+  color: #e53935;
+  text-align: center;
+  line-height: 1.5;
 }
 </style>

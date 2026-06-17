@@ -37,6 +37,10 @@
           <view class="action-icon">📱</view>
           <view class="action-label">扫码核销</view>
         </view>
+        <view class="action-item" @click="go('staff')">
+          <view class="action-icon">👥</view>
+          <view class="action-label">人员管理</view>
+        </view>
         <view class="action-item" @click="go('setting')">
           <view class="action-icon">⚙️</view>
           <view class="action-label">店铺设置</view>
@@ -70,6 +74,7 @@ function go(page: string) {
     order: '/pagesMerchant/order/list',
     goods: '/pagesMerchant/goods/list',
     verify: '/pagesMerchant/verify/index',
+    staff: '/pagesMerchant/staff/index',
     setting: '/pagesMerchant/shop/setting',
   }
   navigateTo({ url: routes[page] })
@@ -98,7 +103,7 @@ function previewCustomer() {
 }
 .section-title { padding: 32rpx 32rpx 16rpx; font-size: 28rpx; font-weight: 600; color: #333; }
 .action-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16rpx; padding: 0 16rpx;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16rpx; padding: 0 16rpx;
 }
 .action-item {
   background: #fff; border-radius: 16rpx; padding: 32rpx 16rpx; text-align: center;

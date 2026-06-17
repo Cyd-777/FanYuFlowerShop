@@ -4,14 +4,19 @@ import { initCloud } from './services/cloud'
 
 import './app.less'
 
-// 初始化云开发
-initCloud()
+const pinia = createPinia()
 
 const App = createApp({
-  onShow(options) {
+  onLaunch() {
+    try {
+      initCloud()
+    } catch (err) {
+      console.error('[cloud] init failed:', err)
+    }
   },
+  onShow() {},
 })
 
-App.use(createPinia())
+App.use(pinia)
 
 export default App

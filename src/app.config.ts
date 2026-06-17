@@ -5,6 +5,7 @@ export default defineAppConfig({
     'pages/category/index',
     'pages/cart/index',
     'pages/mine/index',
+    'pages/mine/other/index',
   ],
   subPackages: [
     {
@@ -36,6 +37,7 @@ export default defineAppConfig({
         'goods/list',
         'goods/edit',
         'verify/index',
+        'staff/index',
         'shop/setting',
       ],
     },

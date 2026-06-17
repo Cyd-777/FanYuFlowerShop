@@ -8,7 +8,7 @@
     <view class="cart-list" v-else>
       <view v-for="(item, idx) in cartItems" :key="idx" class="cart-item">
         <nut-checkbox v-model="item.checked" />
-        <image class="thumb" src="{{ item.image }}" mode="aspectFill" />
+        <image class="thumb" :src="item.image" mode="aspectFill" />
         <view class="info">
           <view class="name">{{ item.name }}</view>
           <view class="price">¥{{ item.price }}</view>

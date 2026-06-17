@@ -7,7 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    NutBackTop: typeof import('@nutui/nutui-taro')['BackTop']
+    IdentityQrModal: typeof import('./src/components/IdentityQrModal.vue')['default']
     NutButton: typeof import('@nutui/nutui-taro')['Button']
     NutCell: typeof import('@nutui/nutui-taro')['Cell']
     NutCheckbox: typeof import('@nutui/nutui-taro')['Checkbox']
@@ -15,6 +15,7 @@ declare module 'vue' {
     NutForm: typeof import('@nutui/nutui-taro')['Form']
     NutFormItem: typeof import('@nutui/nutui-taro')['FormItem']
     NutInput: typeof import('@nutui/nutui-taro')['Input']
+    NutPopup: typeof import('@nutui/nutui-taro')['Popup']
     NutSearchbar: typeof import('@nutui/nutui-taro')['Searchbar']
     NutSwiper: typeof import('@nutui/nutui-taro')['Swiper']
     NutSwiperItem: typeof import('@nutui/nutui-taro')['SwiperItem']

@@ -2,7 +2,7 @@
   <view class="page-customize">
     <view class="section">
       <view class="section-title">选择花材</view>
-      <scroll-view class="materials" scroll-x enhanced show-scrollbar="{{false}}">
+      <scroll-view class="materials" scroll-x :enhanced="true" :show-scrollbar="false">
         <view v-for="(m, idx) in materials" :key="idx"
           :class="['material-item', { selected: m.selected }]"
           @click="toggleMaterial(idx)">

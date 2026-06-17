@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "fan-yu-flower-shop",
   "description": "梵宇花店小程序",
-  "appid": "wx0ffe76c16c70762c",
+  "appid": "wx2092fe472ae1eb0c",
   "setting": {
     "urlCheck": true,
     "es6": false,
@@ -30,6 +30,7 @@
     }
   },
   "compileType": "miniprogram",
+  "cloudfunctionRoot": "cloudfunctions/",
   "simulatorPluginLibVersion": {},
   "packOptions": {
     "ignore": [],

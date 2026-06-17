@@ -6,7 +6,7 @@
     </view>
 
     <!-- 分类入口 -->
-    <scroll-view class="categories" scroll-x enhanced show-scrollbar="{{false}}">
+    <scroll-view class="categories" scroll-x :enhanced="true" :show-scrollbar="false">
       <view
         v-for="(cat, idx) in categories"
         :key="idx"
@@ -27,13 +27,11 @@
         class="goods-card"
         @click="goDetail(item.id)"
       >
-        <image class="goods-img" src="{{ item.image }}" mode="aspectFill" />
+        <image class="goods-img" :src="item.image" mode="aspectFill" />
         <view class="goods-name">{{ item.name }}</view>
         <view class="goods-price">¥{{ item.price }}</view>
       </view>
     </view>
-
-    <nut-back-top :threshold="200" />
   </view>
 </template>
 

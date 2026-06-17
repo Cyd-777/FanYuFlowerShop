@@ -1,63 +1,89 @@
 import { UserRole, STORAGE_KEYS } from '@/utils/constants'
-import { getCloud } from './cloud'
+import { getCloud, getCloudCallConfig } from './cloud'
 
 interface AuthResult {
   openid: string
   role: UserRole
 }
 
-/**
- * 微信登录 → 获取 openid → 判断身份
- * 全程无感，用户不需要额外操作
- */
-export async function login(): Promise<AuthResult> {
-  const cloud = getCloud()
+interface LoginCloudResult {
+  success?: boolean
+  errMsg?: string
+  openid?: string
+  isMerchant?: boolean
+}
 
-  // 1. wx.login 获取 code
-  const { code } = await wx.login()
+function parseLoginResult(result: LoginCloudResult | null | undefined): LoginCloudResult {
+  if (!result) {
+    throw new Error('云函数返回为空，请确认 login 云函数已部署')
+  }
 
-  // 2. 云函数：code 换 openid + 判断身份
-  const res: any = await cloud.callFunction({
-    name: 'login',
-    data: { code },
-  })
+  if (result.success === false) {
+    throw new Error(result.errMsg || '云函数 login 执行失败')
+  }
 
-  const { openid, isMerchant } = res.result
-  const role = isMerchant ? UserRole.Merchant : UserRole.Customer
+  if (!result.openid) {
+    throw new Error(result.errMsg || '未获取到 openid，请检查云开发环境')
+  }
 
-  // 3. 缓存登录态
-  wx.setStorageSync(STORAGE_KEYS.Token, openid)
-  wx.setStorageSync(STORAGE_KEYS.Role, role)
+  return result
+}
 
-  return { openid, role }
+function formatCloudError(err: unknown): string {
+  if (!err) return '未知错误'
+
+  const anyErr = err as { errMsg?: string; message?: string; errCode?: number }
+  const parts = [
+    anyErr.errMsg,
+    anyErr.message,
+    anyErr.errCode != null ? `errCode: ${anyErr.errCode}` : '',
+  ].filter(Boolean)
+
+  return parts.join(' | ') || String(err)
 }
 
 /**
- * 检查是否有登录态
+ * 微信登录 → 云函数获取 openid → 判断身份
  */
+export async function login(): Promise<AuthResult> {
+  const cloud = getCloud()
+  const config = getCloudCallConfig()
+
+  let res: WechatMiniprogram.Cloud.CallFunctionResult
+
+  try {
+    res = await cloud.callFunction({
+      name: 'login',
+      data: {},
+      ...(config ? { config } : {}),
+    })
+  } catch (err) {
+    throw new Error(`云函数调用失败: ${formatCloudError(err)}`)
+  }
+
+  const result = parseLoginResult(res.result as LoginCloudResult)
+  const role = result.isMerchant ? UserRole.Merchant : UserRole.Customer
+
+  wx.setStorageSync(STORAGE_KEYS.Token, result.openid!)
+  wx.setStorageSync(STORAGE_KEYS.Role, role)
+
+  return { openid: result.openid!, role }
+}
+
 export function hasToken(): boolean {
   return !!wx.getStorageSync(STORAGE_KEYS.Token)
 }
 
-/**
- * 获取缓存的角色
- */
 export function getCachedRole(): UserRole | null {
   return wx.getStorageSync(STORAGE_KEYS.Role) || null
 }
 
-/**
- * 退出登录（清缓存）
- */
 export function logout() {
   wx.removeStorageSync(STORAGE_KEYS.Token)
   wx.removeStorageSync(STORAGE_KEYS.Role)
   wx.removeStorageSync(STORAGE_KEYS.UserInfo)
 }
 
-/**
- * 检查当前角色，跳转到不同首页
- */
 export function navigateToHome(role: UserRole) {
   if (role === UserRole.Merchant) {
     wx.reLaunch({ url: '/pagesMerchant/dashboard/index' })

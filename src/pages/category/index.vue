@@ -20,7 +20,7 @@
           class="goods-item"
           @click="goDetail(item.id)"
         >
-          <image class="thumb" src="{{ item.image }}" mode="aspectFill" />
+          <image class="thumb" :src="item.image" mode="aspectFill" />
           <view class="info">
             <view class="name">{{ item.name }}</view>
             <view class="price">¥{{ item.price }}</view>
