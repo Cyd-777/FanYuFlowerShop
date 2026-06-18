@@ -10,5 +10,5 @@ cloudfunctions/**/node_modules/
 # Local IDE config
 project.private.config.json
 
-# Duplicate output
-images/
+# Duplicate output at repo root (dist/ is the real miniprogram root)
+/images/

@@ -4,5 +4,15 @@
     "wechatId": "a2267892497",
     "name": "店长",
     "role": "owner"
+  },
+  {
+    "openid": "示例管理员openid",
+    "name": "副店长",
+    "role": "manager"
+  },
+  {
+    "openid": "示例员工openid",
+    "name": "店员小王",
+    "role": "staff"
   }
 ]

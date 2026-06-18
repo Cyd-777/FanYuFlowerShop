@@ -37,3 +37,27 @@ export function getCloudCallConfig(): WechatMiniprogram.Cloud.CallFunctionConfig
   if (!CLOUD_ENV_ID) return undefined
   return { env: CLOUD_ENV_ID }
 }
+
+/** 解析云函数 callFunction 抛出的错误，便于排查 */
+export function formatCloudError(err: unknown): string {
+  if (!err) return '未知错误'
+  const anyErr = err as { errMsg?: string; message?: string; errCode?: number }
+  const parts = [
+    anyErr.errMsg,
+    anyErr.message,
+    anyErr.errCode != null ? `errCode: ${anyErr.errCode}` : '',
+  ].filter(Boolean)
+  return parts.join(' | ') || String(err)
+}
+
+/** 解析云函数返回值（部分基础库会返回 JSON 字符串） */
+export function parseCloudResult<T>(raw: unknown): T {
+  if (typeof raw === 'string') {
+    try {
+      return JSON.parse(raw) as T
+    } catch {
+      return raw as T
+    }
+  }
+  return raw as T
+}

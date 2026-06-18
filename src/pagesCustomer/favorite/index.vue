@@ -1,32 +1,148 @@
 <template>
   <view class="page-favorite">
-    <view class="goods-grid">
-      <view v-for="(item, idx) in list" :key="idx" class="goods-card">
-        <image class="goods-img" :src="item.image" mode="aspectFill" />
+    <view v-if="loading" class="loading-tip">加载中…</view>
+
+    <view v-else-if="list.length" class="goods-grid">
+      <view
+        v-for="item in list"
+        :key="item._id"
+        class="goods-card"
+        @click="goDetail(item._id)"
+      >
+        <view class="goods-img-wrap">
+          <GoodsImage :src="item.imageUrl" root-class="goods-img" />
+          <GoodsSoldOutBadge :stock="item.stock" :on-sale="item.onSale" />
+        </view>
         <view class="goods-name">{{ item.name }}</view>
-        <view class="goods-price">¥{{ item.price }}</view>
-        <nut-button size="small" type="primary" plain @click="addToCart(item)">加入购物车</nut-button>
+        <view class="goods-price">¥{{ formatPrice(item.price) }}</view>
+        <nut-button
+          size="small"
+          type="primary"
+          plain
+          :disabled="!canAddToCart(item)"
+          @click.stop="addToCart(item)"
+        >
+          {{ canAddToCart(item) ? '加入购物车' : '暂不可购' }}
+        </nut-button>
       </view>
     </view>
-    <nut-empty description="还没有收藏的商品" v-if="!list.length" />
+
+    <nut-empty v-else description="还没有收藏的商品" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useDidShow } from '@tarojs/taro'
+import { navigateTo } from '@/utils/router'
+import { listFavoriteGoods } from '@/services/favorite'
+import { addGoodsToCart } from '@/services/cart'
+import { hasToken } from '@/services/auth'
+import { attachGoodsCoverImages } from '@/utils/goodsImage'
+import { isGoodsPurchasable } from '@/utils/goodsAvailability'
+import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
+import GoodsImage from '@/components/GoodsImage.vue'
+import type { Goods } from '@/types/goods'
 
-const list = ref<{ name: string; image: string; price: number }[]>([])
+type FavoriteCard = Goods & { imageUrl: string }
 
-function addToCart(item: any) {
-  wx.showToast({ title: '已加入购物车', icon: 'success' })
+const list = ref<FavoriteCard[]>([])
+const loading = ref(false)
+
+useDidShow(() => {
+  void loadList()
+})
+
+async function loadList() {
+  if (!hasToken()) {
+    list.value = []
+    return
+  }
+
+  loading.value = true
+  try {
+    const goods = await listFavoriteGoods()
+    list.value = await attachGoodsCoverImages(goods)
+  } catch (err) {
+    list.value = []
+    wx.showToast({
+      title: err instanceof Error ? err.message : '加载失败',
+      icon: 'none',
+    })
+  } finally {
+    loading.value = false
+  }
+}
+
+function formatPrice(price: number) {
+  return Number(price).toFixed(2).replace(/\.00$/, '')
+}
+
+function canAddToCart(item: FavoriteCard) {
+  return isGoodsPurchasable(item)
+}
+
+async function addToCart(item: FavoriteCard) {
+  try {
+    await addGoodsToCart(item._id, 1, item.imageUrl)
+    wx.showToast({ title: '已加入购物车', icon: 'success' })
+  } catch (err) {
+    wx.showToast({
+      title: err instanceof Error ? err.message : '加购失败',
+      icon: 'none',
+    })
+  }
+}
+
+function goDetail(id: string) {
+  navigateTo({ url: `/pagesCustomer/goods/detail?id=${id}` })
 }
 </script>
 
 <style lang="less">
-.page-favorite { background: #f8f8f8; min-height: 100vh; }
-.goods-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16rpx; padding: 16rpx; }
-.goods-card { background: #fff; border-radius: 16rpx; padding: 16rpx; text-align: center; }
-.goods-img { width: 100%; height: 260rpx; border-radius: 8rpx; background: #f0f0f0; }
-.goods-name { margin-top: 8rpx; font-size: 26rpx; color: #333; }
-.goods-price { font-size: 28rpx; font-weight: 600; color: #e53935; margin: 8rpx 0; }
+.page-favorite {
+  background: #f8f8f8;
+  min-height: 100vh;
+}
+.loading-tip {
+  padding: 80rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #999;
+}
+.goods-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+  padding: 16rpx;
+}
+.goods-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 16rpx;
+  text-align: center;
+}
+.goods-img-wrap {
+  position: relative;
+}
+.goods-img {
+  width: 100%;
+  height: 260rpx;
+  border-radius: 8rpx;
+  background: #f0f0f0;
+}
+.goods-name {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.goods-price {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #e53935;
+  margin: 8rpx 0;
+}
 </style>

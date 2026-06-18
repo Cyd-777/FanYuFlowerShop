@@ -1,5 +1,6 @@
 import { defineConfig, type UserConfigExport } from '@tarojs/cli'
 import path from 'path'
+import { execSync } from 'child_process'
 import devConfig from './dev'
 import prodConfig from './prod'
 import NutUIResolver from '@nutui/auto-import-resolver'
@@ -21,12 +22,27 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
     deviceRatio: {
       640: 2.34 / 2,
       750: 1,
-      375: 2,
+      375: 2 / 1,
       828: 1.81 / 2
     },
     sourceRoot: 'src',
     outputRoot: 'dist',
-    plugins: ['@tarojs/plugin-html'],
+    onBuildFinish() {
+      try {
+        execSync('node scripts/patch-dist-config.js', {
+          cwd: path.resolve(__dirname, '..'),
+          stdio: 'inherit',
+        })
+      } catch (err) {
+        console.warn('[patch] dist/project.config.json 修补失败', err)
+      }
+    },
+    plugins: [
+      ['@tarojs/plugin-html', {
+        // NutUI 官方推荐：避免 pxtransform 二次转换 NutUI 样式
+        pxtransformBlackList: [/nutui/i],
+      }],
+    ],
     defineConstants: {
     },
     copy: {
@@ -70,6 +86,18 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
         chain.plugin('unplugin-vue-components').use(Components({
           resolvers: [NutUIResolver({taro: true})]
         }))
+        chain.module
+          .rule('less')
+          .oneOf('normal')
+          .use('less-loader')
+          .tap((options: Record<string, unknown> = {}) => {
+            const lessOptions = (options.lessOptions as Record<string, unknown>) || {}
+            const tokenPath = path.resolve(__dirname, '..', 'src/styles/tokens.less').replace(/\\/g, '/')
+            const prefix = `@import "${tokenPath}";`
+            const existing = String(lessOptions.additionalData || '')
+            lessOptions.additionalData = existing.includes(tokenPath) ? existing : `${prefix}\n${existing}`
+            return { ...options, lessOptions }
+          })
       }
     },
     h5: {
@@ -102,6 +130,18 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
         chain.plugin('unplugin-vue-components').use(Components({
           resolvers: [NutUIResolver({taro: true})]
         }))
+        chain.module
+          .rule('less')
+          .oneOf('normal')
+          .use('less-loader')
+          .tap((options: Record<string, unknown> = {}) => {
+            const lessOptions = (options.lessOptions as Record<string, unknown>) || {}
+            const tokenPath = path.resolve(__dirname, '..', 'src/styles/tokens.less').replace(/\\/g, '/')
+            const prefix = `@import "${tokenPath}";`
+            const existing = String(lessOptions.additionalData || '')
+            lessOptions.additionalData = existing.includes(tokenPath) ? existing : `${prefix}\n${existing}`
+            return { ...options, lessOptions }
+          })
       }
     },
     rn: {

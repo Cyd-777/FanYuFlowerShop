@@ -18,25 +18,50 @@
       </nut-form-item>
     </nut-form>
 
-    <nut-button type="primary" block class="save-btn" @click="save">保存设置</nut-button>
+    <nut-button type="primary" block class="save-btn" :loading="saving" @click="save">
+      保存设置
+    </nut-button>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useDidShow } from '@tarojs/taro'
 import { navigateBack } from '@/utils/router'
+import { useShopStore, type ShopSettings } from '@/stores/shop'
 
-const form = ref({
-  shopName: '梵宇花店',
-  phone: '',
-  openTime: '09:00',
-  closeTime: '21:00',
-  deliveryNote: '',
+const shopStore = useShopStore()
+const form = ref<ShopSettings>({ ...shopStore.settings })
+const saving = ref(false)
+
+useDidShow(() => {
+  void shopStore.hydrate().then(() => {
+    form.value = { ...shopStore.settings }
+  })
 })
 
-function save() {
-  wx.showToast({ title: '设置已保存', icon: 'success' })
-  setTimeout(() => navigateBack(), 1500)
+async function save() {
+  const name = form.value.shopName.trim()
+  if (!name) {
+    wx.showToast({ title: '请填写店铺名称', icon: 'none' })
+    return
+  }
+
+  if (saving.value) return
+  saving.value = true
+
+  try {
+    await shopStore.updateSettings({ ...form.value, shopName: name })
+    wx.showToast({ title: '设置已保存', icon: 'success' })
+    setTimeout(() => navigateBack(), 1500)
+  } catch (err) {
+    wx.showToast({
+      title: err instanceof Error ? err.message : '保存失败',
+      icon: 'none',
+    })
+  } finally {
+    saving.value = false
+  }
 }
 </script>
 

@@ -7,20 +7,26 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    GoodsCardSkeleton: typeof import('./src/components/GoodsCardSkeleton.vue')['default']
+    GoodsImage: typeof import('./src/components/GoodsImage.vue')['default']
+    GoodsNameTypeahead: typeof import('./src/components/GoodsNameTypeahead.vue')['default']
+    GoodsSoldOutBadge: typeof import('./src/components/GoodsSoldOutBadge.vue')['default']
     IdentityQrModal: typeof import('./src/components/IdentityQrModal.vue')['default']
     NutButton: typeof import('@nutui/nutui-taro')['Button']
     NutCell: typeof import('@nutui/nutui-taro')['Cell']
-    NutCheckbox: typeof import('@nutui/nutui-taro')['Checkbox']
     NutEmpty: typeof import('@nutui/nutui-taro')['Empty']
     NutForm: typeof import('@nutui/nutui-taro')['Form']
     NutFormItem: typeof import('@nutui/nutui-taro')['FormItem']
     NutInput: typeof import('@nutui/nutui-taro')['Input']
-    NutPopup: typeof import('@nutui/nutui-taro')['Popup']
+    NutRadio: typeof import('@nutui/nutui-taro')['Radio']
+    NutRadioGroup: typeof import('@nutui/nutui-taro')['RadioGroup']
     NutSearchbar: typeof import('@nutui/nutui-taro')['Searchbar']
+    NutSkeleton: typeof import('@nutui/nutui-taro')['Skeleton']
     NutSwiper: typeof import('@nutui/nutui-taro')['Swiper']
     NutSwiperItem: typeof import('@nutui/nutui-taro')['SwiperItem']
     NutSwitch: typeof import('@nutui/nutui-taro')['Switch']
     NutTabPane: typeof import('@nutui/nutui-taro')['TabPane']
     NutTabs: typeof import('@nutui/nutui-taro')['Tabs']
+    SmartAddressInput: typeof import('./src/components/SmartAddressInput.vue')['default']
   }
 }

@@ -1,0 +1,5 @@
+export { loadWithCache, invalidateCacheModule } from './loadWithCache'
+export type { LoadWithCacheOptions, LoadWithCacheResult } from './loadWithCache'
+export { hasCacheEntry, readCacheEntry } from './storage'
+export { fetchCacheVersions, resetCacheVersionsMemory } from './meta'
+export { MODULE_TTL_MS } from './constants'

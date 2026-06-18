@@ -1,6 +1,6 @@
 {
   "name": "fan-yu-flower-shop",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "private": true,
   "description": "梵宇花店小程序",
   "templateInfo": {
@@ -11,7 +11,10 @@
   },
   "scripts": {
     "build:weapp": "taro build --type weapp",
-    "postbuild:weapp": "node scripts/patch-dist-config.js",
+    "prebuild:weapp": "node scripts/generate-tab-icons.js",
+    "postbuild:weapp": "node scripts/patch-dist-config.js && node scripts/sync-tab-icons.js && node scripts/check-main-package.js",
+    "generate:tab-icons": "node scripts/generate-tab-icons.js",
+    "sync:cloud": "node scripts/sync-cloud-common.js",
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
     "build:tt": "taro build --type tt",
@@ -53,7 +56,6 @@
     "@tarojs/shared": "4.2.0",
     "@tarojs/taro": "4.2.0",
     "pinia": "^2.3.1",
-    "uqrcodejs": "^4.0.7",
     "vue": "^3.3.0"
   },
   "devDependencies": {

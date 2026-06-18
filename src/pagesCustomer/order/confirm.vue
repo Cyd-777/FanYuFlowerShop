@@ -1,59 +1,168 @@
 <template>
   <view class="page-confirm">
-    <nut-cell title="收货地址" :desc="address ? address.detail : '请选择地址'" is-link @click="selectAddress" />
+    <view class="address-card" @click="selectAddress">
+      <view class="address-label">收货地址</view>
+      <view v-if="address" class="address-content">
+        <view class="address-user">{{ address.name }} {{ address.phone }}</view>
+        <view class="address-detail">{{ formatAddressLine(address) }}</view>
+      </view>
+      <view v-else class="address-placeholder">请选择收货地址</view>
+      <text class="address-arrow">›</text>
+    </view>
 
     <view class="goods-section">
       <view class="section-title">商品信息</view>
-      <view v-for="(item, idx) in goodsList" :key="idx" class="order-goods">
-        <image class="thumb" :src="item.image" mode="aspectFill" />
-        <view class="info">
-          <view class="name">{{ item.name }}</view>
-          <view class="price">¥{{ item.price }} x {{ item.count }}</view>
+      <view v-if="goodsList.length" class="goods-list">
+        <view v-for="item in goodsList" :key="item.lineKey" class="order-goods">
+          <GoodsImage :src="item.image" root-class="thumb" />
+          <view class="info">
+            <view class="name">{{ item.name }}</view>
+            <view v-if="item.customSummary" class="custom-summary">{{ item.customSummary }}</view>
+            <view class="price">¥{{ formatPrice(item.price) }} x {{ item.count }}</view>
+          </view>
         </view>
       </view>
+      <view v-else class="empty-tip">暂无待结算商品，请从购物车选择</view>
     </view>
 
-    <nut-cell title="备注" is-link @click="showRemark = true">
+    <nut-cell title="备注" is-link @click="editRemark">
       <view slot="desc">{{ remark || '无' }}</view>
     </nut-cell>
 
     <view class="action-bar">
       <view class="total">合计: <text class="price">¥{{ totalPrice }}</text></view>
-      <nut-button type="primary" @click="submitOrder">提交订单</nut-button>
+      <nut-button type="primary" :disabled="!goodsList.length" @click="submitOrder">
+        提交订单
+      </nut-button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useDidShow } from '@tarojs/taro'
+import { storeToRefs } from 'pinia'
+import { getCheckoutAddress, formatAddressLine } from '@/services/address'
+import { useCartStore } from '@/stores/cart'
+import GoodsImage from '@/components/GoodsImage.vue'
+import type { UserAddress } from '@/types/address'
 
-const address = ref<{ detail: string } | null>(null)
+const cartStore = useCartStore()
+const { checkedItems } = storeToRefs(cartStore)
+
+const address = ref<UserAddress | null>(null)
 const remark = ref('')
-const showRemark = ref(false)
-const goodsList = ref<{ name: string; image: string; price: number; count: number }[]>([])
 
-const totalPrice = computed(() =>
-  goodsList.value.reduce((s, i) => s + i.price * i.count, 0).toFixed(2)
-)
+const goodsList = computed(() => checkedItems.value)
+const totalPrice = computed(() => cartStore.checkedTotalPrice.toFixed(2))
+
+useDidShow(() => {
+  address.value = getCheckoutAddress()
+})
+
+function formatPrice(price: number) {
+  return Number(price).toFixed(2).replace(/\.00$/, '')
+}
 
 function selectAddress() {
   wx.navigateTo({ url: '/pagesCustomer/address/list?from=confirm' })
 }
 
+function editRemark() {
+  wx.showModal({
+    title: '订单备注',
+    editable: true,
+    placeholderText: '选填',
+    content: remark.value,
+    success: (res) => {
+      if (!res.confirm) return
+      remark.value = (res as { content?: string }).content?.trim() || ''
+    },
+  })
+}
+
 function submitOrder() {
-  wx.showToast({ title: '订单已提交', icon: 'success' })
+  if (!goodsList.value.length) {
+    wx.showToast({ title: '暂无待结算商品', icon: 'none' })
+    return
+  }
+  if (!address.value) {
+    wx.showToast({ title: '请选择收货地址', icon: 'none' })
+    return
+  }
+  wx.showToast({ title: '订单已提交（待接入支付）', icon: 'success' })
 }
 </script>
 
 <style lang="less">
-.page-confirm { background: #f8f8f8; min-height: 100vh; padding-bottom: 120rpx; }
-.goods-section { background: #fff; padding: 24rpx; margin-top: 16rpx; }
+@import '@/styles/tokens.less';
+
+.page-confirm { background: @color-bg-page; min-height: 100vh; padding-bottom: 120rpx; }
+.address-card {
+  display: flex;
+  align-items: center;
+  margin: 16rpx;
+  padding: 24rpx 32rpx;
+  background: @color-bg-card;
+  border-radius: @radius-md;
+}
+.address-label {
+  flex-shrink: 0;
+  margin-right: 24rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: @color-text-primary;
+}
+.address-content {
+  flex: 1;
+  min-width: 0;
+}
+.address-user {
+  font-size: 28rpx;
+  color: @color-text-primary;
+}
+.address-detail {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: @color-text-tertiary;
+  line-height: 1.5;
+}
+.address-placeholder {
+  flex: 1;
+  font-size: 26rpx;
+  color: @color-text-placeholder;
+}
+.address-arrow {
+  flex-shrink: 0;
+  margin-left: 12rpx;
+  font-size: 36rpx;
+  color: @color-text-placeholder;
+}
+.goods-section {
+  background: @color-bg-card;
+  padding: 24rpx;
+  margin: 16rpx;
+  border-radius: @radius-md;
+}
 .section-title { font-size: 28rpx; font-weight: 600; margin-bottom: 16rpx; }
 .order-goods { display: flex; margin-bottom: 16rpx; }
-.thumb { width: 120rpx; height: 120rpx; border-radius: 8rpx; background: #f0f0f0; }
-.info { margin-left: 16rpx; flex: 1; }
-.name { font-size: 26rpx; color: #333; }
+.order-goods:last-child { margin-bottom: 0; }
+.thumb { width: 120rpx; height: 120rpx; border-radius: 8rpx; flex-shrink: 0; }
+.info { margin-left: 16rpx; flex: 1; min-width: 0; }
+.name { font-size: 26rpx; color: #333; font-weight: 500; }
+.custom-summary {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: @color-text-tertiary;
+  line-height: 1.5;
+}
 .price { font-size: 24rpx; color: #999; margin-top: 4rpx; }
+.empty-tip {
+  padding: 32rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: @color-text-tertiary;
+}
 .action-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex; align-items: center; padding: 16rpx 24rpx;

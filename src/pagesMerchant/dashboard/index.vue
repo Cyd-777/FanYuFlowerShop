@@ -2,7 +2,7 @@
   <view class="page-dashboard">
     <view class="header">
       <view class="greeting">👋 早上好，店长</view>
-      <view class="shop-name">梵宇花店</view>
+      <view class="shop-name">{{ shopStore.shopName }}</view>
     </view>
 
     <!-- 数据概览 -->
@@ -33,6 +33,10 @@
           <view class="action-icon">🌷</view>
           <view class="action-label">商品管理</view>
         </view>
+        <view class="action-item" @click="go('category')">
+          <view class="action-icon">🏷️</view>
+          <view class="action-label">分类管理</view>
+        </view>
         <view class="action-item" @click="go('verify')">
           <view class="action-icon">📱</view>
           <view class="action-label">扫码核销</view>
@@ -40,6 +44,10 @@
         <view class="action-item" @click="go('staff')">
           <view class="action-icon">👥</view>
           <view class="action-label">人员管理</view>
+        </view>
+        <view class="action-item" @click="go('salesStrategy')">
+          <view class="action-icon">📈</view>
+          <view class="action-label">销售策略</view>
         </view>
         <view class="action-item" @click="go('setting')">
           <view class="action-icon">⚙️</view>
@@ -58,10 +66,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { navigateTo } from '@/utils/router'
-import { UserRole } from '@/utils/constants'
-import { useUserStore } from '@/stores/user'
+import { useShopDisplay } from '@/composables/useShopDisplay'
 
-const userStore = useUserStore()
+const shopStore = useShopDisplay({ initDb: true })
 
 const stats = ref({
   todayOrders: 0,
@@ -73,11 +80,18 @@ function go(page: string) {
   const routes: Record<string, string> = {
     order: '/pagesMerchant/order/list',
     goods: '/pagesMerchant/goods/list',
+    category: '/pagesMerchant/category/list',
     verify: '/pagesMerchant/verify/index',
     staff: '/pagesMerchant/staff/index',
+    salesStrategy: '/pagesMerchant/shop/sales-strategy/index',
     setting: '/pagesMerchant/shop/setting',
   }
-  navigateTo({ url: routes[page] })
+  const url = routes[page]
+  if (!url) return
+  navigateTo({ url }).catch((err) => {
+    console.error('[dashboard] navigate failed:', err)
+    wx.showToast({ title: '页面打开失败', icon: 'none' })
+  })
 }
 
 function previewCustomer() {

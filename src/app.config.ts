@@ -1,11 +1,12 @@
 export default defineAppConfig({
+  lazyCodeLoading: 'requiredComponents',
   pages: [
     'pages/login/index',
     'pages/home/index',
     'pages/category/index',
+    'pages/wiki/index',
     'pages/cart/index',
     'pages/mine/index',
-    'pages/mine/other/index',
   ],
   subPackages: [
     {
@@ -14,8 +15,8 @@ export default defineAppConfig({
         'goods/detail',
         'goods/list',
         'customize/index',
+        'customize/pick',
         'customize/preview',
-        'theme/index',
         'order/confirm',
         'order/list',
         'order/detail',
@@ -26,6 +27,8 @@ export default defineAppConfig({
         'address/list',
         'address/edit',
         'favorite/index',
+        'other/index',
+        'wiki/detail',
       ],
     },
     {
@@ -36,9 +39,16 @@ export default defineAppConfig({
         'order/detail',
         'goods/list',
         'goods/edit',
+        'category/list',
+        'category/edit',
+        'flower/picker',
         'verify/index',
         'staff/index',
+        'staff/detail',
         'shop/setting',
+        'shop/sales-strategy/index',
+        'shop/sales-strategy/edit',
+        'shop/goods-picker',
       ],
     },
   ],
@@ -48,6 +58,12 @@ export default defineAppConfig({
     navigationBarTitleText: '梵宇花店',
     navigationBarTextStyle: 'black',
   },
+  permission: {
+    'scope.userLocation': {
+      desc: '你的位置信息将用于地图选择收货地址',
+    },
+  },
+  requiredPrivateInfos: ['chooseAddress', 'chooseLocation', 'getLocation'],
   tabBar: {
     color: '#999',
     selectedColor: '#e53935',
@@ -62,9 +78,15 @@ export default defineAppConfig({
       },
       {
         pagePath: 'pages/category/index',
-        text: '分类',
+        text: '商城',
         iconPath: 'images/tab/category.png',
         selectedIconPath: 'images/tab/category-active.png',
+      },
+      {
+        pagePath: 'pages/wiki/index',
+        text: '百科',
+        iconPath: 'images/tab/wiki.png',
+        selectedIconPath: 'images/tab/wiki-active.png',
       },
       {
         pagePath: 'pages/cart/index',

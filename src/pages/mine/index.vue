@@ -1,20 +1,20 @@
 <template>
   <view class="page-mine">
     <view class="user-card">
-      <view class="avatar">🌷</view>
+      <view class="avatar">{{ avatarEmoji }}</view>
       <view class="user-info">
-        <view class="nickname">{{ userInfo.nickName || '花友' }}</view>
-        <view class="merchant-badge" v-if="isMerchant">商家</view>
+        <view class="nickname">{{ userInfo.nickName || defaultNickname }}</view>
+        <view class="merchant-badge" v-if="isMerchant">{{ merchantBadgeText }}</view>
       </view>
     </view>
 
     <view class="merchant-entry" v-if="isMerchant" @click="goMerchant">
-      <view class="merchant-entry-icon">🏪</view>
+      <view class="merchant-entry-icon">{{ merchantIcon }}</view>
       <view class="merchant-entry-text">
-        <view class="entry-title">商家工作台</view>
-        <view class="entry-desc">管理商品、订单与店铺</view>
+        <view class="entry-title">{{ merchantTitle }}</view>
+        <view class="entry-desc">{{ merchantDesc }}</view>
       </view>
-      <text class="entry-arrow">›</text>
+      <text class="entry-arrow">{{ entryArrow }}</text>
     </view>
 
     <view class="order-nav">
@@ -30,21 +30,38 @@
     </view>
 
     <view class="menu-list">
-      <nut-cell
-        title="我的身份码"
-        desc="扫码核销 / 添加工作人员"
-        is-link
-        @click="showIdentityQr = true"
-      />
-      <nut-cell title="会员中心" is-link @click="goMember" />
-      <nut-cell title="我的收藏" is-link @click="goFavorite" />
-      <nut-cell title="地址管理" is-link @click="goAddress" />
+      <view class="menu-item" @tap="showIdentityQr = true">
+        <view class="menu-main">
+          <view class="menu-title">{{ identityTitle }}</view>
+          <view class="menu-desc">{{ identityDesc }}</view>
+        </view>
+        <text class="menu-arrow">{{ entryArrow }}</text>
+      </view>
+      <view class="menu-item" @tap="goMember">
+        <view class="menu-title">{{ memberTitle }}</view>
+        <text class="menu-arrow">{{ entryArrow }}</text>
+      </view>
+      <view class="menu-item" @tap="goFavorite">
+        <view class="menu-title">{{ favoriteTitle }}</view>
+        <text class="menu-arrow">{{ entryArrow }}</text>
+      </view>
+      <view class="menu-item" @tap="goAddress">
+        <view class="menu-title">{{ addressTitle }}</view>
+        <text class="menu-arrow">{{ entryArrow }}</text>
+      </view>
     </view>
 
-    <IdentityQrModal v-model:visible="showIdentityQr" :openid="openid" />
+    <IdentityQrModal
+      v-if="showIdentityQr"
+      v-model:visible="showIdentityQr"
+      :openid="openid"
+    />
 
     <view class="menu-list other-list">
-      <nut-cell title="其他" is-link @click="goOther" />
+      <view class="menu-item" @tap="goOther">
+        <view class="menu-title">{{ otherTitle }}</view>
+        <text class="menu-arrow">{{ entryArrow }}</text>
+      </view>
     </view>
   </view>
 </template>
@@ -61,8 +78,22 @@ import IdentityQrModal from '@/components/IdentityQrModal.vue'
 const userStore = useUserStore()
 const showIdentityQr = ref(false)
 
+const avatarEmoji = '🌷'
+const merchantIcon = '🏪'
+const merchantTitle = '商家工作台'
+const merchantDesc = '管理商品、订单与店铺'
+const entryArrow = '›'
+const defaultNickname = '花友'
+const merchantBadgeText = '商家'
+const identityTitle = '我的身份码'
+const identityDesc = '扫码核销 / 添加工作人员'
+const memberTitle = '会员中心'
+const favoriteTitle = '我的收藏'
+const addressTitle = '地址管理'
+const otherTitle = '关于我们'
+
 const userInfo = ref({
-  nickName: '花友',
+  nickName: defaultNickname,
 })
 
 const isMerchant = computed(() => userStore.isMerchant())
@@ -73,7 +104,9 @@ const openid = computed(
 
 useDidShow(() => {
   const role = getCachedRole()
-  if (role) userStore.role = role
+  if (role) {
+    userStore.$patch({ role })
+  }
 })
 
 const orderNavs = ref([
@@ -100,7 +133,7 @@ function goAddress() {
 }
 
 function goOther() {
-  navigateTo({ url: '/pages/mine/other/index' })
+  navigateTo({ url: '/pagesCustomer/other/index' })
 }
 
 function goMerchant() {
@@ -109,6 +142,8 @@ function goMerchant() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
+
 .page-mine {
   min-height: 100vh;
   background: #f8f8f8;
@@ -190,8 +225,34 @@ function goMerchant() {
   }
 }
 .menu-list {
-  background: #fff;
+  background: @color-bg-card;
   margin-bottom: 16rpx;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 32rpx;
+  border-bottom: 2rpx solid @color-border;
+  &:last-child {
+    border-bottom: none;
+  }
+}
+.menu-main {
+  flex: 1;
+}
+.menu-title {
+  font-size: @font-size-lg;
+  color: @color-text-primary;
+}
+.menu-desc {
+  margin-top: 6rpx;
+  font-size: @font-size-sm;
+  color: @color-text-tertiary;
+}
+.menu-arrow {
+  font-size: 36rpx;
+  color: @color-text-placeholder;
+  margin-left: 16rpx;
 }
 .other-list {
   margin-top: 16rpx;

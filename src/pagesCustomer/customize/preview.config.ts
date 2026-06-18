@@ -1,1 +1,1 @@
-export default definePageConfig({ navigationBarTitleText: '定制预览' })
+export default definePageConfig({ navigationBarTitleText: '订单确认' })

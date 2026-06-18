@@ -1,40 +1,56 @@
 <template>
   <view class="page-level">
+    <view class="intro">会员等级以花卉命名，积分越高，花开越盛，礼遇越多。</view>
+
     <view class="levels">
-      <view v-for="(lv, idx) in levels" :key="idx" :class="['level-card', { current: idx === currentLevel }]">
+      <view
+        v-for="(lv, idx) in levels"
+        :key="lv.id"
+        :class="['level-card', { current: idx === currentLevelIndex }]"
+      >
         <view class="lv-icon">{{ lv.icon }}</view>
         <view class="lv-name">{{ lv.name }}</view>
-        <view class="lv-condition">需 {{ lv.points }} 积分</view>
-        <view class="lv-discount">{{ lv.discount }}折</view>
+        <view class="lv-flower">{{ lv.flower }}</view>
+        <view class="lv-condition">需 {{ lv.minPoints }} 积分</view>
+        <view class="lv-discount">{{ formatDiscount(lv.discount) }}</view>
       </view>
     </view>
+
     <view class="benefits">
       <view class="title">等级权益</view>
-      <view v-for="(b, idx) in benefits" :key="idx" class="benefit-item">{{ b }}</view>
+      <view v-for="(item, idx) in benefits" :key="idx" class="benefit-item">{{ item }}</view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import {
+  MEMBER_LEVELS,
+  MEMBER_LEVEL_BENEFITS,
+  resolveMemberLevelIndex,
+  formatMemberDiscount,
+} from '@/types/member'
 
-const currentLevel = ref(0)
-const levels = ref([
-  { icon: '🌱', name: '普通会员', points: 0, discount: 10 },
-  { icon: '🌸', name: '银卡会员', points: 200, discount: 9.5 },
-  { icon: '🌹', name: '金卡会员', points: 500, discount: 9 },
-  { icon: '💎', name: '钻石会员', points: 1000, discount: 8.5 },
-])
-const benefits = ref([
-  '等级越高，折扣越大',
-  '生日当月赠送双倍积分',
-  '金卡及以上会员免配送费',
-  '钻石会员专享新品优先预订',
-])
+const points = ref(120)
+
+const levels = MEMBER_LEVELS
+const benefits = MEMBER_LEVEL_BENEFITS
+const currentLevelIndex = computed(() => resolveMemberLevelIndex(points.value))
+
+function formatDiscount(discount: number) {
+  return formatMemberDiscount(discount)
+}
 </script>
 
 <style lang="less">
 .page-level { background: #f8f8f8; min-height: 100vh; padding: 32rpx; }
+.intro {
+  margin-bottom: 24rpx;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.5;
+}
 .levels { display: flex; gap: 16rpx; overflow-x: auto; padding-bottom: 16rpx; }
 .level-card {
   flex-shrink: 0; width: 200rpx; background: #fff; border-radius: 16rpx;
@@ -42,7 +58,8 @@ const benefits = ref([
   &.current { border-color: #e53935; background: #fce4ec; }
   .lv-icon { font-size: 64rpx; }
   .lv-name { margin-top: 8rpx; font-size: 28rpx; font-weight: 600; }
-  .lv-condition { margin-top: 4rpx; font-size: 22rpx; color: #999; }
+  .lv-flower { margin-top: 4rpx; font-size: 22rpx; color: #e53935; }
+  .lv-condition { margin-top: 8rpx; font-size: 22rpx; color: #999; }
   .lv-discount { margin-top: 12rpx; font-size: 40rpx; font-weight: 700; color: #e53935; }
 }
 .benefits { background: #fff; border-radius: 16rpx; padding: 32rpx; margin-top: 24rpx; }

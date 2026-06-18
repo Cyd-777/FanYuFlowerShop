@@ -1,17 +1,15 @@
 <template>
   <view class="login-page">
-    <view class="logo">🌷</view>
-    <view class="title">梵宇花店</view>
-    <view class="desc">每一束花，都是一次心动</view>
-    <nut-button
+    <view class="logo">{{ logoEmoji }}</view>
+    <view class="title">{{ shopStore.shopName }}</view>
+    <view class="desc">{{ descText }}</view>
+    <view
       class="login-btn"
-      type="primary"
-      block
-      :loading="loading"
-      @click="handleLogin"
+      :class="{ loading: loading }"
+      @tap="handleLogin"
     >
-      微信一键登录
-    </nut-button>
+      {{ loading ? loadingText : loginText }}
+    </view>
     <view class="tip" v-if="errorMsg">{{ errorMsg }}</view>
   </view>
 </template>
@@ -19,13 +17,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
+import { useShopStore } from '@/stores/shop'
 import { navigateToHome, hasToken, getCachedRole } from '@/services/auth'
+
+const logoEmoji = '🌷'
+const descText = '每一束花，都是一次心动'
+const loginText = '微信一键登录'
+const loadingText = '登录中...'
 
 const loading = ref(false)
 const errorMsg = ref('')
 const userStore = useUserStore()
+const shopStore = useShopStore()
 
 onMounted(() => {
+  void shopStore.hydrate()
   try {
     if (hasToken()) {
       const role = getCachedRole()
@@ -43,9 +49,9 @@ async function handleLogin() {
   try {
     const { role } = await userStore.doLogin()
     navigateToHome(role)
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[login] failed:', err)
-    const msg = err?.message || err?.errMsg || '登录失败，请重试'
+    const msg = err instanceof Error ? err.message : (err as { errMsg?: string })?.errMsg || '登录失败，请重试'
     errorMsg.value = msg
     wx.showModal({
       title: '登录失败',
@@ -59,13 +65,15 @@ async function handleLogin() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
+
 .login-page {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 200rpx;
   min-height: 100vh;
-  background: linear-gradient(180deg, #fce4ec 0%, #fff 40%);
+  background: linear-gradient(180deg, @color-primary-light 0%, @color-bg-card 40%);
 }
 .logo {
   width: 160rpx;
@@ -74,26 +82,34 @@ async function handleLogin() {
   font-size: 100rpx;
   line-height: 160rpx;
   text-align: center;
-  background: #fff;
+  background: @color-bg-card;
 }
 .title {
   margin-top: 32rpx;
   font-size: 48rpx;
   font-weight: 600;
-  color: #333;
+  color: @color-text-primary;
 }
 .desc {
   margin-top: 16rpx;
   font-size: 28rpx;
-  color: #999;
+  color: @color-text-tertiary;
 }
 .login-btn {
   position: fixed;
   bottom: 160rpx;
   left: 64rpx;
   right: 64rpx;
-  width: auto;
-  border-radius: 48rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  text-align: center;
+  border-radius: @radius-pill;
+  font-size: 30rpx;
+  color: #fff;
+  background: @color-primary;
+  &.loading {
+    opacity: 0.7;
+  }
 }
 .tip {
   position: fixed;
@@ -101,7 +117,7 @@ async function handleLogin() {
   left: 64rpx;
   right: 64rpx;
   font-size: 24rpx;
-  color: #e53935;
+  color: @color-primary;
   text-align: center;
   line-height: 1.5;
 }

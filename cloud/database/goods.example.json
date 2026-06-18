@@ -1,0 +1,15 @@
+[
+  {
+    "name": "春日混搭花束",
+    "price": 168,
+    "unit": "束",
+    "stock": 20,
+    "description": "清新淡雅的混搭花束，适合日常送花。",
+    "categoryId": "分类文档 _id",
+    "categoryName": "混搭花束",
+    "coverImage": "cloud://xxx.jpg",
+    "images": ["cloud://xxx.jpg"],
+    "onSale": true,
+    "sort": 100
+  }
+]

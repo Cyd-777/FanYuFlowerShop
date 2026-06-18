@@ -1,32 +1,63 @@
 <template>
   <view class="page-category">
-    <nut-searchbar v-model="keyword" placeholder="搜索花束..." @search="onSearch" />
+    <view class="search-bar">
+      <input
+        class="search-input"
+        v-model="keyword"
+        :placeholder="searchPlaceholder"
+        confirm-type="search"
+        @confirm="onSearch"
+      />
+    </view>
     <view class="content">
       <scroll-view class="left" scroll-y>
         <view
-          v-for="(cat, idx) in categories"
-          :key="idx"
-          :class="['left-item', { active: idx === activeIdx }]"
-          @click="activeIdx = idx"
+          class="left-item customize-entry"
+          :class="{ active: activeIdx === -1 }"
+          @click="showCustomizePanel"
         >
-          {{ cat.name }}
+          ✨ 定制花束
+        </view>
+        <view
+          v-for="(tab, idx) in tabs"
+          :key="tab.key"
+          :class="['left-item', { active: idx === activeIdx }]"
+          @click="switchCategory(idx)"
+        >
+          {{ tab.name }}
         </view>
       </scroll-view>
       <scroll-view class="right" scroll-y>
-        <view class="right-title">{{ categories[activeIdx]?.name }}</view>
-        <view
-          v-for="(item, idx) in subGoods"
-          :key="idx"
-          class="goods-item"
-          @click="goDetail(item.id)"
-        >
-          <image class="thumb" :src="item.image" mode="aspectFill" />
-          <view class="info">
-            <view class="name">{{ item.name }}</view>
-            <view class="price">¥{{ item.price }}</view>
+        <view v-if="activeIdx === -1" class="customize-panel">
+          <view class="customize-title">定制花束</view>
+          <view class="customize-desc">
+            花材为所有按支售卖的商品；包装与贺卡从对应分类中选择，填写留言后提交订单。
           </view>
+          <nut-button type="primary" @click="goCustomize">开始定制</nut-button>
         </view>
-        <nut-empty description="暂无商品" v-if="!subGoods.length" />
+        <template v-else>
+        <view class="right-title">{{ tabs[activeIdx]?.name }}</view>
+        <GoodsCardSkeleton v-if="loading" variant="row" :count="5" />
+        <template v-else>
+          <view
+            v-for="item in goodsList"
+            :key="item._id"
+            class="goods-item"
+            :class="{ 'is-sold-out': item.stock <= 0 }"
+            @click="goDetail(item._id)"
+          >
+            <view class="thumb-wrap">
+              <GoodsImage :src="item.imageUrl" root-class="thumb" />
+              <GoodsSoldOutBadge :stock="item.stock" :on-sale="item.onSale" />
+            </view>
+            <view class="info">
+              <view class="name">{{ item.name }}</view>
+              <view class="price">¥{{ formatPrice(item.price) }}</view>
+            </view>
+          </view>
+          <view v-if="!goodsList.length" class="empty-tip">{{ emptyText }}</view>
+        </template>
+        </template>
       </scroll-view>
     </view>
   </view>
@@ -34,38 +65,104 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useDidShow, useLoad, usePullDownRefresh } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
+import { usePublicGoods } from '@/composables/usePublicGoods'
+import { usePublicCategories } from '@/composables/usePublicCategories'
+import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
+import GoodsImage from '@/components/GoodsImage.vue'
+import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
 
 const keyword = ref('')
+const searchPlaceholder = '搜索花束...'
+const emptyText = '暂无商品'
 const activeIdx = ref(0)
+const { categories, loadCategories } = usePublicCategories()
+const { goodsList, loading, setCategory, loadGoods } = usePublicGoods()
 
-const categories = ref([
-  { name: '混搭花束' },
-  { name: '玫瑰' },
-  { name: '向日葵' },
-  { name: '礼盒' },
-  { name: '求婚' },
+const tabs = computed(() => [
+  { key: 'all', name: '全部', categoryId: '' },
+  ...categories.value.map((item) => ({
+    key: item._id,
+    name: item.name,
+    categoryId: item._id,
+  })),
 ])
 
-const subGoods = computed(() => [])
+useLoad(() => {
+  void refreshPage()
+})
+
+useDidShow(() => {
+  void refreshPage()
+})
+
+usePullDownRefresh(() => {
+  void refreshPage(true).finally(() => {
+    wx.stopPullDownRefresh()
+  })
+})
+
+async function refreshPage(force = false) {
+  await loadCategories({ force })
+  await reloadGoods(force)
+}
+
+function formatPrice(price: number) {
+  return Number(price).toFixed(2).replace(/\.00$/, '')
+}
+
+function switchCategory(idx: number) {
+  activeIdx.value = idx
+  const current = tabs.value[idx]
+  setCategory(current?.categoryId || '')
+  void reloadGoods()
+}
+
+function showCustomizePanel() {
+  activeIdx.value = -1
+}
+
+function goCustomize() {
+  navigateTo({ url: '/pagesCustomer/customize/index' })
+}
+
+function reloadGoods(force = false) {
+  if (activeIdx.value < 0) return Promise.resolve()
+  const current = tabs.value[activeIdx.value]
+  return loadGoods('', current?.categoryId || '', { force })
+}
 
 function onSearch() {
   if (keyword.value) {
-    navigateTo({ url: '/pagesCustomer/goods/list?keyword=' + keyword.value })
+    navigateTo({ url: '/pagesCustomer/goods/list?keyword=' + encodeURIComponent(keyword.value) })
   }
 }
 
-function goDetail(id: number) {
+function goDetail(id: string) {
   navigateTo({ url: '/pagesCustomer/goods/detail?id=' + id })
 }
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
+
 .page-category {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f8f8f8;
+  background: @color-bg-page;
+}
+.search-bar {
+  padding: 16rpx 24rpx;
+  background: @color-bg-card;
+}
+.search-input {
+  height: 72rpx;
+  padding: 0 24rpx;
+  border-radius: 36rpx;
+  background: @color-bg-muted;
+  font-size: @font-size-md;
 }
 .content {
   flex: 1;
@@ -83,11 +180,28 @@ function goDetail(id: number) {
   text-align: center;
   border-left: 4rpx solid transparent;
   &.active {
-    color: #e53935;
-    border-left-color: #e53935;
-    background: #fce4ec;
+    color: @color-primary;
+    border-left-color: @color-primary;
+    background: @color-primary-light;
     font-weight: 600;
   }
+}
+.customize-entry { font-size: 24rpx; }
+.customize-panel {
+  padding: 48rpx 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
+}
+.customize-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+.customize-desc {
+  margin: 16rpx 0 32rpx;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
 }
 .right {
   flex: 1;
@@ -105,6 +219,13 @@ function goDetail(id: number) {
   border-radius: 12rpx;
   padding: 16rpx;
   margin-bottom: 16rpx;
+  &.is-sold-out .thumb {
+    opacity: 0.72;
+  }
+  .thumb-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
   .thumb {
     width: 160rpx;
     height: 160rpx;
@@ -124,7 +245,13 @@ function goDetail(id: number) {
     margin-top: 8rpx;
     font-size: 28rpx;
     font-weight: 600;
-    color: #e53935;
+    color: @color-primary;
   }
+}
+.empty-tip {
+  padding: 48rpx 0;
+  text-align: center;
+  font-size: @font-size-md;
+  color: @color-text-tertiary;
 }
 </style>

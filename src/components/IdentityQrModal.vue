@@ -1,44 +1,31 @@
 <template>
-  <nut-popup
-    v-model:visible="show"
-    round
-    position="center"
-    :close-on-click-overlay="true"
-    :style="{ padding: '0' }"
-  >
-    <view class="identity-modal">
-      <view class="modal-title">我的身份码</view>
-      <view class="modal-desc">出示此码供商家扫码核销，或由管理员扫码添加为工作人员</view>
+  <view v-if="visible" class="identity-modal-mask" @tap="close">
+    <view class="identity-modal" @tap.stop="noop">
+      <view class="modal-close" @tap="close">{{ closeText }}</view>
 
-      <view v-if="modules.length" class="qr-wrap" :style="qrWrapStyle">
-        <view v-for="(row, rowI) in modules" :key="rowI" class="qr-row">
-          <view
-            v-for="(cell, colI) in row"
-            :key="colI"
-            class="qr-cell"
-            :class="{ on: cell.isBlack }"
-            :style="cellStyle"
-          />
-        </view>
+      <view class="modal-title">{{ titleText }}</view>
+      <view class="modal-desc">{{ descText }}</view>
+
+      <view class="qr-placeholder">
+        <text class="placeholder-icon">{{ qrIcon }}</text>
+        <text class="placeholder-text">{{ qrText }}</text>
+        <text class="placeholder-hint">{{ qrHint }}</text>
       </view>
-      <view v-else class="qr-placeholder">生成中…</view>
 
-      <view class="openid-row">{{ openid }}</view>
-      <nut-button block type="primary" @click="copyOpenid">复制 OpenID</nut-button>
+      <view class="openid-row">{{ openid || emptyOpenidText }}</view>
+
+      <view
+        class="copy-btn"
+        :class="{ disabled: !openid }"
+        @tap="copyOpenid"
+      >
+        {{ copyText }}
+      </view>
     </view>
-  </nut-popup>
+  </view>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref } from 'vue'
-// @ts-expect-error uqrcodejs 无类型声明
-import UQRCode from 'uqrcodejs'
-import { encodeIdentityQr } from '@/utils/identity'
-
-interface QrCell {
-  isBlack: boolean
-}
-
 const props = defineProps<{
   visible: boolean
   openid: string
@@ -48,51 +35,20 @@ const emit = defineEmits<{
   'update:visible': [value: boolean]
 }>()
 
-const modules = ref<QrCell[][]>([])
-const qrSizeRpx = 400
+const titleText = '我的身份码'
+const descText = '商家可扫描身份码添加工作人员，到店提货时出示此码核销'
+const qrIcon = '📱'
+const qrText = '二维码生成开发中'
+const qrHint = '当前请出示下方 OpenID'
+const copyText = '复制 OpenID'
+const closeText = '×'
+const emptyOpenidText = '未获取到 OpenID'
 
-const show = computed({
-  get: () => props.visible,
-  set: (val) => emit('update:visible', val),
-})
+function noop() {}
 
-const cellSizeRpx = computed(() => {
-  const count = modules.value.length || 1
-  return Math.floor(qrSizeRpx / count)
-})
-
-const qrWrapStyle = computed(() => ({
-  width: `${qrSizeRpx}rpx`,
-  height: `${qrSizeRpx}rpx`,
-}))
-
-const cellStyle = computed(() => ({
-  width: `${cellSizeRpx.value}rpx`,
-  height: `${cellSizeRpx.value}rpx`,
-}))
-
-function buildModules() {
-  if (!props.openid) {
-    modules.value = []
-    return
-  }
-
-  const qr = new UQRCode()
-  qr.data = encodeIdentityQr(props.openid)
-  qr.size = 200
-  qr.make()
-  modules.value = qr.modules as QrCell[][]
+function close() {
+  emit('update:visible', false)
 }
-
-watch(
-  () => [props.visible, props.openid] as const,
-  ([visible, openid]) => {
-    if (visible && openid) {
-      buildModules()
-    }
-  },
-  { immediate: true },
-)
 
 function copyOpenid() {
   if (!props.openid) return
@@ -104,9 +60,36 @@ function copyOpenid() {
 </script>
 
 <style lang="less">
+.identity-modal-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+}
 .identity-modal {
+  position: relative;
   width: 560rpx;
-  padding: 48rpx 40rpx;
+  padding: 48rpx 40rpx 40rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+.modal-close {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  width: 56rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  font-size: 44rpx;
+  color: #999;
   text-align: center;
 }
 .modal-title {
@@ -120,35 +103,31 @@ function copyOpenid() {
   color: #999;
   line-height: 1.5;
 }
-.qr-wrap {
+.qr-placeholder {
   display: flex;
   flex-direction: column;
-  margin: 32rpx auto 24rpx;
-  background: #fff;
-  border: 2rpx solid #eee;
-  overflow: hidden;
-}
-.qr-row {
-  display: flex;
-  flex-direction: row;
-  line-height: 0;
-}
-.qr-cell {
-  flex-shrink: 0;
-  background: #fff;
-  &.on {
-    background: #000;
-  }
-}
-.qr-placeholder {
+  align-items: center;
+  justify-content: center;
   width: 400rpx;
   height: 400rpx;
   margin: 32rpx auto 24rpx;
-  line-height: 400rpx;
-  font-size: 26rpx;
-  color: #ccc;
   background: #fafafa;
-  border-radius: 8rpx;
+  border: 2rpx dashed #e0e0e0;
+  border-radius: 16rpx;
+  .placeholder-icon {
+    font-size: 80rpx;
+    line-height: 1;
+  }
+  .placeholder-text {
+    margin-top: 16rpx;
+    font-size: 28rpx;
+    color: #999;
+  }
+  .placeholder-hint {
+    margin-top: 8rpx;
+    font-size: 22rpx;
+    color: #ccc;
+  }
 }
 .openid-row {
   margin-bottom: 24rpx;
@@ -158,5 +137,16 @@ function copyOpenid() {
   word-break: break-all;
   background: #f8f8f8;
   border-radius: 8rpx;
+}
+.copy-btn {
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  color: #fff;
+  background: #e53935;
+  &.disabled {
+    opacity: 0.45;
+  }
 }
 </style>

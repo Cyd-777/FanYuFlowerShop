@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { initCloud } from './services/cloud'
+import { fetchCacheVersions } from './utils/cache/meta'
+import { useCartStore } from './stores/cart'
 
 import './app.less'
 
@@ -10,11 +12,16 @@ const App = createApp({
   onLaunch() {
     try {
       initCloud()
+      void fetchCacheVersions().catch((err) => {
+        console.warn('[cache] launch meta prefetch failed:', err)
+      })
     } catch (err) {
       console.error('[cloud] init failed:', err)
     }
   },
-  onShow() {},
+  onShow() {
+    useCartStore().refreshBadge()
+  },
 })
 
 App.use(pinia)

@@ -1,44 +1,93 @@
 <template>
   <view class="page-preview">
-    <view class="preview-area">
-      <image class="preview-img" src="" mode="aspectFit" />
-      <view class="tip">定制预览效果</view>
+    <view class="summary-card">
+      <view class="title">订单确认</view>
+      <view class="row">
+        <text class="label">花材</text>
+        <text>{{ flowerNames }}</text>
+      </view>
+      <view class="row">
+        <text class="label">包装</text>
+        <text>{{ draft?.packaging?.name || '—' }}</text>
+      </view>
+      <view class="row">
+        <text class="label">贺卡</text>
+        <text>{{ draft?.card?.name || '无' }}</text>
+      </view>
+      <view v-if="draft?.cardMessage" class="row">
+        <text class="label">留言</text>
+        <text>{{ draft.cardMessage }}</text>
+      </view>
+      <view class="row total">
+        <text class="label">合计</text>
+        <text class="price">¥{{ totalPrice }}</text>
+      </view>
+      <view class="note">确认后将进入下单页，选择收货地址后提交（订单支付功能待接入）</view>
     </view>
-    <view class="summary">
-      <view class="row"><text class="label">花材</text><text>{{ materials }}</text></view>
-      <view class="row"><text class="label">包装</text><text>{{ pkgName }}</text></view>
-      <view class="row"><text class="label">卡片</text><text>{{ cardMsg || '无' }}</text></view>
-      <view class="row total"><text class="label">合计</text><text class="price">¥{{ price }}</text></view>
-    </view>
-    <nut-button type="primary" block class="submit-btn" @click="submit">确认定制并加入购物车</nut-button>
+
+    <nut-button type="primary" block class="submit-btn" :loading="submitting" @click="submit">
+      提交订单
+    </nut-button>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useDidShow } from '@tarojs/taro'
+import { navigateTo } from '@/utils/router'
+import { useCartStore } from '@/stores/cart'
+import {
+  CUSTOM_BOUQUET_DRAFT_KEY,
+  calcCustomBouquetPrice,
+  isCustomBouquetReady,
+} from '@/types/customBouquet'
+import type { CustomBouquetDraft } from '@/types/customBouquet'
 
-const materials = ref('红玫瑰 x3, 满天星 x1')
-const pkgName = ref('精美礼盒')
-const cardMsg = ref('')
-const price = ref(65)
+const cartStore = useCartStore()
+const draft = ref<CustomBouquetDraft | null>(null)
+const submitting = ref(false)
+
+const flowerNames = computed(() => draft.value?.flowers.map((item) => item.name).join('、') || '—')
+const totalPrice = computed(() =>
+  draft.value ? calcCustomBouquetPrice(draft.value).toFixed(2).replace(/\.00$/, '') : '0',
+)
+
+useDidShow(() => {
+  const cached = wx.getStorageSync(CUSTOM_BOUQUET_DRAFT_KEY) as CustomBouquetDraft | ''
+  if (!cached || typeof cached !== 'object' || !isCustomBouquetReady(cached)) {
+    draft.value = null
+    wx.showToast({ title: '请先完成定制选择', icon: 'none' })
+    setTimeout(() => wx.navigateBack(), 1200)
+    return
+  }
+  draft.value = cached
+})
 
 function submit() {
-  wx.showToast({ title: '已加入购物车', icon: 'success' })
-  setTimeout(() => wx.navigateBack(), 1500)
+  if (!draft.value || submitting.value) return
+
+  submitting.value = true
+  try {
+    const lineKey = cartStore.addCustomBouquet(draft.value)
+    cartStore.setOnlyChecked(lineKey)
+    wx.removeStorageSync(CUSTOM_BOUQUET_DRAFT_KEY)
+    navigateTo({ url: '/pagesCustomer/order/confirm' })
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
 
 <style lang="less">
-.page-preview { background: #f8f8f8; min-height: 100vh; }
-.preview-area {
-  background: #fff; padding: 48rpx; text-align: center;
-  .preview-img { width: 400rpx; height: 400rpx; background: #f0f0f0; border-radius: 16rpx; margin: 0 auto; }
-  .tip { margin-top: 16rpx; font-size: 26rpx; color: #999; }
+.page-preview { background: #f8f8f8; min-height: 100vh; padding: 24rpx; }
+.summary-card { background: #fff; border-radius: 16rpx; padding: 32rpx 24rpx; }
+.title { font-size: 32rpx; font-weight: 600; color: #333; margin-bottom: 24rpx; }
+.row {
+  display: flex; padding: 12rpx 0; font-size: 26rpx; border-bottom: 2rpx solid #f5f5f5;
+  .label { color: #999; width: 120rpx; flex-shrink: 0; }
+  &.total { border: none; margin-top: 8rpx; }
+  .price { color: #e53935; font-weight: 600; font-size: 32rpx; }
 }
-.summary { background: #fff; margin-top: 16rpx; padding: 24rpx; }
-.row { display: flex; padding: 12rpx 0; font-size: 26rpx; border-bottom: 2rpx solid #f5f5f5; }
-.row.total { border: none; }
-.label { color: #999; width: 120rpx; }
-.price { color: #e53935; font-weight: 600; font-size: 32rpx; }
-.submit-btn { margin: 48rpx 32rpx; border-radius: 48rpx; }
+.note { margin-top: 16rpx; font-size: 22rpx; color: #999; line-height: 1.5; }
+.submit-btn { margin-top: 48rpx; border-radius: 48rpx; }
 </style>

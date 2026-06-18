@@ -1,7 +1,10 @@
 import type { UserConfigExport } from "@tarojs/cli";
 
 export default {
-  mini: {},
+  mini: {
+    // 真机上传不需要 source map，避免 dist 里大量 .map 文件
+    enableSourceMap: false,
+  },
   h5: {
     /**
      * WebpackChain 插件配置
