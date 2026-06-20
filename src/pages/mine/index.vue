@@ -111,8 +111,8 @@ useDidShow(() => {
 
 const orderNavs = ref([
   { key: 'all', icon: '📋', label: '全部' },
-  { key: 'pending', icon: '⏳', label: '待付款' },
-  { key: 'shipped', icon: '🚚', label: '待收货' },
+  { key: 'pending', icon: '⏳', label: '待处理' },
+  { key: 'processing', icon: '🌸', label: '处理中' },
   { key: 'completed', icon: '✅', label: '已完成' },
 ])
 

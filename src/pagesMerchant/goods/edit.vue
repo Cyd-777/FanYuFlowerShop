@@ -13,7 +13,7 @@
             class="slot-img"
             :src="item.preview"
             mode="aspectFill"
-            @click="previewImages(idx)"
+            @tap.stop="previewImages(idx)"
           />
           <view v-if="idx === 0" class="cover-badge">{{ coverBadgeText }}</view>
           <view
@@ -72,6 +72,14 @@
 
         <nut-form-item :label="labelStock">
           <nut-input v-model="form.stock" placeholder="0" type="number" />
+        </nut-form-item>
+
+        <nut-form-item v-if="form.salesType === 'group'" :label="labelUnitsPerGroup">
+          <nut-input
+            v-model="form.unitsPerGroup"
+            :placeholder="unitsPerGroupPlaceholder"
+            type="number"
+          />
         </nut-form-item>
 
         <nut-form-item :label="labelDescription">
@@ -156,6 +164,7 @@ import {
   updateGoods,
   uploadGoodsImage,
 } from '@/services/goods'
+import { linkStockInLineGoods } from '@/utils/stockInSession'
 import { useMerchantCategories } from '@/composables/useMerchantCategories'
 import { resolveCloudImageMap } from '@/utils/goodsImage'
 import type { FlowerPickResult } from '@/types/flower'
@@ -188,6 +197,8 @@ const labelName = '品名'
 const namePlaceholder = '如：春日混搭花束'
 const labelPrice = '价格（元）'
 const labelStock = '库存'
+const labelUnitsPerGroup = '每组数量'
+const unitsPerGroupPlaceholder = '如 10（表示每组 10 支）'
 const labelDescription = '商品简介'
 const descriptionPlaceholder = '介绍花材、适用场景等'
 const labelSort = '排序优先级'
@@ -204,6 +215,9 @@ const createButtonText = '创建商品'
 const saveEditButtonText = '保存修改'
 
 const goodsId = ref('')
+const returnToStockIn = ref(false)
+const stockInLineKey = ref('')
+const prefillColor = ref('')
 const saving = ref(false)
 const deleting = ref(false)
 const imageSlots = ref<ImageSlot[]>([])
@@ -229,6 +243,7 @@ const form = ref<GoodsForm>({
   onSale: true,
   recommend: false,
   sort: '0',
+  unitsPerGroup: '',
 })
 
 const isEdit = computed(() => !!goodsId.value)
@@ -244,6 +259,12 @@ let goodsLoadSeq = 0
 
 useLoad((options) => {
   goodsId.value = options?.id || ''
+  returnToStockIn.value = options?.from === 'stock-in'
+  stockInLineKey.value = options?.stockInLineKey || ''
+  prefillColor.value = options?.prefillColor || ''
+  if (options?.prefillName) {
+    form.value.name = decodeURIComponent(options.prefillName)
+  }
   wx.setNavigationBarTitle({ title: goodsId.value ? '编辑商品' : '新建商品' })
   void bootstrapPage()
 })
@@ -295,6 +316,9 @@ function selectSalesType(type: GoodsSalesType) {
   if (form.value.salesType === type) return
   form.value.salesType = type
   form.value.unit = unitFromSalesType(type)
+  if (type !== 'group') {
+    form.value.unitsPerGroup = ''
+  }
   if (!needsFlowerPickForSalesType(type)) {
     clearFlowerSelection()
   }
@@ -334,6 +358,10 @@ function applyGoodsToForm(goods: Goods) {
   form.value.onSale = goods.onSale
   form.value.recommend = goods.recommend === true
   form.value.sort = String(goods.sort || 0)
+  form.value.unitsPerGroup =
+    goods.unitsPerGroup != null && goods.unitsPerGroup > 0
+      ? String(goods.unitsPerGroup)
+      : ''
 }
 
 function matchCategoryByKindName(kindName: string) {
@@ -523,6 +551,13 @@ function validateForm() {
     wx.showToast({ title: '请填写有效库存', icon: 'none' })
     return false
   }
+  if (form.value.salesType === 'group') {
+    const perGroup = parseInt(form.value.unitsPerGroup, 10)
+    if (Number.isNaN(perGroup) || perGroup <= 0) {
+      wx.showToast({ title: '请填写每组数量', icon: 'none' })
+      return false
+    }
+  }
   return true
 }
 
@@ -541,6 +576,17 @@ async function save() {
 
     wx.removeStorageSync(FLOWER_PICK_STORAGE_KEY)
     wx.showToast({ title: isEdit.value ? '已保存' : '已创建', icon: 'success' })
+
+    if (returnToStockIn.value && stockInLineKey.value && !isEdit.value) {
+      linkStockInLineGoods(stockInLineKey.value, saved._id, {
+        name: saved.name,
+        stock: saved.stock,
+        unit: saved.unit,
+      })
+      setTimeout(() => navigateBack(), 800)
+      return
+    }
+
     setTimeout(() => navigateBack(), 1200)
   } catch (err) {
     wx.showToast({

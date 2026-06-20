@@ -34,23 +34,9 @@
 </template>
 
 <script setup lang="ts">
-import { useDidShow } from '@tarojs/taro'
-import { navigateTo } from '@/utils/router'
-import { useMerchantCategories } from '@/composables/useMerchantCategories'
+import { usePageData } from '@/composables/usePageData'
 
-const { categories: categoryList, loading, loadCategories } = useMerchantCategories()
-
-useDidShow(() => {
-  void loadCategories()
-})
-
-function addCategory() {
-  navigateTo({ url: '/pagesMerchant/category/edit' })
-}
-
-function editCategory(id: string) {
-  navigateTo({ url: '/pagesMerchant/category/edit?id=' + id })
-}
+const { categoryList, loading, addCategory, editCategory } = usePageData()
 </script>
 
 <style lang="less">

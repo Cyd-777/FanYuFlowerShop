@@ -11,6 +11,8 @@ export interface UserAddress {
   latitude?: number
   longitude?: number
   poiName?: string
+  /** 地址来源：微信地址导入 */
+  source?: 'wechat'
 }
 
 export type UserAddressForm = Omit<UserAddress, 'id' | 'updatedAt'>

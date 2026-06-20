@@ -3,6 +3,8 @@ import {
   isCloudFileId,
   pickCoverFileId,
   pickDisplayImage,
+  pickPublicCoverUrl,
+  pickDisplayImageForGoods,
   resolveCloudImageMap,
 } from '@/utils/goodsImage'
 import type { CartLineItem } from '@/types/cart'
@@ -40,7 +42,11 @@ export async function syncCartWithServer(items: CartLineItem[]): Promise<CartSyn
       }
 
       const coverId = pickCoverFileId(goods)
-      const image = line.image && !isCloudFileId(line.image) ? line.image : coverId
+      const publicUrl = pickPublicCoverUrl(goods)
+      const image =
+        line.image && !isCloudFileId(line.image)
+          ? line.image
+          : publicUrl || pickDisplayImageForGoods(goods) || coverId
 
       next.push({
         lineKey: line.lineKey || line.goodsId,

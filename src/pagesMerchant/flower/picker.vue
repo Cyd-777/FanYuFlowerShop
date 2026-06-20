@@ -73,146 +73,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useLoad } from '@tarojs/taro'
-import { navigateBack } from '@/utils/router'
-import { buildFlowerLabel, listFlowerCatalogCached, searchFlowerCatalog } from '@/services/flower'
-import { hasCacheEntry } from '@/utils/cache'
-import type { FlowerKindWithVarieties } from '@/types/flower'
-import { FLOWER_PICK_STORAGE_KEY } from '@/types/flower'
+import { usePageData } from '@/composables/usePageData'
 
-const cloudSourceLabel = '数据来源：云数据库 flower_kinds / flower_varieties'
-const searchPlaceholder = '搜索品类或品种，如 红玫瑰、黄天霸'
-const emptyVarietyText = '该品类下暂无品种，请在云数据库添加品种'
-const emptyCatalogText = '云端花卉库为空，请先在云数据库录入数据'
-const confirmText = '确认选择'
-
-const loading = ref(false)
-const keyword = ref('')
-const catalog = ref<FlowerKindWithVarieties[]>([])
-const presetKindId = ref('')
-const presetVarietyId = ref('')
-const activeKindId = ref('')
-const selectedVarietyId = ref('')
-
-const activeKind = computed(() => catalog.value.find((item) => item._id === activeKindId.value))
-const activeVarieties = computed(() => activeKind.value?.varieties || [])
-const totalVarietyCount = computed(() =>
-  catalog.value.reduce((sum, item) => sum + item.varieties.length, 0),
-)
-const cloudStatsText = computed(() => {
-  return `已加载 ${catalog.value.length} 个品类 · ${totalVarietyCount.value} 个品种`
-})
-const canConfirm = computed(() => !!activeKindId.value && !!selectedVarietyId.value)
-const selectedLabel = computed(() => {
-  if (!activeKind.value || !selectedVarietyId.value) return ''
-  const variety = activeVarieties.value.find((item) => item._id === selectedVarietyId.value)
-  if (!variety) return ''
-  return buildFlowerLabel(activeKind.value.name, variety.name)
-})
-
-useLoad((options) => {
-  presetKindId.value = options?.kindId || ''
-  presetVarietyId.value = options?.varietyId || ''
-  void loadCatalog()
-})
-
-async function loadCatalog() {
-  const isSearch = !!keyword.value.trim()
-  loading.value = isSearch ? true : !hasCacheEntry('flower:catalog:list')
-  try {
-    const list = isSearch
-      ? await searchFlowerCatalog(keyword.value.trim())
-      : (
-          await listFlowerCatalogCached({
-            onUpdate: (updated) => {
-              catalog.value = updated
-              syncSelectionAfterCatalogLoad(updated)
-            },
-          })
-        ).data
-    catalog.value = list
-    syncSelectionAfterCatalogLoad(list)
-  } catch (err) {
-    wx.showToast({
-      title: err instanceof Error ? err.message : '加载花卉库失败',
-      icon: 'none',
-      duration: 3000,
-    })
-  } finally {
-    loading.value = false
-  }
-}
-
-function syncSelectionAfterCatalogLoad(list: FlowerKindWithVarieties[]) {
-  if (!list.length) {
-    activeKindId.value = ''
-    selectedVarietyId.value = ''
-    return
-  }
-
-  if (presetKindId.value && list.some((item) => item._id === presetKindId.value)) {
-    activeKindId.value = presetKindId.value
-  } else if (!list.some((item) => item._id === activeKindId.value)) {
-    activeKindId.value = list[0]._id
-  }
-
-  if (
-    presetVarietyId.value &&
-    activeVarieties.value.some((item) => item._id === presetVarietyId.value)
-  ) {
-    selectedVarietyId.value = presetVarietyId.value
-  } else {
-    ensureSelectedVariety()
-  }
-}
-
-function selectKind(kindId: string) {
-  activeKindId.value = kindId
-  selectedVarietyId.value = ''
-  ensureSelectedVariety()
-}
-
-function selectVariety(varietyId: string) {
-  selectedVarietyId.value = varietyId
-}
-
-function ensureSelectedVariety() {
-  const varieties = activeVarieties.value
-  if (!varieties.length) {
-    selectedVarietyId.value = ''
-    return
-  }
-  if (!varieties.some((item) => item._id === selectedVarietyId.value)) {
-    selectedVarietyId.value = varieties[0]._id
-  }
-}
-
-async function handleSearch() {
-  await loadCatalog()
-}
-
-function confirmPick() {
-  const kind = activeKind.value
-  const variety = activeVarieties.value.find((item) => item._id === selectedVarietyId.value)
-  if (!kind || !variety) return
-
-  const unit = variety.defaultUnit || kind.defaultUnit || '束'
-  const description = [variety.description, kind.description].filter(Boolean).join('\n')
-
-  wx.setStorageSync(FLOWER_PICK_STORAGE_KEY, {
-    name: variety.name,
-    unit,
-    description,
-    flowerKindId: kind._id,
-    flowerKindName: kind.name,
-    flowerVarietyId: variety._id,
-    flowerVarietyName: variety.name,
-    pickedAt: Date.now(),
-  })
-
-  navigateBack()
-}
+const {
+  cloudSourceLabel,
+  searchPlaceholder,
+  emptyVarietyText,
+  emptyCatalogText,
+  confirmText,
+  loading,
+  keyword,
+  catalog,
+  activeKindId,
+  selectedVarietyId,
+  activeKind,
+  activeVarieties,
+  cloudStatsText,
+  canConfirm,
+  selectedLabel,
+  selectKind,
+  selectVariety,
+  handleSearch,
+  confirmPick,
+} = usePageData()
 </script>
 
 <style lang="less">

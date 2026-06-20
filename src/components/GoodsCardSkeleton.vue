@@ -47,15 +47,15 @@ withDefaults(
 }
 
 .goods-skeleton-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16rpx;
   padding: 0 16rpx 32rpx;
   box-sizing: border-box;
 }
 
 .goods-skeleton-card {
-  width: calc(50% - 8rpx);
+  min-width: 0;
   background: #fff;
   border-radius: 16rpx;
   overflow: hidden;

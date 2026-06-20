@@ -42,7 +42,14 @@
         class="goods-card"
         @click="goDetail(item._id)"
       >
-        <GoodsImage :src="item.imageUrl" root-class="goods-img" />
+        <view class="goods-img-wrap">
+          <GoodsImage
+            :src="item.imageUrl"
+            :cloud-file-id="item.coverImage || item.images?.[0]"
+            root-class="goods-img"
+          />
+          <GoodsNewListingBadge :goods="item" />
+        </view>
         <view class="goods-name">{{ item.name }}</view>
         <view class="goods-price" :style="{ color: themePreset.primaryColor }">
           <text v-if="item.discountPrice != null" class="price-sale">
@@ -59,122 +66,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useDidShow, useLoad, usePullDownRefresh } from '@tarojs/taro'
-import { navigateTo } from '@/utils/router'
-import { useShopDisplay } from '@/composables/useShopDisplay'
-import { usePublicCategories } from '@/composables/usePublicCategories'
-import { listPublicRecommendGoodsCached } from '@/services/goods'
-import { hasCacheEntry } from '@/utils/cache'
-import { attachGoodsCoverImages, resolveCloudImageUrl } from '@/utils/goodsImage'
-import { resolveActiveTheme } from '@/types/shopTheme'
-import { applyDiscountPrice, getThemeDiscountRate } from '@/utils/themeDiscount'
+import { usePageData } from '@/composables/usePageData'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
-import type { Category } from '@/types/category'
-import type { Goods } from '@/types/goods'
+import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
 
-const emptyText = '暂无推荐花束，去分类逛逛吧'
-const shopStore = useShopDisplay()
-const { categories, loadCategories } = usePublicCategories()
-const goodsList = ref<Array<Goods & { imageUrl: string; discountPrice?: number }>>([])
-const loading = ref(false)
-const bannerUrl = ref('')
-
-const themePreset = computed(() => resolveActiveTheme(shopStore.settings.decoration))
-
-const sectionTitle = computed(() =>
-  themePreset.value.id === 'default' ? '推荐花束' : `${themePreset.value.name}推荐`,
-)
-
-const headerStyle = computed(() => ({
-  background: `linear-gradient(135deg, ${themePreset.value.headerGradient[0]}, ${themePreset.value.headerGradient[1]})`,
-}))
-
-const themeChipBg = computed(() => `${themePreset.value.headerGradient[0]}`)
-
-async function applyThemeUi() {
-  const bannerId = themePreset.value.bannerImage
-  bannerUrl.value = bannerId ? await resolveCloudImageUrl(bannerId) : ''
-
-  try {
-    wx.setTabBarStyle({ selectedColor: themePreset.value.primaryColor })
-  } catch (err) {
-    console.warn('[home] setTabBarStyle failed:', err)
-  }
-}
-
-function attachDiscounts(items: Array<Goods & { imageUrl: string }>) {
-  const decoration = shopStore.settings.decoration
-  return items.map((item) => {
-    const rate = getThemeDiscountRate(item._id, decoration)
-    if (rate == null) return item
-    return {
-      ...item,
-      discountPrice: applyDiscountPrice(item.price, rate),
-    }
-  })
-}
-
-async function loadRecommend(force = false) {
-  loading.value =
-    force === true
-      ? true
-      : !hasCacheEntry('goods:public:recommend') && !goodsList.value.length
-
-  try {
-    const { data } = await listPublicRecommendGoodsCached({
-      force,
-      onUpdate: (list) => {
-        void attachGoodsCoverImages(list).then((items) => {
-          goodsList.value = attachDiscounts(items)
-        })
-      },
-    })
-    goodsList.value = attachDiscounts(await attachGoodsCoverImages(data))
-  } catch (err) {
-    console.error('[home] recommend load failed:', err)
-    if (!goodsList.value.length) goodsList.value = []
-    wx.showToast({
-      title: err instanceof Error ? err.message : '加载推荐失败',
-      icon: 'none',
-    })
-  } finally {
-    loading.value = false
-  }
-}
-
-async function refreshPage(force = false) {
-  await shopStore.hydrate({ force })
-  await applyThemeUi()
-  await Promise.all([loadCategories({ force }), loadRecommend(force)])
-}
-
-useLoad(() => {
-  void refreshPage()
-})
-
-useDidShow(() => {
-  void refreshPage()
-})
-
-usePullDownRefresh(() => {
-  void refreshPage(true).finally(() => {
-    wx.stopPullDownRefresh()
-  })
-})
-
-function formatPrice(price: number) {
-  return Number(price).toFixed(2).replace(/\.00$/, '')
-}
-
-function goCategory(cat: Category) {
-  navigateTo({ url: '/pagesCustomer/goods/list?categoryId=' + cat._id })
-}
-
-function goDetail(id: string) {
-  navigateTo({ url: '/pagesCustomer/goods/detail?id=' + id })
-}
+const {
+  shopStore,
+  categories,
+  goodsList,
+  loading,
+  bannerUrl,
+  themePreset,
+  sectionTitle,
+  headerStyle,
+  themeChipBg,
+  emptyText,
+  formatPrice,
+  goCategory,
+  goDetail,
+} = usePageData()
 </script>
 
 <style lang="less">
@@ -183,6 +94,7 @@ function goDetail(id: string) {
 .page-home {
   min-height: 100vh;
   background: #f8f8f8;
+  overflow-x: hidden;
 }
 .header {
   padding: 48rpx 32rpx 32rpx;
@@ -244,17 +156,21 @@ function goDetail(id: string) {
   font-weight: 600;
 }
 .goods-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16rpx;
   padding: 0 16rpx 32rpx;
+  box-sizing: border-box;
 }
 .goods-card {
-  width: calc(50% - 8rpx);
+  min-width: 0;
   background: #fff;
   border-radius: 16rpx;
   overflow: hidden;
   box-sizing: border-box;
+  .goods-img-wrap {
+    position: relative;
+  }
   .goods-img {
     width: 100%;
     height: 340rpx;
@@ -264,6 +180,9 @@ function goDetail(id: string) {
     padding: 12rpx 16rpx 4rpx;
     font-size: 26rpx;
     color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .goods-price {
     padding: 0 16rpx 16rpx;

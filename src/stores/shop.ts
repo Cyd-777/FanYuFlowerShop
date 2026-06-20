@@ -2,11 +2,12 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { DEFAULT_SHOP_NAME, STORAGE_KEYS } from '@/utils/constants'
 import {
-  fetchShopSettingsCached,
   saveShopSettings,
   saveThemeConfig,
   setActiveTheme,
 } from '@/services/shop'
+import { shopRepository } from '@/data/repository'
+import { CACHE_KEYS } from '@/data/cacheKeys'
 import { hasCacheEntry } from '@/utils/cache'
 import type { ShopSettings, ShopDecoration, ShopThemeConfig } from '@/types/shop'
 import { DEFAULT_SHOP_DECORATION } from '@/types/shop'
@@ -53,10 +54,10 @@ export const useShopStore = defineStore('shop', () => {
   async function hydrate(options?: { force?: boolean }) {
     settings.value = readLocalSettings()
 
-    const cacheKey = 'shop:settings'
+    const cacheKey = CACHE_KEYS.shopSettings
     loading.value = options?.force ? true : !hasCacheEntry(cacheKey)
     try {
-      const { data } = await fetchShopSettingsCached({
+      const { data } = await shopRepository.ensureSettings({
         force: options?.force,
         onUpdate: (remote) => {
           settings.value = {

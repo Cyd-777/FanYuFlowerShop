@@ -6,31 +6,47 @@ import { isGoodsOffSale, isGoodsOnSale } from '@/utils/goodsAvailability'
 /** 商家端上架状态：已上架含售罄 */
 export type MerchantShelfStatus = 'all' | 'onShelf' | 'offShelf'
 
+/** 商家端库存筛选 */
+export type MerchantStockStatus = 'all' | 'inStock' | 'soldOut'
+
 export interface MerchantGoodsFilterState {
   shelfStatus: MerchantShelfStatus
   categoryId: string
   flowerKindId: string
+  flowerVarietyId: string
   recommendOnly: boolean
   salesType: GoodsSalesType | ''
+  stockStatus: MerchantStockStatus
   priceMin: string
   priceMax: string
   nameKeyword: string
+  /** 品名精确匹配（否则为包含匹配） */
+  nameKeywordExact: boolean
 }
 
 export const DEFAULT_MERCHANT_GOODS_FILTER: MerchantGoodsFilterState = {
   shelfStatus: 'all',
   categoryId: '',
   flowerKindId: '',
+  flowerVarietyId: '',
   recommendOnly: false,
   salesType: '',
+  stockStatus: 'all',
   priceMin: '',
   priceMax: '',
   nameKeyword: '',
+  nameKeywordExact: false,
 }
 
 export interface FlowerKindOption {
   id: string
   name: string
+}
+
+export interface FlowerVarietyOption {
+  id: string
+  name: string
+  kindId: string
 }
 
 /** 商家端 Tab：在同一份全量列表上按 onSale 筛选（云函数 / 旧接口） */
@@ -67,6 +83,18 @@ function matchFlowerKind(item: Goods, flowerKindId: string): boolean {
   return item.flowerKindId === id
 }
 
+function matchFlowerVariety(item: Goods, flowerVarietyId: string): boolean {
+  const id = flowerVarietyId.trim()
+  if (!id) return true
+  return item.flowerVarietyId === id
+}
+
+function matchStockStatus(item: Goods, stockStatus: MerchantStockStatus): boolean {
+  if (stockStatus === 'inStock') return item.stock > 0
+  if (stockStatus === 'soldOut') return item.stock <= 0
+  return true
+}
+
 function matchSalesType(item: Goods, salesType: GoodsSalesType | ''): boolean {
   if (!salesType) return true
   return inferSalesType(item) === salesType
@@ -87,10 +115,12 @@ export function filterMerchantGoodsView(
   filter: MerchantGoodsFilterState,
 ): Goods[] {
   return list.filter((item) => {
-    if (!matchGoodsNameKeyword(item, filter.nameKeyword)) return false
+    if (!matchGoodsNameKeyword(item, filter.nameKeyword, filter.nameKeywordExact)) return false
     if (!matchShelfStatus(item, filter.shelfStatus)) return false
     if (!matchCategory(item, filter.categoryId)) return false
     if (!matchFlowerKind(item, filter.flowerKindId)) return false
+    if (!matchFlowerVariety(item, filter.flowerVarietyId)) return false
+    if (!matchStockStatus(item, filter.stockStatus)) return false
     if (filter.recommendOnly && !item.recommend) return false
     if (!matchSalesType(item, filter.salesType)) return false
     if (!matchPriceRange(item, filter.priceMin, filter.priceMax)) return false
@@ -109,6 +139,22 @@ export function collectFlowerKindOptions(list: Goods[]): FlowerKindOption[] {
   return Array.from(map.entries())
     .map(([id, name]) => ({ id, name }))
     .sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
+}
+
+export function collectFlowerVarietyOptions(list: Goods[], flowerKindId = ''): FlowerVarietyOption[] {
+  const kindId = flowerKindId.trim()
+  const map = new Map<string, FlowerVarietyOption>()
+  for (const item of list) {
+    if (kindId && item.flowerKindId !== kindId) continue
+    const id = item.flowerVarietyId?.trim()
+    if (!id) continue
+    map.set(id, {
+      id,
+      name: item.flowerVarietyName?.trim() || id,
+      kindId: item.flowerKindId || '',
+    })
+  }
+  return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
 }
 
 /** 花材种类是否仍存在于当前可选列表 */

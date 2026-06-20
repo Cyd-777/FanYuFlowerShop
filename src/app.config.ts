@@ -39,6 +39,8 @@ export default defineAppConfig({
         'order/detail',
         'goods/list',
         'goods/edit',
+        'goods/stock-in',
+        'goods/stock-in-import',
         'category/list',
         'category/edit',
         'flower/picker',

@@ -31,7 +31,31 @@
 
 环境 ID 示例：`cloud1-d4gygenkwbed9bb6c`（以 `src/config/env.ts` 为准）
 
+### 一键部署（推荐）
+
 ```bash
+# 首次：安装 CLI 并登录（浏览器扫码，只需一次）
+npm i -g @cloudbase/cli
+tcb login
+
+# 同步公共模块 + 部署全部云函数
+npm run deploy:cloud
+
+# 只部署指定函数
+npm run deploy:cloud -- --only goods,meta,favorite
+```
+
+### 微信开发者工具（不上 CLI 时）
+
+1. 打开项目根目录（含 `cloudfunctions/`）
+2. 左侧 **`cloudfunctions` 根目录** 右键
+3. 选择 **「上传并部署：所有云函数（云端安装依赖）」**  
+   （部分版本在 **云开发 → 云函数** 面板顶部有「批量上传」）
+
+### 逐个部署（CLI）
+
+```bash
+npm run sync:cloud
 cd cloudfunctions/login   && tcb fn deploy login   -e <envId> --force --yes
 cd cloudfunctions/shop    && tcb fn deploy shop    -e <envId> --force --yes
 cd cloudfunctions/staff   && tcb fn deploy staff   -e <envId> --force --yes
@@ -98,6 +122,28 @@ Taro 会把小程序产物编译到 `dist/`，**仓库根目录本身没有 `app
 - [ ] 商家端先进入「分类管理」，确认有启用中的分类
 - [ ] 商品编辑页选择分类并保存，且「立即上架」为开启
 - [ ] 用户端进入首页 Tab（非仅停留在商家工作台）
+
+### 体验版 / 真机商品图不显示
+
+Cloud Console 里 `coverImageUrl` 已有 `https://`，但手机仍无图，通常是下面两类原因之一：
+
+**A. downloadFile 合法域名未配置（HTTPS 临时链）**
+
+1. 打开 [微信公众平台](https://mp.weixin.qq.com) → 开发 → 开发管理 → 开发设置 → **服务器域名**
+2. 在 **downloadFile 合法域名** 增加云存储 CDN 域名（与 Console 里 `coverImageUrl` 的 host 一致），例如：  
+   `636c-cloud1-d4gygenkwbed9bb6c-1444200315.tcb.qcloud.la`
+3. 或在 **微信开发者工具 → 云开发 → 设置** 中使用「一键配置安全域名」
+
+开发者工具可勾选「不校验合法域名」，**体验版/真机会强制校验**，故仅工具里正常、手机不行时优先查此项。
+
+**B. 本地仍是旧版商品缓存（无 coverImageUrl）**
+
+- 删除小程序重新进入，或清除 Storage 里 `goods:public` 前缀项  
+- 代码已把缓存键升为 `v2`，重新上传体验版后会自动拉新数据
+
+**C. 云存储权限（可选替代方案）**
+
+将 `goods/` 目录设为 **所有用户可读，仅创建者可写** 后，前端可直接用 `cloud://` 展示（已在代码中作 fallback）；否则必须走 HTTPS + 合法域名。
 
 ### 云函数调用失败
 

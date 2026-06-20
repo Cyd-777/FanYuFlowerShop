@@ -14,6 +14,23 @@ export function navigateTo(opt: NavigateOptions) {
   })
 }
 
+/** 跳转失败时 Toast 提示（便于排查未编译新页面等问题） */
+export async function navigateToWithFeedback(opt: NavigateOptions, fallback = '页面跳转失败') {
+  try {
+    await navigateTo(opt)
+  } catch (err) {
+    const errMsg =
+      err && typeof err === 'object' && 'errMsg' in err
+        ? String((err as { errMsg: string }).errMsg)
+        : ''
+    const hint = errMsg.includes('not found') || errMsg.includes('不存在')
+      ? '页面未注册，请重新编译小程序'
+      : errMsg || fallback
+    wx.showToast({ title: hint.slice(0, 28), icon: 'none', duration: 2800 })
+    console.error('[router] navigateTo failed:', opt.url, err)
+  }
+}
+
 /** TabBar 页面切换 */
 export function switchTab(opt: NavigateOptions) {
   return new Promise<void>((resolve, reject) => {

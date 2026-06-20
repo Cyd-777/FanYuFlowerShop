@@ -21,6 +21,13 @@
           @focus="onFocus"
           @blur="onBlur"
         />
+        <text
+          v-if="inputValue.trim()"
+          class="search-action"
+          @tap.stop="onConfirm"
+        >
+          搜索
+        </text>
         <text v-if="inputValue" class="clear-btn" @tap.stop="onClear">×</text>
       </view>
 
@@ -108,11 +115,10 @@ function dismiss() {
   setFocused(false)
 }
 
-function scheduleDebouncedQuery(value: string) {
+function scheduleSuggestionQuery(value: string) {
   if (debounceTimer) clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
     debouncedQuery.value = value.trim()
-    emit('search', debouncedQuery.value)
   }, 220)
 }
 
@@ -121,12 +127,14 @@ function onInput(event: { detail: { value: string } }) {
   inputValue.value = value
   emit('update:modelValue', value)
   panelVisible.value = !!value.trim()
-  scheduleDebouncedQuery(value)
+  scheduleSuggestionQuery(value)
 }
 
 function onConfirm() {
+  const query = inputValue.value.trim()
+  debouncedQuery.value = query
   dismiss()
-  emit('search', inputValue.value.trim())
+  emit('search', query)
 }
 
 function onFocus() {
@@ -171,7 +179,7 @@ function onClear() {
   right: 0;
   bottom: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.65);
 }
 .goods-name-typeahead {
   position: relative;
@@ -203,6 +211,15 @@ function onClear() {
   height: 72rpx;
   font-size: 28rpx;
   color: #333;
+}
+.search-action {
+  flex-shrink: 0;
+  margin-left: 8rpx;
+  padding: 0 8rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #e53935;
+  line-height: 72rpx;
 }
 .clear-btn {
   flex-shrink: 0;

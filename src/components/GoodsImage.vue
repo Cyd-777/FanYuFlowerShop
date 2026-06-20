@@ -6,10 +6,10 @@
       <text v-if="showHint && !isLoading" class="goods-image-hint">{{ hintText }}</text>
     </view>
     <image
-      v-if="effectiveSrc && !failed"
+      v-if="displaySrc && !failed"
       class="goods-image-img"
       :class="{ loaded }"
-      :src="effectiveSrc"
+      :src="displaySrc"
       :mode="mode"
       @load="onLoad"
       @error="onError"
@@ -19,10 +19,17 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import {
+  fetchPublicImageLocalPath,
+  isCloudFileId,
+  resolveImageDisplayPath,
+} from '@/utils/goodsImage'
 
 const props = withDefaults(
   defineProps<{
     src?: string
+    /** cloud:// 文件 ID，HTTPS 换链失败时用云函数代理读取 */
+    cloudFileId?: string
     mode?: 'aspectFill' | 'aspectFit' | 'widthFix'
     emoji?: string
     showHint?: boolean
@@ -31,6 +38,7 @@ const props = withDefaults(
   }>(),
   {
     src: '',
+    cloudFileId: '',
     mode: 'aspectFill',
     emoji: '🌷',
     showHint: false,
@@ -41,28 +49,84 @@ const props = withDefaults(
 
 const loaded = ref(false)
 const failed = ref(false)
-
-const effectiveSrc = computed(() => props.src?.trim() || '')
+const displaySrc = ref('')
+const triedProxy = ref(false)
+let resolveToken = 0
 
 const isLoading = computed(
-  () => !!effectiveSrc.value && !loaded.value && !failed.value,
+  () => !!props.src?.trim() && !loaded.value && !failed.value && !displaySrc.value,
 )
 
 const showPlaceholder = computed(
-  () => !effectiveSrc.value || failed.value || !loaded.value,
+  () => !props.src?.trim() || failed.value || !loaded.value || !displaySrc.value,
 )
 
-watch(effectiveSrc, () => {
+function pickCloudFileId() {
+  if (props.cloudFileId && isCloudFileId(props.cloudFileId)) return props.cloudFileId
+  const trimmed = (props.src || '').trim()
+  if (isCloudFileId(trimmed)) return trimmed
+  return ''
+}
+
+async function tryPublicImageProxy() {
+  const fileId = pickCloudFileId()
+  if (!fileId || triedProxy.value) return ''
+  triedProxy.value = true
+  return fetchPublicImageLocalPath(fileId)
+}
+
+async function resolveDisplaySrc(raw: string) {
+  const token = ++resolveToken
   loaded.value = false
   failed.value = false
-})
+  displaySrc.value = ''
+  triedProxy.value = false
+
+  const trimmed = raw.trim()
+  if (!trimmed) return
+
+  const localPath = await resolveImageDisplayPath(trimmed)
+  if (token !== resolveToken) return
+
+  if (localPath) {
+    displaySrc.value = localPath
+    return
+  }
+
+  const proxyPath = await tryPublicImageProxy()
+  if (token !== resolveToken) return
+  if (proxyPath) {
+    displaySrc.value = proxyPath
+    return
+  }
+
+  if (/^https?:\/\//.test(trimmed)) {
+    displaySrc.value = trimmed
+  }
+}
+
+watch(
+  () => [props.src, props.cloudFileId] as const,
+  ([next]) => {
+    void resolveDisplaySrc(next || '')
+  },
+  { immediate: true },
+)
 
 function onLoad() {
   loaded.value = true
 }
 
-function onError() {
+async function onError() {
+  const proxyPath = await tryPublicImageProxy()
+  if (proxyPath) {
+    failed.value = false
+    loaded.value = false
+    displaySrc.value = proxyPath
+    return
+  }
   failed.value = true
+  console.warn('[GoodsImage] image render failed, src=', (props.src || '').slice(0, 120))
 }
 </script>
 

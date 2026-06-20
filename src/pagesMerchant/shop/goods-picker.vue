@@ -34,58 +34,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useLoad } from '@tarojs/taro'
-import { navigateBack } from '@/utils/router'
-import { useMerchantGoods } from '@/composables/useMerchantGoods'
-import { readMerchantGoodsPick, writeMerchantGoodsPick } from '@/types/merchantPick'
+import { usePageData } from '@/composables/usePageData'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 
-const { goodsList, loading, loadGoods } = useMerchantGoods()
-const selectedIds = ref<string[]>([])
-const ruleId = ref('')
-const ready = ref(false)
-
-const displayList = computed(() => goodsList.value)
-
-useLoad(() => {
-  const ctx = readMerchantGoodsPick()
-  ruleId.value = ctx?.ruleId || ''
-  selectedIds.value = ctx?.selectedIds ? [...ctx.selectedIds] : []
-  ready.value = true
-  void loadGoods('', 'onSale')
-})
-
-function formatPrice(price: number) {
-  return Number(price).toFixed(2).replace(/\.00$/, '')
-}
-
-function isSelected(id: string) {
-  return !!id && selectedIds.value.includes(id)
-}
-
-function toggle(id: string) {
-  if (!id || !ready.value) return
-
-  const next = new Set(selectedIds.value)
-  if (next.has(id)) next.delete(id)
-  else next.add(id)
-  selectedIds.value = [...next]
-}
-
-function confirm() {
-  if (!ruleId.value) {
-    wx.showToast({ title: '折扣信息丢失，请返回重试', icon: 'none' })
-    return
-  }
-  writeMerchantGoodsPick({
-    ruleId: ruleId.value,
-    selectedIds: [...selectedIds.value],
-    consumed: false,
-  })
-  navigateBack()
-}
+const {
+  displayList,
+  loading,
+  selectedIds,
+  formatPrice,
+  isSelected,
+  toggle,
+  confirm,
+} = usePageData()
 </script>
 
 <style lang="less">

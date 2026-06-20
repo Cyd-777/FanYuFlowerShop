@@ -97,62 +97,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useLoad } from '@tarojs/taro'
-import { getPublicWikiCached } from '@/services/wiki'
-import { hasCacheEntry } from '@/utils/cache'
-import type { FlowerWiki, WikiTab } from '@/types/wiki'
-import { getWikiDisplayName, getWikiSubtitle } from '@/types/wiki'
+import { usePageData } from '@/composables/usePageData'
 
-const emptySectionText = '暂无相关内容'
-const notFoundText = '未找到百科内容'
-
-const tabs: { key: WikiTab; label: string }[] = [
-  { key: 'atlas', label: '花卉图鉴' },
-  { key: 'care', label: '养殖指南' },
-  { key: 'language', label: '花语百科' },
-]
-
-const wikiId = ref('')
-const activeTab = ref<WikiTab>('atlas')
-const loading = ref(false)
-const wiki = ref<FlowerWiki | null>(null)
-
-const displayName = computed(() => (wiki.value ? getWikiDisplayName(wiki.value) : ''))
-const displaySubtitle = computed(() => (wiki.value ? getWikiSubtitle(wiki.value) : ''))
-
-useLoad((options) => {
-  wikiId.value = options?.id || ''
-  if (options?.tab === 'care' || options?.tab === 'language' || options?.tab === 'atlas') {
-    activeTab.value = options.tab
-  }
-  if (wikiId.value) {
-    void loadWiki()
-  }
-})
-
-async function loadWiki() {
-  const cacheKey = `wiki:public:detail:${wikiId.value}`
-  loading.value = !hasCacheEntry(cacheKey)
-  try {
-    const { data } = await getPublicWikiCached(wikiId.value, {
-      onUpdate: (updated) => {
-        wiki.value = updated
-        wx.setNavigationBarTitle({ title: getWikiDisplayName(updated) || '花卉百科' })
-      },
-    })
-    wiki.value = data
-    wx.setNavigationBarTitle({ title: displayName.value || '花卉百科' })
-  } catch (err) {
-    wiki.value = null
-    wx.showToast({
-      title: err instanceof Error ? err.message : '加载失败',
-      icon: 'none',
-    })
-  } finally {
-    loading.value = false
-  }
-}
+const {
+  emptySectionText,
+  notFoundText,
+  tabs,
+  activeTab,
+  loading,
+  wiki,
+  displayName,
+  displaySubtitle,
+} = usePageData()
 </script>
 
 <style lang="less">

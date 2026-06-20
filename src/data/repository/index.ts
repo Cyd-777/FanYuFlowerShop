@@ -1,0 +1,7 @@
+export { categoriesRepository } from './categoriesRepository'
+export { goodsRepository } from './goodsRepository'
+export { wikiRepository } from './wikiRepository'
+export { shopRepository } from './shopRepository'
+export { merchantGoodsRepository } from './merchantGoodsRepository'
+export { merchantCategoriesRepository } from './merchantCategoriesRepository'
+export { flowerRepository } from './flowerRepository'

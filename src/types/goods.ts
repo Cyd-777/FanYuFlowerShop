@@ -38,9 +38,17 @@ export interface Goods {
   flowerVarietyName?: string
   coverImage: string
   images: string[]
+  /** 顾客端公开接口：云函数侧已换链的封面 HTTPS */
+  coverImageUrl?: string
+  /** 顾客端公开接口：云函数侧已换链的多图 HTTPS */
+  imageUrls?: string[]
   onSale: boolean
   recommend: boolean
   sort: number
+  /** 最近一次上架时间（新建上架或下架后再上架时更新） */
+  listedAt?: string
+  /** 成组售卖时，每组包含的数量（如 10 支/组） */
+  unitsPerGroup?: number
   createdAt?: string
   updatedAt?: string
 }
@@ -62,6 +70,7 @@ export interface GoodsForm {
   onSale: boolean
   recommend: boolean
   sort: string
+  unitsPerGroup: string
 }
 
 export type GoodsListFilter = 'all' | 'onSale' | 'offSale'

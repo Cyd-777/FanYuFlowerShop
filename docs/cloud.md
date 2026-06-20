@@ -16,11 +16,12 @@
 | `shop` | 店铺设置读写 | `get`, `update` |
 | `staff` | 工作人员管理 | `list`, `add`, `remove`, `updateRole` |
 | `initDb` | 初始化数据库（商家权限） | （无 action） |
-| `goods` | 商品管理 | 商家：`list`, `get`, `add`, `update`, `remove`；用户端：`publicList`, `publicGet` |
+| `goods` | 商品管理 | 商家：`list`, `get`, `add`, `update`, `remove`；用户端：`publicList`, `publicGet`, `resolveFileUrls` |
 | `category` | 分类管理 | 商家：`list`, `get`, `add`, `update`, `remove`；用户端：`publicList` |
 | `flower` | 花卉库（品类 / 品种） | 商家：`list`, `search`, `getVariety` |
 | `wiki` | 花卉百科智库 | 用户端：`publicList`, `publicGet`, `publicMatch` |
-| `meta` | 缓存版本号 | 用户端：返回 `cache_meta.versions` |
+| `meta` | 缓存版本号 | 用户端：返回 `cache_meta.versions`；`action: resolveFileUrls` 换图片临时链接 |
+| `order` | 订单 | `create`, `get`, `list`, `updateStatus`, `stats` |
 
 ## 数据库集合
 
@@ -34,6 +35,7 @@
 | `flower_varieties` | 花卉品种（红玫瑰、黄天霸等） | `flower` 云函数 |
 | `flower_wiki` | 花卉百科智库（图鉴 / 养殖 / 花语） | `wiki` 云函数，关联 `kindId` / `varietyId` |
 | `cache_meta` | 各模块缓存版本号 | `meta` 云函数；写操作自动 bump |
+| `orders` | 顾客订单（行快照、地址、状态） | `order` 云函数 |
 
 ### categories 字段
 
@@ -71,10 +73,20 @@
 
 ## 云存储
 
-- [x] 用途：商品封面图
-- [x] 上传路径：`goods/{timestamp}_{random}.{ext}`
-- [x] 前端通过 `getTempFileURL` 换取临时链接展示
+- [x] 用途：商品封面图、店铺 banner 等（**商家维护的公有资源**）
+- [x] 上传路径：`goods/{timestamp}_{random}.{ext}`（商家端上传，存 `cloud://` fileID）
+- [x] **顾客端展示**：`goods.publicList` / `publicGet`、`favorite.list` 在云函数内换好 `coverImageUrl` / `imageUrls`（HTTPS），不依赖顾客身份读存储
+- [x] 商家端列表：仍可用客户端或 `resolveFileUrls` 换链（上传者本人通常可读）
 - [ ] 需在云开发控制台开通云存储
+
+### 数据归属（读接口约定）
+
+| 类型 | 示例 | 维护方 | 顾客端接口 |
+|------|------|--------|------------|
+| 公有只读 | 商品、分类、百科 | 商家 | `publicList` / `publicGet` 等，**无需登录**或仅需 OpenID |
+| 顾客私有 | 收藏、购物车、订单 | 顾客 | 按 OpenID 隔离；收藏列表中的商品图同样走公有换链 |
+
+**说明**：云存储默认「仅创建者可读」时，顾客不能在前端用 `getTempFileURL` 读商家上传的图；必须在云函数侧换链后下发 HTTPS。
 
 ## 权限与角色
 

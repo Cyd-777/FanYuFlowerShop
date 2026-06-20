@@ -24,6 +24,10 @@ function normalizeCartLine(raw: Partial<CartLineItem>): CartLineItem | null {
     count: Math.max(1, Number(raw.count) || 1),
     checked: raw.checked !== false,
     customSummary: raw.customSummary,
+    customDraft:
+      raw.kind === 'custom' && raw.customDraft && typeof raw.customDraft === 'object'
+        ? raw.customDraft
+        : undefined,
   }
 }
 
@@ -138,6 +142,7 @@ export const useCartStore = defineStore('cart', () => {
       count: 1,
       checked: true,
       customSummary: summaryParts.join('；'),
+      customDraft: { ...draft },
     }
     items.value.push(line)
     return lineKey

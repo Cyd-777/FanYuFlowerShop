@@ -6,17 +6,33 @@ const fs = require('fs')
 const path = require('path')
 
 const root = path.join(__dirname, '../cloudfunctions')
-const src = path.join(root, 'common/cacheMeta.js')
-const targets = ['goods', 'category', 'shop', 'meta', 'flower', 'wiki', 'seedDemo']
+const srcDir = path.join(root, 'common')
+const commonFiles = ['cacheMeta.js', 'fileUrls.js']
+const targets = [
+  'goods',
+  'category',
+  'shop',
+  'meta',
+  'flower',
+  'wiki',
+  'seedDemo',
+  'order',
+  'favorite',
+]
 
-if (!fs.existsSync(src)) {
-  console.error('[sync-cloud-common] missing', src)
-  process.exit(1)
+for (const file of commonFiles) {
+  const src = path.join(srcDir, file)
+  if (!fs.existsSync(src)) {
+    console.error('[sync-cloud-common] missing', src)
+    process.exit(1)
+  }
 }
 
 for (const name of targets) {
   const dir = path.join(root, name, 'common')
   fs.mkdirSync(dir, { recursive: true })
-  fs.copyFileSync(src, path.join(dir, 'cacheMeta.js'))
-  console.log('[sync-cloud-common]', name, '← common/cacheMeta.js')
+  for (const file of commonFiles) {
+    fs.copyFileSync(path.join(srcDir, file), path.join(dir, file))
+    console.log('[sync-cloud-common]', name, '← common/' + file)
+  }
 }

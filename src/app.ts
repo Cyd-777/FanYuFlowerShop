@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import { initCloud } from './services/cloud'
 import { fetchCacheVersions } from './utils/cache/meta'
 import { useCartStore } from './stores/cart'
+import { cacheSyncScheduler } from './data'
 
 import './app.less'
 
@@ -21,6 +22,10 @@ const App = createApp({
   },
   onShow() {
     useCartStore().refreshBadge()
+    cacheSyncScheduler.onAppShow()
+  },
+  onHide() {
+    cacheSyncScheduler.onAppHide()
   },
 })
 

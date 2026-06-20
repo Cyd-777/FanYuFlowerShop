@@ -1,5 +1,8 @@
 # 本地缓存执行清单
 
+> **策略与架构**见 [data-loading.md](./data-loading.md)（分层、优先级调度、三端适配、文献参考）。  
+> 本文档记录 **已落地的 SWR 实现** 与运维清单。
+
 ## 策略概览
 
 **Stale-While-Revalidate（SWR）**：有缓存先展示 → 后台拉 `meta` 版本号 → 版本变或 TTL 过期再拉业务数据。
@@ -81,3 +84,10 @@ cloudfunctions/wiki
 | 店铺设置 | `shop:settings` |
 
 存储前缀：`fyfs:cache:v1:`
+
+## 待建设（见 data-loading.md）
+
+- [x] `CacheSyncScheduler`：空闲预取、进页抢占、断点 manifest（`src/data/`）
+- [x] Repository 门面：`shop` / `categories` / `goods` / `wiki`
+- [ ] 三端 `IStorage` / `IApi` 适配（导出 App 前）
+- [ ] 列表 cursor 分页与增量 sync API

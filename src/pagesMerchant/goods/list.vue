@@ -1,5 +1,5 @@
 <template>
-  <view class="page-merchant-goods">
+  <view class="page-merchant-goods" :class="{ 'batch-mode': batchMode, 'has-batch-bar': batchMode }">
     <view class="toolbar">
       <GoodsNameTypeahead
         v-model="keyword"
@@ -8,6 +8,18 @@
         @search="onSearchKeyword"
         @select="onPickSuggestion"
       />
+      <view class="toolbar-actions">
+        <view class="exact-toggle">
+          <text class="exact-label">精确匹配</text>
+          <nut-switch v-model="filters.nameKeywordExact" />
+        </view>
+        <view class="link-btn" hover-class="link-btn--active" @tap.stop="goStockInImport">
+          进货单入库
+        </view>
+        <view class="link-btn" hover-class="link-btn--active" @tap.stop="toggleBatchMode">
+          {{ batchMode ? '退出批量' : '批量管理' }}
+        </view>
+      </view>
     </view>
 
     <view class="filter-panel">
@@ -52,6 +64,21 @@
         </view>
 
         <view class="filter-row">
+          <text class="filter-label">花卉品种</text>
+          <picker
+            class="filter-picker"
+            :range="flowerVarietyLabels"
+            :value="flowerVarietyIndex"
+            :disabled="!flowerVarietyOptions.length"
+            @change="onFlowerVarietyChange"
+          >
+            <view class="filter-value" :class="{ muted: !flowerVarietyOptions.length }">
+              {{ flowerVarietyLabels[flowerVarietyIndex] }}
+            </view>
+          </picker>
+        </view>
+
+        <view class="filter-row">
           <text class="filter-label">销售类型</text>
           <picker
             class="filter-picker"
@@ -60,6 +87,18 @@
             @change="onSalesTypeChange"
           >
             <view class="filter-value">{{ salesTypeLabels[salesTypeIndex] }}</view>
+          </picker>
+        </view>
+
+        <view class="filter-row">
+          <text class="filter-label">库存状态</text>
+          <picker
+            class="filter-picker"
+            :range="stockStatusLabels"
+            :value="stockStatusIndex"
+            @change="onStockStatusChange"
+          >
+            <view class="filter-value">{{ stockStatusLabels[stockStatusIndex] }}</view>
           </picker>
         </view>
 
@@ -102,11 +141,16 @@
           v-for="item in goodsList"
           :key="item._id"
           class="goods-card"
-          @click="editGoods(item._id)"
+          :class="{ selected: isSelected(item._id) }"
+          @click="onCardClick(item._id)"
         >
+          <view v-if="batchMode" class="select-badge" :class="{ checked: isSelected(item._id) }">
+            {{ isSelected(item._id) ? '✓' : '' }}
+          </view>
           <view class="img-wrap">
             <GoodsImage :src="item.imageUrl" root-class="goods-img" />
-            <view class="status-badge" :class="statusClass(item)">
+            <GoodsNewListingBadge :goods="item" />
+            <view v-if="statusText(item)" class="status-badge" :class="statusClass(item)">
               {{ statusText(item) }}
             </view>
             <view v-if="item.recommend" class="recommend-badge">推荐</view>
@@ -126,24 +170,47 @@
       />
     </view>
 
-    <view class="fab-wrap">
+    <view v-if="!batchMode" class="fab-wrap">
       <nut-button type="primary" class="fab-btn" @click="addGoods">+ 新建商品</nut-button>
+    </view>
+
+    <view v-if="batchMode" class="batch-bar">
+      <view class="batch-top">
+        <text class="batch-count">已选 {{ selectedIds.length }} 件</text>
+        <text class="batch-link" @click="toggleSelectAll">
+          {{ allVisibleSelected ? '取消全选' : '全选当前' }}
+        </text>
+      </view>
+      <view class="batch-actions">
+        <view class="batch-action" hover-class="batch-action--active" @tap.stop="runQuickBatch('onShelf')">上架</view>
+        <view class="batch-action" hover-class="batch-action--active" @tap.stop="runQuickBatch('offShelf')">下架</view>
+        <view class="batch-action" hover-class="batch-action--active" @tap.stop="runQuickBatch('recommendOn')">设推荐</view>
+        <view class="batch-action" hover-class="batch-action--active" @tap.stop="runQuickBatch('recommendOff')">取消推荐</view>
+        <!-- TODO: 批量修改弹层待格式确定后恢复（MerchantGoodsBatchEditSheet） -->
+        <view class="batch-action" hover-class="batch-action--active" @tap.stop="goBatchStockIn">批量入库</view>
+        <view class="batch-action danger" hover-class="batch-action--active" @tap.stop="runQuickBatch('remove')">删除</view>
+      </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useDidShow } from '@tarojs/taro'
-import { navigateTo } from '@/utils/router'
-import { useMerchantGoods } from '@/composables/useMerchantGoods'
-import { useMerchantCategories } from '@/composables/useMerchantCategories'
+import { usePageData } from '@/composables/usePageData'
+import { navigateTo, navigateToWithFeedback } from '@/utils/router'
+import {
+  batchRemoveGoods,
+  batchUpdateGoods,
+} from '@/services/goods'
 import {
   collectFlowerKindOptions,
+  collectFlowerVarietyOptions,
   DEFAULT_MERCHANT_GOODS_FILTER,
   isFlowerKindInOptions,
 } from '@/utils/goodsListFilter'
-import type { MerchantShelfStatus } from '@/utils/goodsListFilter'
+import type { MerchantShelfStatus, MerchantStockStatus } from '@/utils/goodsListFilter'
+import { buildSelectStockInSession, writeStockInSession } from '@/utils/stockInSession'
+import type { GoodsBatchPatch, GoodsBatchQuickAction } from '@/types/goodsBatch'
 import {
   GOODS_SALES_TYPE_OPTIONS,
   type Goods,
@@ -152,16 +219,14 @@ import {
 import { isGoodsSoldOut } from '@/utils/goodsAvailability'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
+import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
 import GoodsNameTypeahead from '@/components/GoodsNameTypeahead.vue'
 import type { GoodsNameSuggestion } from '@/utils/goodsNameSuggest'
 
 const keyword = ref('')
-
-const shelfTabs: Array<{ label: string; value: MerchantShelfStatus }> = [
-  { label: '全部', value: 'all' },
-  { label: '已上架', value: 'onShelf' },
-  { label: '已下架', value: 'offShelf' },
-]
+const batchMode = ref(false)
+const selectedIds = ref<string[]>([])
+const batchWorking = ref(false)
 
 const {
   goodsList,
@@ -170,18 +235,26 @@ const {
   filters,
   setFilters,
   resetFilters,
+  categories,
   loadGoods,
-} = useMerchantGoods()
-const { categories, loadCategories } = useMerchantCategories()
+} = usePageData()
+
+const shelfTabs: Array<{ label: string; value: MerchantShelfStatus }> = [
+  { label: '全部', value: 'all' },
+  { label: '已上架', value: 'onShelf' },
+  { label: '已下架', value: 'offShelf' },
+]
+
+const stockStatusOptions: Array<{ label: string; value: MerchantStockStatus }> = [
+  { label: '全部库存', value: 'all' },
+  { label: '有库存', value: 'inStock' },
+  { label: '已售罄', value: 'soldOut' },
+]
 
 const categoryOptions = computed(() => {
-  const options: Array<{ id: string; label: string }> = [
-    { id: '', label: '全部分类' },
-  ]
+  const options: Array<{ id: string; label: string }> = [{ id: '', label: '全部分类' }]
   const hasUncategorized = catalogList.value.some((item) => !item.categoryId)
-  if (hasUncategorized) {
-    options.push({ id: '__none__', label: '未分类' })
-  }
+  if (hasUncategorized) options.push({ id: '__none__', label: '未分类' })
   for (const cat of categories.value) {
     options.push({ id: cat._id, label: cat.name })
   }
@@ -189,7 +262,6 @@ const categoryOptions = computed(() => {
 })
 
 const categoryLabels = computed(() => categoryOptions.value.map((item) => item.label))
-
 const categoryIndex = computed(() => {
   const idx = categoryOptions.value.findIndex((item) => item.id === filters.value.categoryId)
   return idx >= 0 ? idx : 0
@@ -198,43 +270,49 @@ const categoryIndex = computed(() => {
 const flowerKindSourceList = computed(() => {
   const categoryId = filters.value.categoryId
   if (!categoryId) return catalogList.value
-  if (categoryId === '__none__') {
-    return catalogList.value.filter((item) => !item.categoryId)
-  }
+  if (categoryId === '__none__') return catalogList.value.filter((item) => !item.categoryId)
   return catalogList.value.filter((item) => item.categoryId === categoryId)
 })
 
-const flowerKindOptions = computed(() =>
-  collectFlowerKindOptions(flowerKindSourceList.value),
-)
-
+const flowerKindOptions = computed(() => collectFlowerKindOptions(flowerKindSourceList.value))
 const flowerKindLabels = computed(() => {
   if (!flowerKindOptions.value.length) return ['暂无花材']
   return ['全部花材', ...flowerKindOptions.value.map((item) => item.name)]
 })
-
 const flowerKindIndex = computed(() => {
   if (!flowerKindOptions.value.length) return 0
-  const idx = flowerKindOptions.value.findIndex(
-    (item) => item.id === filters.value.flowerKindId,
+  const idx = flowerKindOptions.value.findIndex((item) => item.id === filters.value.flowerKindId)
+  return idx >= 0 ? idx + 1 : 0
+})
+
+const flowerVarietyOptions = computed(() =>
+  collectFlowerVarietyOptions(flowerKindSourceList.value, filters.value.flowerKindId),
+)
+const flowerVarietyLabels = computed(() => {
+  if (!flowerVarietyOptions.value.length) return ['暂无品种']
+  return ['全部品种', ...flowerVarietyOptions.value.map((item) => item.name)]
+})
+const flowerVarietyIndex = computed(() => {
+  if (!flowerVarietyOptions.value.length) return 0
+  const idx = flowerVarietyOptions.value.findIndex(
+    (item) => item.id === filters.value.flowerVarietyId,
   )
   return idx >= 0 ? idx + 1 : 0
 })
 
 const salesTypeOptions = computed(() => [
   { value: '' as const, label: '全部类型' },
-  ...GOODS_SALES_TYPE_OPTIONS.map((item) => ({
-    value: item.value,
-    label: item.label,
-  })),
+  ...GOODS_SALES_TYPE_OPTIONS.map((item) => ({ value: item.value, label: item.label })),
 ])
-
 const salesTypeLabels = computed(() => salesTypeOptions.value.map((item) => item.label))
-
 const salesTypeIndex = computed(() => {
-  const idx = salesTypeOptions.value.findIndex(
-    (item) => item.value === filters.value.salesType,
-  )
+  const idx = salesTypeOptions.value.findIndex((item) => item.value === filters.value.salesType)
+  return idx >= 0 ? idx : 0
+})
+
+const stockStatusLabels = computed(() => stockStatusOptions.map((item) => item.label))
+const stockStatusIndex = computed(() => {
+  const idx = stockStatusOptions.findIndex((item) => item.value === filters.value.stockStatus)
   return idx >= 0 ? idx : 0
 })
 
@@ -245,11 +323,14 @@ const hasActiveFilters = computed(() => {
     current.shelfStatus !== defaults.shelfStatus
     || current.categoryId !== defaults.categoryId
     || current.flowerKindId !== defaults.flowerKindId
+    || current.flowerVarietyId !== defaults.flowerVarietyId
     || current.recommendOnly !== defaults.recommendOnly
     || current.salesType !== defaults.salesType
+    || current.stockStatus !== defaults.stockStatus
     || current.priceMin.trim() !== ''
     || current.priceMax.trim() !== ''
     || current.nameKeyword.trim() !== ''
+    || current.nameKeywordExact !== defaults.nameKeywordExact
   )
 })
 
@@ -259,18 +340,127 @@ const emptyDescription = computed(() => {
   return '还没有商品，点击下方按钮创建'
 })
 
+const allVisibleSelected = computed(() =>
+  goodsList.value.length > 0 && goodsList.value.every((item) => selectedIds.value.includes(item._id)),
+)
+
 watch(flowerKindOptions, (options) => {
   if (!isFlowerKindInOptions(filters.value.flowerKindId, options)) {
-    setFilters({ flowerKindId: '' })
+    setFilters({ flowerKindId: '', flowerVarietyId: '' })
   }
 })
 
-useDidShow(() => {
-  void Promise.all([
-    loadCategories(),
-    loadGoods(),
-  ])
+watch(flowerVarietyOptions, (options) => {
+  const id = filters.value.flowerVarietyId
+  if (!id) return
+  if (!options.some((item) => item.id === id)) {
+    setFilters({ flowerVarietyId: '' })
+  }
 })
+
+function isSelected(id: string) {
+  return selectedIds.value.includes(id)
+}
+
+function toggleBatchMode() {
+  batchMode.value = !batchMode.value
+  if (!batchMode.value) selectedIds.value = []
+}
+
+function toggleSelect(id: string) {
+  if (isSelected(id)) {
+    selectedIds.value = selectedIds.value.filter((item) => item !== id)
+  } else {
+    selectedIds.value = [...selectedIds.value, id]
+  }
+}
+
+function toggleSelectAll() {
+  if (allVisibleSelected.value) {
+    const visible = new Set(goodsList.value.map((item) => item._id))
+    selectedIds.value = selectedIds.value.filter((id) => !visible.has(id))
+    return
+  }
+  const merged = new Set([...selectedIds.value, ...goodsList.value.map((item) => item._id)])
+  selectedIds.value = [...merged]
+}
+
+function onCardClick(id: string) {
+  if (batchMode.value) {
+    toggleSelect(id)
+    return
+  }
+  editGoods(id)
+}
+
+function requireSelection(): string[] | null {
+  if (!selectedIds.value.length) {
+    wx.showToast({ title: '请先选择商品', icon: 'none' })
+    return null
+  }
+  return selectedIds.value
+}
+
+async function runQuickBatch(action: GoodsBatchQuickAction) {
+  const ids = requireSelection()
+  if (!ids) return
+
+  if (action === 'remove') {
+    const { confirm } = await new Promise<{ confirm: boolean }>((resolve) => {
+      wx.showModal({
+        title: '批量删除',
+        content: `确定删除选中的 ${ids.length} 件商品？`,
+        confirmColor: '#e53935',
+        success: (res) => resolve({ confirm: res.confirm }),
+      })
+    })
+    if (!confirm) return
+  }
+
+  batchWorking.value = true
+  try {
+    if (action === 'remove') {
+      await batchRemoveGoods(ids)
+      wx.showToast({ title: '已删除', icon: 'success' })
+    } else {
+      const patch: GoodsBatchPatch = {}
+      if (action === 'onShelf') patch.onSale = true
+      if (action === 'offShelf') patch.onSale = false
+      if (action === 'recommendOn') patch.recommend = true
+      if (action === 'recommendOff') patch.recommend = false
+      await batchUpdateGoods(ids, patch)
+      wx.showToast({ title: '已更新', icon: 'success' })
+    }
+    selectedIds.value = []
+    await loadGoods({ force: true })
+  } catch (err) {
+    wx.showToast({
+      title: err instanceof Error ? err.message : '操作失败',
+      icon: 'none',
+    })
+  } finally {
+    batchWorking.value = false
+  }
+}
+
+function goBatchStockIn() {
+  const ids = requireSelection()
+  if (!ids) return
+  const session = buildSelectStockInSession(ids, catalogList.value)
+  if (!session.lines.length) {
+    wx.showToast({ title: '所选商品无效', icon: 'none' })
+    return
+  }
+  writeStockInSession(session)
+  batchMode.value = false
+  selectedIds.value = []
+  void navigateToWithFeedback({ url: '/pagesMerchant/goods/stock-in' })
+}
+
+/** 粘贴进货单前置页（识别后再进入计数器列表） */
+function goStockInImport() {
+  void navigateToWithFeedback({ url: '/pagesMerchant/goods/stock-in-import' })
+}
 
 function onSearchKeyword(value: string) {
   setFilters({ nameKeyword: value.trim() })
@@ -288,39 +478,53 @@ function formatPrice(price: number) {
 function statusText(item: Goods) {
   if (!item.onSale) return '下架'
   if (isGoodsSoldOut(item)) return '售罄'
-  return '在售'
+  return ''
 }
 
 function statusClass(item: Goods) {
   if (!item.onSale) return 'off'
   if (isGoodsSoldOut(item)) return 'sold-out'
-  return 'on'
+  return ''
 }
 
 function onCategoryChange(event: { detail: { value: string } }) {
   const index = Number(event.detail.value)
   const option = categoryOptions.value[index]
-  setFilters({
-    categoryId: option?.id || '',
-    flowerKindId: '',
-  })
+  setFilters({ categoryId: option?.id || '', flowerKindId: '', flowerVarietyId: '' })
 }
 
 function onFlowerKindChange(event: { detail: { value: string } }) {
   if (!flowerKindOptions.value.length) return
   const index = Number(event.detail.value)
   if (index <= 0) {
-    setFilters({ flowerKindId: '' })
+    setFilters({ flowerKindId: '', flowerVarietyId: '' })
     return
   }
   const option = flowerKindOptions.value[index - 1]
-  setFilters({ flowerKindId: option?.id || '' })
+  setFilters({ flowerKindId: option?.id || '', flowerVarietyId: '' })
+}
+
+function onFlowerVarietyChange(event: { detail: { value: string } }) {
+  if (!flowerVarietyOptions.value.length) return
+  const index = Number(event.detail.value)
+  if (index <= 0) {
+    setFilters({ flowerVarietyId: '' })
+    return
+  }
+  const option = flowerVarietyOptions.value[index - 1]
+  setFilters({ flowerVarietyId: option?.id || '' })
 }
 
 function onSalesTypeChange(event: { detail: { value: string } }) {
   const index = Number(event.detail.value)
   const option = salesTypeOptions.value[index]
   setFilters({ salesType: (option?.value || '') as GoodsSalesType | '' })
+}
+
+function onStockStatusChange(event: { detail: { value: string } }) {
+  const index = Number(event.detail.value)
+  const option = stockStatusOptions[index]
+  setFilters({ stockStatus: option?.value || 'all' })
 }
 
 function onResetFilters() {
@@ -343,6 +547,9 @@ function editGoods(id: string) {
   background: #f8f8f8;
   padding-bottom: 160rpx;
   box-sizing: border-box;
+  &.has-batch-bar {
+    padding-bottom: 360rpx;
+  }
 }
 .toolbar {
   flex-shrink: 0;
@@ -350,6 +557,33 @@ function editGoods(id: string) {
   background: #fff;
   position: relative;
   z-index: 201;
+}
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 12rpx;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 202;
+}
+.exact-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.exact-label {
+  font-size: 24rpx;
+  color: #666;
+}
+.link-btn {
+  font-size: 24rpx;
+  color: #667eea;
+  padding: 8rpx 0;
+}
+.link-btn--active {
+  opacity: 0.65;
 }
 .filter-panel {
   flex-shrink: 0;
@@ -456,9 +690,33 @@ function editGoods(id: string) {
   gap: 16rpx;
 }
 .goods-card {
+  position: relative;
   background: #fff;
   border-radius: 16rpx;
   overflow: hidden;
+  border: 2rpx solid transparent;
+  &.selected {
+    border-color: #667eea;
+  }
+}
+.select-badge {
+  position: absolute;
+  top: 12rpx;
+  left: 12rpx;
+  z-index: 2;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid #fff;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 24rpx;
+  line-height: 36rpx;
+  text-align: center;
+  &.checked {
+    background: #667eea;
+    border-color: #667eea;
+  }
 }
 .img-wrap {
   position: relative;
@@ -484,6 +742,9 @@ function editGoods(id: string) {
   &.sold-out {
     background: rgba(0, 0, 0, 0.55);
   }
+}
+.batch-mode .status-badge {
+  left: 56rpx;
 }
 .recommend-badge {
   position: absolute;
@@ -538,5 +799,52 @@ function editGoods(id: string) {
   height: 96rpx;
   border-radius: 48rpx;
   font-size: 30rpx;
+}
+.batch-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 120;
+  background: #fff;
+  border-top: 2rpx solid #eee;
+  padding: 16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom));
+}
+.batch-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+.batch-count {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 600;
+}
+.batch-link {
+  font-size: 24rpx;
+  color: #667eea;
+}
+.batch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx 16rpx;
+}
+.batch-action {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.08);
+  border-radius: 999rpx;
+  &.danger {
+    color: #e53935;
+    background: rgba(229, 57, 53, 0.08);
+  }
+}
+.batch-action--active {
+  opacity: 0.7;
 }
 </style>

@@ -7,15 +7,15 @@
 
     <!-- 数据概览 -->
     <view class="stats-grid">
-      <view class="stat-card">
+      <view class="stat-card" @click="goOrders('all')">
         <view class="stat-value">{{ stats.todayOrders }}</view>
         <view class="stat-label">今日订单</view>
       </view>
-      <view class="stat-card">
+      <view class="stat-card highlight" @click="goOrders('pending')">
         <view class="stat-value">{{ stats.pendingOrders }}</view>
         <view class="stat-label">待处理</view>
       </view>
-      <view class="stat-card">
+      <view class="stat-card" @click="goOrders('completed')">
         <view class="stat-value">{{ stats.todayRevenue }}</view>
         <view class="stat-label">今日收入(¥)</view>
       </view>
@@ -65,8 +65,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
+import { getMerchantOrderStats } from '@/services/order'
 import { useShopDisplay } from '@/composables/useShopDisplay'
+import type { OrderStatus } from '@/types/order'
 
 const shopStore = useShopDisplay({ initDb: true })
 
@@ -75,6 +78,35 @@ const stats = ref({
   pendingOrders: 0,
   todayRevenue: '0.00',
 })
+
+const statsLoading = ref(false)
+
+useDidShow(() => {
+  void loadStats()
+})
+
+async function loadStats() {
+  statsLoading.value = true
+  try {
+    const data = await getMerchantOrderStats()
+    stats.value = {
+      todayOrders: data.todayOrders,
+      pendingOrders: data.pendingOrders,
+      todayRevenue: Number(data.todayRevenue).toFixed(2).replace(/\.00$/, ''),
+    }
+  } catch (err) {
+    console.warn('[dashboard] load stats failed:', err)
+  } finally {
+    statsLoading.value = false
+  }
+}
+
+function goOrders(tab: OrderStatus | 'all') {
+  const query = tab === 'all' ? '' : `?status=${tab}`
+  navigateTo({ url: `/pagesMerchant/order/list${query}` }).catch((err) => {
+    console.error('[dashboard] navigate orders failed:', err)
+  })
+}
 
 function go(page: string) {
   const routes: Record<string, string> = {
@@ -114,6 +146,7 @@ function previewCustomer() {
   box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
   .stat-value { font-size: 40rpx; font-weight: 700; color: #333; }
   .stat-label { margin-top: 4rpx; font-size: 22rpx; color: #999; }
+  &.highlight .stat-value { color: #e53935; }
 }
 .section-title { padding: 32rpx 32rpx 16rpx; font-size: 28rpx; font-weight: 600; color: #333; }
 .action-grid {

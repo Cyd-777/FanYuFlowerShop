@@ -17,14 +17,23 @@
         </view>
         <view v-if="!fromConfirm" class="addr-actions" @click.stop>
           <text class="action-btn" @click="goEdit(item.id)">编辑</text>
+          <text class="action-btn danger" @click="handleRemove(item.id)">删除</text>
         </view>
       </view>
     </view>
 
-    <nut-empty v-else description="还没有收货地址，请先添加" />
+    <nut-empty v-else description="还没有收货地址，请从微信添加" />
 
     <view class="footer">
-      <nut-button type="primary" block class="add-btn" @click="goEdit()">新增地址</nut-button>
+      <nut-button
+        type="primary"
+        block
+        class="add-btn"
+        :loading="importing"
+        @click="addFromWechat"
+      >
+        从微信添加地址
+      </nut-button>
     </view>
   </view>
 </template>
@@ -33,11 +42,20 @@
 import { ref } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import { navigateTo, navigateBack } from '@/utils/router'
-import { listAddresses, setCheckoutAddress, formatAddressLine } from '@/services/address'
+import {
+  listAddresses,
+  setCheckoutAddress,
+  formatAddressLine,
+  hydrateAddressesFromCloud,
+  importWechatAddressAndSave,
+  removeAddress,
+  handleLocationError,
+} from '@/services/address'
 import type { UserAddress } from '@/types/address'
 
 const list = ref<UserAddress[]>([])
 const fromConfirm = ref(false)
+const importing = ref(false)
 
 useLoad((options) => {
   fromConfirm.value = options?.from === 'confirm'
@@ -45,6 +63,9 @@ useLoad((options) => {
 
 useDidShow(() => {
   list.value = listAddresses()
+  void hydrateAddressesFromCloud().then((merged) => {
+    list.value = merged
+  })
 })
 
 function handleCardClick(item: UserAddress) {
@@ -56,11 +77,43 @@ function handleCardClick(item: UserAddress) {
   goEdit(item.id)
 }
 
-function goEdit(id?: string) {
-  const url = id
-    ? `/pagesCustomer/address/edit?id=${encodeURIComponent(id)}`
-    : '/pagesCustomer/address/edit'
-  navigateTo({ url })
+function goEdit(id: string) {
+  navigateTo({ url: `/pagesCustomer/address/edit?id=${encodeURIComponent(id)}` })
+}
+
+async function addFromWechat() {
+  if (importing.value) return
+
+  importing.value = true
+  try {
+    const saved = await importWechatAddressAndSave()
+    list.value = listAddresses()
+    wx.showToast({ title: '地址已保存', icon: 'success' })
+
+    if (fromConfirm.value) {
+      setCheckoutAddress(saved.id)
+      setTimeout(() => navigateBack(), 500)
+    }
+  } catch (err) {
+    handleLocationError(err, '添加地址失败')
+  } finally {
+    importing.value = false
+  }
+}
+
+async function handleRemove(id: string) {
+  const { confirm } = await new Promise<{ confirm: boolean }>((resolve) => {
+    wx.showModal({
+      title: '删除地址',
+      content: '确定删除这条收货地址吗？',
+      success: (r) => resolve({ confirm: r.confirm }),
+    })
+  })
+  if (!confirm) return
+
+  removeAddress(id)
+  list.value = listAddresses()
+  wx.showToast({ title: '已删除', icon: 'success' })
 }
 </script>
 
@@ -119,10 +172,16 @@ function goEdit(id?: string) {
 .addr-actions {
   flex-shrink: 0;
   margin-left: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
 }
 .action-btn {
   font-size: 24rpx;
   color: @color-primary;
+  &.danger {
+    color: @color-primary;
+  }
 }
 .footer {
   position: fixed;

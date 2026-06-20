@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { hasCacheEntry } from '@/utils/cache'
-import { listMerchantCategories, listMerchantCategoriesCached } from '@/services/category'
+import { listMerchantCategories } from '@/services/category'
+import { merchantCategoriesRepository } from '@/data/repository/merchantCategoriesRepository'
 import type { Category } from '@/types/category'
 
 const CACHE_KEY = 'categories:merchant'
@@ -12,7 +13,7 @@ export function useMerchantCategories() {
   async function loadCategories(options?: { force?: boolean }) {
     loading.value = options?.force ? true : !hasCacheEntry(CACHE_KEY)
     try {
-      const { data } = await listMerchantCategoriesCached({
+      const { data } = await merchantCategoriesRepository.ensureList({
         force: options?.force,
         onUpdate: (list) => {
           categories.value = list
@@ -36,7 +37,7 @@ export function useMerchantCategories() {
   /** 表单等轻量场景：有缓存则静默 SWR，不展示 loading */
   async function loadCategoriesQuiet() {
     try {
-      const { data } = await listMerchantCategoriesCached({
+      const { data } = await merchantCategoriesRepository.ensureList({
         onUpdate: (list) => {
           categories.value = list
         },

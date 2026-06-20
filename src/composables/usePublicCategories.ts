@@ -1,9 +1,10 @@
 import { ref } from 'vue'
 import { hasCacheEntry } from '@/utils/cache'
-import { listPublicCategoriesCached } from '@/services/category'
+import { categoriesRepository } from '@/data/repository'
+import { CACHE_KEYS } from '@/data/cacheKeys'
 import type { Category } from '@/types/category'
 
-const CACHE_KEY = 'categories:public'
+const CACHE_KEY = CACHE_KEYS.categoriesPublic
 
 export function usePublicCategories() {
   const categories = ref<Category[]>([])
@@ -12,7 +13,7 @@ export function usePublicCategories() {
   async function loadCategories(options?: { force?: boolean }) {
     loading.value = options?.force ? true : !hasCacheEntry(CACHE_KEY)
     try {
-      const { data } = await listPublicCategoriesCached({
+      const { data } = await categoriesRepository.ensurePublicList({
         force: options?.force,
         onUpdate: (list) => {
           categories.value = list

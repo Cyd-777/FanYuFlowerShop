@@ -10,7 +10,12 @@
         @click="goDetail(item._id)"
       >
         <view class="goods-img-wrap">
-          <GoodsImage :src="item.imageUrl" root-class="goods-img" />
+          <GoodsImage
+            :src="item.imageUrl"
+            :cloud-file-id="item.coverImage || item.images?.[0]"
+            root-class="goods-img"
+          />
+          <GoodsNewListingBadge :goods="item" />
           <GoodsSoldOutBadge :stock="item.stock" :on-sale="item.onSale" />
         </view>
         <view class="goods-name">{{ item.name }}</view>
@@ -41,6 +46,7 @@ import { hasToken } from '@/services/auth'
 import { attachGoodsCoverImages } from '@/utils/goodsImage'
 import { isGoodsPurchasable } from '@/utils/goodsAvailability'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
+import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import type { Goods } from '@/types/goods'
 

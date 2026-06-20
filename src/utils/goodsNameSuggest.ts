@@ -55,9 +55,15 @@ export function suggestGoodsNames(
   return result
 }
 
-/** 按名称关键词筛选（模糊包含，忽略大小写） */
-export function matchGoodsNameKeyword(item: Goods, keyword: string): boolean {
-  const q = keyword.trim().toLowerCase()
+/** 按名称关键词筛选；exact 为 true 时精确匹配品名 */
+export function matchGoodsNameKeyword(
+  item: Goods,
+  keyword: string,
+  exact = false,
+): boolean {
+  const q = keyword.trim()
   if (!q) return true
-  return (item.name || '').toLowerCase().includes(q)
+  const name = (item.name || '').trim()
+  if (exact) return name === q
+  return name.toLowerCase().includes(q.toLowerCase())
 }

@@ -31,7 +31,12 @@
 
     <view class="action-bar">
       <view class="total">合计: <text class="price">¥{{ totalPrice }}</text></view>
-      <nut-button type="primary" :disabled="!goodsList.length" @click="submitOrder">
+      <nut-button
+        type="primary"
+        :loading="submitting"
+        :disabled="!goodsList.length || submitting"
+        @click="submitOrder"
+      >
         提交订单
       </nut-button>
     </view>
@@ -42,7 +47,13 @@
 import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { storeToRefs } from 'pinia'
-import { getCheckoutAddress, formatAddressLine } from '@/services/address'
+import {
+  getCheckoutAddress,
+  formatAddressLine,
+  toOrderAddressSnapshot,
+} from '@/services/address'
+import { buildCreateOrderInput, createOrder } from '@/services/order'
+import { redirectTo } from '@/utils/router'
 import { useCartStore } from '@/stores/cart'
 import GoodsImage from '@/components/GoodsImage.vue'
 import type { UserAddress } from '@/types/address'
@@ -52,6 +63,7 @@ const { checkedItems } = storeToRefs(cartStore)
 
 const address = ref<UserAddress | null>(null)
 const remark = ref('')
+const submitting = ref(false)
 
 const goodsList = computed(() => checkedItems.value)
 const totalPrice = computed(() => cartStore.checkedTotalPrice.toFixed(2))
@@ -81,7 +93,9 @@ function editRemark() {
   })
 }
 
-function submitOrder() {
+async function submitOrder() {
+  if (submitting.value) return
+
   if (!goodsList.value.length) {
     wx.showToast({ title: '暂无待结算商品', icon: 'none' })
     return
@@ -90,7 +104,26 @@ function submitOrder() {
     wx.showToast({ title: '请选择收货地址', icon: 'none' })
     return
   }
-  wx.showToast({ title: '订单已提交（待接入支付）', icon: 'success' })
+
+  submitting.value = true
+  try {
+    const payload = buildCreateOrderInput(
+      goodsList.value,
+      toOrderAddressSnapshot(address.value),
+      remark.value,
+    )
+    const order = await createOrder(payload)
+    cartStore.removeChecked()
+    wx.showToast({ title: '订单已提交', icon: 'success' })
+    redirectTo({
+      url: `/pagesCustomer/order/detail?id=${order._id}`,
+    })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : '提交失败，请重试'
+    wx.showToast({ title: message, icon: 'none', duration: 2500 })
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
 

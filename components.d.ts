@@ -10,6 +10,7 @@ declare module 'vue' {
     GoodsCardSkeleton: typeof import('./src/components/GoodsCardSkeleton.vue')['default']
     GoodsImage: typeof import('./src/components/GoodsImage.vue')['default']
     GoodsNameTypeahead: typeof import('./src/components/GoodsNameTypeahead.vue')['default']
+    GoodsNewListingBadge: typeof import('./src/components/GoodsNewListingBadge.vue')['default']
     GoodsSoldOutBadge: typeof import('./src/components/GoodsSoldOutBadge.vue')['default']
     IdentityQrModal: typeof import('./src/components/IdentityQrModal.vue')['default']
     NutButton: typeof import('@nutui/nutui-taro')['Button']
@@ -27,6 +28,7 @@ declare module 'vue' {
     NutSwitch: typeof import('@nutui/nutui-taro')['Switch']
     NutTabPane: typeof import('@nutui/nutui-taro')['TabPane']
     NutTabs: typeof import('@nutui/nutui-taro')['Tabs']
+    OrderStatusSteps: typeof import('./src/components/OrderStatusSteps.vue')['default']
     SmartAddressInput: typeof import('./src/components/SmartAddressInput.vue')['default']
   }
 }

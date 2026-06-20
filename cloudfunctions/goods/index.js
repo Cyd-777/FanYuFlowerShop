@@ -1,5 +1,10 @@
 const cloud = require('wx-server-sdk')
 const { bumpCacheModule } = require('./common/cacheMeta')
+const {
+  resolveFileUrls,
+  enrichPublicGoodsList,
+  enrichPublicGoods,
+} = require('./common/fileUrls')
 
 async function safeBumpCacheModule(module) {
   try {
@@ -118,6 +123,11 @@ function pickGoods(doc) {
     onSale: doc.onSale !== false,
     recommend: doc.recommend === true,
     sort: Number(doc.sort) || 0,
+    listedAt: doc.listedAt || doc.createdAt || '',
+    unitsPerGroup:
+      doc.unitsPerGroup != null && Number(doc.unitsPerGroup) > 0
+        ? Number(doc.unitsPerGroup)
+        : undefined,
     createdAt: doc.createdAt,
     updatedAt: doc.updatedAt,
   }
@@ -158,6 +168,8 @@ function normalizeGoodsInput(input) {
   const flowerVarietyId = String(input.flowerVarietyId || '').trim()
   const flowerVarietyName = String(input.flowerVarietyName || '').trim()
   const needsFlowerPick = salesType === 'stem' || salesType === 'group'
+  const unitsPerGroupRaw =
+    salesType === 'group' ? parseInt(input.unitsPerGroup, 10) : undefined
 
   if (!name) {
     throw new Error('商品名称不能为空')
@@ -173,6 +185,11 @@ function normalizeGoodsInput(input) {
   }
   if (needsFlowerPick && !flowerVarietyId) {
     throw new Error('单支或成组花材请选择花卉品种')
+  }
+  if (salesType === 'group') {
+    if (Number.isNaN(unitsPerGroupRaw) || unitsPerGroupRaw <= 0) {
+      throw new Error('成组售卖请填写每组数量')
+    }
   }
 
   const finalCover = coverImage || images[0] || ''
@@ -197,6 +214,7 @@ function normalizeGoodsInput(input) {
     onSale,
     recommend,
     sort,
+    ...(salesType === 'group' ? { unitsPerGroup: unitsPerGroupRaw } : {}),
   }
 }
 
@@ -255,7 +273,7 @@ exports.main = async (event) => {
         recommendOnly,
         inStockOnly,
       })
-      return { success: true, list }
+      return { success: true, list: await enrichPublicGoodsList(list) }
     } catch (err) {
       return {
         success: false,
@@ -277,11 +295,55 @@ exports.main = async (event) => {
         return { success: false, errMsg: '商品不存在或已下架' }
       }
 
-      return { success: true, goods: pickGoods(data) }
+      return { success: true, goods: await enrichPublicGoods(pickGoods(data)) }
     } catch (err) {
       return {
         success: false,
         errMsg: err.message || err.errMsg || '获取商品详情失败',
+      }
+    }
+  }
+
+  if (action === 'resolveFileUrls') {
+    try {
+      const urls = await resolveFileUrls(event.fileList)
+      return { success: true, urls }
+    } catch (err) {
+      return {
+        success: false,
+        errMsg: err.message || err.errMsg || '换取图片链接失败',
+      }
+    }
+  }
+
+  /** 云函数侧读取存储文件（管理员权限），供顾客端在「仅创建者可读」时使用 */
+  if (action === 'publicImage') {
+    try {
+      const fileId = String(event.fileId || '').trim()
+      if (!fileId.startsWith('cloud://')) {
+        return { success: false, errMsg: '无效的文件 ID' }
+      }
+
+      const res = await cloud.downloadFile({ fileID: fileId })
+      if (!res.fileContent) {
+        return { success: false, errMsg: '读取图片失败' }
+      }
+
+      const lower = fileId.toLowerCase()
+      let mime = 'image/jpeg'
+      if (lower.endsWith('.png')) mime = 'image/png'
+      else if (lower.endsWith('.webp')) mime = 'image/webp'
+      else if (lower.endsWith('.gif')) mime = 'image/gif'
+
+      return {
+        success: true,
+        mime,
+        base64: res.fileContent.toString('base64'),
+      }
+    } catch (err) {
+      return {
+        success: false,
+        errMsg: err.message || err.errMsg || '读取图片失败',
       }
     }
   }
@@ -355,6 +417,7 @@ exports.main = async (event) => {
         const addRes = await db.collection('goods').add({
           data: {
             ...payload,
+            listedAt: payload.onSale !== false ? db.serverDate() : null,
             createdBy: operatorOpenid,
             createdAt: db.serverDate(),
             updatedAt: db.serverDate(),
@@ -371,9 +434,16 @@ exports.main = async (event) => {
         return { success: false, errMsg: '缺少商品 ID' }
       }
 
+      const { data: beforeDoc } = await db.collection('goods').doc(id).get()
+      const listedAtPatch =
+        beforeDoc && beforeDoc.onSale === false && payload.onSale !== false
+          ? { listedAt: db.serverDate() }
+          : {}
+
       await db.collection('goods').doc(id).update({
         data: {
           ...payload,
+          ...listedAtPatch,
           updatedAt: db.serverDate(),
           updatedBy: operatorOpenid,
         },
@@ -405,6 +475,131 @@ exports.main = async (event) => {
     await db.collection('goods').doc(id).remove()
     await safeBumpCacheModule('goods')
     return { success: true }
+  }
+
+  if (action === 'batchRemove') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限删除商品' }
+    }
+
+    const ids = Array.isArray(event.ids) ? event.ids.map((id) => String(id).trim()).filter(Boolean) : []
+    if (!ids.length) {
+      return { success: false, errMsg: '请选择要删除的商品' }
+    }
+
+    await ensureCollection('goods')
+    for (const id of ids) {
+      try {
+        await db.collection('goods').doc(id).remove()
+      } catch (err) {
+        console.error('[goods] batch remove failed:', id, err.message || err)
+      }
+    }
+    await safeBumpCacheModule('goods')
+    return { success: true, removed: ids.length }
+  }
+
+  if (action === 'batchUpdate') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限批量修改商品' }
+    }
+
+    const ids = Array.isArray(event.ids) ? event.ids.map((id) => String(id).trim()).filter(Boolean) : []
+    const patch = event.patch && typeof event.patch === 'object' ? event.patch : {}
+
+    if (!ids.length) {
+      return { success: false, errMsg: '请选择要修改的商品' }
+    }
+
+    const data = {}
+    if (patch.onSale != null) data.onSale = patch.onSale !== false
+    if (patch.recommend != null) data.recommend = patch.recommend === true
+    if (patch.price != null) {
+      const price = Number(patch.price)
+      if (Number.isNaN(price) || price < 0) {
+        return { success: false, errMsg: '价格无效' }
+      }
+      data.price = price
+    }
+    if (patch.description != null) data.description = String(patch.description || '').trim()
+    if (patch.sort != null) {
+      const sort = parseInt(patch.sort, 10)
+      if (Number.isNaN(sort)) {
+        return { success: false, errMsg: '排序无效' }
+      }
+      data.sort = sort
+    }
+    if (patch.unitsPerGroup != null) {
+      const unitsPerGroup = parseInt(patch.unitsPerGroup, 10)
+      if (Number.isNaN(unitsPerGroup) || unitsPerGroup <= 0) {
+        return { success: false, errMsg: '每组数量无效' }
+      }
+      data.unitsPerGroup = unitsPerGroup
+    }
+
+    if (!Object.keys(data).length) {
+      return { success: false, errMsg: '没有可更新的字段' }
+    }
+
+    data.updatedAt = db.serverDate()
+    data.updatedBy = operatorOpenid
+
+    await ensureCollection('goods')
+    for (const id of ids) {
+      try {
+        const updateData = { ...data }
+        if (patch.onSale === true) {
+          const { data: doc } = await db.collection('goods').doc(id).get()
+          if (doc && doc.onSale === false) {
+            updateData.listedAt = db.serverDate()
+          }
+        }
+        await db.collection('goods').doc(id).update({ data: updateData })
+      } catch (err) {
+        console.error('[goods] batch update failed:', id, err.message || err)
+      }
+    }
+    await safeBumpCacheModule('goods')
+    return { success: true, updated: ids.length }
+  }
+
+  if (action === 'stockIn') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限入库' }
+    }
+
+    const items = Array.isArray(event.items) ? event.items : []
+    if (!items.length) {
+      return { success: false, errMsg: '请填写入库数量' }
+    }
+
+    await ensureCollection('goods')
+    let applied = 0
+
+    for (const raw of items) {
+      const id = String(raw?.goodsId || raw?.id || '').trim()
+      const delta = parseInt(raw?.delta, 10)
+      if (!id || Number.isNaN(delta) || delta <= 0) continue
+
+      await db.collection('goods').doc(id).update({
+        data: {
+          stock: db.command.inc(delta),
+          updatedAt: db.serverDate(),
+          updatedBy: operatorOpenid,
+        },
+      })
+      applied += 1
+    }
+
+    if (!applied) {
+      return { success: false, errMsg: '没有有效的入库项' }
+    }
+
+    await safeBumpCacheModule('goods')
+    return { success: true, applied }
   }
 
   return { success: false, errMsg: '未知操作' }

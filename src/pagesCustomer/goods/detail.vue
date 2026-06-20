@@ -5,11 +5,18 @@
     </view>
 
     <template v-else>
-    <nut-swiper v-if="images.length" :init-page="0" :pagination-visible="true" pagination-color="#e53935">
-      <nut-swiper-item v-for="(img, idx) in images" :key="idx">
-        <GoodsImage :src="img" root-class="swiper-img" />
-      </nut-swiper-item>
-    </nut-swiper>
+    <view v-if="images.length" class="swiper-wrap">
+      <nut-swiper :init-page="0" :pagination-visible="true" pagination-color="#e53935">
+        <nut-swiper-item v-for="(img, idx) in images" :key="idx">
+          <GoodsImage
+            :src="img"
+            :cloud-file-id="imageFileIds[idx]"
+            root-class="swiper-img"
+          />
+        </nut-swiper-item>
+      </nut-swiper>
+      <GoodsNewListingBadge :goods="goods" />
+    </view>
     <GoodsImage v-else root-class="swiper-img" show-hint />
 
     <view class="info-section">
@@ -63,51 +70,36 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useDidShow, useLoad } from '@tarojs/taro'
+import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
-import { getPublicGoodsCached } from '@/services/goods'
 import { checkFavorite, toggleFavorite as toggleFavoriteApi } from '@/services/favorite'
 import { hasToken } from '@/services/auth'
-import { matchPublicWikiCached } from '@/services/wiki'
-import { hasCacheEntry } from '@/utils/cache'
-import { resolveCloudImageMap } from '@/utils/goodsImage'
 import GoodsImage from '@/components/GoodsImage.vue'
+import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
 import { useAddToCart } from '@/composables/useAddToCart'
+import { usePageData } from '@/composables/usePageData'
 import {
   isGoodsOffSale,
   isGoodsPurchasable,
   isGoodsSoldOut,
 } from '@/utils/goodsAvailability'
-import type { Goods } from '@/types/goods'
-import type { FlowerWiki } from '@/types/wiki'
-import { getWikiDisplayName } from '@/types/wiki'
 
-const wikiCardTitle = '查看花卉百科'
-const wikiCardDesc = '图鉴 · 养殖指南 · 花语百科'
+const {
+  wikiCardTitle,
+  wikiCardDesc,
+  goods,
+  images,
+  imageFileIds,
+  goodsId,
+  loading,
+  wikiEntry,
+  formatPrice,
+  goWiki,
+} = usePageData()
 
 const { adding, cartStore, addToCart: addGoodsToCart, buyNow: buyGoodsNow } = useAddToCart()
 
-const goods = ref<Goods>({
-  _id: '',
-  name: '',
-  price: 0,
-  unit: '束',
-  stock: 0,
-  description: '',
-  categoryId: '',
-  categoryName: '',
-  coverImage: '',
-  images: [],
-  onSale: true,
-  recommend: false,
-  sort: 0,
-})
-
-const images = ref<string[]>([])
-const goodsId = ref('')
-const loading = ref(false)
 const quantity = ref(1)
-const wikiEntry = ref<FlowerWiki | null>(null)
 const favorited = ref(false)
 const favoriteLoading = ref(false)
 
@@ -145,13 +137,6 @@ const flowerTags = computed(() => {
   if (goods.value.flowerKindName) tags.push(goods.value.flowerKindName)
   if (goods.value.flowerVarietyName) tags.push(goods.value.flowerVarietyName)
   return tags
-})
-
-useLoad((options) => {
-  goodsId.value = options?.id || ''
-  if (goodsId.value) {
-    void loadGoods()
-  }
 })
 
 useDidShow(() => {
@@ -198,73 +183,6 @@ async function toggleFavorite() {
   } finally {
     favoriteLoading.value = false
   }
-}
-
-function formatPrice(price: number) {
-  return Number(price).toFixed(2).replace(/\.00$/, '')
-}
-
-async function applyGoodsImages(data: Goods) {
-  const fileIds = data.images.length
-    ? data.images
-    : data.coverImage
-      ? [data.coverImage]
-      : []
-
-  const imageMap = await resolveCloudImageMap(fileIds)
-  images.value = fileIds.length
-    ? fileIds.map((fileId) => imageMap.get(fileId) || (/^https?:\/\//.test(fileId) ? fileId : ''))
-    : []
-}
-
-async function loadGoods() {
-  const cacheKey = `goods:public:detail:${goodsId.value}`
-  loading.value = !hasCacheEntry(cacheKey)
-  try {
-    const { data } = await getPublicGoodsCached(goodsId.value, {
-      onUpdate: async (updated) => {
-        goods.value = updated
-        await applyGoodsImages(updated)
-        await loadMatchedWiki()
-      },
-    })
-    goods.value = data
-    await applyGoodsImages(data)
-    await loadMatchedWiki()
-  } catch (err) {
-    wx.showToast({
-      title: err instanceof Error ? err.message : '加载失败',
-      icon: 'none',
-    })
-  } finally {
-    loading.value = false
-  }
-}
-
-async function loadMatchedWiki() {
-  if (!goods.value.flowerKindId && !goods.value.flowerVarietyId) {
-    wikiEntry.value = null
-    return
-  }
-
-  try {
-    const { data } = await matchPublicWikiCached(
-      goods.value.flowerKindId || '',
-      goods.value.flowerVarietyId || '',
-      { onUpdate: (wiki) => { wikiEntry.value = wiki } },
-    )
-    wikiEntry.value = data
-  } catch {
-    wikiEntry.value = null
-  }
-}
-
-function goWiki() {
-  if (!wikiEntry.value) return
-  const name = getWikiDisplayName(wikiEntry.value)
-  navigateTo({
-    url: `/pagesCustomer/wiki/detail?id=${wikiEntry.value._id}&tab=atlas&from=goods&name=${encodeURIComponent(name)}`,
-  })
 }
 
 function decreaseQty() {
@@ -319,6 +237,9 @@ function buyNow() {
 <style lang="less">
 .page-goods-detail { padding-bottom: 120rpx; background: #f8f8f8; }
 .loading-wrap { padding: 24rpx; }
+.swiper-wrap {
+  position: relative;
+}
 .swiper-img { width: 100%; height: 600rpx; }
 .info-section { padding: 24rpx; background: #fff; }
 .name-row {

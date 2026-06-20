@@ -1,64 +1,44 @@
 <template>
   <view class="page-edit-addr">
-    <SmartAddressInput
-      :detail="form.detail"
-      :province="form.province"
-      :city="form.city"
-      :district="form.district"
-      @update:detail="form.detail = $event"
-      @apply="applySmartFill"
-    />
+    <view class="wechat-tip">
+      地址来自微信地址簿。如需修改，请在微信地址中编辑后重新导入。
+    </view>
 
     <view class="quick-actions">
-      <view class="quick-btn" @click="importWechatAddress">
+      <view class="quick-btn primary" @click="reimportWechatAddress">
         <text class="quick-icon">📮</text>
-        <text>微信地址</text>
-      </view>
-      <view class="quick-btn" @click="pickMapLocation">
-        <text class="quick-icon">📍</text>
-        <text>地图选址</text>
+        <text>从微信重新导入</text>
       </view>
     </view>
 
     <view class="form-card">
-      <nut-form>
-        <nut-form-item label="收件人">
-          <nut-input v-model="form.name" placeholder="请输入收件人姓名" />
-        </nut-form-item>
-        <nut-form-item label="手机号">
-          <nut-input v-model="form.phone" placeholder="请输入手机号" type="tel" />
-        </nut-form-item>
-        <nut-form-item label="所在地区">
-          <picker mode="region" :value="regionPickerValue" @change="onRegionChange">
-            <view class="picker-value" :class="{ placeholder: !regionText }">
-              {{ regionText || '请选择省 / 市 / 区' }}
-            </view>
-          </picker>
-        </nut-form-item>
-      </nut-form>
-
-      <view v-if="hasMapPin" class="map-tip">
-        <text class="map-tip-label">地图定位</text>
-        <text class="map-tip-text">
-          {{ form.poiName || '已选位置' }}
-          <text v-if="mapCoordsText" class="map-coords">（{{ mapCoordsText }}）</text>
-        </text>
+      <view class="readonly-row">
+        <text class="readonly-label">收件人</text>
+        <text class="readonly-value">{{ form.name || '—' }}</text>
+      </view>
+      <view class="readonly-row">
+        <text class="readonly-label">手机号</text>
+        <text class="readonly-value">{{ form.phone || '—' }}</text>
+      </view>
+      <view class="readonly-row">
+        <text class="readonly-label">所在地区</text>
+        <text class="readonly-value">{{ regionText || '—' }}</text>
+      </view>
+      <view class="readonly-row">
+        <text class="readonly-label">详细地址</text>
+        <text class="readonly-value">{{ form.detail || '—' }}</text>
       </view>
 
       <nut-cell>
         <label class="default-switch">
           <text>设为默认地址</text>
-          <nut-switch v-model="form.isDefault" />
+          <nut-switch v-model="form.isDefault" @change="onDefaultChange" />
         </label>
       </nut-cell>
     </view>
 
     <view class="actions">
-      <nut-button type="primary" block class="save-btn" :loading="saving" @click="save">
-        保存地址
-      </nut-button>
       <nut-button
-        v-if="addressId"
         block
         plain
         type="danger"
@@ -76,47 +56,41 @@
 import { computed, ref } from 'vue'
 import { useLoad } from '@tarojs/taro'
 import { navigateBack } from '@/utils/router'
-import SmartAddressInput from '@/components/SmartAddressInput.vue'
 import {
-  createNewAddressForm,
   getAddress,
+  importWechatAddressAndSave,
   removeAddress,
   saveAddress,
   toAddressForm,
+  wechatAddressToForm,
 } from '@/services/address'
-import {
-  applyMapLocationToForm,
-  chooseMapLocationWithAuth,
-  chooseWechatAddress,
-  formatRegionText,
-  handleLocationError,
-} from '@/utils/location'
+import { chooseWechatAddress, formatRegionText, handleLocationError } from '@/utils/location'
 import type { UserAddressForm } from '@/types/address'
 
 const addressId = ref('')
-const saving = ref(false)
 const deleting = ref(false)
-const locating = ref(false)
+const reimporting = ref(false)
 
-const form = ref<UserAddressForm>(createNewAddressForm())
+const form = ref<UserAddressForm>({
+  name: '',
+  phone: '',
+  province: '',
+  city: '',
+  district: '',
+  detail: '',
+  isDefault: false,
+})
 
 const regionText = computed(() =>
   formatRegionText(form.value.province, form.value.city, form.value.district),
 )
-const regionPickerValue = computed(() =>
-  [form.value.province, form.value.city, form.value.district].filter(Boolean),
-)
-const hasMapPin = computed(
-  () => typeof form.value.latitude === 'number' && typeof form.value.longitude === 'number',
-)
-const mapCoordsText = computed(() => {
-  if (!hasMapPin.value) return ''
-  return `${form.value.latitude!.toFixed(5)}, ${form.value.longitude!.toFixed(5)}`
-})
 
 useLoad((options) => {
   addressId.value = options?.id ? decodeURIComponent(options.id) : ''
-  if (!addressId.value) return
+  if (!addressId.value) {
+    void importWechatAddressAndBack()
+    return
+  }
 
   const existing = getAddress(addressId.value)
   if (!existing) {
@@ -128,75 +102,43 @@ useLoad((options) => {
   form.value = toAddressForm(existing)
 })
 
-function applySmartFill(payload: Partial<UserAddressForm>) {
-  if (payload.name) form.value.name = payload.name
-  if (payload.phone) form.value.phone = payload.phone
-  if (payload.province) form.value.province = payload.province
-  if (payload.city) form.value.city = payload.city
-  if (payload.district) form.value.district = payload.district
-  if (payload.detail) form.value.detail = payload.detail
-  if ('latitude' in payload) form.value.latitude = payload.latitude
-  if ('longitude' in payload) form.value.longitude = payload.longitude
-  if ('poiName' in payload) form.value.poiName = payload.poiName
+async function importWechatAddressAndBack() {
+  try {
+    await importWechatAddressAndSave()
+    wx.showToast({ title: '地址已保存', icon: 'success' })
+    setTimeout(() => navigateBack(), 500)
+  } catch (err) {
+    handleLocationError(err, '添加地址失败')
+    setTimeout(() => navigateBack(), 800)
+  }
 }
 
-function onRegionChange(event: { detail: { value: string[] } }) {
-  const [province = '', city = '', district = ''] = event.detail.value || []
-  form.value.province = province
-  form.value.city = city
-  form.value.district = district
-}
+async function reimportWechatAddress() {
+  if (reimporting.value || !addressId.value) return
 
-async function importWechatAddress() {
+  reimporting.value = true
   try {
     const result = await chooseWechatAddress()
-    applySmartFill({
-      name: result.name,
-      phone: result.phone,
-      province: result.province,
-      city: result.city,
-      district: result.district,
-      detail: result.detail,
-      latitude: undefined,
-      longitude: undefined,
-      poiName: undefined,
-    })
-    wx.showToast({ title: '已导入微信地址', icon: 'success' })
+    const nextForm = wechatAddressToForm(result, { isDefault: form.value.isDefault })
+    saveAddress(nextForm, addressId.value)
+    form.value = nextForm
+    wx.showToast({ title: '已更新为微信地址', icon: 'success' })
   } catch (err) {
     handleLocationError(err, '导入微信地址失败')
-  }
-}
-
-async function pickMapLocation() {
-  if (locating.value) return
-
-  locating.value = true
-  try {
-    const location = await chooseMapLocationWithAuth()
-    applyMapLocationToForm(form.value, location)
-    wx.showToast({ title: '已选择地图位置', icon: 'success' })
-  } catch (err) {
-    handleLocationError(err, '地图选点失败')
   } finally {
-    locating.value = false
+    reimporting.value = false
   }
 }
 
-async function save() {
-  if (saving.value) return
-
-  saving.value = true
+function onDefaultChange(value: boolean) {
+  if (!addressId.value) return
   try {
-    saveAddress(form.value, addressId.value || undefined)
-    wx.showToast({ title: '保存成功', icon: 'success' })
-    setTimeout(() => navigateBack(), 500)
+    saveAddress({ ...form.value, isDefault: value }, addressId.value)
   } catch (err) {
     wx.showToast({
       title: err instanceof Error ? err.message : '保存失败',
       icon: 'none',
     })
-  } finally {
-    saving.value = false
   }
 }
 
@@ -237,10 +179,19 @@ async function handleDelete() {
   background: @color-bg-page;
   padding-bottom: 32rpx;
 }
+.wechat-tip {
+  margin: 16rpx;
+  padding: 20rpx 24rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: @color-text-secondary;
+  background: @color-bg-card;
+  border-radius: @radius-md;
+}
 .quick-actions {
   display: flex;
   gap: 16rpx;
-  margin: 16rpx;
+  margin: 0 16rpx 16rpx;
 }
 .quick-btn {
   flex: 1;
@@ -253,6 +204,9 @@ async function handleDelete() {
   border-radius: @radius-md;
   font-size: 26rpx;
   color: @color-text-primary;
+  &.primary {
+    color: @color-primary;
+  }
 }
 .quick-icon {
   font-size: 30rpx;
@@ -263,31 +217,22 @@ async function handleDelete() {
   border-radius: @radius-md;
   overflow: hidden;
 }
-.picker-value {
-  width: 100%;
-  min-height: 48rpx;
+.readonly-row {
+  display: flex;
+  padding: 24rpx 32rpx;
+  border-bottom: 2rpx solid @color-border;
+}
+.readonly-label {
+  flex-shrink: 0;
+  width: 160rpx;
+  font-size: 28rpx;
+  color: @color-text-secondary;
+}
+.readonly-value {
+  flex: 1;
   font-size: 28rpx;
   color: @color-text-primary;
   line-height: 1.5;
-  &.placeholder {
-    color: @color-text-placeholder;
-  }
-}
-.map-tip {
-  padding: 0 32rpx 16rpx;
-  font-size: 24rpx;
-  line-height: 1.6;
-}
-.map-tip-label {
-  display: block;
-  margin-bottom: 4rpx;
-  color: @color-text-tertiary;
-}
-.map-tip-text {
-  color: @color-text-secondary;
-}
-.map-coords {
-  color: @color-text-tertiary;
 }
 .default-switch {
   display: flex;
@@ -299,13 +244,9 @@ async function handleDelete() {
 .actions {
   margin: 24rpx 16rpx 0;
 }
-.save-btn,
 .delete-btn {
   border-radius: @radius-pill;
   height: 88rpx;
   font-size: 30rpx;
-}
-.delete-btn {
-  margin-top: 16rpx;
 }
 </style>

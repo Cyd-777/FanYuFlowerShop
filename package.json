@@ -15,6 +15,7 @@
     "postbuild:weapp": "node scripts/patch-dist-config.js && node scripts/sync-tab-icons.js && node scripts/check-main-package.js",
     "generate:tab-icons": "node scripts/generate-tab-icons.js",
     "sync:cloud": "node scripts/sync-cloud-common.js",
+    "deploy:cloud": "node scripts/deploy-cloud-functions.js",
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
     "build:tt": "taro build --type tt",

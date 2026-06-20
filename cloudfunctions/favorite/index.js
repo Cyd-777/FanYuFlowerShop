@@ -1,4 +1,5 @@
 const cloud = require('wx-server-sdk')
+const { enrichPublicGoodsList } = require('./common/fileUrls')
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
@@ -85,7 +86,7 @@ exports.main = async (event) => {
         .map((fav) => goodsMap.get(fav.goodsId))
         .filter(Boolean)
 
-      return { success: true, list }
+      return { success: true, list: await enrichPublicGoodsList(list) }
     }
 
     if (action === 'check') {

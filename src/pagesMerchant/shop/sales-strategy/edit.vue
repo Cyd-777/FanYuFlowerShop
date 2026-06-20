@@ -63,11 +63,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useDidShow, useLoad } from '@tarojs/taro'
+import { ref, watch } from 'vue'
+import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
-import { useShopStore } from '@/stores/shop'
-import { useMerchantGoods } from '@/composables/useMerchantGoods'
+import { usePageData } from '@/composables/usePageData'
 import { uploadGoodsImage } from '@/services/goods'
 import { resolveCloudImageUrl } from '@/utils/goodsImage'
 import { getShopThemePreset } from '@/types/shopTheme'
@@ -76,7 +75,6 @@ import {
   writeMerchantGoodsPick,
   markMerchantGoodsPickConsumed,
 } from '@/types/merchantPick'
-import type { ShopThemeId } from '@/types/shopTheme'
 import type { ThemeDiscountRule } from '@/types/shop'
 
 interface DiscountFormItem {
@@ -85,9 +83,7 @@ interface DiscountFormItem {
   goodsIds: string[]
 }
 
-const shopStore = useShopStore()
-const { goodsList, loadGoods } = useMerchantGoods()
-const themeId = ref<ShopThemeId>('default')
+const { shopStore, themeId, goodsList, ensuring } = usePageData()
 const saving = ref(false)
 const bannerFileId = ref('')
 const bannerPreview = ref('')
@@ -102,28 +98,21 @@ const form = ref({
 
 const discounts = ref<DiscountFormItem[]>([])
 const discountsDirty = ref(false)
-let initSeq = 0
+let formHydrated = false
 
-useLoad((options) => {
-  const raw = options?.themeId as ShopThemeId
-  if (raw) themeId.value = raw
-  const preset = getShopThemePreset(themeId.value)
-  wx.setNavigationBarTitle({ title: `${preset.name}主题` })
-
-  const seq = ++initSeq
-  void (async () => {
-    await shopStore.hydrate({ force: true })
-    if (seq !== initSeq) return
-    await loadGoods('', 'onSale')
-    if (seq !== initSeq) return
-    hydrateForm()
-    applyPickResult()
-  })()
-})
+watch(
+  () => ensuring.value,
+  (loading) => {
+    if (!loading && !formHydrated) {
+      hydrateForm()
+      applyPickResult()
+      formHydrated = true
+    }
+  },
+)
 
 useDidShow(() => {
   applyPickResult()
-  void loadGoods('', 'onSale')
 })
 
 function applyPickResult() {

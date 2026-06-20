@@ -2,10 +2,14 @@ import { getCloud, getCloudCallConfig, parseCloudResult, formatCloudError } from
 import { invalidateCacheModule, loadWithCache } from '@/utils/cache'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
 import type { Goods, GoodsForm, GoodsListFilter } from '@/types/goods'
+import { goodsListMissingPublicImageUrls } from '@/utils/goodsImage'
+import type { GoodsBatchPatch } from '@/types/goodsBatch'
+import type { StockInSubmitItem } from '@/types/stockIn'
 import { unitFromSalesType } from '@/types/goods'
+import { CACHE_KEYS, goodsPublicDetailKey } from '@/data/cacheKeys'
 
 function publicGoodsCacheKey() {
-  return 'goods:public:all'
+  return CACHE_KEYS.goodsPublicAll
 }
 
 interface GoodsCloudResult {
@@ -62,7 +66,7 @@ export async function listPublicGoods(keyword = '', categoryId = ''): Promise<Go
   return Array.isArray(result.list) ? result.list : []
 }
 
-export const PUBLIC_RECOMMEND_CACHE_KEY = 'goods:public:recommend'
+export const PUBLIC_RECOMMEND_CACHE_KEY = CACHE_KEYS.goodsRecommend
 
 export async function listPublicRecommendGoods(): Promise<Goods[]> {
   const result = await callGoods({
@@ -81,29 +85,39 @@ export async function listPublicRecommendGoods(): Promise<Goods[]> {
 export async function listPublicRecommendGoodsCached(
   options?: { force?: boolean; onUpdate?: (list: Goods[]) => void },
 ): Promise<LoadWithCacheResult<Goods[]>> {
-  return loadWithCache({
-    module: 'goods',
-    cacheKey: PUBLIC_RECOMMEND_CACHE_KEY,
-    fetcher: () => listPublicRecommendGoods(),
-    force: options?.force,
-    onUpdate: options?.onUpdate,
-  })
+  const run = (force?: boolean) =>
+    loadWithCache({
+      module: 'goods',
+      cacheKey: PUBLIC_RECOMMEND_CACHE_KEY,
+      fetcher: () => listPublicRecommendGoods(),
+      force: force ?? options?.force,
+      onUpdate: options?.onUpdate,
+    })
+
+  const result = await run()
+  if (!options?.force && goodsListMissingPublicImageUrls(result.data)) {
+    return run(true)
+  }
+  return result
 }
 
 export async function listPublicGoodsCached(
   options?: { force?: boolean; onUpdate?: (list: Goods[]) => void },
 ): Promise<LoadWithCacheResult<Goods[]>> {
-  return loadWithCache({
-    module: 'goods',
-    cacheKey: publicGoodsCacheKey(),
-    fetcher: () => listPublicGoods('', ''),
-    force: options?.force,
-    onUpdate: options?.onUpdate,
-  })
-}
+  const run = (force?: boolean) =>
+    loadWithCache({
+      module: 'goods',
+      cacheKey: publicGoodsCacheKey(),
+      fetcher: () => listPublicGoods('', ''),
+      force: force ?? options?.force,
+      onUpdate: options?.onUpdate,
+    })
 
-function publicGoodsDetailCacheKey(id: string) {
-  return `goods:public:detail:${id}`
+  const result = await run()
+  if (!options?.force && goodsListMissingPublicImageUrls(result.data)) {
+    return run(true)
+  }
+  return result
 }
 
 export async function getPublicGoods(id: string): Promise<Goods> {
@@ -130,13 +144,20 @@ export async function getPublicGoodsCached(
   id: string,
   options?: { force?: boolean; onUpdate?: (goods: Goods) => void },
 ): Promise<LoadWithCacheResult<Goods>> {
-  return loadWithCache({
-    module: 'goods',
-    cacheKey: publicGoodsDetailCacheKey(id),
-    fetcher: () => getPublicGoods(id),
-    force: options?.force,
-    onUpdate: options?.onUpdate,
-  })
+  const run = (force?: boolean) =>
+    loadWithCache({
+      module: 'goods',
+      cacheKey: goodsPublicDetailKey(id),
+      fetcher: () => getPublicGoods(id),
+      force: force ?? options?.force,
+      onUpdate: options?.onUpdate,
+    })
+
+  const result = await run()
+  if (!options?.force && goodsListMissingPublicImageUrls([result.data])) {
+    return run(true)
+  }
+  return result
 }
 
 export const MERCHANT_GOODS_LIST_CACHE_KEY = 'goods:merchant:all'
@@ -180,6 +201,8 @@ export async function getMerchantGoods(id: string): Promise<Goods> {
 
 export function toGoodsPayload(form: GoodsForm) {
   const salesType = form.salesType
+  const unitsPerGroup =
+    salesType === 'group' ? parseInt(form.unitsPerGroup, 10) : undefined
   return {
     name: form.name.trim(),
     price: Number(form.price),
@@ -197,6 +220,7 @@ export function toGoodsPayload(form: GoodsForm) {
     onSale: form.onSale,
     recommend: form.recommend,
     sort: parseInt(form.sort, 10) || 0,
+    ...(unitsPerGroup != null && !Number.isNaN(unitsPerGroup) ? { unitsPerGroup } : {}),
   }
 }
 
@@ -233,6 +257,43 @@ export async function removeGoods(id: string): Promise<void> {
     throw new Error(result.errMsg || '删除商品失败')
   }
   invalidateCacheModule('goods')
+}
+
+export async function batchRemoveGoods(ids: string[]): Promise<number> {
+  const result = await callGoods({
+    action: 'batchRemove',
+    ids,
+  })
+  if (!result.success) {
+    throw new Error(result.errMsg || '批量删除失败')
+  }
+  invalidateCacheModule('goods')
+  return Number((result as { removed?: number }).removed) || ids.length
+}
+
+export async function batchUpdateGoods(ids: string[], patch: GoodsBatchPatch): Promise<number> {
+  const result = await callGoods({
+    action: 'batchUpdate',
+    ids,
+    patch,
+  })
+  if (!result.success) {
+    throw new Error(result.errMsg || '批量修改失败')
+  }
+  invalidateCacheModule('goods')
+  return Number((result as { updated?: number }).updated) || ids.length
+}
+
+export async function submitStockIn(items: StockInSubmitItem[]): Promise<number> {
+  const result = await callGoods({
+    action: 'stockIn',
+    items,
+  })
+  if (!result.success) {
+    throw new Error(result.errMsg || '提交进货单失败')
+  }
+  invalidateCacheModule('goods')
+  return Number((result as { applied?: number }).applied) || items.length
 }
 
 export async function uploadGoodsImage(localPath: string): Promise<string> {

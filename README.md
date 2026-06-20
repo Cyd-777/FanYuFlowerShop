@@ -8,8 +8,11 @@
 |------|------|
 | [docs/setup.md](docs/setup.md) | 环境配置、编译、部署清单 |
 | [docs/cloud.md](docs/cloud.md) | 云函数、数据库集合、云存储 |
-| [docs/cache.md](docs/cache.md) | 本地缓存与版本号策略 |
+| [docs/cache.md](docs/cache.md) | 本地缓存与版本号策略（已实现清单） |
+| [docs/data-loading.md](docs/data-loading.md) | **数据加载方案**（分层、调度、三端、文献） |
 | [docs/architecture.md](docs/architecture.md) | 方案 A：主包/分包与 NutUI 使用规范 |
+| [docs/closed-loop-plan.md](docs/closed-loop-plan.md) | **基础三环闭环 · 分步实施计划** |
+| [docs/post-closed-loop-branches.md](docs/post-closed-loop-branches.md) | **闭环之上 · Issue #1 功能分支地图** |
 | [docs/features.md](docs/features.md) | 功能总览与模块索引 |
 | [docs/goods.md](docs/goods.md) | **商品模块**（至提交订单前） |
 | [docs/order.md](docs/order.md) | **订单模块**（提交订单后） |
@@ -61,6 +64,8 @@ FanYuFlowerShop/
 |------|------|
 | `npm run build:weapp` | 编译微信小程序 |
 | `npm run dev:weapp` | 开发模式（watch） |
+| `npm run sync:cloud` | 同步云函数公共模块（`common/` → 各函数目录） |
+| `npm run deploy:cloud` | 一键部署全部云函数（需 `tcb login`） |
 | `tcb fn deploy <name> -e <envId> --force --yes` | 部署单个云函数 |
 
 ## 版本
