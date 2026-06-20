@@ -13,6 +13,8 @@ import { isSameGoodsListSnapshot } from '@/utils/goodsListSnapshot'
 import { resolveActiveTheme } from '@/types/shopTheme'
 import { applyDiscountPrice, getThemeDiscountRate } from '@/utils/themeDiscount'
 import { navigateTo } from '@/utils/router'
+import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
+import { goodsLiveSync } from '@/services/goodsLiveSync'
 import type { PageEnsureContext } from '../types'
 import type { PageSetupResult } from '../pageRegistry'
 import type { Category } from '@/types/category'
@@ -100,7 +102,15 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     await shopStore.hydrate({ force: ctx.force })
     await applyThemeUi()
     await Promise.all([loadCategories({ force: ctx.force }), loadRecommend(!!ctx.force)])
+    goodsLiveSync.resetVersionBaseline()
   }
+
+  useGoodsLiveSync({
+    preferFullRefresh: true,
+    getTargetIds: () => [],
+    applyPatches: async () => {},
+    refreshScope: () => loadRecommend(false),
+  })
 
   function formatPrice(price: number) {
     return Number(price).toFixed(2).replace(/\.00$/, '')

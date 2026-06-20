@@ -1,6 +1,8 @@
 import { ref } from 'vue'
 import { usePublicGoods } from '@/composables/usePublicGoods'
 import { usePublicCategories } from '@/composables/usePublicCategories'
+import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
+import { goodsLiveSync } from '@/services/goodsLiveSync'
 import { navigateTo } from '@/utils/router'
 import type { GoodsNameSuggestion } from '@/utils/goodsNameSuggest'
 import type { PageEnsureContext } from '../types'
@@ -10,7 +12,7 @@ export function setupCustomerGoodsListPageData(): PageSetupResult & Record<strin
   const keyword = ref('')
   const categoryId = ref('')
   const categoryName = ref('')
-  const { goodsList, loading, loadGoods, searchCatalog } = usePublicGoods()
+  const { goodsList, loading, loadGoods, searchCatalog, patchVisibleGoods } = usePublicGoods()
   const { categories, loadCategories } = usePublicCategories()
 
   function onLoad(query: Record<string, string | undefined>) {
@@ -35,7 +37,14 @@ export function setupCustomerGoodsListPageData(): PageSetupResult & Record<strin
   async function ensure(ctx: PageEnsureContext) {
     await initCategoryName()
     await reloadGoods()
+    goodsLiveSync.resetVersionBaseline()
   }
+
+  useGoodsLiveSync({
+    getTargetIds: () => goodsList.value.map((item) => item._id),
+    applyPatches: (result) => patchVisibleGoods(result),
+    refreshScope: () => reloadGoods(),
+  })
 
   function formatPrice(price: number) {
     return Number(price).toFixed(2).replace(/\.00$/, '')

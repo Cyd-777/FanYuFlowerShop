@@ -1,6 +1,8 @@
 import { computed, ref } from 'vue'
 import { usePublicGoods } from '@/composables/usePublicGoods'
 import { usePublicCategories } from '@/composables/usePublicCategories'
+import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
+import { goodsLiveSync } from '@/services/goodsLiveSync'
 import { navigateTo } from '@/utils/router'
 import type { GoodsNameSuggestion } from '@/utils/goodsNameSuggest'
 import type { PageEnsureContext } from '../types'
@@ -12,7 +14,8 @@ export function setupCategoryPageData(): PageSetupResult & Record<string, unknow
   const emptyText = '暂无商品'
   const activeIdx = ref(0)
   const { categories, loadCategories } = usePublicCategories()
-  const { goodsList, loading, setCategory, loadGoods, searchCatalog } = usePublicGoods()
+  const { goodsList, loading, setCategory, loadGoods, searchCatalog, patchVisibleGoods } =
+    usePublicGoods()
 
   const tabs = computed(() => [
     { key: 'all', name: '全部', categoryId: '' },
@@ -32,7 +35,17 @@ export function setupCategoryPageData(): PageSetupResult & Record<string, unknow
   async function ensure(ctx: PageEnsureContext) {
     await loadCategories({ force: ctx.force })
     await reloadGoods(!!ctx.force)
+    goodsLiveSync.resetVersionBaseline()
   }
+
+  useGoodsLiveSync({
+    getTargetIds: () => {
+      if (activeIdx.value < 0) return []
+      return goodsList.value.map((item) => item._id)
+    },
+    applyPatches: (result) => patchVisibleGoods(result),
+    refreshScope: () => reloadGoods(false),
+  })
 
   function formatPrice(price: number) {
     return Number(price).toFixed(2).replace(/\.00$/, '')

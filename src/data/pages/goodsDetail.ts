@@ -1,5 +1,7 @@
 import { ref } from 'vue'
 import { navigateTo } from '@/utils/router'
+import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
+import { goodsLiveSync } from '@/services/goodsLiveSync'
 import { goodsRepository, wikiRepository } from '@/data/repository'
 import { goodsPublicDetailKey } from '@/data/cacheKeys'
 import { hasCacheEntry } from '@/utils/cache'
@@ -107,7 +109,22 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
   async function ensure(ctx: PageEnsureContext) {
     if (!goodsId.value) return
     await loadGoods(!!ctx.force)
+    goodsLiveSync.resetVersionBaseline()
   }
+
+  useGoodsLiveSync({
+    getTargetIds: () => (goodsId.value ? [goodsId.value] : []),
+    applyPatches: async ({ patches, missingIds }) => {
+      if (missingIds.includes(goodsId.value)) {
+        goods.value = { ...goods.value, onSale: false, stock: 0 }
+        return
+      }
+      const patch = patches.find((item) => item._id === goodsId.value)
+      if (!patch) return
+      goods.value = patch
+      await applyGoodsImages(patch)
+    },
+  })
 
   function formatPrice(price: number) {
     return Number(price).toFixed(2).replace(/\.00$/, '')

@@ -91,3 +91,4 @@ cloudfunctions/wiki
 - [x] Repository 门面：`shop` / `categories` / `goods` / `wiki`
 - [ ] 三端 `IStorage` / `IApi` 适配（导出 App 前）
 - [ ] 列表 cursor 分页与增量 sync API
+- [x] 顾客端商品前台轮询（`goodsLiveSync` + `useGoodsLiveSync`，meta 版本变化局部 patch）

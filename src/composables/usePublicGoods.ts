@@ -4,9 +4,10 @@ import { listPublicGoods } from '@/services/goods'
 import { goodsRepository } from '@/data/repository'
 import { CACHE_KEYS } from '@/data/cacheKeys'
 import { attachGoodsCoverImages, attachGoodsCoverImagesFromCache } from '@/utils/goodsImage'
-import { isSameGoodsListSnapshot } from '@/utils/goodsListSnapshot'
+import { isSameGoodsListSnapshot, mergeGoodsListById } from '@/utils/goodsListSnapshot'
 import { filterPublicGoodsList } from '@/utils/goodsListFilter'
 import type { Goods } from '@/types/goods'
+import type { PublicGoodsPatchResult } from '@/services/goodsLivePatch'
 
 export interface GoodsCard extends Goods {
   imageUrl: string
@@ -95,12 +96,34 @@ export function usePublicGoods() {
     }
   }
 
+  async function patchVisibleGoods(result: PublicGoodsPatchResult) {
+    const target = searchResults.value ?? sourceGoods.value
+    if (!target.length && !result.patches.length && !result.missingIds.length) return
+
+    const withImages = result.patches.length
+      ? await attachGoodsCoverImages(result.patches, target)
+      : []
+
+    const merged = mergeGoodsListById(target, withImages, {
+      missingIds: result.missingIds,
+    })
+
+    if (merged === target) return
+
+    if (searchResults.value) {
+      searchResults.value = merged
+    } else {
+      sourceGoods.value = merged
+    }
+  }
+
   return {
     goodsList,
     loading,
     activeCategoryId,
     setCategory,
     loadGoods,
+    patchVisibleGoods,
     searchCatalog: computed(() => sourceGoods.value),
   }
 }
