@@ -1,46 +1,97 @@
 <template>
   <view class="page-home">
-    <view class="header" :style="headerStyle">
+    <AppFeedbackHost />
+    <view
+      v-if="isSearchStuck"
+      class="overlay-status-bar-fill"
+      :style="statusBarFillStyle"
+    />
+
+    <view class="header" :style="homeHeaderStyle">
       <view v-if="themePreset.promoTag" class="promo-tag">{{ themePreset.promoTag }}</view>
       <view class="greeting">{{ themePreset.emoji }} 欢迎来到{{ shopStore.shopName }}</view>
       <view class="subtitle">{{ themePreset.homeSubtitle }}</view>
     </view>
 
-    <image
-      v-if="bannerUrl"
-      class="theme-banner"
-      :src="bannerUrl"
-      mode="aspectFill"
-    />
-
-    <scroll-view
-      v-if="categories.length"
-      class="categories"
-      scroll-x
-      :enhanced="true"
-      :show-scrollbar="false"
+    <view
+      id="home-search-sticky"
+      class="home-search page-sticky-search"
+      :class="{ 'is-stuck': isSearchStuck }"
+      :style="searchStickyStyle"
     >
-      <view
-        v-for="cat in categories"
-        :key="cat._id"
-        class="category-item"
-        @click="goCategory(cat)"
+      <AppSearchInput
+        v-model="keyword"
+        :placeholder="searchPlaceholder"
+        :suggest-title="suggestTitle"
+        :suggest="unifiedSuggest"
+        history-profile="customer-unified"
+        history-dual-channel
+        :sticky="false"
+        sticky-bleed="24rpx"
+        :trigger-style="searchTriggerStyle"
+        @search="onSearchKeyword"
+        @select-channel="onPickSearchChannel"
+        @select="onPickSearchSuggestion"
+        @focus-change="onSearchModalOpen"
+      />
+    </view>
+
+    <nut-swiper
+      v-if="bannerUrls.length"
+      class="theme-banner-swiper"
+      :init-page="0"
+      :pagination-visible="bannerUrls.length > 1"
+      pagination-color="#e53935"
+    >
+      <nut-swiper-item v-for="(url, idx) in bannerUrls" :key="idx">
+        <image class="theme-banner" :src="url" mode="aspectFill" />
+      </nut-swiper-item>
+    </nut-swiper>
+
+    <view
+      v-if="categories.length"
+      class="categories-wrap page-sticky-tabs"
+      :class="{ 'is-search-stuck': isSearchStuck }"
+      :style="tabsStickyStyle"
+    >
+      <scroll-view
+        id="home-categories-scroll"
+        class="categories-scroll"
+        :scroll-x="true"
+        :style="categoriesScroll.scrollViewportStyle"
+        :show-scrollbar="false"
       >
-        <view class="cat-icon" :style="{ background: themeChipBg }">{{ cat.icon }}</view>
-        <view class="cat-name">{{ cat.name }}</view>
-      </view>
-    </scroll-view>
+        <view id="home-categories-track" class="categories-track" :style="categoriesScroll.trackStyle">
+          <view
+            v-for="cat in categories"
+            :key="cat._id"
+            class="category-item"
+            @click="goCategory(cat)"
+          >
+            <view class="cat-icon" :style="{ background: themeChipBg }">{{ cat.icon }}</view>
+            <view class="cat-name">{{ cat.name }}</view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
 
     <view class="section-title" :style="{ color: themePreset.primaryColor }">
       ✨ {{ sectionTitle }}
     </view>
     <GoodsCardSkeleton v-if="loading" :count="4" />
-    <view v-else class="goods-grid">
+    <view
+      v-else
+      class="goods-grid"
+      @touchstart="browseTouchHandlers.onTouchStart"
+      @touchmove="browseTouchHandlers.onTouchMove"
+      @touchend="browseTouchHandlers.onTouchEnd"
+      @touchcancel="browseTouchHandlers.onTouchCancel"
+    >
       <view
         v-for="item in goodsList"
         :key="item._id"
         class="goods-card"
-        @click="goDetail(item._id)"
+        @tap="goDetail(item._id)"
       >
         <view class="goods-img-wrap">
           <GoodsImage
@@ -48,9 +99,10 @@
             :cloud-file-id="item.coverImage || item.images?.[0]"
             root-class="goods-img"
           />
-          <GoodsNewListingBadge :goods="item" />
+          <GoodsSoldOutBadge :stock="item.stock" :on-sale="item.onSale" />
         </view>
         <view class="goods-name">{{ item.name }}</view>
+        <GoodsSalesTagRow :goods="item" />
         <view class="goods-price" :style="{ color: themePreset.primaryColor }">
           <text v-if="item.discountPrice != null" class="price-sale">
             ¥{{ formatPrice(item.discountPrice) }}
@@ -66,26 +118,84 @@
 </template>
 
 <script setup lang="ts">
+import AppSearchInput from '@/components/AppSearchInput.vue'
+import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
+import { useNavBarLayout } from '@/composables/useNavBarLayout'
+import { useOverlayStickySearch } from '@/composables/useOverlayStickySearch'
+import { rpxToPx } from '@/composables/usePageSticky'
+import { useScrollXTrack } from '@/composables/useScrollXTrack'
 import { usePageData } from '@/composables/usePageData'
+import { computed } from 'vue'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
-import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
+import GoodsSalesTagRow from '@/components/GoodsSalesTagRow.vue'
+import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
 
 const {
   shopStore,
   categories,
   goodsList,
   loading,
-  bannerUrl,
+  bannerUrls,
   themePreset,
   sectionTitle,
   headerStyle,
   themeChipBg,
   emptyText,
+  searchPlaceholder,
+  suggestTitle,
+  keyword,
+  unifiedSuggest,
+  onSearchKeyword,
+  onPickSearchChannel,
+  onPickSearchSuggestion,
+  onSearchModalOpen,
   formatPrice,
   goCategory,
   goDetail,
+  browseTouchHandlers,
 } = usePageData()
+
+const { statusBarHeightPx } = useNavBarLayout()
+const {
+  isSearchStuck,
+  statusBarFillStyle,
+  searchStickyStyle,
+  searchTriggerStyle,
+  tabsStickyStyle,
+} = useOverlayStickySearch({
+  searchSelector: '#home-search-sticky',
+  wrapPadYRpx: 24,
+  background: '#f8f8f8',
+  remeasureDeps: [
+    () => loading.value,
+    () => bannerUrls.value.length,
+    () => categories.value.length,
+    () => themePreset.value.promoTag,
+    () => shopStore.shopName,
+  ],
+})
+
+const homeHeaderStyle = computed(() => ({
+  ...headerStyle.value,
+  paddingTop: `calc(${statusBarHeightPx.value} + 24rpx)`,
+}))
+
+const categoriesScroll = useScrollXTrack({
+  heightRpx: 168,
+  measure: {
+    rowSelectors: ['#home-categories-track'],
+    horizontalPaddingRpx: 32,
+  },
+  estimateTrackWidthPx: () => {
+    const count = categories.value.length
+    const itemRpx = 128
+    const totalRpx = count * itemRpx + 32
+    const viewport = rpxToPx(750)
+    return Math.max(rpxToPx(totalRpx), viewport + 1)
+  },
+  watchSources: [categories],
+})
 </script>
 
 <style lang="less">
@@ -94,10 +204,11 @@ const {
 .page-home {
   min-height: 100vh;
   background: #f8f8f8;
-  overflow-x: hidden;
+  box-sizing: border-box;
+  width: 100%;
 }
 .header {
-  padding: 48rpx 32rpx 32rpx;
+  padding: 24rpx 32rpx;
   .greeting {
     font-size: 36rpx;
     font-weight: 600;
@@ -118,19 +229,38 @@ const {
   background: rgba(0, 0, 0, 0.35);
   border-radius: 20rpx;
 }
+.home-search {
+  padding: 12rpx 24rpx;
+  background: #f8f8f8;
+}
+.theme-banner-swiper {
+  width: 100%;
+  background: #f0f0f0;
+}
 .theme-banner {
   width: 100%;
   height: 320rpx;
   display: block;
   background: #f0f0f0;
 }
-.categories {
-  display: flex;
-  padding: 24rpx 16rpx;
-  white-space: nowrap;
+.categories-wrap {
   background: #fff;
+  width: 100%;
+  overflow: hidden;
+}
+.categories-scroll {
+  box-sizing: border-box;
+}
+.categories-track {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  padding: 24rpx 16rpx;
+  box-sizing: border-box;
 }
 .category-item {
+  flex: none;
   display: inline-flex;
   flex-direction: column;
   align-items: center;

@@ -1,19 +1,22 @@
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { hasCacheEntry } from '@/utils/cache'
-import { buildFlowerLabel, searchFlowerCatalog } from '@/services/flower'
+import { buildFlowerLabel } from '@/services/flower'
 import { flowerRepository } from '@/data/repository'
+import { wikiRepository } from '@/data/repository/wikiRepository'
 import { CACHE_KEYS } from '@/data/cacheKeys'
 import { navigateBack } from '@/utils/router'
+import { buildFlowerCatalogFromWiki } from '@/utils/wikiFlowerCatalog'
 import type { FlowerKindWithVarieties } from '@/types/flower'
 import { FLOWER_PICK_STORAGE_KEY } from '@/types/flower'
 import type { PageEnsureContext } from '../types'
 import type { PageSetupResult } from '../pageRegistry'
 
 export function setupFlowerPickerPageData(): PageSetupResult & Record<string, unknown> {
-  const cloudSourceLabel = '数据来源：云数据库 flower_kinds / flower_varieties'
+  const cloudSourceLabel = '数据来源：智库 flower_wiki（与百科 Tab 同步）'
   const searchPlaceholder = '搜索品类或品种，如 红玫瑰、黄天霸'
-  const emptyVarietyText = '该品类下暂无品种，请在云数据库添加品种'
-  const emptyCatalogText = '云端花卉库为空，请先在云数据库录入数据'
+  const emptyVarietyText = '该品类在智库中暂无子品种词条'
+  const emptyCatalogText = '智库花卉库为空，请先维护 flower_wiki'
   const confirmText = '确认选择'
 
   const loading = ref(false)
@@ -70,23 +73,24 @@ export function setupFlowerPickerPageData(): PageSetupResult & Record<string, un
 
   async function loadCatalog() {
     const isSearch = !!keyword.value.trim()
-    loading.value = isSearch ? true : !hasCacheEntry(CACHE_KEYS.flowerCatalog)
+    loading.value = isSearch ? true : !hasCacheEntry(CACHE_KEYS.wikiList)
     try {
-      const list = isSearch
-        ? await searchFlowerCatalog(keyword.value.trim())
-        : (
-            await flowerRepository.ensureCatalog({
-              onUpdate: (updated) => {
-                catalog.value = updated
-                syncSelectionAfterCatalogLoad(updated)
-              },
-            })
-          ).data
-      catalog.value = list
-      syncSelectionAfterCatalogLoad(list)
+      if (isSearch) {
+        const wikiList = await wikiRepository.searchPublicList(keyword.value.trim())
+        catalog.value = buildFlowerCatalogFromWiki(wikiList)
+      } else {
+        const { data } = await flowerRepository.ensureCatalog({
+          onUpdate: (updated) => {
+            catalog.value = updated
+            syncSelectionAfterCatalogLoad(updated)
+          },
+        })
+        catalog.value = data
+      }
+      syncSelectionAfterCatalogLoad(catalog.value)
     } catch (err) {
-      wx.showToast({
-        title: err instanceof Error ? err.message : '加载花卉库失败',
+      showToast({
+        title: err instanceof Error ? err.message : '加载智库花卉库失败',
         icon: 'none',
         duration: 3000,
       })

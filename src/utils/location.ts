@@ -1,3 +1,4 @@
+import { showToast } from '@/utils/feedback'
 const MUNICIPALITIES = ['北京市', '上海市', '天津市', '重庆市']
 
 export interface ParsedRegion {
@@ -208,5 +209,5 @@ export function handleLocationError(err: unknown, fallback = '操作失败') {
   if (err instanceof Error && err.message === 'USER_CANCEL') return
 
   const message = err instanceof Error ? err.message : fallback
-  wx.showToast({ title: message, icon: 'none' })
+  showToast({ title: message, icon: 'none' })
 }

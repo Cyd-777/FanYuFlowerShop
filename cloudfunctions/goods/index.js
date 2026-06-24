@@ -227,31 +227,40 @@ async function finalizeGoodsPayload(input) {
   }
 }
 
+const {
+  normalizeGoodsQuery,
+  tokenizeQuery,
+  filterPublicGoodsList,
+} = require('./goodsPublicSearch')
+
 async function listOnSaleGoods(options = {}) {
   const {
     keyword = '',
     categoryId = '',
     recommendOnly = false,
     inStockOnly = false,
+    query,
   } = options
 
   await ensureCollection('goods')
-
   const { data } = await db.collection('goods').get()
-  const text = String(keyword).trim().toLowerCase()
-  const catId = String(categoryId).trim()
 
-  return data
-    .map(pickGoods)
-    .filter((item) => {
-      if (item.onSale === false) return false
-      if (recommendOnly && !item.recommend) return false
-      if (inStockOnly && item.stock <= 0) return false
-      if (catId && item.categoryId !== catId) return false
-      if (!text) return true
-      return item.name.toLowerCase().includes(text)
-    })
-    .sort((a, b) => b.sort - a.sort)
+  const searchInput =
+    query && typeof query === 'object'
+      ? query
+      : {
+          text: keyword,
+          textTokens: tokenizeQuery(keyword),
+          categoryId,
+          recommendOnly,
+          inStockOnly,
+        }
+
+  return filterPublicGoodsList(data.map(pickGoods), searchInput)
+}
+
+async function searchPublicGoods(queryInput = {}) {
+  return listOnSaleGoods({ query: queryInput })
 }
 
 exports.main = async (event) => {
@@ -266,18 +275,33 @@ exports.main = async (event) => {
         categoryId = '',
         recommendOnly = false,
         inStockOnly = false,
+        query,
       } = event
       const list = await listOnSaleGoods({
         keyword,
         categoryId,
         recommendOnly,
         inStockOnly,
+        query,
       })
       return { success: true, list: await enrichPublicGoodsList(list) }
     } catch (err) {
       return {
         success: false,
         errMsg: err.message || err.errMsg || '获取商品列表失败',
+      }
+    }
+  }
+
+  if (action === 'publicSearch') {
+    try {
+      const { query = {} } = event
+      const list = await searchPublicGoods(query)
+      return { success: true, list: await enrichPublicGoodsList(list) }
+    } catch (err) {
+      return {
+        success: false,
+        errMsg: err.message || err.errMsg || '搜索商品失败',
       }
     }
   }

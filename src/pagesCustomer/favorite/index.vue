@@ -1,5 +1,6 @@
 <template>
   <view class="page-favorite">
+    <AppNavBar />
     <view v-if="loading" class="loading-tip">加载中…</view>
 
     <view v-else-if="list.length" class="goods-grid">
@@ -37,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
@@ -71,7 +73,7 @@ async function loadList() {
     list.value = await attachGoodsCoverImages(goods)
   } catch (err) {
     list.value = []
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '加载失败',
       icon: 'none',
     })
@@ -91,9 +93,9 @@ function canAddToCart(item: FavoriteCard) {
 async function addToCart(item: FavoriteCard) {
   try {
     await addGoodsToCart(item._id, 1, item.imageUrl)
-    wx.showToast({ title: '已加入购物车', icon: 'success' })
+    showToast({ title: '已加入购物车', icon: 'success' })
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '加购失败',
       icon: 'none',
     })

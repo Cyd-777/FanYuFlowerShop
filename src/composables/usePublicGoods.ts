@@ -1,10 +1,13 @@
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { hasCacheEntry, readCacheEntry } from '@/utils/cache'
-import { listPublicGoods } from '@/services/goods'
+import { listPublicGoods, syncPublicGoodsListFromCloud } from '@/services/goods'
 import { goodsRepository } from '@/data/repository'
+import { parseCustomerGoodsSearchQuery } from '@/utils/parseCustomerGoodsSearchQuery'
 import { CACHE_KEYS } from '@/data/cacheKeys'
 import { attachGoodsCoverImages, attachGoodsCoverImagesFromCache } from '@/utils/goodsImage'
-import { isSameGoodsListSnapshot, mergeGoodsListById } from '@/utils/goodsListSnapshot'
+import { applyPublicGoodsLivePatches } from '@/utils/applyPublicGoodsLivePatches'
+import { isSameGoodsListSnapshot } from '@/utils/goodsListSnapshot'
 import { filterPublicGoodsList } from '@/utils/goodsListFilter'
 import type { Goods } from '@/types/goods'
 import type { PublicGoodsPatchResult } from '@/services/goodsLivePatch'
@@ -35,19 +38,26 @@ export function usePublicGoods() {
     return items
   }
 
-  async function loadGoods(keyword = '', categoryId = '', options?: { force?: boolean }) {
+  async function loadGoods(
+    keyword = '',
+    categoryId = '',
+    options?: { force?: boolean; exactName?: boolean },
+  ) {
     activeCategoryId.value = categoryId
     const trimmedKeyword = keyword.trim()
 
     if (trimmedKeyword) {
       loading.value = true
       try {
-        const list = await listPublicGoods(trimmedKeyword, categoryId)
+        const query = parseCustomerGoodsSearchQuery(trimmedKeyword, categoryId, {
+          exactName: options?.exactName,
+        })
+        const list = await goodsRepository.search(query)
         searchResults.value = await attachGoodsCoverImages(list)
       } catch (err) {
         console.error('[goods] load failed:', err)
         searchResults.value = []
-        wx.showToast({
+        showToast({
           title: err instanceof Error ? err.message : '加载商品失败',
           icon: 'none',
         })
@@ -87,7 +97,7 @@ export function usePublicGoods() {
       if (!sourceGoods.value.length) {
         sourceGoods.value = []
       }
-      wx.showToast({
+      showToast({
         title: err instanceof Error ? err.message : '加载商品失败',
         icon: 'none',
       })
@@ -98,22 +108,26 @@ export function usePublicGoods() {
 
   async function patchVisibleGoods(result: PublicGoodsPatchResult) {
     const target = searchResults.value ?? sourceGoods.value
-    if (!target.length && !result.patches.length && !result.missingIds.length) return
-
-    const withImages = result.patches.length
-      ? await attachGoodsCoverImages(result.patches, target)
-      : []
-
-    const merged = mergeGoodsListById(target, withImages, {
-      missingIds: result.missingIds,
-    })
-
+    const merged = await applyPublicGoodsLivePatches(target, result)
     if (merged === target) return
 
     if (searchResults.value) {
       searchResults.value = merged
     } else {
       sourceGoods.value = merged
+    }
+  }
+
+  /** 推荐位/分类结构变化：静默拉全表索引并对齐缓存 */
+  async function silentRefreshSourceGoods() {
+    if (searchResults.value) return
+
+    try {
+      const previous = sourceGoods.value
+      const data = await syncPublicGoodsListFromCloud()
+      sourceGoods.value = await applySourceGoods(data, previous)
+    } catch (err) {
+      console.warn('[goods] silent refresh failed:', err)
     }
   }
 
@@ -124,6 +138,7 @@ export function usePublicGoods() {
     setCategory,
     loadGoods,
     patchVisibleGoods,
+    silentRefreshSourceGoods,
     searchCatalog: computed(() => sourceGoods.value),
   }
 }

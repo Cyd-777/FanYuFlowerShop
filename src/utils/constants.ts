@@ -7,6 +7,9 @@ export enum UserRole {
 /** 云数据库集合名 */
 export const CLOUD_COLLECTIONS = {
   Merchants: 'merchants',
+  Users: 'users',
+  UserAuth: 'user_auth',
+  SmsCodes: 'sms_codes',
   Shops: 'shops',
   Goods: 'goods',
   Categories: 'categories',
@@ -20,13 +23,18 @@ export const CLOUD_COLLECTIONS = {
 
 /** 缓存 key */
 export const STORAGE_KEYS = {
-  Token: 'token',
+  UserId: 'user_id',
   UserInfo: 'user_info',
   Role: 'user_role',
+  AccessEpoch: 'user_access_epoch',
+  PendingStaffInvite: 'pending_staff_invite_token',
   ShopSettings: 'shop_settings',
   Cart: 'cart_items',
   UserAddresses: 'user_addresses',
   CheckoutSelectedAddressId: 'checkout_selected_address_id',
+  SearchHistoryCustomerUnified: 'search_history_customer_unified',
+  SearchHistoryWiki: 'search_history_wiki',
+  SearchHistoryMerchantGoods: 'search_history_merchant_goods',
 } as const
 
 /** 默认店铺名称（未配置时使用） */

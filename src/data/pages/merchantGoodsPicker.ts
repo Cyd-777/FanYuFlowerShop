@@ -1,3 +1,4 @@
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useMerchantGoods } from '@/composables/useMerchantGoods'
 import { navigateBack } from '@/utils/router'
@@ -43,7 +44,7 @@ export function setupMerchantGoodsPickerPageData(): PageSetupResult & Record<str
 
   function confirm() {
     if (!ruleId.value) {
-      wx.showToast({ title: '折扣信息丢失，请返回重试', icon: 'none' })
+      showToast({ title: '折扣信息丢失，请返回重试', icon: 'none' })
       return
     }
     writeMerchantGoodsPick({

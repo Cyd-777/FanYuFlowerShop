@@ -1,3 +1,4 @@
+import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
 import { submitStockIn } from '@/services/goods'
 import type { StockInLine, StockInSession } from '@/types/stockIn'
@@ -57,7 +58,7 @@ export function setupMerchantGoodsStockInPageData(): PageSetupResult & Record<st
       .map((line) => ({ goodsId: line.goodsId as string, delta: line.quantity }))
 
     if (!items.length) {
-      wx.showToast({ title: '请设置入库数量', icon: 'none' })
+      showToast({ title: '请设置入库数量', icon: 'none' })
       return
     }
 
@@ -65,12 +66,12 @@ export function setupMerchantGoodsStockInPageData(): PageSetupResult & Record<st
     try {
       await submitStockIn(items)
       clearStockInSession()
-      wx.showToast({ title: '入库成功', icon: 'success' })
+      showToast({ title: '入库成功', icon: 'success' })
       setTimeout(() => {
         wx.reLaunch({ url: '/pagesMerchant/goods/list' })
       }, 800)
     } catch (err) {
-      wx.showToast({
+      showToast({
         title: err instanceof Error ? err.message : '提交失败',
         icon: 'none',
       })

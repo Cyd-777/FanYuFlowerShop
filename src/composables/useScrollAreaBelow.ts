@@ -1,5 +1,6 @@
 import { nextTick, ref } from 'vue'
 import Taro, { useDidShow, useReady } from '@tarojs/taro'
+import { getNavBarLayout } from '@/utils/navBarLayout'
 
 /** 搜索栏区域的 rpx 估算（padding + input），用于首帧与测量失败时的兜底 */
 const SEARCH_BAR_RPX = 104
@@ -11,7 +12,8 @@ function rpxToPx(rpx: number) {
 
 function fallbackLayout() {
   const { windowHeight } = Taro.getWindowInfo()
-  const top = rpxToPx(SEARCH_BAR_RPX)
+  const navTop = getNavBarLayout().totalHeight
+  const top = navTop + rpxToPx(SEARCH_BAR_RPX)
   return {
     topPx: top,
     heightPx: Math.max(0, windowHeight - top),

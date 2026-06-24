@@ -49,7 +49,7 @@ async function revalidateInBackground<T>(
   onUpdate?: (data: T) => void,
 ) {
   try {
-    const versions = await fetchCacheVersions()
+    const versions = await fetchCacheVersions(true)
     const remoteVersion = getModuleVersion(versions, module)
     const versionChanged = entry.serverVersion !== remoteVersion
     const ttlExpired = isTtlExpired(entry.cachedAt, ttlMs)

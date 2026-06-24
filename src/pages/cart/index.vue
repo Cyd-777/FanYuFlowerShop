@@ -1,5 +1,6 @@
 <template>
-  <view class="page-cart">
+  <view class="page-cart page-nav-overlay-safe" :style="navCssVars">
+    <AppNavBar />
     <view v-if="syncing" class="sync-tip">正在同步商品信息…</view>
 
     <view class="empty-state" v-if="!syncing && !items.length">
@@ -56,114 +57,40 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
-import { storeToRefs } from 'pinia'
-import { navigateTo } from '@/utils/router'
 import { useCartStore } from '@/stores/cart'
-import { fetchGoodsForCartIncrease, syncCartWithServer } from '@/services/cart'
-import { CUSTOM_CART_GOODS_ID } from '@/types/cart'
+import { useCartPanelActions } from '@/composables/useCartPanelActions'
 import GoodsImage from '@/components/GoodsImage.vue'
-import type { CartLineItem } from '@/types/cart'
+import { useNavBarLayout } from '@/composables/useNavBarLayout'
 
-const emptyText = '购物车是空的'
+const { cssVars: navCssVars } = useNavBarLayout()
 const goHomeText = '去逛逛'
 const allCheckText = '全选'
 const totalLabel = '合计:'
 const checkoutText = '结算'
 
 const cartStore = useCartStore()
-const { items, allChecked } = storeToRefs(cartStore)
-const syncing = ref(false)
-
-const totalPrice = computed(() => cartStore.checkedTotalPrice.toFixed(2))
-
-function formatPrice(price: number) {
-  return Number(price).toFixed(2).replace(/\.00$/, '')
-}
-
-async function syncCart() {
-  if (!cartStore.items.length) return
-
-  syncing.value = true
-  try {
-    const result = await syncCartWithServer(cartStore.items)
-    cartStore.replaceItems(result.items)
-
-    if (result.removedNames.length) {
-      wx.showToast({
-        title: `${result.removedNames.length} 件商品已失效并移除`,
-        icon: 'none',
-      })
-    } else if (result.adjusted.length) {
-      wx.showToast({
-        title: '部分商品数量已按库存调整',
-        icon: 'none',
-      })
-    }
-  } catch (err) {
-    console.warn('[cart] sync failed:', err)
-  } finally {
-    syncing.value = false
-  }
-}
+const {
+  items,
+  allChecked,
+  syncing,
+  totalPrice,
+  formatPrice,
+  syncCart,
+  toggleItem,
+  toggleAll,
+  increase,
+  decrease,
+  remove,
+  openItem,
+  goHome,
+  goCheckout,
+} = useCartPanelActions()
 
 useDidShow(() => {
   cartStore.refreshBadge()
   void syncCart()
 })
-
-function toggleItem(lineKey: string) {
-  cartStore.toggleChecked(lineKey)
-}
-
-function toggleAll() {
-  cartStore.toggleAllChecked()
-}
-
-async function increase(item: CartLineItem) {
-  if (item.kind !== 'goods' || item.count >= item.stock) return
-
-  try {
-    const goods = await fetchGoodsForCartIncrease(item.goodsId)
-    cartStore.increaseWithGoods(item.goodsId, goods)
-  } catch (err) {
-    const message = err instanceof Error ? err.message : '操作失败'
-    if (message.includes('下架') || message.includes('售罄')) {
-      cartStore.removeItem(item.lineKey)
-    }
-    wx.showToast({ title: message, icon: 'none' })
-  }
-}
-
-function decrease(lineKey: string) {
-  cartStore.decrease(lineKey)
-}
-
-function remove(lineKey: string) {
-  cartStore.removeItem(lineKey)
-}
-
-function openItem(item: CartLineItem) {
-  if (item.kind === 'custom' || item.goodsId === CUSTOM_CART_GOODS_ID) return
-  navigateTo({ url: `/pagesCustomer/goods/detail?id=${item.goodsId}` })
-}
-
-function goHome() {
-  wx.switchTab({ url: '/pages/home/index' })
-}
-
-function goCheckout() {
-  if (!cartStore.checkedItems.length) {
-    wx.showToast({ title: '请选择要结算的商品', icon: 'none' })
-    return
-  }
-  if (cartStore.checkedItems.some((item) => item.kind === 'goods' && item.stock <= 0)) {
-    wx.showToast({ title: '所选商品含售罄商品', icon: 'none' })
-    return
-  }
-  navigateTo({ url: '/pagesCustomer/order/confirm' })
-}
 </script>
 
 <style lang="less">

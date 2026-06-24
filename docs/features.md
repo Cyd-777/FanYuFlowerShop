@@ -1,3 +1,6 @@
+> 📂 **文档分类**：业务功能 · **主索引**：[README.md](../README.md) · **整理规划**：[文档规划.md](./文档规划.md)  
+> ⚠️ 部分进度勾选可能滞后，以代码与 [👥-feature-layers.md](./👥-feature-layers.md) 为准。
+
 # 功能模块与进度
 
 ## 业务模块划分
@@ -7,7 +10,7 @@
 | **商品** | 浏览 → 加购 → 购物车（至点击「结算」前） | [goods.md](./goods.md) |
 | **订单** | 确认页填单 → 提交订单 → 支付 → 列表/详情 → 商家处理 → 核销 | [order.md](./order.md) |
 
-其他：登录/身份、店铺设置、人员、百科 Tab、会员/收藏等见下文；本地缓存见 [cache.md](./cache.md)，加载架构见 [data-loading.md](./data-loading.md)。
+其他：登录/身份、店铺设置、人员、百科 Tab、会员/收藏等见下文；**跨模块策略**见 [功能实施策略.md](./功能实施策略.md)；本地缓存见 [cache.md](./cache.md)，加载架构见 [data-loading.md](./data-loading.md)。
 
 ---
 

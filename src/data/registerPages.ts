@@ -3,6 +3,7 @@ import { setupHomePageData } from './pages/home'
 import { setupCategoryPageData } from './pages/category'
 import { setupWikiTabPageData } from './pages/wikiTab'
 import { setupWikiDetailPageData } from './pages/wikiDetail'
+import { setupCustomerSearchPageData } from './pages/customerSearch'
 import { setupCustomerGoodsListPageData } from './pages/customerGoodsList'
 import { setupCustomizePickPageData } from './pages/customizePick'
 import { setupMerchantGoodsListPageData } from './pages/merchantGoodsList'
@@ -25,6 +26,7 @@ export function registerAllPageSetups() {
   registerPageSetup('pages/category/index', setupCategoryPageData)
   registerPageSetup('pages/wiki/index', setupWikiTabPageData)
   registerPageSetup('pagesCustomer/wiki/detail', setupWikiDetailPageData)
+  registerPageSetup('pagesCustomer/search/index', setupCustomerSearchPageData)
   registerPageSetup('pagesCustomer/goods/list', setupCustomerGoodsListPageData)
   registerPageSetup('pagesCustomer/goods/detail', setupGoodsDetailPageData)
   registerPageSetup('pagesCustomer/customize/pick', setupCustomizePickPageData)

@@ -49,6 +49,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { computed, ref, watch } from 'vue'
 import { parseAddressText } from '@/utils/addressParse'
 import { parseRegionFromAddress } from '@/utils/location'
@@ -142,7 +143,7 @@ async function fetchSuggestions(keyword: string) {
 function applyParsed(raw: string) {
   const parsed = parseAddressText(raw)
   if (!parsed.name && !parsed.phone && !parsed.detail && !parsed.province) {
-    wx.showToast({ title: '未识别到有效地址', icon: 'none' })
+    showToast({ title: '未识别到有效地址', icon: 'none' })
     return
   }
 
@@ -166,7 +167,7 @@ function applyParsed(raw: string) {
     }, 0)
   }
 
-  wx.showToast({ title: '识别完成', icon: 'success' })
+  showToast({ title: '识别完成', icon: 'success' })
 }
 
 function parseCurrent() {
@@ -179,7 +180,7 @@ async function pasteAndParse() {
     smartText.value = res.data
     applyParsed(res.data)
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '读取剪贴板失败',
       icon: 'none',
     })

@@ -1,5 +1,6 @@
 <template>
   <view class="page-level">
+    <AppNavBar />
     <view class="intro">会员等级以花卉命名，积分越高，花开越盛，礼遇越多。</view>
 
     <view class="levels">

@@ -12,7 +12,9 @@ export interface ShopThemeConfig {
   headerGradient?: [string, string]
   homeSubtitle?: string
   promoTag?: string
+  /** @deprecated 兼容旧数据，等同 bannerImages[0] */
   bannerImage?: string
+  bannerImages?: string[]
   discounts?: ThemeDiscountRule[]
 }
 
@@ -28,6 +30,10 @@ export interface ShopSettings {
   closeTime: string
   deliveryNote: string
   decoration: ShopDecoration
+  /** 云函数 get 时解析的首屏 Banner HTTPS（首张，兼容旧客户端） */
+  bannerImageUrl?: string
+  /** 云函数 get 时解析的轮播 Banner HTTPS 列表 */
+  bannerImageUrls?: string[]
 }
 
 export const DEFAULT_SHOP_DECORATION: ShopDecoration = {

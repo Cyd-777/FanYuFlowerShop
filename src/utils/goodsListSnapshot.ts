@@ -1,4 +1,5 @@
 import { pickCoverFileId } from '@/utils/goodsImage'
+import { mergeGoodsLivePatch } from '@/utils/goodsLiveMerge'
 import type { Goods } from '@/types/goods'
 
 export type GoodsCardSnapshot = {
@@ -27,7 +28,7 @@ export function isSameGoodsCardSnapshot<T extends GoodsCardSnapshot>(next: T, cu
     && (next.listedAt || '') === (current.listedAt || '')
     && (next.coverImageUrl || '') === (current.coverImageUrl || '')
     && pickCoverFileId(next) === pickCoverFileId(current)
-    && (next.imageUrl || '') === (next.imageUrl || '')
+    && (next.imageUrl || '') === (current.imageUrl || '')
   )
 }
 
@@ -70,9 +71,11 @@ export function mergeGoodsListById<T extends Goods & { imageUrl?: string }>(
         imageUrl: patch.imageUrl || item.imageUrl,
       } as T
 
-      if (isSameGoodsCardSnapshot(merged, item)) return item
+      const { item: patched, changed: fieldChanged } = mergeGoodsLivePatch(item, merged)
+      if (!fieldChanged) return item
+
       changed = true
-      return merged
+      return patched
     })
 
   return changed ? next : current

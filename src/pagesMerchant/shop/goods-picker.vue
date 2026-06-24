@@ -1,5 +1,6 @@
 <template>
   <view class="page-goods-picker">
+    <AppNavBar />
     <view class="tip">勾选参与此折扣的商品</view>
     <GoodsCardSkeleton v-if="loading" variant="row" :count="6" />
     <view v-else class="list">

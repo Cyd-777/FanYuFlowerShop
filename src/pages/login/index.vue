@@ -1,65 +1,208 @@
 <template>
   <view class="login-page">
+    <AppNavBar />
     <view class="logo">{{ logoEmoji }}</view>
     <view class="title">{{ shopStore.shopName }}</view>
     <view class="desc">{{ descText }}</view>
-    <view
-      class="login-btn"
-      :class="{ loading: loading }"
-      @tap="handleLogin"
-    >
-      {{ loading ? loadingText : loginText }}
+
+    <view class="login-panel">
+      <button class="login-btn wechat" :disabled="loading" @tap="handleWechatLogin">
+        {{ loading && mode === 'wechat' ? '登录中...' : '微信一键登录' }}
+      </button>
+
+      <template v-if="enablePhoneLogin">
+        <view class="divider">
+          <view class="divider-line" />
+          <text class="divider-text">或</text>
+          <view class="divider-line" />
+        </view>
+
+        <view class="phone-form">
+          <input
+            class="field-input"
+            type="number"
+            maxlength="11"
+            placeholder="手机号"
+            :value="phone"
+            :disabled="loading"
+            @input="onPhoneInput"
+          />
+          <view class="code-row">
+            <input
+              class="field-input code-input"
+              type="number"
+              maxlength="6"
+              placeholder="验证码"
+              :value="smsCode"
+              :disabled="loading"
+              @input="onCodeInput"
+            />
+            <button
+              class="code-btn"
+              :disabled="loading || sendingCode || countdown > 0"
+              @tap="handleSendCode"
+            >
+              {{ countdown > 0 ? `${countdown}s` : sendingCode ? '发送中' : '获取验证码' }}
+            </button>
+          </view>
+          <button class="login-btn phone" :disabled="loading" @tap="handlePhoneLogin">
+            {{ loading && mode === 'phone' ? '登录中...' : '手机号登录' }}
+          </button>
+        </view>
+
+        <view v-if="devCodeHint" class="dev-hint">开发验证码：{{ devCodeHint }}</view>
+      </template>
     </view>
+
     <view class="tip" v-if="errorMsg">{{ errorMsg }}</view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { showToast } from '@/utils/feedback'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useShopStore } from '@/stores/shop'
-import { navigateToHome, hasToken, getCachedRole } from '@/services/auth'
+import { ENABLE_PHONE_LOGIN } from '@/config/login'
+import { navigateToHome, hasToken, getCachedRole, sendPhoneLoginCode } from '@/services/auth'
+import { STORAGE_KEYS } from '@/utils/constants'
+import { redirectTo } from '@/utils/router'
+import { parsePendingStaffInvite } from '@/services/staff'
 
 const logoEmoji = '🌷'
 const descText = '每一束花，都是一次心动'
-const loginText = '微信一键登录'
-const loadingText = '登录中...'
+
+const enablePhoneLogin = ENABLE_PHONE_LOGIN
 
 const loading = ref(false)
+const sendingCode = ref(false)
+const countdown = ref(0)
 const errorMsg = ref('')
+const devCodeHint = ref('')
+const phone = ref('')
+const smsCode = ref('')
+const mode = ref<'wechat' | 'phone' | ''>('')
+
 const userStore = useUserStore()
 const shopStore = useShopStore()
+
+let countdownTimer: ReturnType<typeof setInterval> | null = null
+
+function redirectAfterLogin(role: ReturnType<typeof getCachedRole>) {
+  const pending = parsePendingStaffInvite(wx.getStorageSync(STORAGE_KEYS.PendingStaffInvite))
+  if (pending) {
+    const url =
+      pending.type === 'code'
+        ? `/pages/invite/join/index?code=${encodeURIComponent(pending.value)}`
+        : `/pages/invite/staff/index?token=${encodeURIComponent(pending.value)}`
+    void redirectTo({ url })
+    return
+  }
+  if (role) navigateToHome(role)
+}
 
 onMounted(() => {
   void shopStore.hydrate()
   try {
     if (hasToken()) {
       const role = getCachedRole()
-      if (role) navigateToHome(role)
+      redirectAfterLogin(role)
     }
   } catch (err) {
     console.error('[login] auto redirect failed:', err)
   }
 })
 
-async function handleLogin() {
+onUnmounted(() => {
+  if (countdownTimer) clearInterval(countdownTimer)
+})
+
+function onPhoneInput(e: { detail?: { value?: string } }) {
+  phone.value = String(e.detail?.value || '').replace(/\D/g, '').slice(0, 11)
+}
+
+function onCodeInput(e: { detail?: { value?: string } }) {
+  smsCode.value = String(e.detail?.value || '').replace(/\D/g, '').slice(0, 6)
+}
+
+function startCountdown(seconds = 60) {
+  countdown.value = seconds
+  if (countdownTimer) clearInterval(countdownTimer)
+  countdownTimer = setInterval(() => {
+    countdown.value -= 1
+    if (countdown.value <= 0 && countdownTimer) {
+      clearInterval(countdownTimer)
+      countdownTimer = null
+    }
+  }, 1000)
+}
+
+async function handleWechatLogin() {
   if (loading.value) return
   loading.value = true
+  mode.value = 'wechat'
   errorMsg.value = ''
   try {
-    const { role } = await userStore.doLogin()
-    navigateToHome(role)
+    const { role } = await userStore.doLoginWechat()
+    redirectAfterLogin(role)
   } catch (err: unknown) {
-    console.error('[login] failed:', err)
-    const msg = err instanceof Error ? err.message : (err as { errMsg?: string })?.errMsg || '登录失败，请重试'
+    const msg = err instanceof Error ? err.message : '微信登录失败'
     errorMsg.value = msg
-    wx.showModal({
-      title: '登录失败',
-      content: msg,
-      showCancel: false,
-    })
+    wx.showModal({ title: '登录失败', content: msg, showCancel: false })
   } finally {
     loading.value = false
+    mode.value = ''
+  }
+}
+
+async function handleSendCode() {
+  if (!enablePhoneLogin || loading.value || sendingCode.value || countdown.value > 0) return
+  if (!/^1\d{10}$/.test(phone.value)) {
+    showToast({ title: '请输入正确手机号', icon: 'none' })
+    return
+  }
+
+  sendingCode.value = true
+  errorMsg.value = ''
+  devCodeHint.value = ''
+  try {
+    const { devCode } = await sendPhoneLoginCode(phone.value)
+    if (devCode) devCodeHint.value = devCode
+    showToast({ title: '验证码已发送', icon: 'success' })
+    startCountdown()
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : '发送失败'
+    errorMsg.value = msg
+    showToast({ title: msg, icon: 'none' })
+  } finally {
+    sendingCode.value = false
+  }
+}
+
+async function handlePhoneLogin() {
+  if (!enablePhoneLogin || loading.value) return
+  if (!/^1\d{10}$/.test(phone.value)) {
+    showToast({ title: '请输入正确手机号', icon: 'none' })
+    return
+  }
+  if (!smsCode.value.trim()) {
+    showToast({ title: '请输入验证码', icon: 'none' })
+    return
+  }
+
+  loading.value = true
+  mode.value = 'phone'
+  errorMsg.value = ''
+  try {
+    const { role } = await userStore.doLoginPhone(phone.value, smsCode.value.trim())
+    redirectAfterLogin(role)
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : '手机号登录失败'
+    errorMsg.value = msg
+    wx.showModal({ title: '登录失败', content: msg, showCancel: false })
+  } finally {
+    loading.value = false
+    mode.value = ''
   }
 }
 </script>
@@ -71,8 +214,9 @@ async function handleLogin() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 200rpx;
+  padding: 180rpx 64rpx 48rpx;
   min-height: 100vh;
+  box-sizing: border-box;
   background: linear-gradient(180deg, @color-primary-light 0%, @color-bg-card 40%);
 }
 .logo {
@@ -95,27 +239,97 @@ async function handleLogin() {
   font-size: 28rpx;
   color: @color-text-tertiary;
 }
+.login-panel {
+  width: 100%;
+  margin-top: 64rpx;
+}
 .login-btn {
-  position: fixed;
-  bottom: 160rpx;
-  left: 64rpx;
-  right: 64rpx;
+  width: 100%;
   height: 96rpx;
   line-height: 96rpx;
-  text-align: center;
   border-radius: @radius-pill;
   font-size: 30rpx;
-  color: #fff;
-  background: @color-primary;
-  &.loading {
+  border: none;
+  &::after {
+    border: none;
+  }
+  &[disabled] {
     opacity: 0.7;
   }
+  &.wechat {
+    color: #fff;
+    background: #07c160;
+  }
+  &.phone {
+    margin-top: 24rpx;
+    color: #fff;
+    background: @color-primary;
+  }
+}
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 40rpx 0 32rpx;
+}
+.divider-line {
+  flex: 1;
+  height: 2rpx;
+  background: rgba(0, 0, 0, 0.08);
+}
+.divider-text {
+  margin: 0 24rpx;
+  font-size: 24rpx;
+  color: @color-text-tertiary;
+}
+.phone-form {
+  width: 100%;
+}
+.field-input {
+  width: 100%;
+  height: 88rpx;
+  margin-bottom: 20rpx;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16rpx;
+  font-size: 28rpx;
+}
+.code-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+}
+.code-input {
+  flex: 1;
+  margin-bottom: 0;
+}
+.code-btn {
+  flex-shrink: 0;
+  width: 220rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0;
+  font-size: 24rpx;
+  color: @color-primary;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16rpx;
+  border: none;
+  &::after {
+    border: none;
+  }
+  &[disabled] {
+    opacity: 0.6;
+    color: #999;
+  }
+}
+.dev-hint {
+  margin-top: 24rpx;
+  font-size: 22rpx;
+  color: #e65100;
+  text-align: center;
 }
 .tip {
-  position: fixed;
-  bottom: 80rpx;
-  left: 64rpx;
-  right: 64rpx;
+  margin-top: 16rpx;
   font-size: 24rpx;
   color: @color-primary;
   text-align: center;

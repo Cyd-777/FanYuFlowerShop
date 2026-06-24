@@ -3,8 +3,10 @@ import {
   listPublicGoodsCached,
   listPublicRecommendGoodsCached,
   getPublicGoodsCached,
+  searchPublicGoods,
   PUBLIC_RECOMMEND_CACHE_KEY,
 } from '@/services/goods'
+import type { GoodsQuery } from '@/types/search'
 import { shouldPreemptBackground } from '../readiness'
 import { CACHE_KEYS, goodsPublicDetailKey } from '../cacheKeys'
 import { cacheSyncScheduler } from '../scheduler/CacheSyncScheduler'
@@ -57,6 +59,10 @@ export const goodsRepository = {
       return cacheSyncScheduler.runExclusive(run)
     }
     return run()
+  },
+
+  async search(query: GoodsQuery): Promise<Goods[]> {
+    return cacheSyncScheduler.runExclusive(() => searchPublicGoods(query))
   },
 
   scheduleRecommendDetailPrefetch(goodsIds: string[]) {

@@ -1,10 +1,13 @@
 <template>
-  <view class="page-goods-list">
-    <view class="search-bar">
+  <view class="page-goods-list" :style="navCssVars">
+    <AppNavBar />
+    <view class="search-bar page-sticky-search" :style="navSearchStickyStyle">
       <GoodsNameTypeahead
         v-model="keyword"
         :catalog="searchCatalog"
-        placeholder="搜索花束..."
+        placeholder="搜索商品、花材…"
+        :sticky="false"
+        sticky-bleed="24rpx"
         @search="onSearchKeyword"
         @select="onPickSuggestion"
       />
@@ -38,11 +41,16 @@
 
 <script setup lang="ts">
 import { usePageData } from '@/composables/usePageData'
+import { useNavBarLayout } from '@/composables/useNavBarLayout'
+import { usePageSticky } from '@/composables/usePageSticky'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
 import GoodsNameTypeahead from '@/components/GoodsNameTypeahead.vue'
+
+const { cssVars: navCssVars } = useNavBarLayout()
+const { navSearchStickyStyle } = usePageSticky()
 
 const {
   keyword,

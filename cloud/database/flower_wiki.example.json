@@ -1,0 +1,75 @@
+{
+  "kindId": "flower_kind_id",
+  "varietyId": "flower_variety_id",
+  "kindName": "玫瑰",
+  "varietyName": "红玫瑰",
+  "icon": "🌹",
+  "coverImage": "",
+  "plantForm": "cut",
+  "bloom": {
+    "vase": "",
+    "vaseNote": "",
+    "soil": "",
+    "soilNote": ""
+  },
+  "careVase": {
+    "summary": "",
+    "vaseLife": "",
+    "vaseLifeNote": "",
+    "waterChange": "",
+    "trim": "",
+    "waterDepth": "",
+    "environment": "",
+    "tips": []
+  },
+  "careSoil": {
+    "summary": "",
+    "light": "",
+    "water": "",
+    "soil": "",
+    "temperature": "",
+    "tips": []
+  },
+  "atlas": {
+    "summary": "",
+    "features": [],
+    "bloomSeason": "",
+    "origin": ""
+  },
+  "taxonomy": {
+    "kingdom": "植物界",
+    "phylum": "被子植物门",
+    "taxonomicClass": "双子叶植物纲",
+    "order": "蔷薇目",
+    "family": "蔷薇科",
+    "genus": "蔷薇属"
+  },
+  "names": {
+    "scientificName": "Rosa × hybrida",
+    "commonNames": ["玫瑰", "月季", "蔷薇"]
+  },
+  "careGuide": {
+    "summary": "",
+    "light": "",
+    "water": "",
+    "soil": "",
+    "temperature": "",
+    "tips": []
+  },
+  "language": {
+    "summary": "",
+    "meaning": "",
+    "occasions": [],
+    "colorMeanings": []
+  },
+  "keywords": [],
+  "aliases": [],
+  "tags": [],
+  "searchText": "",
+  "occasions": [],
+  "seasonMonths": [],
+  "restockHints": [],
+  "searchVersion": 1,
+  "enabled": true,
+  "sort": 100
+}

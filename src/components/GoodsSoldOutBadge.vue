@@ -1,20 +1,21 @@
 <template>
-  <view v-if="soldOut" class="goods-sold-out-badge">{{ label }}</view>
+  <view v-if="overlay" class="goods-sold-out-badge" :class="overlay.kind">{{ overlay.label }}</view>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { isGoodsSoldOut } from '@/utils/goodsAvailability'
+import { getCustomerGoodsImageOverlay } from '@/utils/goodsAvailability'
 
 const props = defineProps<{
   stock: number
   onSale?: boolean
 }>()
 
-const label = '售罄'
-
-const soldOut = computed(() =>
-  isGoodsSoldOut({ stock: props.stock, onSale: props.onSale !== false }),
+const overlay = computed(() =>
+  getCustomerGoodsImageOverlay({
+    stock: props.stock,
+    onSale: props.onSale !== false,
+  }),
 )
 </script>
 
@@ -26,8 +27,16 @@ const soldOut = computed(() =>
   padding: 4rpx 14rpx;
   font-size: 22rpx;
   color: #fff;
-  background: rgba(0, 0, 0, 0.55);
   border-radius: 8rpx;
-  z-index: 1;
+  z-index: 2;
+  pointer-events: none;
+
+  &.soldOut {
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  &.lowStock {
+    background: rgba(230, 81, 0, 0.88);
+  }
 }
 </style>

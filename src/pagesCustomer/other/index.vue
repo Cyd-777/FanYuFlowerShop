@@ -1,5 +1,6 @@
 <template>
   <view class="page-other">
+    <AppNavBar />
     <view class="shop-header">
       <view class="shop-logo">🌷</view>
       <view class="shop-name">{{ shopName }}</view>
@@ -74,7 +75,7 @@ function callPhone() {
 
 function handleLogout() {
   logout()
-  userStore.$patch({ isLoggedIn: false, role: null, openid: '' })
+  userStore.$patch({ isLoggedIn: false, role: null, userId: '' })
   wx.reLaunch({ url: '/pages/login/index' })
 }
 </script>

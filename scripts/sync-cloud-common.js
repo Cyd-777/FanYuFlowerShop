@@ -7,7 +7,7 @@ const path = require('path')
 
 const root = path.join(__dirname, '../cloudfunctions')
 const srcDir = path.join(root, 'common')
-const commonFiles = ['cacheMeta.js', 'fileUrls.js']
+const commonFiles = ['cacheMeta.js', 'fileUrls.js', 'accessControl.js', 'authIdentifier.js', 'account.js', 'db.js', 'flowerSeed.js', 'ensureFlowerCatalog.js', 'wikiExcluded.js']
 const targets = [
   'goods',
   'category',
@@ -18,6 +18,8 @@ const targets = [
   'seedDemo',
   'order',
   'favorite',
+  'login',
+  'staff',
 ]
 
 for (const file of commonFiles) {

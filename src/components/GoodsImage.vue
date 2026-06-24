@@ -7,6 +7,7 @@
     </view>
     <image
       v-if="displaySrc && !failed"
+      :key="imageRenderKey"
       class="goods-image-img"
       :class="{ loaded }"
       :src="displaySrc"
@@ -53,6 +54,10 @@ const displaySrc = ref('')
 const triedProxy = ref(false)
 let resolveToken = 0
 
+const imageRenderKey = computed(
+  () => `${props.cloudFileId || ''}|${props.src || ''}`,
+)
+
 const isLoading = computed(
   () => !!props.src?.trim() && !loaded.value && !failed.value && !displaySrc.value,
 )
@@ -76,13 +81,13 @@ async function tryPublicImageProxy() {
 }
 
 async function resolveDisplaySrc(raw: string) {
+  const trimmed = raw.trim()
   const token = ++resolveToken
   loaded.value = false
   failed.value = false
   displaySrc.value = ''
   triedProxy.value = false
 
-  const trimmed = raw.trim()
   if (!trimmed) return
 
   const localPath = await resolveImageDisplayPath(trimmed)

@@ -1,5 +1,6 @@
 <template>
   <view class="page-theme-edit">
+    <AppNavBar />
     <view class="section">
       <view class="section-title">主题色</view>
       <nut-form>
@@ -22,12 +23,24 @@
     </view>
 
     <view class="section">
-      <view class="section-title">主视觉 Banner</view>
-      <view class="banner-box" @click="chooseBanner">
-        <image v-if="bannerPreview" class="banner-img" :src="bannerPreview" mode="aspectFill" />
-        <view v-else class="banner-placeholder">+ 上传 Banner</view>
+      <view class="section-head">
+        <view class="section-title">轮播 Banner</view>
+        <view
+          class="link"
+          :class="{ disabled: banners.length >= maxBanners }"
+          @click="chooseBanner"
+        >
+          + 上传
+        </view>
       </view>
-      <view v-if="bannerPreview" class="clear-banner" @click="clearBanner">清除 Banner</view>
+      <view v-if="!banners.length" class="banner-empty">暂无轮播图，点击右上角上传</view>
+      <view v-else class="banner-grid">
+        <view v-for="(item, index) in banners" :key="item.fileId" class="banner-thumb">
+          <image class="banner-thumb-img" :src="item.preview" mode="aspectFill" />
+          <view class="banner-thumb-remove" @click.stop="removeBanner(index)">×</view>
+        </view>
+      </view>
+      <view v-if="banners.length" class="banner-hint">已上传 {{ banners.length }}/{{ maxBanners }} 张，首页将自动轮播</view>
     </view>
 
     <view class="section">
@@ -56,20 +69,23 @@
       </view>
     </view>
 
-    <nut-button type="primary" block class="save-btn" :loading="saving" @click="save">
-      保存策略
-    </nut-button>
+    <view class="page-actions">
+      <nut-button type="primary" block class="action-btn" :loading="saving" @click="save">
+        保存策略
+      </nut-button>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { ref, watch } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
 import { usePageData } from '@/composables/usePageData'
 import { uploadGoodsImage } from '@/services/goods'
 import { resolveCloudImageUrl } from '@/utils/goodsImage'
-import { getShopThemePreset } from '@/types/shopTheme'
+import { getShopThemePreset, resolveThemeBannerFileIds } from '@/types/shopTheme'
 import {
   readMerchantGoodsPick,
   writeMerchantGoodsPick,
@@ -83,10 +99,17 @@ interface DiscountFormItem {
   goodsIds: string[]
 }
 
+interface BannerItem {
+  fileId: string
+  preview: string
+}
+
+const MAX_BANNERS = 5
+
 const { shopStore, themeId, goodsList, ensuring } = usePageData()
 const saving = ref(false)
-const bannerFileId = ref('')
-const bannerPreview = ref('')
+const maxBanners = MAX_BANNERS
+const banners = ref<BannerItem[]>([])
 
 const form = ref({
   primaryColor: '',
@@ -150,10 +173,7 @@ function hydrateForm() {
     promoTag: saved.promoTag ?? preset.promoTag,
   }
 
-  bannerFileId.value = saved.bannerImage || ''
-  void resolveCloudImageUrl(bannerFileId.value).then((url) => {
-    bannerPreview.value = url
-  })
+  void loadBannersFromConfig(saved)
 
   if (discountsDirty.value) return
 
@@ -196,34 +216,59 @@ function pickGoods(ruleId: string) {
   navigateTo({ url: '/pagesMerchant/shop/goods-picker' })
 }
 
+async function loadBannersFromConfig(saved: { bannerImage?: string; bannerImages?: string[] }) {
+  const fileIds = resolveThemeBannerFileIds(saved)
+  if (!fileIds.length) {
+    banners.value = []
+    return
+  }
+  const items = await Promise.all(
+    fileIds.map(async (fileId) => ({
+      fileId,
+      preview: (await resolveCloudImageUrl(fileId)) || fileId,
+    })),
+  )
+  banners.value = items
+}
+
+function removeBanner(index: number) {
+  banners.value = banners.value.filter((_, i) => i !== index)
+}
+
 async function chooseBanner() {
+  const remaining = MAX_BANNERS - banners.value.length
+  if (remaining <= 0) {
+    showToast({ title: `最多上传 ${MAX_BANNERS} 张`, icon: 'none' })
+    return
+  }
+
   try {
     const res = await wx.chooseMedia({
-      count: 1,
+      count: remaining,
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
     })
-    const file = res.tempFiles[0]
-    if (!file?.tempFilePath) return
+    const files = res.tempFiles || []
+    if (!files.length) return
 
     wx.showLoading({ title: '上传中' })
-    const fileID = await uploadGoodsImage(file.tempFilePath)
-    bannerFileId.value = fileID
-    bannerPreview.value = file.tempFilePath
+    for (const file of files) {
+      if (!file?.tempFilePath) continue
+      const fileID = await uploadGoodsImage(file.tempFilePath)
+      banners.value.push({
+        fileId: fileID,
+        preview: file.tempFilePath,
+      })
+    }
   } catch (err) {
     if ((err as { errMsg?: string }).errMsg?.includes('cancel')) return
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '上传失败',
       icon: 'none',
     })
   } finally {
     wx.hideLoading()
   }
-}
-
-function clearBanner() {
-  bannerFileId.value = ''
-  bannerPreview.value = ''
 }
 
 function parseRateText(text: string): number | null {
@@ -253,18 +298,20 @@ async function save() {
 
   saving.value = true
   try {
+    const bannerFileIds = banners.value.map((item) => item.fileId).filter(Boolean)
     await shopStore.saveTheme(themeId.value, {
       primaryColor: form.value.primaryColor.trim(),
       headerGradient: [form.value.gradientStart.trim(), form.value.gradientEnd.trim()],
       homeSubtitle: form.value.homeSubtitle.trim(),
       promoTag: form.value.promoTag.trim(),
-      bannerImage: bannerFileId.value,
+      bannerImages: bannerFileIds,
+      bannerImage: bannerFileIds[0] || '',
       discounts: buildDiscounts(),
     })
     discountsDirty.value = false
-    wx.showToast({ title: '已保存', icon: 'success' })
+    showToast({ title: '已保存', icon: 'success' })
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '保存失败',
       icon: 'none',
     })
@@ -275,21 +322,36 @@ async function save() {
 </script>
 
 <style lang="less">
-.page-theme-edit { min-height: 100vh; background: #f8f8f8; padding-bottom: 48rpx; }
-.section { background: #fff; margin-bottom: 16rpx; padding: 24rpx; }
+.page-theme-edit {
+  min-height: 100vh;
+  background: #f8f8f8;
+  padding-bottom: 48rpx;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+.section { background: #fff; margin-bottom: 16rpx; padding: 24rpx; box-sizing: border-box; }
 .section-head { display: flex; justify-content: space-between; align-items: center; }
 .section-title { font-size: 28rpx; font-weight: 600; color: #333; margin-bottom: 16rpx; }
 .link { font-size: 26rpx; color: #e53935; }
-.banner-box {
-  height: 280rpx; border-radius: 12rpx; overflow: hidden;
-  background: #fafafa; border: 2rpx dashed #e0e0e0;
+.link.disabled { color: #ccc; }
+.banner-empty {
+  padding: 48rpx 0; text-align: center; color: #bbb; font-size: 26rpx;
 }
-.banner-img { width: 100%; height: 100%; }
-.banner-placeholder {
-  height: 100%; display: flex; align-items: center; justify-content: center;
-  color: #bbb; font-size: 28rpx;
+.banner-grid {
+  display: flex; flex-wrap: wrap; gap: 16rpx;
 }
-.clear-banner { margin-top: 12rpx; font-size: 24rpx; color: #e53935; text-align: right; }
+.banner-thumb {
+  position: relative; width: calc((100% - 32rpx) / 3); height: 180rpx;
+  border-radius: 12rpx; overflow: hidden; background: #fafafa;
+}
+.banner-thumb-img { width: 100%; height: 100%; }
+.banner-thumb-remove {
+  position: absolute; top: 8rpx; right: 8rpx; width: 40rpx; height: 40rpx;
+  line-height: 36rpx; text-align: center; border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45); color: #fff; font-size: 28rpx;
+}
+.banner-hint { margin-top: 12rpx; font-size: 22rpx; color: #999; }
 .empty { font-size: 24rpx; color: #999; }
 .discount-card {
   margin-top: 16rpx; padding: 16rpx; background: #fafafa; border-radius: 12rpx;
@@ -299,5 +361,15 @@ async function save() {
 .goods-pick { flex: 1; font-size: 26rpx; color: #e53935; text-align: right; }
 .goods-names { font-size: 22rpx; color: #999; line-height: 1.5; }
 .remove { margin-top: 8rpx; font-size: 24rpx; color: #e53935; text-align: right; }
-.save-btn { margin: 24rpx 16rpx 0; border-radius: 48rpx; height: 96rpx; }
+.page-actions {
+  padding: 24rpx 16rpx 0;
+  box-sizing: border-box;
+}
+.action-btn {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 48rpx;
+  height: 96rpx;
+  box-sizing: border-box;
+}
 </style>

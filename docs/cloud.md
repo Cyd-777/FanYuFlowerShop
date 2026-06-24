@@ -1,3 +1,6 @@
+> 📂 **文档分类**：入门与运维 · **主索引**：[README.md](../README.md) · **整理规划**：[文档规划.md](./文档规划.md)  
+> ⚠️ 云函数表可能不全，完整树见 README「云函数结构树」；`address` / `favorite` / `map` / `seedDemo` 等待补入本文。
+
 # 云开发说明
 
 ## 环境配置
@@ -19,7 +22,7 @@
 | `goods` | 商品管理 | 商家：`list`, `get`, `add`, `update`, `remove`；用户端：`publicList`, `publicGet`, `resolveFileUrls` |
 | `category` | 分类管理 | 商家：`list`, `get`, `add`, `update`, `remove`；用户端：`publicList` |
 | `flower` | 花卉库（品类 / 品种） | 商家：`list`, `search`, `getVariety` |
-| `wiki` | 花卉百科智库 | 用户端：`publicList`, `publicGet`, `publicMatch` |
+| `wiki` | 花卉百科智库 | 用户端：`publicList`, `publicGet`, `publicMatch`, `publicSearch`；维护：`syncKindProfiles`（批量写回品类资料） |
 | `meta` | 缓存版本号 | 用户端：返回 `cache_meta.versions`；`action: resolveFileUrls` 换图片临时链接 |
 | `order` | 订单 | `create`, `get`, `list`, `updateStatus`, `stats` |
 
@@ -123,6 +126,13 @@
 tcb fn invoke initDb -e <envId> -d '{}'
 tcb fn invoke category -e <envId> -d '{"action":"publicList"}'
 tcb fn invoke goods -e <envId> -d '{"action":"publicList","keyword":"","categoryId":""}'
+tcb fn invoke wiki -e <envId> -d '{"action":"syncKindProfiles"}'
+```
+
+百科品类资料批量写回（部署 `wiki` 后）：
+
+```bash
+npm run sync:wiki-profiles
 ```
 
 ## 前端 API 封装
@@ -136,3 +146,40 @@ tcb fn invoke goods -e <envId> -d '{"action":"publicList","keyword":"","category
 | `src/services/goods.ts` | 商品（商家 + 用户端） |
 | `src/services/category.ts` | 分类（商家 + 用户端） |
 | `src/services/initDb.ts` | 数据库初始化 |
+
+---
+
+## 补充（2026-06 文档整理，与 README 云函数树对齐）
+
+> 本节为**增补**，不替代上文；上文表格仍保留作历史参考。完整结构树见 [README.md](../README.md#一云函数结构树)。
+
+### 云函数增补表
+
+| 云函数 | 用途 | 主要 action / 说明 |
+|--------|------|---------------------|
+| `address` | 顾客收货地址（按 OpenID） | `list`、`replaceAll` |
+| `favorite` | 顾客收藏 | `list`、`add`、`remove`、`check` |
+| `map` | 地图 / 选点辅助 | 地理相关（地址场景） |
+| `seedDemo` | 演示数据写入 | 开发 / 演示用 |
+
+### `goods` 增补 action（商家端）
+
+- `batchRemove` — 批量删除
+- `batchUpdate` — 批量更新（上下架、推荐等）
+- `stockIn` — 批量增加可售数
+- `publicImage` — 顾客端图片代理（仅创建者可读存储）
+
+### 集合增补
+
+- `user_addresses` — 顾客收货地址
+- `favorites` — 顾客收藏记录
+
+### 前端服务增补
+
+- `src/services/address.ts` — 地址云 API
+- `src/services/favorite.ts` — 收藏
+- `src/services/order.ts` — 订单
+- `src/services/wiki.ts` — 百科
+- `src/services/map.ts` — 地图
+- `src/services/goodsLiveSync.ts` — 商品热字段轮询同步
+

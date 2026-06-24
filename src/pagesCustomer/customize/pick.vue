@@ -1,5 +1,6 @@
 <template>
   <view class="page-customize-pick">
+    <AppNavBar />
     <view class="tip">{{ pickTip }}</view>
     <GoodsCardSkeleton v-if="loading" variant="row" :count="5" />
     <view v-else-if="goodsList.length" class="goods-list">

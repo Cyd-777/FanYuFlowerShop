@@ -1,6 +1,9 @@
 import { getCloud, getCloudCallConfig, parseCloudResult, formatCloudError } from './cloud'
 import { invalidateCacheModule, loadWithCache } from '@/utils/cache'
+import { fetchCacheVersions, getModuleVersion } from '@/utils/cache/meta'
+import { writeCacheEntry } from '@/utils/cache/storage'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
+import type { GoodsQuery } from '@/types/search'
 import type { Goods, GoodsForm, GoodsListFilter } from '@/types/goods'
 import { goodsListMissingPublicImageUrls } from '@/utils/goodsImage'
 import type { GoodsBatchPatch } from '@/types/goodsBatch'
@@ -66,6 +69,20 @@ export async function listPublicGoods(keyword = '', categoryId = ''): Promise<Go
   return Array.isArray(result.list) ? result.list : []
 }
 
+/** 结构化顾客端商品搜索 */
+export async function searchPublicGoods(query: GoodsQuery): Promise<Goods[]> {
+  const result = await callGoods({
+    action: 'publicSearch',
+    query,
+  })
+
+  if (result.success !== true) {
+    throw new Error(result.errMsg || '搜索商品失败')
+  }
+
+  return Array.isArray(result.list) ? result.list : []
+}
+
 export const PUBLIC_RECOMMEND_CACHE_KEY = CACHE_KEYS.goodsRecommend
 
 export async function listPublicRecommendGoods(): Promise<Goods[]> {
@@ -80,6 +97,33 @@ export async function listPublicRecommendGoods(): Promise<Goods[]> {
   }
 
   return Array.isArray(result.list) ? result.list : []
+}
+
+/** live sync / 静默对齐：直拉云端并写回本地缓存（不走 SWR 立即返回旧数据的路径） */
+export async function syncRecommendListFromCloud(): Promise<Goods[]> {
+  const [versions, data] = await Promise.all([
+    fetchCacheVersions(true),
+    listPublicRecommendGoods(),
+  ])
+  writeCacheEntry(PUBLIC_RECOMMEND_CACHE_KEY, {
+    data,
+    serverVersion: getModuleVersion(versions, 'goods'),
+    cachedAt: Date.now(),
+  })
+  return data
+}
+
+export async function syncPublicGoodsListFromCloud(): Promise<Goods[]> {
+  const [versions, data] = await Promise.all([
+    fetchCacheVersions(true),
+    listPublicGoods('', ''),
+  ])
+  writeCacheEntry(publicGoodsCacheKey(), {
+    data,
+    serverVersion: getModuleVersion(versions, 'goods'),
+    cachedAt: Date.now(),
+  })
+  return data
 }
 
 export async function listPublicRecommendGoodsCached(

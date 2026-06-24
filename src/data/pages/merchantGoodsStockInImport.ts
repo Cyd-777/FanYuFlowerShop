@@ -1,3 +1,4 @@
+import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
 import { navigateToWithFeedback } from '@/utils/router'
 import {
@@ -25,7 +26,7 @@ export function setupMerchantGoodsStockInImportPageData(): PageSetupResult & Rec
   async function goStockInList() {
     const parsed = parsePreview()
     if (!parsed.length) {
-      wx.showToast({
+      showToast({
         title: '未识别到有效行，请检查格式',
         icon: 'none',
         duration: 2500,
@@ -39,7 +40,7 @@ export function setupMerchantGoodsStockInImportPageData(): PageSetupResult & Rec
       writeStockInSession(session)
       await navigateToWithFeedback({ url: '/pagesMerchant/goods/stock-in' })
     } catch (err) {
-      wx.showToast({
+      showToast({
         title: err instanceof Error ? err.message : '跳转失败',
         icon: 'none',
       })

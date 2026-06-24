@@ -1,4 +1,5 @@
-import { computed, ref } from 'vue'
+import { showToast } from '@/utils/feedback'
+import { computed, ref, type Ref } from 'vue'
 import { hasCacheEntry, readCacheEntry } from '@/utils/cache'
 import {
   MERCHANT_GOODS_LIST_CACHE_KEY,
@@ -14,6 +15,7 @@ import {
   filterMerchantGoodsView,
 } from '@/utils/goodsListFilter'
 import type { MerchantGoodsFilterState } from '@/utils/goodsListFilter'
+import type { Category } from '@/types/category'
 import type { Goods } from '@/types/goods'
 
 export interface MerchantGoodsCard extends Goods {
@@ -29,7 +31,7 @@ async function withCoverImages(
   return items
 }
 
-export function useMerchantGoods() {
+export function useMerchantGoods(categories?: Ref<Category[]>) {
   const sourceGoods = ref<MerchantGoodsCard[]>([])
   const filters = ref<MerchantGoodsFilterState>({ ...DEFAULT_MERCHANT_GOODS_FILTER })
   const loading = ref(false)
@@ -37,7 +39,10 @@ export function useMerchantGoods() {
   const catalogList = computed(() => sourceGoods.value)
 
   const goodsList = computed(() =>
-    filterMerchantGoodsView(sourceGoods.value, filters.value),
+    filterMerchantGoodsView(sourceGoods.value, filters.value, {
+      categories: categories?.value ?? [],
+      catalog: sourceGoods.value,
+    }),
   )
 
   function setFilters(partial: Partial<MerchantGoodsFilterState>) {
@@ -77,7 +82,7 @@ export function useMerchantGoods() {
       if (!sourceGoods.value.length) {
         sourceGoods.value = []
       }
-      wx.showToast({
+      showToast({
         title: err instanceof Error ? err.message : '加载商品失败',
         icon: 'none',
       })

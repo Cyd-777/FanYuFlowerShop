@@ -1,7 +1,9 @@
 import { getCloud, getCloudCallConfig, parseCloudResult } from './cloud'
 import { loadWithCache } from '@/utils/cache'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
+import type { WikiQuery, WikiSearchResult } from '@/types/search'
 import type { FlowerWiki, FlowerWikiListItem } from '@/types/wiki'
+import { normalizeFlowerWiki } from '@/types/wiki'
 
 const PUBLIC_WIKI_LIST_KEY = 'wiki:public:list'
 
@@ -10,6 +12,7 @@ interface WikiCloudResult {
   errMsg?: string
   list?: FlowerWikiListItem[]
   wiki?: FlowerWiki | null
+  answer?: WikiSearchResult['answer']
 }
 
 async function callWiki<T = WikiCloudResult>(data: Record<string, unknown>): Promise<T> {
@@ -47,6 +50,18 @@ export async function listPublicWiki(keyword = ''): Promise<FlowerWikiListItem[]
   return Array.isArray(result.list) ? result.list : []
 }
 
+/** 结构化智库搜索（2.0，含百科式问答） */
+export async function searchPublicWiki(query: WikiQuery): Promise<WikiSearchResult> {
+  const result = await callWiki({ action: 'publicSearch', query })
+  if (result.success !== true) {
+    throw new Error(result.errMsg || '搜索花卉百科失败')
+  }
+  return {
+    list: Array.isArray(result.list) ? result.list : [],
+    answer: result.answer || null,
+  }
+}
+
 export async function listPublicWikiCached(options?: {
   force?: boolean
   onUpdate?: (list: FlowerWikiListItem[]) => void
@@ -73,7 +88,7 @@ export async function getPublicWiki(id: string): Promise<FlowerWiki> {
   if (!result.success || !result.wiki) {
     throw new Error(result.errMsg || '获取百科详情失败')
   }
-  return result.wiki
+  return normalizeFlowerWiki(result.wiki)
 }
 
 export async function getPublicWikiCached(
@@ -94,7 +109,7 @@ export async function matchPublicWiki(kindId = '', varietyId = ''): Promise<Flow
   if (!result.success) {
     throw new Error(result.errMsg || '匹配智库失败')
   }
-  return result.wiki || null
+  return result.wiki ? normalizeFlowerWiki(result.wiki) : null
 }
 
 export async function matchPublicWikiCached(

@@ -1,5 +1,6 @@
 <template>
   <view class="page-merchant-goods-edit">
+    <AppNavBar />
     <view class="images-section">
       <view class="section-label">{{ labelImages }}</view>
       <view class="images-tip">{{ imagesTip }}</view>
@@ -154,6 +155,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { ref, computed } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import { navigateBack, navigateTo } from '@/utils/router'
@@ -401,7 +403,7 @@ async function loadCategories() {
       form.value.categoryId = enabledCategories.value[0]._id
     }
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '加载分类失败',
       icon: 'none',
     })
@@ -418,7 +420,7 @@ async function loadGoods() {
     await loadImageSlotsFromGoods(goods)
   } catch (err) {
     if (seq !== goodsLoadSeq) return
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '加载失败',
       icon: 'none',
     })
@@ -488,7 +490,7 @@ async function addImages() {
     syncFormImagesFromSlots()
   } catch (err) {
     if ((err as { errMsg?: string }).errMsg?.includes('cancel')) return
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '上传失败',
       icon: 'none',
     })
@@ -499,7 +501,7 @@ async function addImages() {
 
 function removeImage(index: number) {
   if (imageSlots.value.length <= 1) {
-    wx.showToast({ title: '至少保留一张主图', icon: 'none' })
+    showToast({ title: '至少保留一张主图', icon: 'none' })
     return
   }
   imageSlots.value.splice(index, 1)
@@ -524,37 +526,37 @@ function previewImages(index: number) {
 
 function validateForm() {
   if (!form.value.salesType) {
-    wx.showToast({ title: '请选择商品类', icon: 'none' })
+    showToast({ title: '请选择商品类', icon: 'none' })
     return false
   }
   if (showFlowerPicker.value && !form.value.flowerVarietyId) {
-    wx.showToast({ title: '请选择花卉品种', icon: 'none' })
+    showToast({ title: '请选择花卉品种', icon: 'none' })
     return false
   }
   if (!form.value.name.trim()) {
-    wx.showToast({ title: '请填写品名', icon: 'none' })
+    showToast({ title: '请填写品名', icon: 'none' })
     return false
   }
   if (!form.value.categoryId) {
-    wx.showToast({ title: '请选择商品分类', icon: 'none' })
+    showToast({ title: '请选择商品分类', icon: 'none' })
     return false
   }
   if (!form.value.coverImage || !imageSlots.value.length) {
-    wx.showToast({ title: '请上传至少一张商品图', icon: 'none' })
+    showToast({ title: '请上传至少一张商品图', icon: 'none' })
     return false
   }
   if (Number.isNaN(Number(form.value.price)) || Number(form.value.price) < 0) {
-    wx.showToast({ title: '请填写有效价格', icon: 'none' })
+    showToast({ title: '请填写有效价格', icon: 'none' })
     return false
   }
   if (Number.isNaN(parseInt(form.value.stock, 10)) || parseInt(form.value.stock, 10) < 0) {
-    wx.showToast({ title: '请填写有效库存', icon: 'none' })
+    showToast({ title: '请填写有效库存', icon: 'none' })
     return false
   }
   if (form.value.salesType === 'group') {
     const perGroup = parseInt(form.value.unitsPerGroup, 10)
     if (Number.isNaN(perGroup) || perGroup <= 0) {
-      wx.showToast({ title: '请填写每组数量', icon: 'none' })
+      showToast({ title: '请填写每组数量', icon: 'none' })
       return false
     }
   }
@@ -575,7 +577,7 @@ async function save() {
     }
 
     wx.removeStorageSync(FLOWER_PICK_STORAGE_KEY)
-    wx.showToast({ title: isEdit.value ? '已保存' : '已创建', icon: 'success' })
+    showToast({ title: isEdit.value ? '已保存' : '已创建', icon: 'success' })
 
     if (returnToStockIn.value && stockInLineKey.value && !isEdit.value) {
       linkStockInLineGoods(stockInLineKey.value, saved._id, {
@@ -589,7 +591,7 @@ async function save() {
 
     setTimeout(() => navigateBack(), 1200)
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '保存失败',
       icon: 'none',
     })
@@ -613,10 +615,10 @@ async function handleDelete() {
   deleting.value = true
   try {
     await removeGoods(goodsId.value)
-    wx.showToast({ title: '已删除', icon: 'success' })
+    showToast({ title: '已删除', icon: 'success' })
     setTimeout(() => navigateBack(), 1200)
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '删除失败',
       icon: 'none',
     })

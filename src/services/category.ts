@@ -85,7 +85,6 @@ export function toCategoryPayload(form: CategoryForm) {
   return {
     name: form.name.trim(),
     icon: form.icon.trim() || '🌷',
-    sort: parseInt(form.sort, 10) || 0,
     enabled: form.enabled,
     customRole: form.customRole || '',
   }
@@ -122,6 +121,15 @@ export async function removeCategory(id: string): Promise<void> {
     throw new Error(result.errMsg || '删除分类失败')
   }
   invalidateCacheModule('categories')
+}
+
+export async function reorderMerchantCategories(orderedIds: string[]): Promise<Category[]> {
+  const result = await callCategory({ action: 'reorderSort', orderedIds })
+  if (result.success !== true) {
+    throw new Error(result.errMsg || '排序保存失败')
+  }
+  invalidateCacheModule('categories')
+  return Array.isArray(result.list) ? result.list : []
 }
 
 export function formatCategoryLabel(category: Pick<Category, 'icon' | 'name'>) {

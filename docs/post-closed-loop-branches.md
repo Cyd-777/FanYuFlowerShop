@@ -1,3 +1,5 @@
+> 📂 **文档分类**：规划与进度（路线图） · **主索引**：[README.md](../README.md) · **整理规划**：[文档规划.md](./文档规划.md)
+
 # 基础闭环之上的功能分支
 
 > **来源**：[GitHub Issue #1](https://github.com/Cyd-777/FanYuFlowerShop/issues/1)  

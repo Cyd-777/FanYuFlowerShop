@@ -1,5 +1,6 @@
 <template>
   <view class="page-goods-detail">
+    <AppNavBar />
     <view v-if="loading" class="loading-wrap">
       <nut-skeleton rows="10" animated />
     </view>
@@ -51,14 +52,12 @@
       </view>
     </view>
 
-    <view v-if="wikiEntry" class="wiki-card" @click="goWiki">
-      <view class="wiki-card-icon">{{ wikiEntry.icon }}</view>
-      <view class="wiki-card-main">
-        <view class="wiki-card-title">{{ wikiCardTitle }}</view>
-        <view class="wiki-card-desc">{{ wikiCardDesc }}</view>
-      </view>
-      <text class="wiki-card-arrow">›</text>
-    </view>
+    <WikiEntryPanel
+      v-if="wikiEntry"
+      :wiki="wikiEntry"
+      default-tab="care"
+      @open-full="goWikiFull"
+    />
 
     <view class="action-bar">
       <nut-button class="cart-btn" plain :disabled="!purchasable || adding" @click="addToCart">加入购物车</nut-button>
@@ -69,6 +68,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { computed, ref, watch } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
@@ -76,6 +76,7 @@ import { checkFavorite, toggleFavorite as toggleFavoriteApi } from '@/services/f
 import { hasToken } from '@/services/auth'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
+import WikiEntryPanel from '@/components/wiki/WikiEntryPanel.vue'
 import { useAddToCart } from '@/composables/useAddToCart'
 import { usePageData } from '@/composables/usePageData'
 import {
@@ -85,8 +86,6 @@ import {
 } from '@/utils/goodsAvailability'
 
 const {
-  wikiCardTitle,
-  wikiCardDesc,
   goods,
   images,
   imageFileIds,
@@ -94,7 +93,7 @@ const {
   loading,
   wikiEntry,
   formatPrice,
-  goWiki,
+  goWikiFull,
 } = usePageData()
 
 const { adding, cartStore, addToCart: addGoodsToCart, buyNow: buyGoodsNow } = useAddToCart()
@@ -163,7 +162,7 @@ async function toggleFavorite() {
   if (!goodsId.value || favoriteLoading.value) return
 
   if (!hasToken()) {
-    wx.showToast({ title: '请先登录', icon: 'none' })
+    showToast({ title: '请先登录', icon: 'none' })
     navigateTo({ url: '/pages/login/index' })
     return
   }
@@ -171,12 +170,12 @@ async function toggleFavorite() {
   favoriteLoading.value = true
   try {
     favorited.value = await toggleFavoriteApi(goodsId.value, favorited.value)
-    wx.showToast({
+    showToast({
       title: favorited.value ? '已收藏' : '已取消收藏',
       icon: 'success',
     })
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '操作失败',
       icon: 'none',
     })
@@ -216,9 +215,9 @@ async function purchaseAction(mode: 'cart' | 'buy') {
       count: quantity.value,
       displayImage: displayImage(),
     })
-    wx.showToast({ title: '已加入购物车', icon: 'success' })
+    showToast({ title: '已加入购物车', icon: 'success' })
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '加购失败',
       icon: 'none',
     })
@@ -306,28 +305,6 @@ function buyNow() {
   &.disabled { opacity: 0.4; }
 }
 .qty-num { font-size: 28rpx; min-width: 48rpx; text-align: center; }
-.wiki-card {
-  display: flex;
-  align-items: center;
-  margin: 16rpx 24rpx 0;
-  padding: 24rpx;
-  background: #fff;
-  border-radius: 16rpx;
-  border: 2rpx solid #fce4ec;
-}
-.wiki-card-icon {
-  width: 72rpx;
-  height: 72rpx;
-  line-height: 72rpx;
-  text-align: center;
-  font-size: 36rpx;
-  background: #fff5f5;
-  border-radius: 12rpx;
-}
-.wiki-card-main { flex: 1; margin: 0 16rpx; }
-.wiki-card-title { font-size: 28rpx; font-weight: 600; color: #333; }
-.wiki-card-desc { margin-top: 4rpx; font-size: 22rpx; color: #999; }
-.wiki-card-arrow { font-size: 32rpx; color: #ccc; }
 .action-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex; gap: 16rpx; padding: 16rpx 24rpx;

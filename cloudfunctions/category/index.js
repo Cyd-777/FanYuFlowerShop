@@ -76,10 +76,9 @@ function pickCategory(doc) {
   }
 }
 
-function normalizeCategoryInput(input) {
+function normalizeCategoryInput(input, options = {}) {
   const name = String(input.name || '').trim()
   const icon = String(input.icon || '🌷').trim() || '🌷'
-  const sort = Number(input.sort) || 0
   const enabled = input.enabled !== false
   const customRole = ['flower', 'packaging', 'card'].includes(input.customRole)
     ? input.customRole
@@ -89,7 +88,37 @@ function normalizeCategoryInput(input) {
     throw new Error('分类名称不能为空')
   }
 
-  return { name, icon, sort, enabled, customRole }
+  const payload = { name, icon, enabled, customRole }
+  if (options.sort != null) {
+    payload.sort = Number(options.sort) || 0
+  }
+  return payload
+}
+
+async function getNextSortForNew() {
+  const { data } = await db.collection('categories').get()
+  if (!data.length) return 100
+  const sorts = data.map((doc) => Number(doc.sort) || 0)
+  return Math.min(...sorts) - 10
+}
+
+async function reorderCategories(orderedIds) {
+  const ids = Array.isArray(orderedIds)
+    ? orderedIds.map((id) => String(id || '').trim()).filter(Boolean)
+    : []
+  if (!ids.length) {
+    throw new Error('排序列表不能为空')
+  }
+
+  const n = ids.length
+  for (let i = 0; i < n; i += 1) {
+    await db.collection('categories').doc(ids[i]).update({
+      data: {
+        sort: (n - i) * 10,
+        updatedAt: db.serverDate(),
+      },
+    })
+  }
 }
 
 async function ensureDefaultCategories() {
@@ -189,9 +218,11 @@ exports.main = async (event) => {
       const payload = normalizeCategoryInput(event.category || {})
 
       if (action === 'add') {
+        const sort = await getNextSortForNew()
         const addRes = await db.collection('categories').add({
           data: {
             ...payload,
+            sort,
             createdAt: db.serverDate(),
             updatedAt: db.serverDate(),
           },
@@ -221,6 +252,27 @@ exports.main = async (event) => {
       return {
         success: false,
         errMsg: err.message || err.errMsg || '保存分类失败',
+      }
+    }
+  }
+
+  if (action === 'reorderSort') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限操作分类' }
+    }
+
+    await ensureDefaultCategories()
+
+    try {
+      await reorderCategories(event.orderedIds)
+      await bumpCacheModule('categories')
+      const list = await listCategories(false)
+      return { success: true, list }
+    } catch (err) {
+      return {
+        success: false,
+        errMsg: err.message || err.errMsg || '排序保存失败',
       }
     }
   }

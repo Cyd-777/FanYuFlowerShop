@@ -1,5 +1,6 @@
 <template>
   <view class="page-sales-strategy">
+    <AppNavBar />
     <view class="toolbar">
       <view class="toolbar-title">节日主题</view>
       <nut-button
@@ -39,6 +40,7 @@
       <nut-button
         type="primary"
         block
+        class="action-btn"
         :loading="activating"
         :disabled="!pendingThemeId"
         @click="confirmReplace"
@@ -50,6 +52,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
@@ -101,11 +104,11 @@ async function confirmReplace() {
   activating.value = true
   try {
     await shopStore.activateTheme(pendingThemeId.value)
-    wx.showToast({ title: '主题已切换', icon: 'success' })
+    showToast({ title: '主题已切换', icon: 'success' })
     replaceMode.value = false
     pendingThemeId.value = ''
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '切换失败',
       icon: 'none',
     })
@@ -120,6 +123,9 @@ async function confirmReplace() {
   min-height: 100vh;
   padding-bottom: 48rpx;
   background: #f8f8f8;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 .toolbar {
   display: flex;
@@ -128,6 +134,7 @@ async function confirmReplace() {
   padding: 24rpx;
   background: #fff;
   margin-bottom: 16rpx;
+  box-sizing: border-box;
 }
 .toolbar-title {
   font-size: 32rpx;
@@ -176,5 +183,13 @@ async function confirmReplace() {
 }
 .theme-tag { color: #e53935; }
 .active-badge { color: #43a047; font-weight: 600; }
-.replace-actions { margin: 32rpx 16rpx 0; }
+.replace-actions {
+  padding: 32rpx 16rpx 0;
+  box-sizing: border-box;
+}
+.action-btn {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 </style>

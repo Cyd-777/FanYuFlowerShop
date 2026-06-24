@@ -1,5 +1,6 @@
 <template>
   <view class="page-address">
+    <AppNavBar />
     <view v-if="list.length" class="addr-list">
       <view
         v-for="item in list"
@@ -39,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import { navigateTo, navigateBack } from '@/utils/router'
@@ -88,7 +90,7 @@ async function addFromWechat() {
   try {
     const saved = await importWechatAddressAndSave()
     list.value = listAddresses()
-    wx.showToast({ title: '地址已保存', icon: 'success' })
+    showToast({ title: '地址已保存', icon: 'success' })
 
     if (fromConfirm.value) {
       setCheckoutAddress(saved.id)
@@ -113,7 +115,7 @@ async function handleRemove(id: string) {
 
   removeAddress(id)
   list.value = listAddresses()
-  wx.showToast({ title: '已删除', icon: 'success' })
+  showToast({ title: '已删除', icon: 'success' })
 }
 </script>
 

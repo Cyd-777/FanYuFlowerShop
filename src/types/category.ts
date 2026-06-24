@@ -16,7 +16,6 @@ export interface Category {
 export interface CategoryForm {
   name: string
   icon: string
-  sort: string
   enabled: boolean
   customRole: CategoryCustomRole
 }

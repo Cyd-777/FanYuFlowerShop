@@ -1,5 +1,6 @@
 <template>
   <view class="page-shop-setting">
+    <AppNavBar />
     <nut-form>
       <nut-form-item label="店铺名称">
         <nut-input v-model="form.shopName" placeholder="请输入店铺名称" />
@@ -18,13 +19,16 @@
       </nut-form-item>
     </nut-form>
 
-    <nut-button type="primary" block class="save-btn" :loading="saving" @click="save">
-      保存设置
-    </nut-button>
+    <view class="page-actions">
+      <nut-button type="primary" block class="action-btn" :loading="saving" @click="save">
+        保存设置
+      </nut-button>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateBack } from '@/utils/router'
@@ -43,7 +47,7 @@ useDidShow(() => {
 async function save() {
   const name = form.value.shopName.trim()
   if (!name) {
-    wx.showToast({ title: '请填写店铺名称', icon: 'none' })
+    showToast({ title: '请填写店铺名称', icon: 'none' })
     return
   }
 
@@ -52,10 +56,10 @@ async function save() {
 
   try {
     await shopStore.updateSettings({ ...form.value, shopName: name })
-    wx.showToast({ title: '设置已保存', icon: 'success' })
+    showToast({ title: '设置已保存', icon: 'success' })
     setTimeout(() => navigateBack(), 1500)
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '保存失败',
       icon: 'none',
     })
@@ -66,6 +70,21 @@ async function save() {
 </script>
 
 <style lang="less">
-.page-shop-setting { background: #f8f8f8; min-height: 100vh; }
-.save-btn { margin: 48rpx 32rpx; border-radius: 48rpx; }
+.page-shop-setting {
+  background: #f8f8f8;
+  min-height: 100vh;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+.page-actions {
+  padding: 48rpx 32rpx;
+  box-sizing: border-box;
+}
+.action-btn {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 48rpx;
+  box-sizing: border-box;
+}
 </style>

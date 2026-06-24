@@ -1,0 +1,62 @@
+@import './tokens.less';
+
+/**
+ * 勿给 page 设 overflow-x:hidden —— 会破坏 position:sticky 吸顶。
+ * 横向防溢出用各页根节点 width/max-width + content-pad-x 即可。
+ */
+page {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+scroll-view {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/** Taro/Vue 须写 :scroll-x="true" / :scroll-y="true"；裸 scroll-x 会编译成 scroll-x=""，微信侧等于关闭 */
+
+/** 列表区内边距：放在 scroll-view 内层，勿直接给 scroll-view 设左右 padding */
+.content-pad-x {
+  box-sizing: border-box;
+  padding-left: @spacing-md;
+  padding-right: @spacing-md;
+}
+
+/** 白底卡片：宽度跟随父级，避免右侧溢出 */
+.surface-card {
+  box-sizing: border-box;
+  max-width: 100%;
+  background: @color-bg-card;
+  border-radius: @radius-md;
+}
+
+/** Tab 浮层页：吸顶后才出现的 statusBar 实底（fixed，不占位） */
+.overlay-status-bar-fill {
+  pointer-events: none;
+}
+
+/** Tab 浮层页搜索吸顶（常态全宽；is-stuck 时 top/胶囊留白由 JS 注入） */
+.page-sticky-search {
+  position: -webkit-sticky;
+  position: sticky;
+  z-index: 120;
+  box-sizing: border-box;
+  box-shadow: none;
+
+  &.is-stuck {
+    box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  }
+}
+
+/** 横向 Tab / 品类 Tag 吸顶 */
+.page-sticky-tabs {
+  position: -webkit-sticky;
+  position: sticky;
+  z-index: 110;
+  background: @color-bg-page;
+  box-shadow: none;
+  overflow: visible;
+  margin-top: 0;
+  padding-top: 0;
+}

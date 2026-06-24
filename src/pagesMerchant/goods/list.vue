@@ -1,137 +1,55 @@
 <template>
-  <view class="page-merchant-goods" :class="{ 'batch-mode': batchMode, 'has-batch-bar': batchMode }">
-    <view class="toolbar">
+  <view
+    class="page-merchant-goods"
+    :class="{ 'batch-mode': batchMode, 'has-batch-bar': batchMode }"
+    :style="navCssVars"
+  >
+    <AppNavBar />
+    <view
+      id="merchant-goods-toolbar"
+      class="manage-toolbar page-sticky-search"
+      :class="{ 'is-filter-open': filterModalOpen }"
+      :style="toolbarStickyStyle"
+    >
       <GoodsNameTypeahead
         v-model="keyword"
         :catalog="catalogList"
-        placeholder="搜索商品名称..."
+        placeholder="口语搜索：上架商品、首页推荐、低于100元、百合…"
+        :sticky="false"
         @search="onSearchKeyword"
         @select="onPickSuggestion"
       />
-      <view class="toolbar-actions">
-        <view class="exact-toggle">
-          <text class="exact-label">精确匹配</text>
-          <nut-switch v-model="filters.nameKeywordExact" />
-        </view>
-        <view class="link-btn" hover-class="link-btn--active" @tap.stop="goStockInImport">
-          进货单入库
-        </view>
-        <view class="link-btn" hover-class="link-btn--active" @tap.stop="toggleBatchMode">
-          {{ batchMode ? '退出批量' : '批量管理' }}
-        </view>
-      </view>
-    </view>
-
-    <view class="filter-panel">
-      <view class="status-tabs">
-        <view
-          v-for="tab in shelfTabs"
-          :key="tab.value"
-          class="status-tab"
-          :class="{ active: filters.shelfStatus === tab.value }"
-          @click="setFilters({ shelfStatus: tab.value })"
-        >
-          {{ tab.label }}
-        </view>
-      </view>
-
-      <view class="filter-form">
-        <view class="filter-row">
-          <text class="filter-label">商品分类</text>
-          <picker
-            class="filter-picker"
-            :range="categoryLabels"
-            :value="categoryIndex"
-            @change="onCategoryChange"
+      <view class="manage-toolbar__bar">
+        <text class="manage-toolbar__count">共 {{ goodsList.length }} 件</text>
+        <view class="manage-toolbar__actions">
+          <view class="tool-btn" hover-class="tool-btn--active" @tap.stop="goStockInImport">
+            进货单入库
+          </view>
+          <view
+            class="tool-btn"
+            :class="{ 'is-active': batchMode }"
+            hover-class="tool-btn--active"
+            @tap.stop="toggleBatchMode"
           >
-            <view class="filter-value">{{ categoryLabels[categoryIndex] }}</view>
-          </picker>
-        </view>
-
-        <view class="filter-row">
-          <text class="filter-label">花材种类</text>
-          <picker
-            class="filter-picker"
-            :range="flowerKindLabels"
-            :value="flowerKindIndex"
-            :disabled="!flowerKindOptions.length"
-            @change="onFlowerKindChange"
+            {{ batchMode ? '退出批量' : '批量管理' }}
+          </view>
+          <view
+            class="tool-btn tool-btn--filter"
+            :class="{ 'is-active': filterModalOpen }"
+            hover-class="tool-btn--active"
+            @tap.stop="toggleFilterModal"
           >
-            <view class="filter-value" :class="{ muted: !flowerKindOptions.length }">
-              {{ flowerKindLabels[flowerKindIndex] }}
-            </view>
-          </picker>
-        </view>
-
-        <view class="filter-row">
-          <text class="filter-label">花卉品种</text>
-          <picker
-            class="filter-picker"
-            :range="flowerVarietyLabels"
-            :value="flowerVarietyIndex"
-            :disabled="!flowerVarietyOptions.length"
-            @change="onFlowerVarietyChange"
-          >
-            <view class="filter-value" :class="{ muted: !flowerVarietyOptions.length }">
-              {{ flowerVarietyLabels[flowerVarietyIndex] }}
-            </view>
-          </picker>
-        </view>
-
-        <view class="filter-row">
-          <text class="filter-label">销售类型</text>
-          <picker
-            class="filter-picker"
-            :range="salesTypeLabels"
-            :value="salesTypeIndex"
-            @change="onSalesTypeChange"
-          >
-            <view class="filter-value">{{ salesTypeLabels[salesTypeIndex] }}</view>
-          </picker>
-        </view>
-
-        <view class="filter-row">
-          <text class="filter-label">库存状态</text>
-          <picker
-            class="filter-picker"
-            :range="stockStatusLabels"
-            :value="stockStatusIndex"
-            @change="onStockStatusChange"
-          >
-            <view class="filter-value">{{ stockStatusLabels[stockStatusIndex] }}</view>
-          </picker>
-        </view>
-
-        <view class="filter-row filter-row--price">
-          <text class="filter-label">价格区间</text>
-          <view class="price-range">
-            <input
-              class="price-input"
-              v-model="filters.priceMin"
-              type="digit"
-              placeholder="最低价"
-            />
-            <text class="price-sep">—</text>
-            <input
-              class="price-input"
-              v-model="filters.priceMax"
-              type="digit"
-              placeholder="最高价"
-            />
+            <text class="tool-btn__label">筛选</text>
+            <text class="tool-btn__count">{{ goodsList.length }}</text>
           </view>
         </view>
-
-        <view class="filter-row filter-row--switch">
-          <text class="filter-label">只显示推荐</text>
-          <nut-switch v-model="filters.recommendOnly" />
-        </view>
-
-        <view class="filter-actions">
-          <text class="result-count">共 {{ goodsList.length }} 件</text>
-          <text class="reset-btn" @click="onResetFilters">重置筛选</text>
-        </view>
       </view>
     </view>
+    <view
+      v-if="filterModalOpen"
+      class="manage-toolbar-placeholder"
+      :style="toolbarPlaceholderStyle"
+    />
 
     <view class="goods-body">
       <GoodsCardSkeleton v-if="loading" :count="4" />
@@ -149,14 +67,12 @@
           </view>
           <view class="img-wrap">
             <GoodsImage :src="item.imageUrl" root-class="goods-img" />
-            <GoodsNewListingBadge :goods="item" />
             <view v-if="statusText(item)" class="status-badge" :class="statusClass(item)">
               {{ statusText(item) }}
             </view>
-            <view v-if="item.recommend" class="recommend-badge">推荐</view>
           </view>
           <view class="goods-name">{{ item.name }}</view>
-          <view class="goods-category">{{ item.categoryName || '未分类' }}</view>
+          <GoodsSalesTagRow :goods="item" />
           <view class="goods-meta">
             <view class="goods-price">¥{{ formatPrice(item.price) }}</view>
             <view class="goods-stock">库存 {{ item.stock }}</view>
@@ -177,25 +93,239 @@
     <view v-if="batchMode" class="batch-bar">
       <view class="batch-top">
         <text class="batch-count">已选 {{ selectedIds.length }} 件</text>
-        <text class="batch-link" @click="toggleSelectAll">
+        <view
+          class="batch-link"
+          hover-class="batch-link--active"
+          @tap.stop="toggleSelectAll"
+        >
           {{ allVisibleSelected ? '取消全选' : '全选当前' }}
-        </text>
+        </view>
       </view>
       <view class="batch-actions">
-        <view class="batch-action" hover-class="batch-action--active" @tap.stop="runQuickBatch('onShelf')">上架</view>
-        <view class="batch-action" hover-class="batch-action--active" @tap.stop="runQuickBatch('offShelf')">下架</view>
-        <view class="batch-action" hover-class="batch-action--active" @tap.stop="runQuickBatch('recommendOn')">设推荐</view>
-        <view class="batch-action" hover-class="batch-action--active" @tap.stop="runQuickBatch('recommendOff')">取消推荐</view>
+        <view
+          class="batch-action"
+          :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
+          hover-class="batch-action--active"
+          @tap.stop="runQuickBatch('onShelf')"
+        >上架</view>
+        <view
+          class="batch-action"
+          :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
+          hover-class="batch-action--active"
+          @tap.stop="runQuickBatch('offShelf')"
+        >下架</view>
+        <view
+          class="batch-action"
+          :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
+          hover-class="batch-action--active"
+          @tap.stop="runQuickBatch('recommendOn')"
+        >设推荐</view>
+        <view
+          class="batch-action"
+          :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
+          hover-class="batch-action--active"
+          @tap.stop="runQuickBatch('recommendOff')"
+        >取消推荐</view>
         <!-- TODO: 批量修改弹层待格式确定后恢复（MerchantGoodsBatchEditSheet） -->
-        <view class="batch-action" hover-class="batch-action--active" @tap.stop="goBatchStockIn">批量入库</view>
-        <view class="batch-action danger" hover-class="batch-action--active" @tap.stop="runQuickBatch('remove')">删除</view>
+        <view
+          class="batch-action"
+          :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
+          hover-class="batch-action--active"
+          @tap.stop="goBatchStockIn"
+        >批量入库</view>
+        <view
+          class="batch-action danger"
+          :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
+          hover-class="batch-action--active"
+          @tap.stop="runQuickBatch('remove')"
+        >删除</view>
+      </view>
+    </view>
+
+    <view
+      v-if="filterModalOpen"
+      class="filter-modal"
+      catchtouchmove
+      @touchmove.stop.prevent
+    >
+      <view class="filter-modal__mask" :style="filterMaskStyle" @tap="closeFilterModal" />
+      <view class="filter-modal__panel" :style="filterPanelStyle" @tap.stop>
+        <view
+          class="filter-modal__foot"
+          :class="{ 'is-closing': filterPanelClosing }"
+          :style="filterFootStyle"
+        >
+          <view class="filter-modal__reveal">
+            <scroll-view
+              class="filter-modal__scroll"
+              :scroll-y="true"
+              :enhanced="true"
+              :show-scrollbar="false"
+            >
+            <view class="filter-form">
+            <view class="filter-section">
+              <view class="filter-section__label">上架状态</view>
+              <view class="filter-chips">
+                <view
+                  v-for="tab in shelfTabs"
+                  :key="tab.value"
+                  class="filter-chip"
+                  :class="{ active: filters.shelfStatus === tab.value }"
+                  @tap="setFilters({ shelfStatus: tab.value })"
+                >
+                  {{ tab.label }}
+                </view>
+              </view>
+              <view class="filter-section__label filter-section__label--sub">库存状态</view>
+              <view class="filter-chips">
+                <view
+                  v-for="opt in stockStatusOptions"
+                  :key="opt.value"
+                  class="filter-chip"
+                  :class="{ active: filters.stockStatus === opt.value }"
+                  @tap="pickStockStatus(opt.value)"
+                >
+                  {{ opt.label }}
+                </view>
+              </view>
+            </view>
+
+            <view class="filter-section">
+              <view class="filter-section__label">商品分类</view>
+              <view class="filter-chips">
+                <view
+                  v-for="opt in categoryOptions"
+                  :key="opt.id || '__all__'"
+                  class="filter-chip"
+                  :class="{ active: isCategoryActive(opt.id) }"
+                  @tap="toggleCategory(opt.id)"
+                >
+                  {{ opt.label }}
+                </view>
+              </view>
+            </view>
+
+            <view class="filter-section">
+              <view class="filter-section__label">花材种类</view>
+              <view v-if="!flowerKindOptions.length" class="filter-empty-hint">暂无花材</view>
+              <view v-else class="filter-chips">
+                <view
+                  class="filter-chip"
+                  :class="{ active: isFlowerKindActive(MERCHANT_FILTER_ALL_ID) }"
+                  @tap="toggleFlowerKind(MERCHANT_FILTER_ALL_ID)"
+                >
+                  全部花材
+                </view>
+                <view
+                  v-for="opt in flowerKindOptions"
+                  :key="opt.id"
+                  class="filter-chip"
+                  :class="{ active: isFlowerKindActive(opt.id) }"
+                  @tap="toggleFlowerKind(opt.id)"
+                >
+                  {{ opt.name }}
+                </view>
+              </view>
+            </view>
+
+            <view class="filter-section">
+              <view class="filter-section__label">花卉品种</view>
+              <view v-if="!flowerVarietyOptions.length" class="filter-empty-hint">暂无品种</view>
+              <view v-else class="filter-chips">
+                <view
+                  class="filter-chip"
+                  :class="{ active: isFlowerVarietyActive(MERCHANT_FILTER_ALL_ID) }"
+                  @tap="toggleFlowerVariety(MERCHANT_FILTER_ALL_ID)"
+                >
+                  全部品种
+                </view>
+                <view
+                  v-for="opt in flowerVarietyOptions"
+                  :key="opt.id"
+                  class="filter-chip"
+                  :class="{ active: isFlowerVarietyActive(opt.id) }"
+                  @tap="toggleFlowerVariety(opt.id)"
+                >
+                  {{ opt.name }}
+                </view>
+              </view>
+            </view>
+
+            <view class="filter-section">
+              <view class="filter-section__label">销售类型</view>
+              <view class="filter-chips">
+                <view
+                  v-for="opt in salesTypeOptions"
+                  :key="opt.value || '__all__'"
+                  class="filter-chip"
+                  :class="{ active: isSalesTypeActive(opt.value) }"
+                  @tap="toggleSalesType(opt.value)"
+                >
+                  {{ opt.label }}
+                </view>
+              </view>
+            </view>
+
+            <view class="filter-section filter-section--price">
+              <view class="filter-section__label">价格区间</view>
+              <view class="price-slider-meta">
+                <text>¥{{ priceSliderMinLabel }}</text>
+                <text class="price-slider-meta__sep">—</text>
+                <text>¥{{ priceSliderMaxLabel }}</text>
+              </view>
+              <view class="price-slider-row">
+                <text class="price-slider-row__label">最低</text>
+                <slider
+                  class="price-slider"
+                  :min="priceBounds.floor"
+                  :max="priceBounds.ceil"
+                  :step="priceBounds.step"
+                  :value="priceSliderMin"
+                  activeColor="#667eea"
+                  backgroundColor="#e8e8e8"
+                  block-size="20"
+                  @changing="onPriceMinChanging"
+                  @change="onPriceMinChange"
+                />
+              </view>
+              <view class="price-slider-row">
+                <text class="price-slider-row__label">最高</text>
+                <slider
+                  class="price-slider"
+                  :min="priceBounds.floor"
+                  :max="priceBounds.ceil"
+                  :step="priceBounds.step"
+                  :value="priceSliderMax"
+                  activeColor="#667eea"
+                  backgroundColor="#e8e8e8"
+                  block-size="20"
+                  @changing="onPriceMaxChanging"
+                  @change="onPriceMaxChange"
+                />
+              </view>
+            </view>
+
+            <view class="filter-section filter-section--switch">
+              <text class="filter-section__label">只看推荐</text>
+              <nut-switch v-model="filters.recommendOnly" />
+            </view>
+          </view>
+        </scroll-view>
+          </view>
+          <view class="filter-modal__actions">
+            <nut-button plain class="filter-modal__btn" @click="onResetFilters">重置</nut-button>
+            <nut-button type="primary" class="filter-modal__btn" @click="closeFilterModal">完成</nut-button>
+          </view>
+        </view>
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { showNotifyConfirm, showToast } from '@/utils/feedback'
+import { computed, nextTick, ref, watch } from 'vue'
+import Taro from '@tarojs/taro'
 import { usePageData } from '@/composables/usePageData'
 import { navigateTo, navigateToWithFeedback } from '@/utils/router'
 import {
@@ -206,7 +336,12 @@ import {
   collectFlowerKindOptions,
   collectFlowerVarietyOptions,
   DEFAULT_MERCHANT_GOODS_FILTER,
-  isFlowerKindInOptions,
+  isMerchantMultiFilterActive,
+  isMerchantSalesTypeActive,
+  MERCHANT_FILTER_ALL_ID,
+  pruneMerchantMultiFilterIds,
+  toggleMerchantMultiFilter,
+  toggleMerchantSalesTypes,
 } from '@/utils/goodsListFilter'
 import type { MerchantShelfStatus, MerchantStockStatus } from '@/utils/goodsListFilter'
 import { buildSelectStockInSession, writeStockInSession } from '@/utils/stockInSession'
@@ -216,15 +351,24 @@ import {
   type Goods,
   type GoodsSalesType,
 } from '@/types/goods'
-import { isGoodsSoldOut } from '@/utils/goodsAvailability'
+import { getMerchantGoodsImageOverlay } from '@/utils/goodsAvailability'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
-import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
+import GoodsSalesTagRow from '@/components/GoodsSalesTagRow.vue'
 import GoodsNameTypeahead from '@/components/GoodsNameTypeahead.vue'
 import type { GoodsNameSuggestion } from '@/utils/goodsNameSuggest'
+import { useNavBarLayout } from '@/composables/useNavBarLayout'
+import { rpxToPx, usePageSticky } from '@/composables/usePageSticky'
 
+const { cssVars: navCssVars, layout: navLayout } = useNavBarLayout()
+const { navSearchStickyStyle } = usePageSticky()
 const keyword = ref('')
 const batchMode = ref(false)
+const filterModalOpen = ref(false)
+const toolbarHeightPx = ref(0)
+/** foot 容器当前高度（0 → 面板满高过渡） */
+const panelRevealHeightPx = ref(0)
+const filterPanelClosing = ref(false)
 const selectedIds = ref<string[]>([])
 const batchWorking = ref(false)
 
@@ -251,8 +395,65 @@ const stockStatusOptions: Array<{ label: string; value: MerchantStockStatus }> =
   { label: '已售罄', value: 'soldOut' },
 ]
 
+function formatPrice(price: number) {
+  return Number(price).toFixed(2).replace(/\.00$/, '')
+}
+
+/** 与 .filter-modal__foot transition 时长一致 */
+const FILTER_PANEL_TRANSITION_MS = 280
+/** 筛选下拉：吸顶工具栏 + 面板合计占屏高 75% */
+const FILTER_PANEL_TOTAL_RATIO = 0.75
+const TOOLBAR_HEIGHT_FALLBACK_PX = rpxToPx(160)
+
+const filterZoneTotalPx = computed(() => {
+  const win = Taro.getWindowInfo()
+  const windowHeight = win.windowHeight ?? 667
+  return Math.floor(windowHeight * FILTER_PANEL_TOTAL_RATIO)
+})
+
+const toolbarStickyStyle = computed(() => {
+  const base = { ...navSearchStickyStyle.value }
+  if (!filterModalOpen.value) return base
+  return {
+    ...base,
+    position: 'fixed',
+    left: '0',
+    right: '0',
+    zIndex: '10001',
+  }
+})
+
+const toolbarPlaceholderStyle = computed(() => ({
+  height: `${toolbarHeightPx.value || TOOLBAR_HEIGHT_FALLBACK_PX}px`,
+}))
+
+const filterPanelFullHeightPx = computed(() => {
+  const navTop = navLayout.value.totalHeight
+  const toolbarH = toolbarHeightPx.value || TOOLBAR_HEIGHT_FALLBACK_PX
+  const panelTop = navTop + toolbarH
+  return Math.max(120, filterZoneTotalPx.value - panelTop)
+})
+
+const filterPanelStyle = computed(() => {
+  const navTop = navLayout.value.totalHeight
+  const toolbarH = toolbarHeightPx.value || TOOLBAR_HEIGHT_FALLBACK_PX
+  return {
+    top: `${navTop + toolbarH}px`,
+    height: `${filterPanelFullHeightPx.value}px`,
+  }
+})
+
+const filterFootStyle = computed(() => ({
+  height: `${panelRevealHeightPx.value}px`,
+}))
+
+/** 全屏遮罩，自自定义 Head 下方起至屏幕底（不随模态动画移动） */
+const filterMaskStyle = computed(() => ({
+  top: `${navLayout.value.totalHeight}px`,
+}))
+
 const categoryOptions = computed(() => {
-  const options: Array<{ id: string; label: string }> = [{ id: '', label: '全部分类' }]
+  const options: Array<{ id: string; label: string }> = [{ id: MERCHANT_FILTER_ALL_ID, label: '全部分类' }]
   const hasUncategorized = catalogList.value.some((item) => !item.categoryId)
   if (hasUncategorized) options.push({ id: '__none__', label: '未分类' })
   for (const cat of categories.value) {
@@ -261,81 +462,124 @@ const categoryOptions = computed(() => {
   return options
 })
 
-const categoryLabels = computed(() => categoryOptions.value.map((item) => item.label))
-const categoryIndex = computed(() => {
-  const idx = categoryOptions.value.findIndex((item) => item.id === filters.value.categoryId)
-  return idx >= 0 ? idx : 0
-})
+const categorySelectableIds = computed(() =>
+  categoryOptions.value.filter((item) => item.id !== MERCHANT_FILTER_ALL_ID).map((item) => item.id),
+)
 
 const flowerKindSourceList = computed(() => {
-  const categoryId = filters.value.categoryId
-  if (!categoryId) return catalogList.value
-  if (categoryId === '__none__') return catalogList.value.filter((item) => !item.categoryId)
-  return catalogList.value.filter((item) => item.categoryId === categoryId)
+  const ids = filters.value.categoryIds
+  if (!ids.length) return catalogList.value
+  return catalogList.value.filter((item) => {
+    if (!item.categoryId) return ids.includes('__none__')
+    return ids.includes(item.categoryId)
+  })
 })
 
 const flowerKindOptions = computed(() => collectFlowerKindOptions(flowerKindSourceList.value))
-const flowerKindLabels = computed(() => {
-  if (!flowerKindOptions.value.length) return ['暂无花材']
-  return ['全部花材', ...flowerKindOptions.value.map((item) => item.name)]
-})
-const flowerKindIndex = computed(() => {
-  if (!flowerKindOptions.value.length) return 0
-  const idx = flowerKindOptions.value.findIndex((item) => item.id === filters.value.flowerKindId)
-  return idx >= 0 ? idx + 1 : 0
-})
+
+const flowerKindSelectableIds = computed(() => flowerKindOptions.value.map((item) => item.id))
 
 const flowerVarietyOptions = computed(() =>
-  collectFlowerVarietyOptions(flowerKindSourceList.value, filters.value.flowerKindId),
+  collectFlowerVarietyOptions(flowerKindSourceList.value, filters.value.flowerKindIds),
 )
-const flowerVarietyLabels = computed(() => {
-  if (!flowerVarietyOptions.value.length) return ['暂无品种']
-  return ['全部品种', ...flowerVarietyOptions.value.map((item) => item.name)]
-})
-const flowerVarietyIndex = computed(() => {
-  if (!flowerVarietyOptions.value.length) return 0
-  const idx = flowerVarietyOptions.value.findIndex(
-    (item) => item.id === filters.value.flowerVarietyId,
-  )
-  return idx >= 0 ? idx + 1 : 0
-})
+
+const flowerVarietySelectableIds = computed(() => flowerVarietyOptions.value.map((item) => item.id))
 
 const salesTypeOptions = computed(() => [
   { value: '' as const, label: '全部类型' },
   ...GOODS_SALES_TYPE_OPTIONS.map((item) => ({ value: item.value, label: item.label })),
 ])
-const salesTypeLabels = computed(() => salesTypeOptions.value.map((item) => item.label))
-const salesTypeIndex = computed(() => {
-  const idx = salesTypeOptions.value.findIndex((item) => item.value === filters.value.salesType)
-  return idx >= 0 ? idx : 0
+
+const salesTypeSelectableValues = computed(() =>
+  GOODS_SALES_TYPE_OPTIONS.map((item) => item.value),
+)
+
+const priceBounds = computed(() => {
+  let min = Infinity
+  let max = 0
+  for (const item of catalogList.value) {
+    const price = Number(item.price) || 0
+    if (price < min) min = price
+    if (price > max) max = price
+  }
+  if (!Number.isFinite(min) || !catalogList.value.length) {
+    return { floor: 0, ceil: 999, step: 1 }
+  }
+  const floor = Math.floor(min)
+  const ceil = Math.max(floor + 1, Math.ceil(max))
+  return { floor, ceil, step: 1 }
 })
 
-const stockStatusLabels = computed(() => stockStatusOptions.map((item) => item.label))
-const stockStatusIndex = computed(() => {
-  const idx = stockStatusOptions.findIndex((item) => item.value === filters.value.stockStatus)
-  return idx >= 0 ? idx : 0
+function parseFilterPrice(value: string): number | null {
+  const trimmed = value.trim()
+  if (!trimmed) return null
+  const num = Number(trimmed)
+  if (Number.isNaN(num) || num < 0) return null
+  return num
+}
+
+const priceSliderMin = computed(() => {
+  const { floor, ceil } = priceBounds.value
+  const parsed = parseFilterPrice(filters.value.priceMin)
+  if (parsed == null) return floor
+  return Math.min(Math.max(parsed, floor), ceil)
 })
+
+const priceSliderMax = computed(() => {
+  const { floor, ceil } = priceBounds.value
+  const parsed = parseFilterPrice(filters.value.priceMax)
+  if (parsed == null) return ceil
+  return Math.min(Math.max(parsed, floor), ceil)
+})
+
+const priceSliderMinLabel = computed(() => formatPrice(priceSliderMin.value))
+const priceSliderMaxLabel = computed(() => formatPrice(priceSliderMax.value))
+
+function syncPriceRange(minVal: number, maxVal: number) {
+  const { floor, ceil } = priceBounds.value
+  const lo = Math.min(minVal, maxVal)
+  const hi = Math.max(minVal, maxVal)
+  setFilters({
+    priceMin: lo <= floor ? '' : String(lo),
+    priceMax: hi >= ceil ? '' : String(hi),
+  })
+}
+
+function onPriceMinChanging(e: { detail: { value: number } }) {
+  syncPriceRange(e.detail.value, priceSliderMax.value)
+}
+
+function onPriceMinChange(e: { detail: { value: number } }) {
+  syncPriceRange(e.detail.value, priceSliderMax.value)
+}
+
+function onPriceMaxChanging(e: { detail: { value: number } }) {
+  syncPriceRange(priceSliderMin.value, e.detail.value)
+}
+
+function onPriceMaxChange(e: { detail: { value: number } }) {
+  syncPriceRange(priceSliderMin.value, e.detail.value)
+}
 
 const hasActiveFilters = computed(() => {
   const current = filters.value
   const defaults = DEFAULT_MERCHANT_GOODS_FILTER
   return (
     current.shelfStatus !== defaults.shelfStatus
-    || current.categoryId !== defaults.categoryId
-    || current.flowerKindId !== defaults.flowerKindId
-    || current.flowerVarietyId !== defaults.flowerVarietyId
+    || current.categoryIds.length > 0
+    || current.flowerKindIds.length > 0
+    || current.flowerVarietyIds.length > 0
     || current.recommendOnly !== defaults.recommendOnly
-    || current.salesType !== defaults.salesType
+    || current.salesTypes.length > 0
     || current.stockStatus !== defaults.stockStatus
     || current.priceMin.trim() !== ''
     || current.priceMax.trim() !== ''
-    || current.nameKeyword.trim() !== ''
-    || current.nameKeywordExact !== defaults.nameKeywordExact
+    || current.searchQuery.trim() !== ''
   )
 })
 
 const emptyDescription = computed(() => {
-  if (filters.value.nameKeyword.trim()) return '没有匹配的商品'
+  if (filters.value.searchQuery.trim()) return '没有匹配的商品'
   if (hasActiveFilters.value) return '没有符合筛选条件的商品'
   return '还没有商品，点击下方按钮创建'
 })
@@ -344,17 +588,38 @@ const allVisibleSelected = computed(() =>
   goodsList.value.length > 0 && goodsList.value.every((item) => selectedIds.value.includes(item._id)),
 )
 
+const hasBatchSelection = computed(() => selectedIds.value.length > 0)
+
 watch(flowerKindOptions, (options) => {
-  if (!isFlowerKindInOptions(filters.value.flowerKindId, options)) {
-    setFilters({ flowerKindId: '', flowerVarietyId: '' })
+  const nextKindIds = pruneMerchantMultiFilterIds(
+    filters.value.flowerKindIds,
+    options.map((item) => item.id),
+  )
+  const nextVarietyIds = pruneMerchantMultiFilterIds(
+    filters.value.flowerVarietyIds,
+    collectFlowerVarietyOptions(flowerKindSourceList.value, nextKindIds).map((item) => item.id),
+  )
+  const kindChanged =
+    nextKindIds.length !== filters.value.flowerKindIds.length
+    || nextKindIds.some((id, idx) => id !== filters.value.flowerKindIds[idx])
+  const varietyChanged =
+    nextVarietyIds.length !== filters.value.flowerVarietyIds.length
+    || nextVarietyIds.some((id, idx) => id !== filters.value.flowerVarietyIds[idx])
+  if (kindChanged || varietyChanged) {
+    setFilters({ flowerKindIds: nextKindIds, flowerVarietyIds: nextVarietyIds })
   }
 })
 
 watch(flowerVarietyOptions, (options) => {
-  const id = filters.value.flowerVarietyId
-  if (!id) return
-  if (!options.some((item) => item.id === id)) {
-    setFilters({ flowerVarietyId: '' })
+  const nextVarietyIds = pruneMerchantMultiFilterIds(
+    filters.value.flowerVarietyIds,
+    options.map((item) => item.id),
+  )
+  if (
+    nextVarietyIds.length !== filters.value.flowerVarietyIds.length
+    || nextVarietyIds.some((id, idx) => id !== filters.value.flowerVarietyIds[idx])
+  ) {
+    setFilters({ flowerVarietyIds: nextVarietyIds })
   }
 })
 
@@ -362,9 +627,101 @@ function isSelected(id: string) {
   return selectedIds.value.includes(id)
 }
 
+function exitBatchMode() {
+  batchMode.value = false
+  selectedIds.value = []
+}
+
 function toggleBatchMode() {
-  batchMode.value = !batchMode.value
-  if (!batchMode.value) selectedIds.value = []
+  if (batchMode.value) {
+    exitBatchMode()
+    return
+  }
+  if (filterModalOpen.value) {
+    closeFilterModal()
+  }
+  batchMode.value = true
+}
+
+function measureToolbarHeight(): Promise<void> {
+  return new Promise((resolve) => {
+    Taro.createSelectorQuery()
+      .select('#merchant-goods-toolbar')
+      .boundingClientRect()
+      .exec((res) => {
+        const rect = res[0] as Taro.BoundingClientRectCallbackResult | null
+        toolbarHeightPx.value = rect?.height ?? TOOLBAR_HEIGHT_FALLBACK_PX
+        resolve()
+      })
+  })
+}
+
+function startFilterPanelReveal() {
+  panelRevealHeightPx.value = 0
+  void nextTick(() => {
+    requestAnimationFrame(() => {
+      panelRevealHeightPx.value = filterPanelFullHeightPx.value
+    })
+  })
+}
+
+function scrollToolbarToTop(): Promise<void> {
+  return new Promise((resolve) => {
+    const query = Taro.createSelectorQuery()
+    query.select('#merchant-goods-toolbar').boundingClientRect()
+    query.selectViewport().scrollOffset()
+    query.exec((res) => {
+      const rect = res[0] as Taro.BoundingClientRectCallbackResult | null
+      const scroll = res[1] as { scrollTop?: number } | null
+      if (!rect || rect.top == null) {
+        resolve()
+        return
+      }
+      const delta = rect.top - navLayout.value.totalHeight
+      if (Math.abs(delta) < 2) {
+        resolve()
+        return
+      }
+      const scrollTop = Math.max(0, (scroll?.scrollTop ?? 0) + delta)
+      Taro.pageScrollTo({
+        scrollTop,
+        duration: 200,
+        complete: () => resolve(),
+        fail: () => resolve(),
+      })
+    })
+  })
+}
+
+async function toggleFilterModal() {
+  if (filterModalOpen.value) {
+    closeFilterModal()
+    return
+  }
+  await openFilterModal()
+}
+
+async function openFilterModal() {
+  if (batchMode.value) {
+    exitBatchMode()
+  }
+  filterPanelClosing.value = false
+  filterModalOpen.value = true
+  panelRevealHeightPx.value = 0
+  await nextTick()
+  await scrollToolbarToTop()
+  await measureToolbarHeight()
+  startFilterPanelReveal()
+}
+
+function closeFilterModal() {
+  if (!filterModalOpen.value || filterPanelClosing.value) return
+  filterPanelClosing.value = true
+  panelRevealHeightPx.value = 0
+  setTimeout(() => {
+    filterModalOpen.value = false
+    filterPanelClosing.value = false
+  }, FILTER_PANEL_TRANSITION_MS)
 }
 
 function toggleSelect(id: string) {
@@ -395,7 +752,7 @@ function onCardClick(id: string) {
 
 function requireSelection(): string[] | null {
   if (!selectedIds.value.length) {
-    wx.showToast({ title: '请先选择商品', icon: 'none' })
+    showToast({ title: '请先选择商品', icon: 'none' })
     return null
   }
   return selectedIds.value
@@ -406,22 +763,27 @@ async function runQuickBatch(action: GoodsBatchQuickAction) {
   if (!ids) return
 
   if (action === 'remove') {
-    const { confirm } = await new Promise<{ confirm: boolean }>((resolve) => {
-      wx.showModal({
-        title: '批量删除',
-        content: `确定删除选中的 ${ids.length} 件商品？`,
-        confirmColor: '#e53935',
-        success: (res) => resolve({ confirm: res.confirm }),
-      })
+    showNotifyConfirm({
+      title: '批量删除',
+      message: `确定删除选中的 ${ids.length} 件商品？`,
+      tone: 'danger',
+      confirmText: '确认删除',
+      onConfirm: () => {
+        void performQuickBatch('remove', ids)
+      },
     })
-    if (!confirm) return
+    return
   }
 
+  await performQuickBatch(action, ids)
+}
+
+async function performQuickBatch(action: GoodsBatchQuickAction, ids: string[]) {
   batchWorking.value = true
   try {
     if (action === 'remove') {
       await batchRemoveGoods(ids)
-      wx.showToast({ title: '已删除', icon: 'success' })
+      showToast({ title: '已删除', icon: 'success' })
     } else {
       const patch: GoodsBatchPatch = {}
       if (action === 'onShelf') patch.onSale = true
@@ -429,12 +791,12 @@ async function runQuickBatch(action: GoodsBatchQuickAction) {
       if (action === 'recommendOn') patch.recommend = true
       if (action === 'recommendOff') patch.recommend = false
       await batchUpdateGoods(ids, patch)
-      wx.showToast({ title: '已更新', icon: 'success' })
+      showToast({ title: '已更新', icon: 'success' })
     }
     selectedIds.value = []
     await loadGoods({ force: true })
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '操作失败',
       icon: 'none',
     })
@@ -448,7 +810,7 @@ function goBatchStockIn() {
   if (!ids) return
   const session = buildSelectStockInSession(ids, catalogList.value)
   if (!session.lines.length) {
-    wx.showToast({ title: '所选商品无效', icon: 'none' })
+    showToast({ title: '所选商品无效', icon: 'none' })
     return
   }
   writeStockInSession(session)
@@ -463,68 +825,78 @@ function goStockInImport() {
 }
 
 function onSearchKeyword(value: string) {
-  setFilters({ nameKeyword: value.trim() })
+  setFilters({ searchQuery: value.trim(), searchMatchMode: 'auto' })
 }
 
 function onPickSuggestion(item: GoodsNameSuggestion) {
-  keyword.value = item.name
-  setFilters({ nameKeyword: item.name.trim() })
-}
-
-function formatPrice(price: number) {
-  return Number(price).toFixed(2).replace(/\.00$/, '')
+  setFilters({ searchQuery: item.name.trim(), searchMatchMode: 'exact' })
 }
 
 function statusText(item: Goods) {
-  if (!item.onSale) return '下架'
-  if (isGoodsSoldOut(item)) return '售罄'
-  return ''
+  return getMerchantGoodsImageOverlay(item)?.label || ''
 }
 
 function statusClass(item: Goods) {
-  if (!item.onSale) return 'off'
-  if (isGoodsSoldOut(item)) return 'sold-out'
+  const kind = getMerchantGoodsImageOverlay(item)?.kind
+  if (kind === 'offSale') return 'off'
+  if (kind === 'soldOut') return 'sold-out'
   return ''
 }
 
-function onCategoryChange(event: { detail: { value: string } }) {
-  const index = Number(event.detail.value)
-  const option = categoryOptions.value[index]
-  setFilters({ categoryId: option?.id || '', flowerKindId: '', flowerVarietyId: '' })
+function isCategoryActive(id: string) {
+  return isMerchantMultiFilterActive(filters.value.categoryIds, id)
 }
 
-function onFlowerKindChange(event: { detail: { value: string } }) {
-  if (!flowerKindOptions.value.length) return
-  const index = Number(event.detail.value)
-  if (index <= 0) {
-    setFilters({ flowerKindId: '', flowerVarietyId: '' })
-    return
-  }
-  const option = flowerKindOptions.value[index - 1]
-  setFilters({ flowerKindId: option?.id || '', flowerVarietyId: '' })
+function toggleCategory(id: string) {
+  const next = toggleMerchantMultiFilter(
+    filters.value.categoryIds,
+    id,
+    categorySelectableIds.value,
+  )
+  setFilters({ categoryIds: next, flowerKindIds: [], flowerVarietyIds: [] })
 }
 
-function onFlowerVarietyChange(event: { detail: { value: string } }) {
-  if (!flowerVarietyOptions.value.length) return
-  const index = Number(event.detail.value)
-  if (index <= 0) {
-    setFilters({ flowerVarietyId: '' })
-    return
-  }
-  const option = flowerVarietyOptions.value[index - 1]
-  setFilters({ flowerVarietyId: option?.id || '' })
+function isFlowerKindActive(id: string) {
+  return isMerchantMultiFilterActive(filters.value.flowerKindIds, id)
 }
 
-function onSalesTypeChange(event: { detail: { value: string } }) {
-  const index = Number(event.detail.value)
-  const option = salesTypeOptions.value[index]
-  setFilters({ salesType: (option?.value || '') as GoodsSalesType | '' })
+function toggleFlowerKind(id: string) {
+  const next = toggleMerchantMultiFilter(
+    filters.value.flowerKindIds,
+    id,
+    flowerKindSelectableIds.value,
+  )
+  setFilters({ flowerKindIds: next, flowerVarietyIds: [] })
 }
 
-function onStockStatusChange(event: { detail: { value: string } }) {
-  const index = Number(event.detail.value)
-  const option = stockStatusOptions[index]
-  setFilters({ stockStatus: option?.value || 'all' })
+function isFlowerVarietyActive(id: string) {
+  return isMerchantMultiFilterActive(filters.value.flowerVarietyIds, id)
+}
+
+function toggleFlowerVariety(id: string) {
+  const next = toggleMerchantMultiFilter(
+    filters.value.flowerVarietyIds,
+    id,
+    flowerVarietySelectableIds.value,
+  )
+  setFilters({ flowerVarietyIds: next })
+}
+
+function isSalesTypeActive(value: GoodsSalesType | '') {
+  return isMerchantSalesTypeActive(filters.value.salesTypes, value)
+}
+
+function toggleSalesType(value: GoodsSalesType | '') {
+  const next = toggleMerchantSalesTypes(
+    filters.value.salesTypes,
+    value,
+    salesTypeSelectableValues.value,
+  )
+  setFilters({ salesTypes: next })
+}
+
+function pickStockStatus(value: MerchantStockStatus) {
+  setFilters({ stockStatus: value })
 }
 
 function onResetFilters() {
@@ -547,125 +919,247 @@ function editGoods(id: string) {
   background: #f8f8f8;
   padding-bottom: 160rpx;
   box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   &.has-batch-bar {
     padding-bottom: 360rpx;
   }
 }
-.toolbar {
+.manage-toolbar {
   flex-shrink: 0;
-  padding: 16rpx;
-  background: #fff;
-  position: relative;
-  z-index: 201;
-}
-.toolbar-actions {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  padding: 16rpx 24rpx 12rpx;
+  background: #fff;
+  box-sizing: border-box;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
+  &.is-filter-open {
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  }
+}
+.manage-toolbar-placeholder {
+  flex-shrink: 0;
+  width: 100%;
+}
+.manage-toolbar__bar {
+  display: flex;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 16rpx;
   margin-top: 12rpx;
-  flex-wrap: wrap;
-  position: relative;
-  z-index: 202;
 }
-.exact-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-}
-.exact-label {
-  font-size: 24rpx;
-  color: #666;
-}
-.link-btn {
-  font-size: 24rpx;
-  color: #667eea;
-  padding: 8rpx 0;
-}
-.link-btn--active {
-  opacity: 0.65;
-}
-.filter-panel {
+.manage-toolbar__count {
   flex-shrink: 0;
-  background: #fff;
-  border-bottom: 2rpx solid #f0f0f0;
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.4;
+  padding-bottom: 6rpx;
 }
-.status-tabs {
-  display: flex;
-  border-bottom: 2rpx solid #f0f0f0;
-}
-.status-tab {
-  flex: 1;
-  padding: 20rpx 0;
-  font-size: 26rpx;
-  color: #666;
-  text-align: center;
-  border-bottom: 4rpx solid transparent;
-  &.active {
-    color: #667eea;
-    font-weight: 600;
-    border-bottom-color: #667eea;
-  }
-}
-.filter-form {
-  padding: 8rpx 24rpx 16rpx;
-}
-.filter-row {
-  display: flex;
-  align-items: center;
-  min-height: 72rpx;
-  border-bottom: 1rpx solid #f5f5f5;
-  &--price {
-    align-items: center;
-  }
-  &--switch {
-    border-bottom: none;
-  }
-}
-.filter-label {
-  width: 160rpx;
-  flex-shrink: 0;
-  font-size: 26rpx;
-  color: #666;
-}
-.filter-picker {
+.manage-toolbar__actions {
   flex: 1;
   min-width: 0;
-}
-.filter-value {
-  font-size: 26rpx;
-  color: #333;
-  text-align: right;
-  padding: 8rpx 0;
-  &::after {
-    content: ' ›';
-    color: #bbb;
-  }
-  &.muted {
-    color: #bbb;
-  }
-}
-.price-range {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12rpx;
+  flex-wrap: wrap;
+  gap: 12rpx 16rpx;
 }
-.price-input {
-  width: 160rpx;
-  height: 56rpx;
-  padding: 0 16rpx;
-  font-size: 26rpx;
-  color: #333;
+.tool-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 10rpx 20rpx;
+  font-size: 24rpx;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.08);
+  border-radius: 999rpx;
+  box-sizing: border-box;
+  &.is-active {
+    color: #fff;
+    background: #667eea;
+    .tool-btn__count {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.22);
+    }
+  }
+  &--filter {
+    padding-right: 12rpx;
+  }
+}
+.tool-btn__label {
+  flex-shrink: 0;
+}
+.tool-btn__count {
+  flex-shrink: 0;
+  min-width: 32rpx;
+  padding: 0 10rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 32rpx;
   text-align: center;
-  background: #f5f5f5;
-  border-radius: 8rpx;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.18);
+  border-radius: 999rpx;
   box-sizing: border-box;
 }
-.price-sep {
+.tool-btn--active {
+  opacity: 0.7;
+}
+.filter-modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+.filter-modal__mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+}
+.filter-modal__panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  pointer-events: auto;
+  z-index: 1;
+  background: transparent;
+}
+.filter-modal__foot {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 0 0 24rpx 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+  transition: height 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  &.is-closing {
+    transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+}
+.filter-modal__reveal {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.filter-modal__scroll {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+.filter-modal__actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 16rpx;
+  padding: 16rpx 24rpx;
+  border-top: 1rpx solid #f0f0f0;
+  background: #fff;
+  box-sizing: border-box;
+}
+.filter-modal__btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 48rpx;
+  font-size: 30rpx;
+}
+.filter-form {
+  padding: 16rpx 24rpx 32rpx;
+  box-sizing: border-box;
+}
+.filter-section {
+  padding-bottom: 20rpx;
+  &--price {
+    .filter-section__label {
+      margin-bottom: 12rpx;
+    }
+  }
+  &--switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16rpx;
+    padding-bottom: 8rpx;
+    .filter-section__label {
+      margin-bottom: 0;
+    }
+  }
+}
+.filter-section__label {
+  margin-bottom: 12rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #333;
+  &--sub {
+    margin-top: 16rpx;
+  }
+}
+.filter-chips {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12rpx 16rpx;
+}
+.filter-chip {
+  flex: none;
+  padding: 12rpx 20rpx;
+  font-size: 24rpx;
+  line-height: 1.2;
+  color: #666;
+  background: #f5f5f5;
+  border: 2rpx solid #eee;
+  border-radius: 999rpx;
+  box-sizing: border-box;
+  &.active {
+    color: #667eea;
+    font-weight: 600;
+    background: rgba(102, 126, 234, 0.1);
+    border-color: rgba(102, 126, 234, 0.35);
+  }
+}
+.filter-empty-hint {
   font-size: 24rpx;
   color: #bbb;
+}
+.price-slider-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  &__sep {
+    color: #bbb;
+    font-weight: 400;
+  }
+}
+.price-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+  &__label {
+    flex-shrink: 0;
+    width: 56rpx;
+    font-size: 24rpx;
+    color: #999;
+  }
+}
+.price-slider {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
 }
 .filter-actions {
   display: flex;
@@ -746,16 +1240,6 @@ function editGoods(id: string) {
 .batch-mode .status-badge {
   left: 56rpx;
 }
-.recommend-badge {
-  position: absolute;
-  top: 12rpx;
-  right: 12rpx;
-  padding: 4rpx 12rpx;
-  font-size: 20rpx;
-  color: #fff;
-  background: rgba(229, 57, 53, 0.9);
-  border-radius: 8rpx;
-}
 .goods-name {
   padding: 12rpx 16rpx 4rpx;
   font-size: 26rpx;
@@ -791,14 +1275,18 @@ function editGoods(id: string) {
   position: fixed;
   left: 32rpx;
   right: 32rpx;
-  bottom: 48rpx;
+  bottom: calc(48rpx + env(safe-area-inset-bottom));
   z-index: 100;
+  box-sizing: border-box;
+  max-width: calc(100vw - 64rpx);
 }
 .fab-btn {
   width: 100%;
+  max-width: 100%;
   height: 96rpx;
   border-radius: 48rpx;
   font-size: 30rpx;
+  box-sizing: border-box;
 }
 .batch-bar {
   position: fixed;
@@ -824,6 +1312,10 @@ function editGoods(id: string) {
 .batch-link {
   font-size: 24rpx;
   color: #667eea;
+  padding: 8rpx 0 8rpx 16rpx;
+}
+.batch-link--active {
+  opacity: 0.7;
 }
 .batch-actions {
   display: flex;
@@ -842,6 +1334,10 @@ function editGoods(id: string) {
   &.danger {
     color: #e53935;
     background: rgba(229, 57, 53, 0.08);
+  }
+  &.is-disabled {
+    opacity: 0.38;
+    pointer-events: none;
   }
 }
 .batch-action--active {

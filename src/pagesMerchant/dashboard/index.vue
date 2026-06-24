@@ -1,6 +1,7 @@
 <template>
   <view class="page-dashboard">
-    <view class="header">
+    <AppFeedbackHost />
+    <view class="header" :style="headerStyle">
       <view class="greeting">👋 早上好，店长</view>
       <view class="shop-name">{{ shopStore.shopName }}</view>
     </view>
@@ -64,14 +65,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { showToast } from '@/utils/feedback'
+import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
 import { getMerchantOrderStats } from '@/services/order'
 import { useShopDisplay } from '@/composables/useShopDisplay'
+import { useNavBarLayout } from '@/composables/useNavBarLayout'
+import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import type { OrderStatus } from '@/types/order'
 
 const shopStore = useShopDisplay({ initDb: true })
+const { statusBarHeightPx } = useNavBarLayout()
+
+const headerStyle = computed(() => ({
+  paddingTop: `calc(${statusBarHeightPx.value} + 48rpx)`,
+}))
 
 const stats = ref({
   todayOrders: 0,
@@ -122,7 +131,7 @@ function go(page: string) {
   if (!url) return
   navigateTo({ url }).catch((err) => {
     console.error('[dashboard] navigate failed:', err)
-    wx.showToast({ title: '页面打开失败', icon: 'none' })
+    showToast({ title: '页面打开失败', icon: 'none' })
   })
 }
 

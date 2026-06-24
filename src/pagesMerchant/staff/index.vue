@@ -1,17 +1,16 @@
 <template>
-  <view class="page-staff">
+  <view class="page-staff" :style="navCssVars">
+    <AppNavBar />
     <view class="intro">
       <view class="title">工作人员</view>
-      <view class="desc">填写 OpenID 添加工作人员，并设置身份</view>
+      <view class="desc">生成邀请码发给同事，对方在小程序「我的」自行输入邀请码即可加入团队</view>
+      <view class="prelaunch-tip">请将邀请码通过微信发给对方；对方打开小程序 → 我的 → 输入邀请码。微信分享链接待正式上线后再验证</view>
     </view>
 
     <view class="add-card">
       <nut-form>
-        <nut-form-item label="OpenID">
-          <nut-input v-model="form.openid" placeholder="粘贴或输入对方 OpenID" />
-        </nut-form-item>
-        <nut-form-item label="姓名">
-          <nut-input v-model="form.name" placeholder="工作人员姓名" />
+        <nut-form-item label="预设姓名">
+          <nut-input v-model="form.name" placeholder="同事在团队中的显示姓名" />
         </nut-form-item>
         <nut-form-item label="身份">
           <nut-radio-group v-model="form.role" direction="horizontal">
@@ -25,12 +24,20 @@
           </nut-radio-group>
         </nut-form-item>
       </nut-form>
-      <nut-button type="primary" block class="add-btn" :loading="adding" @click="handleAdd">
-        添加工作人员
+
+      <nut-button type="primary" block class="primary-btn" :loading="creating" @click="handleCreateInvite">
+        生成邀请码
       </nut-button>
-      <nut-button plain block class="scan-btn" :loading="adding" @click="scanToAdd">
-        扫码添加
-      </nut-button>
+
+      <view v-if="activeInvite" class="invite-panel">
+        <view class="invite-panel-title">请将下方邀请码发给对方（24 小时内有效，仅可使用一次）</view>
+        <view class="invite-code">{{ activeInvite.code }}</view>
+        <view class="invite-meta">身份：{{ activeInvite.roleLabel }}</view>
+        <view class="invite-meta">过期：{{ inviteExpiresText }}</view>
+        <nut-button type="primary" block class="copy-code-btn" @click="copyInviteCode">复制邀请码发给对方</nut-button>
+        <button class="share-btn" open-type="share">发送微信邀请</button>
+        <nut-button plain block class="copy-btn" @click="copyInvitePath">复制小程序路径</nut-button>
+      </view>
     </view>
 
     <view class="staff-list" v-if="staffList.length">
@@ -46,21 +53,21 @@
             {{ item.name }}
             <text class="role-tag" :class="item.role">{{ roleLabel(item.role) }}</text>
           </view>
-          <view class="staff-openid">{{ maskOpenid(item.openid) }}</view>
         </view>
         <text class="item-arrow">›</text>
       </view>
     </view>
 
     <view class="empty" v-else-if="!loading">
-      <view class="empty-text">暂无工作人员，请在上方填写 OpenID 添加</view>
+      <view class="empty-text">暂无工作人员，请生成邀请码发给同事，由对方自行输入加入</view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useDidShow } from '@tarojs/taro'
+import { showToast } from '@/utils/feedback'
+import { computed, ref } from 'vue'
+import { useDidShow, useShareAppMessage } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
 import {
   ASSIGNABLE_STAFF_ROLES,
@@ -68,12 +75,20 @@ import {
   STAFF_ROLES,
   type StaffRole,
 } from '@/utils/constants'
-import { normalizeOpenid, parseIdentityQr } from '@/utils/identity'
-import { listStaff, addStaff, type StaffMember } from '@/services/staff'
+import {
+  createStaffInvite,
+  listStaff,
+  type StaffInviteCreated,
+  type StaffMember,
+} from '@/services/staff'
+import { useNavBarLayout } from '@/composables/useNavBarLayout'
+
+const { cssVars: navCssVars } = useNavBarLayout()
 
 const staffList = ref<StaffMember[]>([])
 const loading = ref(false)
-const adding = ref(false)
+const creating = ref(false)
+const activeInvite = ref<StaffInviteCreated | null>(null)
 
 const roleOptions = ASSIGNABLE_STAFF_ROLES.map((value) => ({
   value,
@@ -81,13 +96,34 @@ const roleOptions = ASSIGNABLE_STAFF_ROLES.map((value) => ({
 }))
 
 const form = ref({
-  openid: '',
   name: '',
   role: STAFF_ROLES.Staff as StaffRole,
 })
 
+const inviteExpiresText = computed(() => {
+  const ts = activeInvite.value?.expiresAt || 0
+  if (!ts) return '--'
+  const d = new Date(ts)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+})
+
 useDidShow(() => {
-  loadStaff()
+  void loadStaff()
+})
+
+useShareAppMessage(() => {
+  const invite = activeInvite.value
+  if (!invite) {
+    return {
+      title: '梵宇花店',
+      path: '/pages/home/index',
+    }
+  }
+  return {
+    title: `邀请你加入梵宇花店商家团队（${invite.roleLabel}）`,
+    path: invite.sharePath,
+  }
 })
 
 function roleLabel(role: StaffRole) {
@@ -99,7 +135,7 @@ async function loadStaff() {
   try {
     staffList.value = await listStaff()
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '加载失败',
       icon: 'none',
     })
@@ -108,92 +144,44 @@ async function loadStaff() {
   }
 }
 
-function maskOpenid(openid: string) {
-  if (openid.length <= 8) return openid
-  return `${openid.slice(0, 4)}...${openid.slice(-4)}`
-}
-
 function goDetail(item: StaffMember) {
   navigateTo({
-    url: `/pagesMerchant/staff/detail?openid=${encodeURIComponent(item.openid)}`,
+    url: `/pagesMerchant/staff/detail?userId=${encodeURIComponent(item.userId)}`,
   })
 }
 
-function pickRole(): Promise<StaffRole | null> {
-  return new Promise((resolve) => {
-    wx.showActionSheet({
-      itemList: roleOptions.map((item) => item.label),
-      success: (res) => resolve(roleOptions[res.tapIndex]?.value || null),
-      fail: () => resolve(null),
-    })
-  })
-}
-
-async function submitAdd(openid: string, name: string, role: StaffRole) {
-  adding.value = true
+async function handleCreateInvite() {
+  const name = form.value.name.trim() || '工作人员'
+  creating.value = true
   try {
-    await addStaff(openid, name, role)
-    wx.showToast({ title: '添加成功', icon: 'success' })
-    form.value.openid = ''
-    form.value.name = ''
-    form.value.role = STAFF_ROLES.Staff
-    await loadStaff()
+    activeInvite.value = await createStaffInvite(name, form.value.role)
+    showToast({ title: '邀请已生成', icon: 'success' })
   } catch (err) {
-    wx.showToast({
-      title: err instanceof Error ? err.message : '添加失败',
+    showToast({
+      title: err instanceof Error ? err.message : '生成失败',
       icon: 'none',
     })
   } finally {
-    adding.value = false
+    creating.value = false
   }
 }
 
-async function handleAdd() {
-  const openid = normalizeOpenid(form.value.openid)
-  if (!openid) {
-    wx.showToast({ title: '请填写有效的 OpenID', icon: 'none' })
-    return
-  }
-
-  const name = form.value.name.trim() || '工作人员'
-  await submitAdd(openid, name, form.value.role)
+function copyInviteCode() {
+  const invite = activeInvite.value
+  if (!invite) return
+  wx.setClipboardData({
+    data: invite.code,
+    success: () => showToast({ title: '邀请码已复制', icon: 'success' }),
+  })
 }
 
-async function scanToAdd() {
-  try {
-    const res = await wx.scanCode({ scanType: ['qrCode'] })
-    const openid = parseIdentityQr(res.result)
-    if (!openid) {
-      wx.showToast({ title: '无法识别的身份码', icon: 'none' })
-      return
-    }
-
-    const { confirm, content } = await new Promise<{ confirm: boolean; content: string }>(
-      (resolve) => {
-        wx.showModal({
-          title: '添加工作人员',
-          editable: true,
-          placeholderText: '请输入姓名',
-          content: '',
-          success: (r) =>
-            resolve({ confirm: r.confirm, content: (r as { content?: string }).content || '' }),
-        })
-      },
-    )
-
-    if (!confirm) return
-
-    const role = await pickRole()
-    if (!role) return
-
-    await submitAdd(openid, content.trim() || '工作人员', role)
-  } catch (err) {
-    if ((err as { errMsg?: string }).errMsg?.includes('cancel')) return
-    wx.showToast({
-      title: err instanceof Error ? err.message : '添加失败',
-      icon: 'none',
-    })
-  }
+function copyInvitePath() {
+  const invite = activeInvite.value
+  if (!invite) return
+  wx.setClipboardData({
+    data: invite.sharePath,
+    success: () => showToast({ title: '路径已复制', icon: 'success' }),
+  })
 }
 </script>
 
@@ -201,9 +189,13 @@ async function scanToAdd() {
 .page-staff {
   min-height: 100vh;
   background: #f8f8f8;
+  box-sizing: border-box;
+  width: 100%;
+  overflow-x: hidden;
 }
 .intro {
-  padding: 32rpx;
+  padding: 32rpx 24rpx;
+  box-sizing: border-box;
   .title {
     font-size: 32rpx;
     font-weight: 600;
@@ -213,20 +205,91 @@ async function scanToAdd() {
     margin-top: 8rpx;
     font-size: 26rpx;
     color: #999;
+    line-height: 1.5;
+  }
+  .prelaunch-tip {
+    margin-top: 12rpx;
+    padding: 12rpx 16rpx;
+    font-size: 24rpx;
+    line-height: 1.45;
+    color: #e65100;
+    background: #fff8e1;
+    border-radius: 12rpx;
   }
 }
 .add-card {
   margin: 0 16rpx 24rpx;
-  padding: 8rpx 0 24rpx;
+  padding: 8rpx 24rpx 24rpx;
   background: #fff;
   border-radius: 16rpx;
+  box-sizing: border-box;
+  overflow: hidden;
 }
-.add-btn,
-.scan-btn {
-  margin: 16rpx 32rpx 0;
+.primary-btn {
+  margin: 16rpx 0 0;
+  width: 100%;
+  max-width: 100%;
   border-radius: 48rpx;
   height: 88rpx;
   font-size: 30rpx;
+  box-sizing: border-box;
+}
+.invite-panel {
+  margin: 24rpx 0 0;
+  padding: 24rpx;
+  background: #fff8f8;
+  border: 2rpx solid #ffe0e0;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+}
+.invite-panel-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #c62828;
+}
+.invite-code {
+  margin-top: 16rpx;
+  font-size: 56rpx;
+  font-weight: 700;
+  letter-spacing: 8rpx;
+  color: #333;
+  text-align: center;
+}
+.invite-meta {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+.copy-code-btn {
+  margin-top: 20rpx;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 48rpx;
+  height: 88rpx;
+  font-size: 30rpx;
+  box-sizing: border-box;
+}
+.share-btn {
+  margin-top: 16rpx;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 48rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 30rpx;
+  color: #fff;
+  background: #e53935;
+  border: none;
+  box-sizing: border-box;
+}
+.copy-btn {
+  margin-top: 16rpx;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 48rpx;
+  height: 88rpx;
+  font-size: 30rpx;
+  box-sizing: border-box;
 }
 .section-title {
   padding: 0 32rpx 16rpx;
@@ -269,11 +332,6 @@ async function scanToAdd() {
     color: #999;
     background: #f5f5f5;
   }
-}
-.staff-openid {
-  margin-top: 6rpx;
-  font-size: 22rpx;
-  color: #bbb;
 }
 .item-arrow {
   flex-shrink: 0;

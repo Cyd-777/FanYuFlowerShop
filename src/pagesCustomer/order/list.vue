@@ -1,11 +1,7 @@
 <template>
   <view class="page-order-list">
-    <nut-tabs v-model="activeTab">
-      <nut-tab-pane title="全部" pane-key="all" />
-      <nut-tab-pane title="待处理" pane-key="pending" />
-      <nut-tab-pane title="处理中" pane-key="processing" />
-      <nut-tab-pane title="已完成" pane-key="completed" />
-    </nut-tabs>
+    <AppNavBar />
+    <OrderListStatusTabs v-model="activeTab" />
 
     <view v-if="loading" class="loading-tip">加载中…</view>
 
@@ -38,12 +34,14 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { ref, watch } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import { listMyOrders } from '@/services/order'
 import type { OrderListTab } from '@/services/order'
 import { navigateTo } from '@/utils/router'
 import GoodsImage from '@/components/GoodsImage.vue'
+import OrderListStatusTabs from '@/components/OrderListStatusTabs.vue'
 import type { Order } from '@/types/order'
 import { getOrderProgressLabel } from '@/types/order'
 
@@ -76,7 +74,7 @@ async function loadOrders() {
     orders.value = await listMyOrders(activeTab.value)
   } catch (err) {
     orders.value = []
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '加载失败',
       icon: 'none',
     })
@@ -126,6 +124,8 @@ function goDetail(id: string) {
   color: #999;
 }
 .order-card {
+  box-sizing: border-box;
+  max-width: calc(100% - 32rpx);
   background: #fff;
   margin: 16rpx;
   border-radius: 12rpx;

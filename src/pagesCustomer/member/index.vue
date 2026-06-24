@@ -1,5 +1,6 @@
 <template>
   <view class="page-member">
+    <AppNavBar />
     <view class="member-card">
       <view class="level-icon">{{ levelProgress.current.icon }}</view>
       <view class="level-name">{{ levelProgress.current.name }}</view>

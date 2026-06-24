@@ -1,5 +1,6 @@
 <template>
   <view class="page-edit-addr">
+    <AppNavBar />
     <view class="wechat-tip">
       地址来自微信地址簿。如需修改，请在微信地址中编辑后重新导入。
     </view>
@@ -53,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useLoad } from '@tarojs/taro'
 import { navigateBack } from '@/utils/router'
@@ -94,7 +96,7 @@ useLoad((options) => {
 
   const existing = getAddress(addressId.value)
   if (!existing) {
-    wx.showToast({ title: '地址不存在', icon: 'none' })
+    showToast({ title: '地址不存在', icon: 'none' })
     setTimeout(() => navigateBack(), 1500)
     return
   }
@@ -105,7 +107,7 @@ useLoad((options) => {
 async function importWechatAddressAndBack() {
   try {
     await importWechatAddressAndSave()
-    wx.showToast({ title: '地址已保存', icon: 'success' })
+    showToast({ title: '地址已保存', icon: 'success' })
     setTimeout(() => navigateBack(), 500)
   } catch (err) {
     handleLocationError(err, '添加地址失败')
@@ -122,7 +124,7 @@ async function reimportWechatAddress() {
     const nextForm = wechatAddressToForm(result, { isDefault: form.value.isDefault })
     saveAddress(nextForm, addressId.value)
     form.value = nextForm
-    wx.showToast({ title: '已更新为微信地址', icon: 'success' })
+    showToast({ title: '已更新为微信地址', icon: 'success' })
   } catch (err) {
     handleLocationError(err, '导入微信地址失败')
   } finally {
@@ -135,7 +137,7 @@ function onDefaultChange(value: boolean) {
   try {
     saveAddress({ ...form.value, isDefault: value }, addressId.value)
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '保存失败',
       icon: 'none',
     })
@@ -158,10 +160,10 @@ async function handleDelete() {
   deleting.value = true
   try {
     removeAddress(addressId.value)
-    wx.showToast({ title: '已删除', icon: 'success' })
+    showToast({ title: '已删除', icon: 'success' })
     setTimeout(() => navigateBack(), 500)
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '删除失败',
       icon: 'none',
     })

@@ -1,5 +1,6 @@
 <template>
   <view class="page-points">
+    <AppNavBar />
     <view class="total-card">
       <view class="label">当前积分</view>
       <view class="value">{{ points }}</view>

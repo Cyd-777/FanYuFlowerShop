@@ -1,5 +1,6 @@
 <template>
   <view class="page-customize">
+    <AppNavBar />
     <view class="tip-card">
       <view class="tip-title">定制花束</view>
       <view class="tip-desc">
@@ -71,6 +72,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
@@ -113,7 +115,7 @@ function goPick(role: 'flower' | 'packaging' | 'card') {
 
 function submitOrder() {
   if (!isCustomBouquetReady(draft.value)) {
-    wx.showToast({ title: '请先选择花材和包装', icon: 'none' })
+    showToast({ title: '请先选择花材和包装', icon: 'none' })
     return
   }
   persistDraft()

@@ -1,12 +1,13 @@
 <template>
   <view class="page-staff-detail">
+    <AppNavBar />
     <view v-if="loading" class="loading-tip">加载中…</view>
 
     <template v-else-if="member">
       <view class="form-card">
         <nut-form>
-          <nut-form-item label="OpenID">
-            <view class="readonly-value">{{ member.openid }}</view>
+          <nut-form-item label="用户 ID">
+            <view class="readonly-value">{{ member.userId }}</view>
           </nut-form-item>
           <nut-form-item label="姓名">
             <nut-input v-model="form.name" placeholder="工作人员姓名" />
@@ -53,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useLoad } from '@tarojs/taro'
 import { navigateBack } from '@/utils/router'
@@ -70,7 +72,7 @@ import {
   type StaffMember,
 } from '@/services/staff'
 
-const targetOpenid = ref('')
+const targetUserId = ref('')
 const member = ref<StaffMember | null>(null)
 const loading = ref(true)
 const saving = ref(false)
@@ -89,7 +91,7 @@ const roleOptions = ASSIGNABLE_STAFF_ROLES.map((value) => ({
 const isOwner = computed(() => member.value?.role === STAFF_ROLES.Owner)
 
 useLoad((options) => {
-  targetOpenid.value = options?.openid ? decodeURIComponent(options.openid) : ''
+  targetUserId.value = options?.userId ? decodeURIComponent(options.userId) : ''
   void loadMember()
 })
 
@@ -98,7 +100,7 @@ function roleLabel(role: StaffRole) {
 }
 
 async function loadMember() {
-  if (!targetOpenid.value) {
+  if (!targetUserId.value) {
     loading.value = false
     return
   }
@@ -106,14 +108,13 @@ async function loadMember() {
   loading.value = true
   try {
     const list = await listStaff()
-    const found = list.find((item) => item.openid === targetOpenid.value) || null
-    member.value = found
-    if (found) {
-      form.value.name = found.name
-      form.value.role = found.role
+    member.value = list.find((item) => item.userId === targetUserId.value) || null
+    if (member.value) {
+      form.value.name = member.value.name
+      form.value.role = member.value.role
     }
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '加载失败',
       icon: 'none',
     })
@@ -127,29 +128,29 @@ async function save() {
 
   const name = form.value.name.trim()
   if (!name) {
-    wx.showToast({ title: '请填写姓名', icon: 'none' })
+    showToast({ title: '请填写姓名', icon: 'none' })
     return
   }
 
   const nameChanged = name !== member.value.name
   const roleChanged = !isOwner.value && form.value.role !== member.value.role
   if (!nameChanged && !roleChanged) {
-    wx.showToast({ title: '没有需要保存的修改', icon: 'none' })
+    showToast({ title: '没有需要保存的修改', icon: 'none' })
     return
   }
 
   saving.value = true
   try {
     if (nameChanged) {
-      await updateStaffName(member.value.openid, name)
+      await updateStaffName(member.value.userId, name)
     }
     if (roleChanged) {
-      await updateStaffRole(member.value.openid, form.value.role)
+      await updateStaffRole(member.value.userId, form.value.role)
     }
-    wx.showToast({ title: '已保存', icon: 'success' })
+    showToast({ title: '已保存', icon: 'success' })
     navigateBack()
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '保存失败',
       icon: 'none',
     })
@@ -173,11 +174,11 @@ async function handleRemove() {
 
   deleting.value = true
   try {
-    await removeStaff(member.value.openid)
-    wx.showToast({ title: '已移除', icon: 'success' })
+    await removeStaff(member.value.userId)
+    showToast({ title: '已移除', icon: 'success' })
     navigateBack()
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '移除失败',
       icon: 'none',
     })

@@ -1,4 +1,6 @@
 import type { Goods } from '@/types/goods'
+import type { SearchSuggestion } from '@/types/search'
+import { buildCustomerGoodsHaystack } from '@/utils/customerGoodsSearch'
 
 export interface GoodsNameSuggestion {
   id: string
@@ -6,7 +8,15 @@ export interface GoodsNameSuggestion {
   categoryName: string
 }
 
-/** 商品名称输入预判：前缀优先，其次包含匹配 */
+function toSearchSuggestion(item: GoodsNameSuggestion): SearchSuggestion {
+  return {
+    id: item.id,
+    label: item.name,
+    meta: item.categoryName,
+  }
+}
+
+/** 商品输入预判：名称前缀优先，亦匹配描述 / 花材 / 分类 */
 export function suggestGoodsNames(
   list: Goods[],
   query: string,
@@ -21,13 +31,16 @@ export function suggestGoodsNames(
     const name = goods.name?.trim() || ''
     if (!name) continue
     const lower = name.toLowerCase()
-    if (!lower.includes(q)) continue
+    const haystack = buildCustomerGoodsHaystack(goods)
+    const nameHit = lower.includes(q) || lower.startsWith(q)
+    const fieldHit = haystack.includes(q)
+    if (!nameHit && !fieldHit) continue
 
     let score = 0
     if (lower.startsWith(q)) score += 100
     if (lower === q) score += 50
-    const index = lower.indexOf(q)
-    score += Math.max(0, 20 - index)
+    if (nameHit) score += Math.max(0, 20 - lower.indexOf(q))
+    if (fieldHit && !nameHit) score += 25
     score -= name.length * 0.05
 
     scored.push({
@@ -53,6 +66,11 @@ export function suggestGoodsNames(
   }
 
   return result
+}
+
+/** 供 AppSearchInput 使用的预判适配 */
+export function suggestGoodsAsSearchItems(list: Goods[], query: string, limit = 8) {
+  return suggestGoodsNames(list, query, limit).map(toSearchSuggestion)
 }
 
 /** 按名称关键词筛选；exact 为 true 时精确匹配品名 */

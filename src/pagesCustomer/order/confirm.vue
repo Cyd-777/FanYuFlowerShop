@@ -1,5 +1,6 @@
 <template>
   <view class="page-confirm">
+    <AppNavBar />
     <view class="address-card" @click="selectAddress">
       <view class="address-label">收货地址</view>
       <view v-if="address" class="address-content">
@@ -44,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { storeToRefs } from 'pinia'
@@ -97,11 +99,11 @@ async function submitOrder() {
   if (submitting.value) return
 
   if (!goodsList.value.length) {
-    wx.showToast({ title: '暂无待结算商品', icon: 'none' })
+    showToast({ title: '暂无待结算商品', icon: 'none' })
     return
   }
   if (!address.value) {
-    wx.showToast({ title: '请选择收货地址', icon: 'none' })
+    showToast({ title: '请选择收货地址', icon: 'none' })
     return
   }
 
@@ -114,13 +116,13 @@ async function submitOrder() {
     )
     const order = await createOrder(payload)
     cartStore.removeChecked()
-    wx.showToast({ title: '订单已提交', icon: 'success' })
+    showToast({ title: '订单已提交', icon: 'success' })
     redirectTo({
       url: `/pagesCustomer/order/detail?id=${order._id}`,
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : '提交失败，请重试'
-    wx.showToast({ title: message, icon: 'none', duration: 2500 })
+    showToast({ title: message, icon: 'none', duration: 2500 })
   } finally {
     submitting.value = false
   }

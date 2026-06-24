@@ -1,5 +1,6 @@
 <template>
   <view class="page-order-detail" :class="{ 'has-footer': canCancel }">
+    <AppNavBar />
     <view v-if="loading" class="loading-tip">加载中…</view>
 
     <template v-else-if="order">
@@ -61,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import { cancelMyOrder, getOrder } from '@/services/order'
@@ -152,9 +154,9 @@ async function handleCancel() {
   cancelling.value = true
   try {
     order.value = await cancelMyOrder(orderId.value)
-    wx.showToast({ title: '订单已取消', icon: 'success' })
+    showToast({ title: '订单已取消', icon: 'success' })
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '取消失败',
       icon: 'none',
       duration: 2500,

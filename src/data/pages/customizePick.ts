@@ -1,3 +1,4 @@
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { usePublicCategories } from '@/composables/usePublicCategories'
 import { goodsRepository } from '@/data/repository'
@@ -83,7 +84,7 @@ export function setupCustomizePickPageData(): PageSetupResult & Record<string, u
       }
     } catch (err) {
       goodsList.value = []
-      wx.showToast({
+      showToast({
         title: err instanceof Error ? err.message : '加载商品失败',
         icon: 'none',
       })

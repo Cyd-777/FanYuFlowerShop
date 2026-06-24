@@ -79,6 +79,19 @@ export function getShopThemePreset(id: ShopThemeId): ShopThemePreset {
 
 export interface ResolvedShopTheme extends ShopThemePreset {
   bannerImage: string
+  bannerImages: string[]
+}
+
+/** 从主题配置读取轮播 fileID 列表（优先 bannerImages，回退 bannerImage） */
+export function resolveThemeBannerFileIds(
+  config?: { bannerImage?: string; bannerImages?: string[] },
+): string[] {
+  const fromList = (config?.bannerImages || [])
+    .map((id) => String(id || '').trim())
+    .filter(Boolean)
+  if (fromList.length) return fromList
+  const single = String(config?.bannerImage || '').trim()
+  return single ? [single] : []
 }
 
 /** 合并预设与商家自定义装潢配置 */
@@ -88,6 +101,7 @@ export function resolveActiveTheme(decoration: {
 }): ResolvedShopTheme {
   const preset = getShopThemePreset(decoration.activeThemeId)
   const override = decoration.themeConfigs[decoration.activeThemeId] || {}
+  const bannerImages = resolveThemeBannerFileIds(override)
 
   return {
     ...preset,
@@ -95,6 +109,7 @@ export function resolveActiveTheme(decoration: {
     headerGradient: override.headerGradient || preset.headerGradient,
     homeSubtitle: override.homeSubtitle ?? preset.homeSubtitle,
     promoTag: override.promoTag ?? preset.promoTag,
-    bannerImage: override.bannerImage || '',
+    bannerImage: bannerImages[0] || '',
+    bannerImages,
   }
 }

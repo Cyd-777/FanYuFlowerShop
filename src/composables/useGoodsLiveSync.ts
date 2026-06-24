@@ -2,8 +2,8 @@ import { useDidHide, useDidShow } from '@tarojs/taro'
 import { goodsLiveSync, type GoodsLiveSyncRegistration } from '@/services/goodsLiveSync'
 
 /**
- * 顾客端商品列表前台轮询：meta.goods 版本变化时局部 patch 或静默整表刷新。
- * 须在页面 setup（如 setupHomePageData）内调用。
+ * 顾客端商品列表：注册 patch 回调，并启停前台定时轮询（20s）。
+ * 浏览手势（useGoodsBrowseRefresh）在轮询空档内补充触发，仍走 meta 版本对齐。
  */
 export function useGoodsLiveSync(options: GoodsLiveSyncRegistration) {
   let registrationId = 0

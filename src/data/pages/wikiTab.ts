@@ -1,63 +1,106 @@
-import { ref } from 'vue'
+import { showToast } from '@/utils/feedback'
+import { ref, computed } from 'vue'
 import { hasCacheEntry } from '@/utils/cache'
 import { wikiRepository } from '@/data/repository'
 import { CACHE_KEYS } from '@/data/cacheKeys'
 import { navigateTo } from '@/utils/router'
-import type { FlowerWikiListItem, WikiTab } from '@/types/wiki'
+import type { SearchSuggestion, WikiAnswerSnippet } from '@/types/search'
+import type { FlowerWikiListItem } from '@/types/wiki'
 import {
+  buildWikiBrowseFlow,
+  filterWikiCatalog,
   getWikiDisplayName,
+  getWikiKindCardPreview,
   getWikiSubtitle,
-  getWikiTabPreview,
+  getWikiKindTabs,
+  WIKI_KIND_SIDEBAR,
 } from '@/types/wiki'
+import { isEmptyWikiQuery, parseWikiSearchQuery } from '@/utils/parseWikiSearchQuery'
+import { suggestWikiEntries } from '@/utils/wikiSuggest'
 import type { PageEnsureContext } from '../types'
 import type { PageSetupResult } from '../pageRegistry'
 
 export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown> {
   const pageTitle = '花卉百科'
-  const pageSubtitle = '图鉴 · 养殖 · 花语，花店智库'
-  const searchPlaceholder = '搜索花卉名称或花语'
+  const pageSubtitle = '按品类浏览花店智库'
+  const searchPlaceholder = '搜索花卉、怎么养、能开多久…'
+  const suggestTitle = '花卉预判'
   const loadingText = '正在加载云端智库...'
   const emptyText = '暂无百科内容，请先在云数据库维护 flower_wiki'
-  const arrowText = '›'
 
-  const tabs: { key: WikiTab; label: string; icon: string }[] = [
-    { key: 'atlas', label: '花卉图鉴', icon: '📖' },
-    { key: 'care', label: '养殖指南', icon: '🌱' },
-    { key: 'language', label: '花语百科', icon: '💬' },
-  ]
+  const kindTabItems = getWikiKindTabs()
 
-  const activeTab = ref<WikiTab>('atlas')
   const keyword = ref('')
+  /** 当前生效的智库筛选词（搜索框提交后清空，筛选仍保留） */
+  const activeWikiQuery = ref('')
+  /** 选中的种类 tag（筛选卡片流；再次点击取消） */
+  const selectedKindName = ref<string | null>(null)
   const loading = ref(false)
   const wikiList = ref<FlowerWikiListItem[]>([])
+  const wikiAnswer = ref<WikiAnswerSnippet | null>(null)
+  const suggestCatalog = ref<FlowerWikiListItem[]>([])
+  const wikiCatalog = ref<FlowerWikiListItem[]>([])
 
-  function onLoad(query: Record<string, string | undefined>) {
-    const tab = query.tab
-    if (tab === 'care' || tab === 'language' || tab === 'atlas') {
-      activeTab.value = tab
+  const isSearchMode = computed(() => Boolean(activeWikiQuery.value.trim()))
+
+  const browseFlow = computed<FlowerWikiListItem[]>(() => {
+    if (isSearchMode.value) return []
+    return buildWikiBrowseFlow(wikiCatalog.value, WIKI_KIND_SIDEBAR, selectedKindName.value)
+  })
+
+  const filterEmptyText = computed(() => {
+    if (!selectedKindName.value) return emptyText
+    return `暂无「${selectedKindName.value}」相关词条`
+  })
+
+  function onLoad(_query: Record<string, string | undefined>) {
+    /* tab 深链仍进详情页，首页不再区分内容 Tab */
+  }
+
+  async function refreshSuggestCatalog(options?: { force?: boolean }) {
+    try {
+      const { data } = await wikiRepository.ensurePublicList({ force: options?.force })
+      suggestCatalog.value = data
+    } catch {
+      /* 预判失败不挡列表 */
+    }
+  }
+
+  async function runWikiSearch(text: string) {
+    const query = parseWikiSearchQuery(text, 'atlas', 'auto')
+    if (isEmptyWikiQuery(query)) {
+      wikiAnswer.value = null
+      await loadWikiList()
+      return
+    }
+    loading.value = true
+    try {
+      const result = await wikiRepository.search(query)
+      wikiList.value = filterWikiCatalog(result.list)
+      wikiAnswer.value = result.answer || null
+    } catch (err) {
+      wikiAnswer.value = null
+      showToast({
+        title: err instanceof Error ? err.message : '搜索失败',
+        icon: 'none',
+        duration: 3000,
+      })
+    } finally {
+      loading.value = false
     }
   }
 
   async function loadWikiList(options?: { force?: boolean }) {
-    const trimmed = keyword.value.trim()
+    const trimmed = activeWikiQuery.value.trim()
 
     if (options?.force) {
       wikiRepository.resetDetailPrefetch()
     }
 
+    void refreshSuggestCatalog({ force: options?.force })
+
     if (trimmed) {
-      loading.value = true
-      try {
-        wikiList.value = await wikiRepository.searchPublicList(trimmed)
-      } catch (err) {
-        wx.showToast({
-          title: err instanceof Error ? err.message : '加载失败',
-          icon: 'none',
-          duration: 3000,
-        })
-      } finally {
-        loading.value = false
-      }
+      await runWikiSearch(trimmed)
       return
     }
 
@@ -66,13 +109,20 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
       const { data } = await wikiRepository.ensurePublicList({
         force: options?.force,
         onUpdate: (list) => {
-          wikiList.value = list
+          const filtered = filterWikiCatalog(list)
+          wikiList.value = filtered
+          wikiCatalog.value = filtered
+          suggestCatalog.value = filtered
         },
       })
-      wikiList.value = data
+      const filtered = filterWikiCatalog(data)
+      wikiList.value = filtered
+      wikiCatalog.value = filtered
+      suggestCatalog.value = filtered
+      wikiAnswer.value = null
       wikiRepository.afterListLoaded(data)
     } catch (err) {
-      wx.showToast({
+      showToast({
         title: err instanceof Error ? err.message : '加载失败',
         icon: 'none',
         duration: 3000,
@@ -94,21 +144,39 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
     return getWikiSubtitle(item)
   }
 
-  function tabPreview(item: FlowerWikiListItem) {
-    return getWikiTabPreview(item, activeTab.value) || '暂无内容'
+  function cardPreview(item: FlowerWikiListItem) {
+    return getWikiKindCardPreview(item)
   }
 
-  function onKeywordInput(e: { detail: { value: string } }) {
-    keyword.value = e.detail.value
+  function isWikiKindEntry(item: FlowerWikiListItem) {
+    return !String(item.varietyName || '').trim()
   }
 
-  function switchTab(tab: WikiTab) {
-    activeTab.value = tab
+  function wikiSuggest(query: string) {
+    return suggestWikiEntries(suggestCatalog.value, query)
+  }
+
+  function onSearchKeyword(value: string) {
+    const trimmed = value.trim()
+    activeWikiQuery.value = trimmed
+    if (!trimmed) {
+      selectedKindName.value = null
+    }
+    void loadWikiList()
+  }
+
+  function onPickSuggestion(item: SearchSuggestion) {
+    activeWikiQuery.value = item.label.trim()
+    void runWikiSearch(item.label)
+  }
+
+  function selectKindTab(kindName: string | null) {
+    selectedKindName.value = kindName
   }
 
   function goDetail(id: string) {
     navigateTo({
-      url: `/pagesCustomer/wiki/detail?id=${id}&tab=${activeTab.value}`,
+      url: `/pagesCustomer/wiki/detail?id=${id}&tab=atlas`,
     })
   }
 
@@ -120,20 +188,27 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
     pageTitle,
     pageSubtitle,
     searchPlaceholder,
+    suggestTitle,
     loadingText,
     emptyText,
-    arrowText,
-    tabs,
-    activeTab,
+    kindTabItems,
+    selectedKindName,
+    isSearchMode,
+    filterEmptyText,
+    browseFlow,
     keyword,
     loading,
     wikiList,
+    wikiAnswer,
     loadWikiList,
     displayName,
     displaySubtitle,
-    tabPreview,
-    onKeywordInput,
-    switchTab,
+    cardPreview,
+    wikiSuggest,
+    onSearchKeyword,
+    onPickSuggestion,
+    selectKindTab,
     goDetail,
+    isWikiKindEntry,
   }
 }

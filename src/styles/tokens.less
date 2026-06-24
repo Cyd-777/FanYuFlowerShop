@@ -3,10 +3,28 @@
  * 页面样式请使用 @变量名，不要写死色值
  */
 
+// 布局（自定义导航栏，由 useNavBarLayout / navBarCssVars 注入）
+// --nav-status-bar-height / --nav-capsule-height / --nav-capsule-top-gap
+// --nav-bar-height / --nav-total-height
+// Tab overlay 页根节点加 .page-nav-overlay-safe 避开浮层 Head
+
+.page-nav-overlay-safe {
+  box-sizing: border-box;
+  padding-top: var(--nav-total-height, 0px);
+}
+
 // 品牌色
 @color-primary: #e53935;
 @color-primary-light: #fce4ec;
 @color-primary-border: #f8bbd0;
+
+// 功能色（通知条 / 模态）
+@color-success: #2e7d32;
+@color-success-bg: #e8f5e9;
+@color-warning: #e65100;
+@color-warning-bg: #fff8e1;
+@color-danger: #c62828;
+@color-danger-bg: #ffebee;
 
 // 商家端强调色
 @color-merchant-start: #667eea;

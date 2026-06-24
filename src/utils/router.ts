@@ -1,3 +1,4 @@
+import { showToast } from '@/utils/feedback'
 /**
  * 路由跳转封装
  * 根据 Taro 环境使用 navigateTo / switchTab 等
@@ -26,7 +27,7 @@ export async function navigateToWithFeedback(opt: NavigateOptions, fallback = '�
     const hint = errMsg.includes('not found') || errMsg.includes('不存在')
       ? '页面未注册，请重新编译小程序'
       : errMsg || fallback
-    wx.showToast({ title: hint.slice(0, 28), icon: 'none', duration: 2800 })
+    showToast({ title: hint.slice(0, 28), icon: 'none', duration: 2800 })
     console.error('[router] navigateTo failed:', opt.url, err)
   }
 }

@@ -1,5 +1,6 @@
 const cloud = require('wx-server-sdk')
 const { bumpCacheModule } = require('./common/cacheMeta')
+const { resolveFileUrls } = require('./common/fileUrls')
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
@@ -65,7 +66,20 @@ function normalizeThemeConfig(raw) {
   }
   if (raw.homeSubtitle != null) next.homeSubtitle = String(raw.homeSubtitle).trim()
   if (raw.promoTag != null) next.promoTag = String(raw.promoTag).trim()
-  if (raw.bannerImage != null) next.bannerImage = String(raw.bannerImage).trim()
+
+  const bannerImages = Array.isArray(raw.bannerImages)
+    ? raw.bannerImages.map((id) => String(id || '').trim()).filter(Boolean)
+    : []
+  if (bannerImages.length) {
+    next.bannerImages = bannerImages
+    next.bannerImage = bannerImages[0]
+  } else if (raw.bannerImage != null) {
+    const single = String(raw.bannerImage).trim()
+    if (single) {
+      next.bannerImage = single
+      next.bannerImages = [single]
+    }
+  }
 
   if (Array.isArray(raw.discounts)) {
     next.discounts = raw.discounts
@@ -74,6 +88,28 @@ function normalizeThemeConfig(raw) {
   }
 
   return next
+}
+
+function resolveThemeBannerIds(config) {
+  if (!config || typeof config !== 'object') return []
+  const fromList = Array.isArray(config.bannerImages)
+    ? config.bannerImages.map((id) => String(id || '').trim()).filter(Boolean)
+    : []
+  if (fromList.length) return fromList
+  const single = String(config.bannerImage || '').trim()
+  return single ? [single] : []
+}
+
+async function resolveBannerUrls(bannerIds) {
+  if (!bannerIds.length) return []
+  const cloudIds = bannerIds.filter((id) => String(id).startsWith('cloud://'))
+  const urlMap = cloudIds.length ? await resolveFileUrls(cloudIds) : {}
+  return bannerIds
+    .map((id) => {
+      if (String(id).startsWith('cloud://')) return urlMap[id] || ''
+      return String(id)
+    })
+    .filter(Boolean)
 }
 
 function pickThemeConfigs(rawConfigs, legacyDoc) {
@@ -213,9 +249,19 @@ exports.main = async (event) => {
   if (action === 'get') {
     try {
       const doc = await getOrCreateShopDoc()
+      const settings = pickSettings(doc)
+      const activeThemeId = settings.decoration.activeThemeId
+      const bannerIds = resolveThemeBannerIds(
+        settings.decoration.themeConfigs[activeThemeId],
+      )
+      if (bannerIds.length) {
+        const urls = await resolveBannerUrls(bannerIds)
+        settings.bannerImageUrls = urls
+        settings.bannerImageUrl = urls[0] || ''
+      }
       return {
         success: true,
-        settings: pickSettings(doc),
+        settings,
       }
     } catch (err) {
       return {

@@ -340,6 +340,15 @@ function fileExtFromCloudId(fileId: string) {
   return 'jpg'
 }
 
+/** 代理图本地文件名：必须用完整 fileId 哈希，截断前缀在同一云环境下会撞名导致图片污染 */
+function proxyLocalFileName(fileId: string, ext: string) {
+  let hash = 5381
+  for (let i = 0; i < fileId.length; i += 1) {
+    hash = ((hash << 5) + hash) ^ fileId.charCodeAt(i)
+  }
+  return `fyfs-proxy-${(hash >>> 0).toString(36)}.${ext}`
+}
+
 interface PublicImageResult {
   success: boolean
   mime?: string
@@ -367,7 +376,7 @@ export async function fetchPublicImageLocalPath(fileId: string): Promise<string>
     }
 
     const ext = fileExtFromCloudId(fileId)
-    const filePath = `${wx.env.USER_DATA_PATH}/fyfs-proxy-${encodeURIComponent(fileId).slice(0, 48)}.${ext}`
+    const filePath = `${wx.env.USER_DATA_PATH}/${proxyLocalFileName(fileId, ext)}`
 
     await new Promise<void>((resolve, reject) => {
       wx.getFileSystemManager().writeFile({

@@ -1,5 +1,6 @@
 <template>
   <view class="page-stock-in" :class="{ 'has-footer': lines.length }">
+    <AppNavBar />
     <view v-if="!lines.length" class="empty-tip">暂无入库项，请从商品列表进入</view>
 
     <view v-else>

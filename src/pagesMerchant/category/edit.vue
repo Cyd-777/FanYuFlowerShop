@@ -1,5 +1,6 @@
 <template>
   <view class="page-category-edit">
+    <AppNavBar />
     <view class="form-card">
       <nut-form>
         <nut-form-item label="分类名称">
@@ -7,9 +8,6 @@
         </nut-form-item>
         <nut-form-item label="分类图标">
           <nut-input v-model="form.icon" placeholder="输入 emoji，如 🌹" />
-        </nut-form-item>
-        <nut-form-item label="排序权重">
-          <nut-input v-model="form.sort" placeholder="数字越大越靠前" type="number" />
         </nut-form-item>
         <nut-form-item label="启用分类">
           <nut-switch v-model="form.enabled" />
@@ -50,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { ref, computed } from 'vue'
 import { useLoad } from '@tarojs/taro'
 import { navigateBack } from '@/utils/router'
@@ -69,7 +68,6 @@ const deleting = ref(false)
 const form = ref<CategoryForm>({
   name: '',
   icon: '🌷',
-  sort: '0',
   enabled: true,
   customRole: '',
 })
@@ -104,12 +102,11 @@ async function loadCategory() {
     form.value = {
       name: category.name,
       icon: category.icon,
-      sort: String(category.sort || 0),
       enabled: category.enabled,
       customRole: category.customRole || '',
     }
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '加载失败',
       icon: 'none',
     })
@@ -121,7 +118,7 @@ async function loadCategory() {
 
 function validateForm() {
   if (!form.value.name.trim()) {
-    wx.showToast({ title: '请填写分类名称', icon: 'none' })
+    showToast({ title: '请填写分类名称', icon: 'none' })
     return false
   }
   return true
@@ -134,14 +131,14 @@ async function save() {
   try {
     if (isEdit.value) {
       await updateCategory(categoryId.value, form.value)
-      wx.showToast({ title: '已保存', icon: 'success' })
+      showToast({ title: '已保存', icon: 'success' })
     } else {
       await createCategory(form.value)
-      wx.showToast({ title: '已创建', icon: 'success' })
+      showToast({ title: '已创建', icon: 'success' })
     }
     setTimeout(() => navigateBack(), 1200)
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '保存失败',
       icon: 'none',
     })
@@ -165,10 +162,10 @@ async function handleDelete() {
   deleting.value = true
   try {
     await removeCategory(categoryId.value)
-    wx.showToast({ title: '已删除', icon: 'success' })
+    showToast({ title: '已删除', icon: 'success' })
     setTimeout(() => navigateBack(), 1200)
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '删除失败',
       icon: 'none',
     })

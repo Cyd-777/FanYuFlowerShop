@@ -1,5 +1,6 @@
 <template>
   <view class="page-theme">
+    <AppNavBar />
     <nut-swiper :init-page="0" :pagination-visible="true" pagination-color="#e53935">
       <nut-swiper-item v-for="(banner, idx) in banners" :key="idx">
         <image class="banner-img" :src="banner.image" mode="aspectFill" />

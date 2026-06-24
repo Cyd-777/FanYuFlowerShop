@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { usePublicGoods } from '@/composables/usePublicGoods'
 import { usePublicCategories } from '@/composables/usePublicCategories'
 import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
+import { useGoodsBrowseRefresh } from '@/composables/useGoodsBrowseRefresh'
 import { goodsLiveSync } from '@/services/goodsLiveSync'
 import { navigateTo } from '@/utils/router'
 import type { GoodsNameSuggestion } from '@/utils/goodsNameSuggest'
@@ -12,12 +13,15 @@ export function setupCustomerGoodsListPageData(): PageSetupResult & Record<strin
   const keyword = ref('')
   const categoryId = ref('')
   const categoryName = ref('')
-  const { goodsList, loading, loadGoods, searchCatalog, patchVisibleGoods } = usePublicGoods()
+  const exactName = ref(false)
+  const { goodsList, loading, loadGoods, searchCatalog, patchVisibleGoods } =
+    usePublicGoods()
   const { categories, loadCategories } = usePublicCategories()
 
   function onLoad(query: Record<string, string | undefined>) {
     keyword.value = query.keyword || ''
     categoryId.value = query.categoryId || ''
+    exactName.value = query.exact === '1'
   }
 
   async function initCategoryName() {
@@ -31,20 +35,23 @@ export function setupCustomerGoodsListPageData(): PageSetupResult & Record<strin
   }
 
   async function reloadGoods() {
-    return loadGoods(keyword.value.trim(), categoryId.value)
+    return loadGoods(keyword.value.trim(), categoryId.value, {
+      exactName: exactName.value,
+    })
   }
 
   async function ensure(ctx: PageEnsureContext) {
     await initCategoryName()
     await reloadGoods()
-    goodsLiveSync.resetVersionBaseline()
+    await goodsLiveSync.resetVersionBaseline()
   }
 
   useGoodsLiveSync({
     getTargetIds: () => goodsList.value.map((item) => item._id),
     applyPatches: (result) => patchVisibleGoods(result),
-    refreshScope: () => reloadGoods(),
   })
+
+  const { browseTouchHandlers } = useGoodsBrowseRefresh()
 
   function formatPrice(price: number) {
     return Number(price).toFixed(2).replace(/\.00$/, '')
@@ -61,7 +68,7 @@ export function setupCustomerGoodsListPageData(): PageSetupResult & Record<strin
 
   function onPickSuggestion(item: GoodsNameSuggestion) {
     keyword.value = item.name
-    void reloadGoods()
+    void loadGoods(item.name, categoryId.value, { exactName: true })
   }
 
   return {
@@ -81,5 +88,6 @@ export function setupCustomerGoodsListPageData(): PageSetupResult & Record<strin
     onPickSuggestion,
     formatPrice,
     goDetail,
+    browseTouchHandlers,
   }
 }

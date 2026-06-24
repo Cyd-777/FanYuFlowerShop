@@ -1,7 +1,9 @@
+import type { WikiQuery, WikiSearchResult } from '@/types/search'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
 import {
   listPublicWiki,
   listPublicWikiCached,
+  searchPublicWiki,
   getPublicWikiCached,
   matchPublicWikiCached,
 } from '@/services/wiki'
@@ -30,6 +32,10 @@ export const wikiRepository = {
   /** 搜索不走缓存，始终抢占后台 */
   async searchPublicList(keyword: string): Promise<FlowerWikiListItem[]> {
     return cacheSyncScheduler.runExclusive(() => listPublicWiki(keyword))
+  },
+
+  async search(query: WikiQuery): Promise<WikiSearchResult> {
+    return cacheSyncScheduler.runExclusive(() => searchPublicWiki(query))
   },
 
   async ensureDetail(

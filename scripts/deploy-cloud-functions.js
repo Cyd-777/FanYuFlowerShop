@@ -53,9 +53,10 @@ function ensureTcb() {
 }
 
 function deployOne(name, envId) {
-  console.log(`\n[deploy:cloud] → ${name}`)
+  const fnDir = path.join(cloudRoot, name)
+  console.log(`\n[deploy:cloud] → ${name} (${fnDir})`)
   execSync(`tcb fn deploy ${name} -e ${envId} --force --yes`, {
-    cwd: root,
+    cwd: fnDir,
     stdio: 'inherit',
   })
 }

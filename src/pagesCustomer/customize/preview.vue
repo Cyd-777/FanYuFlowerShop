@@ -1,5 +1,6 @@
 <template>
   <view class="page-preview">
+    <AppNavBar />
     <view class="summary-card">
       <view class="title">订单确认</view>
       <view class="row">
@@ -32,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
@@ -56,7 +58,7 @@ useDidShow(() => {
   const cached = wx.getStorageSync(CUSTOM_BOUQUET_DRAFT_KEY) as CustomBouquetDraft | ''
   if (!cached || typeof cached !== 'object' || !isCustomBouquetReady(cached)) {
     draft.value = null
-    wx.showToast({ title: '请先完成定制选择', icon: 'none' })
+    showToast({ title: '请先完成定制选择', icon: 'none' })
     setTimeout(() => wx.navigateBack(), 1200)
     return
   }

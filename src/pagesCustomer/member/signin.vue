@@ -1,5 +1,6 @@
 <template>
   <view class="page-signin">
+    <AppNavBar />
     <view class="calendar">
       <view class="month">{{ currentMonth }}</view>
       <view class="days">
@@ -23,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { ref, computed } from 'vue'
 
 const signedToday = ref(false)
@@ -38,7 +40,7 @@ const days = ref(
 )
 
 function doSignin() {
-  wx.showToast({ title: '签到成功 +5积分', icon: 'success' })
+  showToast({ title: '签到成功 +5积分', icon: 'success' })
   signedToday.value = true
 }
 </script>

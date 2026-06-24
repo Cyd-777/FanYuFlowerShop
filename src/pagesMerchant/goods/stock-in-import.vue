@@ -1,5 +1,6 @@
 <template>
   <view class="page-stock-in-import">
+    <AppNavBar />
     <view class="intro">
       <view class="title">粘贴进货单</view>
       <view class="desc">

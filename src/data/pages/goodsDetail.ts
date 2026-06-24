@@ -1,3 +1,4 @@
+import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
 import { navigateTo } from '@/utils/router'
 import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
@@ -5,7 +6,8 @@ import { goodsLiveSync } from '@/services/goodsLiveSync'
 import { goodsRepository, wikiRepository } from '@/data/repository'
 import { goodsPublicDetailKey } from '@/data/cacheKeys'
 import { hasCacheEntry } from '@/utils/cache'
-import { resolveCloudImageMap, pickPublicImageUrls } from '@/utils/goodsImage'
+import { resolveCloudImageMap, pickPublicImageUrls, attachGoodsCoverImages, pickCoverFileId } from '@/utils/goodsImage'
+import { hasGoodsLiveDiff, mergeGoodsLivePatch } from '@/utils/goodsLiveMerge'
 import type { Goods } from '@/types/goods'
 import type { FlowerWiki } from '@/types/wiki'
 import { getWikiDisplayName } from '@/types/wiki'
@@ -29,8 +31,7 @@ const EMPTY_GOODS: Goods = {
 }
 
 export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unknown> {
-  const wikiCardTitle = '查看花卉百科'
-  const wikiCardDesc = '图鉴 · 养殖指南 · 花语百科'
+  const wikiSectionTitle = '花卉百科'
 
   const goods = ref<Goods>({ ...EMPTY_GOODS })
   const images = ref<string[]>([])
@@ -97,7 +98,7 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
       await applyGoodsImages(data)
       await loadMatchedWiki()
     } catch (err) {
-      wx.showToast({
+      showToast({
         title: err instanceof Error ? err.message : '加载失败',
         icon: 'none',
       })
@@ -109,20 +110,35 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
   async function ensure(ctx: PageEnsureContext) {
     if (!goodsId.value) return
     await loadGoods(!!ctx.force)
-    goodsLiveSync.resetVersionBaseline()
+    await goodsLiveSync.resetVersionBaseline()
   }
 
   useGoodsLiveSync({
     getTargetIds: () => (goodsId.value ? [goodsId.value] : []),
     applyPatches: async ({ patches, missingIds }) => {
       if (missingIds.includes(goodsId.value)) {
+        if (goods.value.onSale === false && goods.value.stock <= 0) return
         goods.value = { ...goods.value, onSale: false, stock: 0 }
         return
       }
       const patch = patches.find((item) => item._id === goodsId.value)
-      if (!patch) return
-      goods.value = patch
-      await applyGoodsImages(patch)
+      if (!patch || !hasGoodsLiveDiff(goods.value, patch)) return
+
+      const prevImagesKey = [pickCoverFileId(goods.value), ...(goods.value.images || [])].join('|')
+      const [withImage] = await attachGoodsCoverImages([patch], [
+        goods.value as Goods & { imageUrl?: string },
+      ])
+      const { item, changed } = mergeGoodsLivePatch(
+        goods.value as Goods & { imageUrl?: string },
+        withImage,
+      )
+      if (!changed) return
+
+      goods.value = item
+      const nextImagesKey = [pickCoverFileId(item), ...(item.images || [])].join('|')
+      if (prevImagesKey !== nextImagesKey) {
+        await applyGoodsImages(item)
+      }
     },
   })
 
@@ -130,11 +146,11 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
     return Number(price).toFixed(2).replace(/\.00$/, '')
   }
 
-  function goWiki() {
+  function goWikiFull() {
     if (!wikiEntry.value) return
     const name = getWikiDisplayName(wikiEntry.value)
     navigateTo({
-      url: `/pagesCustomer/wiki/detail?id=${wikiEntry.value._id}&tab=atlas&from=goods&name=${encodeURIComponent(name)}`,
+      url: `/pagesCustomer/wiki/detail?id=${wikiEntry.value._id}&tab=care&from=goods&name=${encodeURIComponent(name)}`,
     })
   }
 
@@ -143,8 +159,7 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
     onLoad,
     refreshOnShow: false,
     pullDownRefresh: false,
-    wikiCardTitle,
-    wikiCardDesc,
+    wikiSectionTitle,
     goods,
     images,
     imageFileIds,
@@ -152,6 +167,6 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
     loading,
     wikiEntry,
     formatPrice,
-    goWiki,
+    goWikiFull,
   }
 }

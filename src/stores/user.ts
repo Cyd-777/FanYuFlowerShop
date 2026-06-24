@@ -1,37 +1,64 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { UserRole, STORAGE_KEYS } from '@/utils/constants'
-import { getCachedRole, hasToken, login as authLogin } from '@/services/auth'
+import { UserRole } from '@/utils/constants'
+import {
+  getCachedRole,
+  getCachedUserId,
+  getCachedUserProfile,
+  hasToken,
+  loginWithWechat,
+  loginWithPhone,
+  type AuthResult,
+} from '@/services/auth'
+import type { UserAccount } from '@/types/account'
 
 export const useUserStore = defineStore('user', () => {
-  const openid = ref(wx.getStorageSync(STORAGE_KEYS.Token) || '')
+  const userId = ref(getCachedUserId())
+  const profile = ref<UserAccount | null>(getCachedUserProfile())
   const role = ref<UserRole | null>(getCachedRole())
   const isLoggedIn = ref(hasToken())
 
-  /** 执行登录 */
-  async function doLogin() {
-    const result = await authLogin()
-    openid.value = result.openid
-    role.value = result.role
+  function syncSession(session: AuthResult) {
+    userId.value = session.userId
+    profile.value = session.profile
+    role.value = session.role
     isLoggedIn.value = true
+  }
+
+  async function doLoginWechat() {
+    const result = await loginWithWechat()
+    syncSession(result)
     return result
   }
 
-  /** 判断是否为商家 */
+  async function doLoginPhone(phone: string, code: string) {
+    const result = await loginWithPhone(phone, code)
+    syncSession(result)
+    return result
+  }
+
+  /** @deprecated 使用 doLoginWechat */
+  async function doLogin() {
+    return doLoginWechat()
+  }
+
   function isMerchant(): boolean {
     return role.value === UserRole.Merchant
   }
 
-  /** 判断是否为顾客 */
   function isCustomer(): boolean {
     return role.value === UserRole.Customer
   }
 
   return {
-    openid,
+    userId,
+    profile,
     role,
     isLoggedIn,
     doLogin,
+    doLoginWechat,
+    doLoginPhone,
+    syncSession,
     isMerchant,
     isCustomer,
   }

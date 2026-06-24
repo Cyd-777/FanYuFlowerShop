@@ -1,5 +1,6 @@
 <template>
   <view class="page-merchant-order-detail" :class="{ 'has-footer': showActions }">
+    <AppNavBar />
     <view v-if="loading" class="loading-tip">加载中…</view>
 
     <template v-else-if="order">
@@ -88,6 +89,7 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import {
@@ -204,9 +206,9 @@ async function doShopAction() {
   updating.value = true
   try {
     order.value = await performMerchantShopAction(orderId.value, order.value)
-    wx.showToast({ title: '操作成功', icon: 'success' })
+    showToast({ title: '操作成功', icon: 'success' })
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '操作失败',
       icon: 'none',
     })
@@ -223,12 +225,12 @@ async function handleRiderAction() {
   updating.value = true
   try {
     order.value = await updateRiderStatus(orderId.value, next)
-    wx.showToast({
+    showToast({
       title: next === 'delivered' ? '订单已完成' : '配送状态已更新',
       icon: 'success',
     })
   } catch (err) {
-    wx.showToast({
+    showToast({
       title: err instanceof Error ? err.message : '操作失败',
       icon: 'none',
     })

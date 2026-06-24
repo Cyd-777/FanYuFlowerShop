@@ -1,36 +1,32 @@
 <template>
-  <view v-if="visible" class="goods-new-listing-badge">{{ label }}</view>
+  <view v-if="show" class="goods-new-listing-badge">新上架</view>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { isNewListing } from '@/utils/goodsNewListing'
 import type { Goods } from '@/types/goods'
+import { isNewListing } from '@/utils/goodsNewListing'
 
-const props = withDefaults(
-  defineProps<{
-    goods: Pick<Goods, 'onSale' | 'listedAt' | 'createdAt'>
-    label?: string
-  }>(),
-  {
-    label: '新上架',
-  },
-)
+const props = defineProps<{
+  goods: Pick<Goods, 'onSale' | 'createdAt'>
+}>()
 
-const visible = computed(() => isNewListing(props.goods))
+const show = computed(() => isNewListing(props.goods))
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
+
 .goods-new-listing-badge {
   position: absolute;
   top: 12rpx;
-  left: 12rpx;
+  right: 12rpx;
   padding: 4rpx 14rpx;
   font-size: 22rpx;
   color: #fff;
-  background: rgba(46, 125, 50, 0.92);
   border-radius: 8rpx;
   z-index: 2;
   pointer-events: none;
+  background: rgba(229, 57, 53, 0.92);
 }
 </style>

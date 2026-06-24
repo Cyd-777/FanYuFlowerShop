@@ -1,3 +1,4 @@
+import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
 import { hasCacheEntry } from '@/utils/cache'
 import { categoriesRepository } from '@/data/repository'
@@ -25,7 +26,7 @@ export function usePublicCategories() {
       if (!categories.value.length) {
         categories.value = []
       }
-      wx.showToast({
+      showToast({
         title: err instanceof Error ? err.message : '加载分类失败',
         icon: 'none',
       })

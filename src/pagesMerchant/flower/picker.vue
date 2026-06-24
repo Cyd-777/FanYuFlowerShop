@@ -1,11 +1,12 @@
 <template>
   <view class="page-flower-picker">
+    <AppNavBar />
     <view class="cloud-banner">
       <text class="cloud-label">{{ cloudSourceLabel }}</text>
       <text v-if="!loading && catalog.length" class="cloud-stats">{{ cloudStatsText }}</text>
     </view>
 
-    <view class="search-bar">
+    <view id="flower-picker-scroll-anchor" class="search-bar">
       <nut-searchbar
         v-model="keyword"
         :placeholder="searchPlaceholder"
@@ -18,8 +19,14 @@
       <nut-skeleton rows="6" animated />
     </view>
 
-    <view v-else-if="catalog.length" class="picker-body">
-      <scroll-view class="kind-panel" scroll-y>
+    <view v-else-if="catalog.length" class="picker-body" :style="pickerBodyStyle">
+      <scroll-view
+        class="kind-panel"
+        :scroll-y="true"
+        :enhanced="true"
+        :show-scrollbar="false"
+        :style="kindScrollStyle"
+      >
         <view
           v-for="kind in catalog"
           :key="kind._id"
@@ -32,7 +39,13 @@
         </view>
       </scroll-view>
 
-      <scroll-view class="variety-panel" scroll-y>
+      <scroll-view
+        class="variety-panel"
+        :scroll-y="true"
+        :enhanced="true"
+        :show-scrollbar="false"
+        :style="varietyScrollStyle"
+      >
         <view v-if="activeKind" class="kind-intro">
           <view class="intro-title">{{ activeKind.name }}</view>
           <view class="intro-desc">{{ activeKind.description }}</view>
@@ -57,7 +70,7 @@
 
     <nut-empty v-else :description="emptyCatalogText" />
 
-    <view class="footer">
+    <view id="flower-picker-footer" class="footer">
       <view v-if="selectedLabel" class="selected-tip">{{ selectedLabel }}</view>
       <nut-button
         type="primary"
@@ -73,7 +86,19 @@
 </template>
 
 <script setup lang="ts">
+import { computed, nextTick, ref, watch } from 'vue'
+import Taro, { useDidShow, useReady } from '@tarojs/taro'
 import { usePageData } from '@/composables/usePageData'
+import { useScrollAreaBelow } from '@/composables/useScrollAreaBelow'
+
+const KIND_WIDTH_RPX = 220
+/** 底栏首帧兜底（实测后会覆盖） */
+const FOOTER_FALLBACK_RPX = 140
+
+function rpxToPx(rpx: number) {
+  const { windowWidth } = Taro.getWindowInfo()
+  return Math.floor((rpx * windowWidth) / 750)
+}
 
 const {
   cloudSourceLabel,
@@ -96,14 +121,72 @@ const {
   handleSearch,
   confirmPick,
 } = usePageData()
+
+const { topPx, remeasure: remeasureAnchor } = useScrollAreaBelow('#flower-picker-scroll-anchor')
+
+const footerHeightPx = ref(rpxToPx(FOOTER_FALLBACK_RPX))
+
+function measureFooter() {
+  Taro.createSelectorQuery()
+    .select('#flower-picker-footer')
+    .boundingClientRect()
+    .exec((res) => {
+      const height = (res?.[0] as { height?: number } | undefined)?.height ?? 0
+      if (height > 0) {
+        footerHeightPx.value = Math.ceil(height)
+      }
+    })
+}
+
+function remeasureLayout() {
+  remeasureAnchor()
+  void nextTick(() => {
+    measureFooter()
+    setTimeout(measureFooter, 80)
+  })
+}
+
+useReady(remeasureLayout)
+useDidShow(remeasureLayout)
+
+const bodyHeightPx = computed(() => {
+  const { windowHeight } = Taro.getWindowInfo()
+  return Math.max(0, Math.floor(windowHeight - topPx.value - footerHeightPx.value))
+})
+
+const kindWidthPx = computed(() => rpxToPx(KIND_WIDTH_RPX))
+
+const pickerBodyStyle = computed(() => ({
+  top: `${topPx.value}px`,
+  bottom: `${footerHeightPx.value}px`,
+}))
+
+const kindScrollStyle = computed(() => ({
+  width: `${kindWidthPx.value}px`,
+  height: `${bodyHeightPx.value}px`,
+}))
+
+const varietyScrollStyle = computed(() => {
+  const { windowWidth } = Taro.getWindowInfo()
+  return {
+    width: `${Math.max(0, windowWidth - kindWidthPx.value)}px`,
+    height: `${bodyHeightPx.value}px`,
+  }
+})
+
+watch(
+  () => [catalog.value.length, loading.value, selectedLabel.value] as const,
+  () => {
+    remeasureLayout()
+  },
+)
 </script>
 
 <style lang="less">
 .page-flower-picker {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #f8f8f8;
+  height: 100vh;
+  overflow: hidden;
+  background: #fff;
 }
 .cloud-banner {
   padding: 16rpx 24rpx;
@@ -125,23 +208,25 @@ const {
 .search-bar {
   background: #fff;
   padding: 16rpx 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
 }
 .loading-wrap {
   padding: 24rpx;
 }
 .picker-body {
-  flex: 1;
+  position: fixed;
+  left: 0;
+  right: 0;
   display: flex;
-  min-height: 0;
-  margin: 16rpx;
-  border-radius: 16rpx;
+  flex-direction: row;
   overflow: hidden;
   background: #fff;
+  z-index: 1;
 }
 .kind-panel {
-  width: 220rpx;
+  flex: none;
+  box-sizing: border-box;
   background: #fafafa;
-  max-height: calc(100vh - 360rpx);
 }
 .kind-item {
   display: flex;
@@ -150,6 +235,7 @@ const {
   justify-content: center;
   padding: 28rpx 12rpx;
   border-left: 6rpx solid transparent;
+  box-sizing: border-box;
   &.active {
     background: #fff;
     border-left-color: #e53935;
@@ -169,13 +255,12 @@ const {
   text-align: center;
 }
 .variety-panel {
-  flex: 1;
-  padding: 24rpx;
-  max-height: calc(100vh - 360rpx);
+  flex: none;
+  box-sizing: border-box;
 }
 .kind-intro {
   margin-bottom: 20rpx;
-  padding-bottom: 16rpx;
+  padding: 24rpx 24rpx 16rpx;
   border-bottom: 1rpx solid #f0f0f0;
 }
 .intro-title {
@@ -190,11 +275,12 @@ const {
   line-height: 1.5;
 }
 .variety-item {
+  margin: 0 24rpx 12rpx;
   padding: 20rpx 24rpx;
-  margin-bottom: 12rpx;
   border-radius: 12rpx;
   background: #f8f8f8;
   border: 2rpx solid transparent;
+  box-sizing: border-box;
   &.active {
     background: #fce4ec;
     border-color: #f8bbd0;
@@ -215,13 +301,18 @@ const {
   line-height: 1.4;
 }
 .empty-varieties {
-  padding: 48rpx 0;
+  padding: 48rpx 24rpx;
   text-align: center;
   font-size: 24rpx;
   color: #bbb;
 }
 .footer {
-  padding: 16rpx 32rpx 32rpx;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 16rpx 32rpx calc(16rpx + env(safe-area-inset-bottom));
   background: #fff;
   box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.04);
 }

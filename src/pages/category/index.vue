@@ -1,12 +1,20 @@
 <template>
-  <view class="page-category">
-    <view id="category-scroll-anchor" class="search-bar">
-      <GoodsNameTypeahead
+  <view class="page-category page-nav-overlay-safe" :style="navCssVars">
+    <AppNavBar />
+    <view id="category-scroll-anchor" class="search-bar page-sticky-search" :style="navSearchStickyStyle">
+      <AppSearchInput
         v-model="keyword"
-        :catalog="searchCatalog"
         :placeholder="searchPlaceholder"
+        :suggest-title="suggestTitle"
+        :suggest="unifiedSuggest"
+        history-profile="customer-unified"
+        history-dual-channel
+        :sticky="false"
+        sticky-bleed="24rpx"
         @search="onSearchKeyword"
+        @select-channel="onPickSearchChannel"
         @select="onPickSuggestion"
+        @focus-change="onSearchModalOpen"
       />
     </view>
 
@@ -46,6 +54,10 @@
         :scroll-y="true"
         :show-scrollbar="false"
         :style="rightScrollStyle"
+        @touchstart="browseTouchHandlers.onTouchStart"
+        @touchmove="browseTouchHandlers.onTouchMove"
+        @touchend="browseTouchHandlers.onTouchEnd"
+        @touchcancel="browseTouchHandlers.onTouchCancel"
       >
         <view class="right-inner">
           <view v-if="activeIdx === -1" class="customize-panel">
@@ -72,11 +84,11 @@
                     :cloud-file-id="item.coverImage || item.images?.[0]"
                     root-class="thumb"
                   />
-                  <GoodsNewListingBadge :goods="item" />
                   <GoodsSoldOutBadge :stock="item.stock" :on-sale="item.onSale" />
                 </view>
                 <view class="info">
                   <view class="name">{{ item.name }}</view>
+                  <GoodsSalesTagRow :goods="item" compact />
                   <view class="price">¥{{ formatPrice(item.price) }}</view>
                 </view>
               </view>
@@ -96,9 +108,14 @@ import { usePageData } from '@/composables/usePageData'
 import { useScrollAreaBelow } from '@/composables/useScrollAreaBelow'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
-import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
+import GoodsSalesTagRow from '@/components/GoodsSalesTagRow.vue'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
-import GoodsNameTypeahead from '@/components/GoodsNameTypeahead.vue'
+import AppSearchInput from '@/components/AppSearchInput.vue'
+import { useNavBarLayout } from '@/composables/useNavBarLayout'
+import { usePageSticky } from '@/composables/usePageSticky'
+
+const { cssVars: navCssVars } = useNavBarLayout()
+const { navSearchStickyStyle } = usePageSticky()
 
 const LEFT_WIDTH_RPX = 180
 
@@ -144,14 +161,18 @@ const {
   goodsList,
   loading,
   tabs,
-  searchCatalog,
+  unifiedSuggest,
+  suggestTitle,
   formatPrice,
   switchCategory,
   showCustomizePanel,
   goCustomize,
   onSearchKeyword,
+  onPickSearchChannel,
   onPickSuggestion,
+  onSearchModalOpen,
   goDetail,
+  browseTouchHandlers,
 } = usePageData()
 
 const leftScrollIntoView = computed(() => {
@@ -178,6 +199,7 @@ watch(
 .search-bar {
   padding: 16rpx 24rpx;
   background: @color-bg-card;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .panels {
@@ -256,6 +278,8 @@ watch(
 
 .goods-item {
   display: flex;
+  box-sizing: border-box;
+  max-width: 100%;
   background: #fff;
   border-radius: 12rpx;
   padding: 16rpx;
@@ -277,6 +301,7 @@ watch(
   .info {
     margin-left: 16rpx;
     flex: 1;
+    min-width: 0;
   }
   .name {
     font-size: 26rpx;

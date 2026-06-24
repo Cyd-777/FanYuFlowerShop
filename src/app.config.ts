@@ -7,6 +7,8 @@ export default defineAppConfig({
     'pages/wiki/index',
     'pages/cart/index',
     'pages/mine/index',
+    'pages/invite/staff/index',
+    'pages/invite/join/index',
   ],
   subPackages: [
     {
@@ -14,6 +16,7 @@ export default defineAppConfig({
       pages: [
         'goods/detail',
         'goods/list',
+        'search/index',
         'customize/index',
         'customize/pick',
         'customize/preview',
@@ -26,7 +29,9 @@ export default defineAppConfig({
         'member/signin',
         'address/list',
         'address/edit',
+        'profile/edit',
         'favorite/index',
+        'feedback/index',
         'other/index',
         'wiki/detail',
       ],
@@ -59,6 +64,7 @@ export default defineAppConfig({
     navigationBarBackgroundColor: '#fff',
     navigationBarTitleText: '梵宇花店',
     navigationBarTextStyle: 'black',
+    navigationStyle: 'custom',
   },
   permission: {
     'scope.userLocation': {
