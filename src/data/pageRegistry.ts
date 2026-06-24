@@ -9,8 +9,10 @@ export interface PageSetupResult {
   refreshOnShow?: boolean
   /** useDidShow 额外回调（不触发 ensure，如收藏态刷新） */
   onShow?: (ctx: PageEnsureContext) => void | Promise<void>
-  /** 是否注册下拉刷新，默认 false */
-  pullDownRefresh?: boolean
+  /** 内容区 scroll-view 下拉（Head 不随动），由页面 bind 到 scroll-view */
+  contentPullRefresh?: ReturnType<typeof useContentPullRefresh>
+  /** 页面级原生下拉（触发后立即 stop 复位） */
+  pullDownRefresh?: boolean | 'page' | 'content'
 }
 
 export type PageSetupFactory = () => PageSetupResult & Record<string, unknown>

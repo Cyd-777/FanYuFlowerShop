@@ -138,7 +138,7 @@ export function setupCategoryPageData(): PageSetupResult & Record<string, unknow
 
   return {
     ensure,
-    pullDownRefresh: true,
+    pullDownRefresh: 'content',
     refreshOnShow: true,
     keyword,
     searchPlaceholder,

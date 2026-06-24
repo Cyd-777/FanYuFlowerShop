@@ -55,6 +55,10 @@
         :scroll-y="true"
         :show-scrollbar="false"
         :style="rightScrollStyle"
+        :refresher-enabled="true"
+        :refresher-triggered="contentPullRefresh?.refresherTriggered ?? false"
+        refresher-default-style="none"
+        @refresherrefresh="contentPullRefresh?.onRefresherRefresh()"
         @touchstart="browseTouchHandlers.onTouchStart"
         @touchmove="browseTouchHandlers.onTouchMove"
         @touchend="browseTouchHandlers.onTouchEnd"
@@ -175,6 +179,7 @@ const {
   onSearchModalOpen,
   goDetail,
   browseTouchHandlers,
+  contentPullRefresh,
 } = usePageData()
 
 const leftScrollIntoView = computed(() => {
@@ -199,6 +204,10 @@ watch(
 }
 
 .search-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 95;
   padding: 16rpx 24rpx;
   background: @color-bg-card;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
