@@ -68,4 +68,9 @@ export const goodsRepository = {
   scheduleRecommendDetailPrefetch(goodsIds: string[]) {
     cacheSyncScheduler.scheduleRecommendGoodsDetailPrefetch(goodsIds)
   },
+
+  /** 拉满：全量商品 id 排队预取 detail（与推荐位共用 manifest） */
+  scheduleGoodsDetailPrefetch(goodsIds: string[]) {
+    cacheSyncScheduler.scheduleRecommendGoodsDetailPrefetch(goodsIds)
+  },
 }

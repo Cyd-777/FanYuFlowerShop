@@ -20,6 +20,7 @@ import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
 import { useGoodsBrowseRefresh } from '@/composables/useGoodsBrowseRefresh'
 import { goodsLiveSync } from '@/services/goodsLiveSync'
 import { prefetchHomeFirstScreen, readCachedHomeBannerUrls } from '@/data/prefetch/homeFirstScreen'
+import { startAggressivePrefetch } from '@/data/prefetch/aggressivePrefetch'
 import { goodsRepository, wikiRepository } from '@/data/repository'
 import { suggestCustomerUnified, buildCustomerSearchPageUrl } from '@/services/customerUnifiedSearch'
 import type { CustomerUnifiedSearchScope, SearchSuggestion } from '@/types/search'
@@ -185,7 +186,7 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
 
     loading.value =
       force === true
-        ? true
+        ? !goodsList.value.length
         : !hasCacheEntry(PUBLIC_RECOMMEND_CACHE_KEY) && !goodsList.value.length
 
     try {
@@ -267,13 +268,13 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
   }
 
   async function ensure(ctx: PageEnsureContext) {
-    prefetchHomeFirstScreen()
-    void loadSearchSuggestCatalogs()
     await shopStore.hydrate({ force: ctx.force })
     const forceNetwork = !!ctx.force
+    syncBannerFromCache()
     await applyThemeUi(forceNetwork)
     await loadCategories({ force: ctx.force })
-    void loadRecommend(!!ctx.force)
+    void loadRecommend(forceNetwork)
+    void startAggressivePrefetch()
     await goodsLiveSync.resetVersionBaseline()
   }
 

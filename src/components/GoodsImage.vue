@@ -82,13 +82,20 @@ async function tryPublicImageProxy() {
 
 async function resolveDisplaySrc(raw: string) {
   const trimmed = raw.trim()
+  if (!trimmed) {
+    displaySrc.value = ''
+    loaded.value = false
+    failed.value = false
+    return
+  }
+
+  if (loaded.value && displaySrc.value === trimmed) return
+
   const token = ++resolveToken
   loaded.value = false
   failed.value = false
   displaySrc.value = ''
   triedProxy.value = false
-
-  if (!trimmed) return
 
   const localPath = await resolveImageDisplayPath(trimmed)
   if (token !== resolveToken) return

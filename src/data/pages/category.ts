@@ -5,6 +5,7 @@ import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
 import { useGoodsBrowseRefresh } from '@/composables/useGoodsBrowseRefresh'
 import { goodsLiveSync } from '@/services/goodsLiveSync'
 import { goodsRepository, wikiRepository } from '@/data/repository'
+import { startAggressivePrefetch } from '@/data/prefetch/aggressivePrefetch'
 import { suggestCustomerUnified, buildCustomerSearchPageUrl } from '@/services/customerUnifiedSearch'
 import { navigateTo, navigateToWithFeedback } from '@/utils/router'
 import type { CustomerUnifiedSearchScope, SearchSuggestion } from '@/types/search'
@@ -66,9 +67,9 @@ export function setupCategoryPageData(): PageSetupResult & Record<string, unknow
   }
 
   async function ensure(ctx: PageEnsureContext) {
-    void loadSearchSuggestCatalogs()
     await loadCategories({ force: ctx.force })
     await reloadGoods(!!ctx.force)
+    void startAggressivePrefetch()
     await goodsLiveSync.resetVersionBaseline()
   }
 

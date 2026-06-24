@@ -160,9 +160,9 @@
     - **代码（Phase C）**：cursor 成组 + `coverThumb`；列表低清 / 详情高清；idle **连续**拉分页 + 全表换链
     - **代码（相关）**：SWR / live patch 后勿整卡重载 `<image>`（Issue #1 闪一下）
     - 体验版验收（进页即见 + 切 Tab 多数命中 L1；Banner 不依赖下拉）
-  - `进度`：**§4.0 + §4.4 + §4.0.6 定稿**；预取拉满已拍板；代码仍为并行 void、scheduler 仅 wiki/推荐 detail
+  - `进度`：**§4.0 + §4.4 + §4.0.6 定稿**；**第一波部分落地** — P0 链 `prefetchHomeP0Chain`、拉满 `startAggressivePrefetch`、home/category ensure 重排、下拉 SWR 不 blank 推荐区、GoodsImage 同 URL 不闪
   - `下步可做`
-    - 第一波：Banner 串行 + P0 后 aggressive prefetch
+    - Tab/路由点击预取、下拉顶栏 loading 组件
     - Phase C：`coverThumb` schema + 连续 cursor
   - `工作历史`
     - 2026-06-17：从 Issue #2 合并 Banner + 加载条目
@@ -171,6 +171,7 @@
     - 2026-06-17：「首屏」改术语 **进页即见**（跳转即见 UI+内容；第一视口仅作页内辅助）
     - 2026-06-17：§7.3 商品图双档 + 流式成组并入本项目；§4.4 定稿；Issue #1 闪一下记入相关项
     - 2026-06-17：预取强度拍板 **拉满** — §4.0.6 写入 data-loading；§10 弱网限速改为可选
+    - 2026-06-17：第一波代码 — P0 链、aggressivePrefetch、home/category ensure、下拉不 blank、GoodsImage 防闪
 
 - [ ] · 支付功能开发 `[░░░░░░░░] 0/3`
   - `需求`：0.2+ 阶段主体/AppID 确定后，顾客须能在线完成支付，而非仅线下收款或「联系客服下单」；接入微信支付（或选定方案），跑通下单→支付→回调/状态同步，并覆盖异常与关单等边界（策略见 [功能实施策略 §7.9](./功能实施策略.md#79-配送与支付过渡方案)）

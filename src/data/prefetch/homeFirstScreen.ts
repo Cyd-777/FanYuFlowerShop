@@ -5,6 +5,7 @@ import type { ShopSettings } from '@/types/shop'
 import { shopRepository } from '@/data/repository/shopRepository'
 import { goodsRepository } from '@/data/repository/goodsRepository'
 import { categoriesRepository } from '@/data/repository/categoriesRepository'
+import { startAggressivePrefetch } from './aggressivePrefetch'
 
 function readLocalShopSettings(): ShopSettings | null {
   try {
@@ -15,31 +16,57 @@ function readLocalShopSettings(): ShopSettings | null {
   }
 }
 
-/** 启动时预热首页首屏数据：用户切到首页时尽量已有缓存，避免骨架/空白 */
+async function ensureBannerImageUrls(settings: ShopSettings | null, force?: boolean) {
+  const decoration = settings?.decoration
+  if (!decoration) return
+
+  const fileIds = resolveActiveTheme(decoration).bannerImages.filter(Boolean)
+  if (!fileIds.length) return
+
+  const targets = force
+    ? fileIds
+    : fileIds.filter((id) => !readCachedImageUrl(id))
+  if (!targets.length) return
+
+  await Promise.all(
+    targets.map((id) =>
+      resolveCloudImageUrl(id).catch((err) => {
+        console.warn('[prefetch] banner url failed:', id, err)
+      }),
+    ),
+  )
+}
+
+/**
+ * 首页 P0 链：100 shop → 110 banner → 120 categories → 200 recommend（不阻塞 aggressive）。
+ */
+export async function prefetchHomeP0Chain(options?: { force?: boolean }) {
+  const force = options?.force
+
+  const settingsResult = await shopRepository.ensureSettings({ force })
+  await ensureBannerImageUrls(settingsResult.data, force)
+
+  await categoriesRepository.ensurePublicList({ force })
+
+  void goodsRepository
+    .ensureRecommendList({ force })
+    .then(({ data }) => {
+      goodsRepository.scheduleGoodsDetailPrefetch(data.map((item) => item._id))
+    })
+    .catch((err) => {
+      console.warn('[prefetch] recommend list failed:', err)
+    })
+}
+
+/** 启动时：P0 链完成后立即拉满预取 */
 export function prefetchHomeFirstScreen() {
-  const local = readLocalShopSettings()
-  if (local?.decoration) {
-    const bannerIds = resolveActiveTheme(local.decoration).bannerImages
-    for (const bannerId of bannerIds) {
-      if (bannerId && !readCachedImageUrl(bannerId)) {
-        void resolveCloudImageUrl(bannerId).catch((err) => {
-          console.warn('[prefetch] banner url failed:', err)
-        })
-      }
-    }
-  }
-
-  void shopRepository.ensureSettings({}).catch((err) => {
-    console.warn('[prefetch] shop settings failed:', err)
-  })
-
-  void categoriesRepository.ensurePublicList({}).catch((err) => {
-    console.warn('[prefetch] categories failed:', err)
-  })
-
-  void goodsRepository.ensureRecommendList({}).catch((err) => {
-    console.warn('[prefetch] recommend list failed:', err)
-  })
+  void prefetchHomeP0Chain()
+    .catch((err) => {
+      console.warn('[prefetch] home P0 chain failed:', err)
+    })
+    .finally(() => {
+      startAggressivePrefetch()
+    })
 }
 
 /** 同步读取本地主题 Banner 可展示 URL 列表 */

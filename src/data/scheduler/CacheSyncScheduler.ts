@@ -134,6 +134,11 @@ class CacheSyncScheduler {
     return module === 'wiki' ? wikiPublicDetailKey(id) : `goods:public:detail:${id}`
   }
 
+  /** P0 完成后立即启动 idle worker（拉满模式，不等默认 2s） */
+  kickIdleWorkerNow() {
+    this.scheduleIdleWork(0)
+  }
+
   private enqueueBackground(kind: BackgroundKind) {
     if (!this.pendingBackground.includes(kind)) {
       this.pendingBackground.push(kind)
