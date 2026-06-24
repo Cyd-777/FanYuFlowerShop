@@ -148,22 +148,22 @@
     - 2026-06-17：Issue #2 Banner 三条 + 加载四条合并；立项 **加载策略** 待讨论
     - 2026-06-17：对齐 Banner 根因——非权限，全屏加载后才出图
 
-- [ ] · 加载策略（Banner / 进页即见 / 缓存） `[███░░░░░] 3/8` · **方案已定稿，待实施**
+- [ ] · 加载策略（Banner / 进页即见 / 缓存） `[█████░░░] 5/8` · **第一波推进中**
   - `需求`：Issue #2、[Issue #1 图片闪一下](https://github.com/Cyd-777/FanYuFlowerShop/issues/1)、[功能实施策略 §7.3/7.4](./功能实施策略.md#73-模型部署与加载) 与 [data-loading §4.0 / §4.4 / §4.0.6](./data-loading.md#40-进页即见--定义定稿) — **进页即见** + 全局权重；**预取拉满**（P0 后连续拉 JSON/URL/detail，不为省流量限速）；Banner `img:banner`（110）；**商品图双档** + **列表流式成组**
   - `清单`
     - ~~进页即见定义 + 各数据包加载权重（见 data-loading §4.0）~~
     - ~~商品图双档 + 列表流式成组方案（见 data-loading §4.4 · §7.3 原话）~~
     - ~~预取强度：**拉满**（§4.0.6 — P0 后连续后台，弱网默认也不暂停）~~
-    - **代码**：`onLaunch` / home `ensure` 按权重 100→110→120→200；Tab/路由 P0-Sync
-    - **代码**：P0 完成后 `startAggressivePrefetch` — goods:all、wiki:list、全 Tab P0、detail 队列、batch thumb URL
-    - **代码**：下拉刷新 SWR（旧 UI + 顶栏 loading）
+    - ~~**代码**：`onLaunch` / home `ensure` 按权重 100→110→120→200；Tab/路由 P0-Sync~~
+    - ~~**代码**：P0 完成后 `startAggressivePrefetch` — goods:all、wiki:list、全 Tab P0、detail 队列、batch thumb URL~~
+    - ~~**代码**：下拉刷新 SWR（旧 UI + 顶栏 loading）~~
     - **代码（Phase C）**：cursor 成组 + `coverThumb`；列表低清 / 详情高清；idle **连续**拉分页 + 全表换链
     - **代码（相关）**：SWR / live patch 后勿整卡重载 `<image>`（Issue #1 闪一下）
     - 体验版验收（进页即见 + 切 Tab 多数命中 L1；Banner 不依赖下拉）
-  - `进度`：**§4.0 + §4.4 + §4.0.6 定稿**；**第一波部分落地** — P0 链 `prefetchHomeP0Chain`、拉满 `startAggressivePrefetch`、home/category ensure 重排、下拉 SWR 不 blank 推荐区、GoodsImage 同 URL 不闪
+  - `进度`：第一波 **routeP0** + **pull 顶栏 loading** 已落地；Phase C / 体验版验收待做
   - `下步可做`
-    - Tab/路由点击预取、下拉顶栏 loading 组件
     - Phase C：`coverThumb` schema + 连续 cursor
+    - 体验版走查 Tab 切换、进详情、下拉顶条
   - `工作历史`
     - 2026-06-17：从 Issue #2 合并 Banner + 加载条目
     - 2026-06-17：对齐 Banner 非权限；全屏加载后才出图
