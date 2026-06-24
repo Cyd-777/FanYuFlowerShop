@@ -1,5 +1,6 @@
 <template>
   <view class="page-wiki" :style="navCssVars">
+    <AppFeedbackHost />
     <AppNavBar hide-back :bar-visible="!isSearchStuck" />
 
     <view
@@ -116,6 +117,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import AppNavBar from '@/components/AppNavBar.vue'
+import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import AppSearchInput from '@/components/AppSearchInput.vue'
 import WikiAnswerCard from '@/components/WikiAnswerCard.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'

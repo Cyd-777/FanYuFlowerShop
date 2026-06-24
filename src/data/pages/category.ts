@@ -6,6 +6,7 @@ import { useGoodsBrowseRefresh } from '@/composables/useGoodsBrowseRefresh'
 import { goodsLiveSync } from '@/services/goodsLiveSync'
 import { goodsRepository, wikiRepository } from '@/data/repository'
 import { startAggressivePrefetch } from '@/data/prefetch/aggressivePrefetch'
+import { prefetchOtherCustomerTabs } from '@/data/prefetch/routeP0'
 import { suggestCustomerUnified, buildCustomerSearchPageUrl } from '@/services/customerUnifiedSearch'
 import { navigateTo, navigateToWithFeedback } from '@/utils/router'
 import type { CustomerUnifiedSearchScope, SearchSuggestion } from '@/types/search'
@@ -70,6 +71,7 @@ export function setupCategoryPageData(): PageSetupResult & Record<string, unknow
     await loadCategories({ force: ctx.force })
     await reloadGoods(!!ctx.force)
     void startAggressivePrefetch()
+    prefetchOtherCustomerTabs('pages/category/index')
     await goodsLiveSync.resetVersionBaseline()
   }
 

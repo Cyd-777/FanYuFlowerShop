@@ -2,6 +2,8 @@ import { showToast } from '@/utils/feedback'
 import { ref, computed } from 'vue'
 import { hasCacheEntry } from '@/utils/cache'
 import { wikiRepository } from '@/data/repository'
+import { startAggressivePrefetch } from '@/data/prefetch/aggressivePrefetch'
+import { prefetchOtherCustomerTabs } from '@/data/prefetch/routeP0'
 import { CACHE_KEYS } from '@/data/cacheKeys'
 import { navigateTo } from '@/utils/router'
 import type { SearchSuggestion, WikiAnswerSnippet } from '@/types/search'
@@ -104,7 +106,7 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
       return
     }
 
-    loading.value = options?.force ? true : !hasCacheEntry(CACHE_KEYS.wikiList)
+    loading.value = options?.force ? !wikiList.value.length : !hasCacheEntry(CACHE_KEYS.wikiList)
     try {
       const { data } = await wikiRepository.ensurePublicList({
         force: options?.force,
@@ -134,6 +136,8 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
 
   async function ensure(ctx: PageEnsureContext) {
     await loadWikiList({ force: ctx.force })
+    void startAggressivePrefetch()
+    prefetchOtherCustomerTabs('pages/wiki/index')
   }
 
   function displayName(item: FlowerWikiListItem) {

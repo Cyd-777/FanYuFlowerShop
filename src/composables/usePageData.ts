@@ -1,5 +1,8 @@
 import { ref } from 'vue'
 import { stopPullDownRefresh, useDidShow, useLoad, usePullDownRefresh } from '@tarojs/taro'
+import { isTabBarRoute, getCurrentPageRoute } from '@/config/pageNav'
+import { prefetchOtherCustomerTabs } from '@/data/prefetch/routeP0'
+import { hidePullRefreshLoading, showPullRefreshLoading } from '@/utils/feedback'
 import { registerAllPageSetups } from '@/data/registerPages'
 import { resolvePageSetupFactory } from '@/data/pageRegistry'
 import { normalizePageQuery } from '@/data/routeUtils'
@@ -29,6 +32,9 @@ export function usePageData(routeKey?: string) {
       await page.ensure({ force, query: queryRef.value })
     } finally {
       ensuring.value = false
+      if (isTabBarRoute(getCurrentPageRoute())) {
+        prefetchOtherCustomerTabs()
+      }
     }
   }
 
@@ -50,7 +56,12 @@ export function usePageData(routeKey?: string) {
 
   if (page.pullDownRefresh) {
     usePullDownRefresh(() => {
-      void refresh(true).finally(() => stopPullDownRefresh())
+      showPullRefreshLoading()
+      void refresh(true)
+        .finally(() => {
+          hidePullRefreshLoading()
+          stopPullDownRefresh()
+        })
     })
   }
 

@@ -1,4 +1,5 @@
 import { showToast } from '@/utils/feedback'
+import { prefetchNavigateTarget, prefetchTabTarget } from '@/data/prefetch/routeP0'
 /**
  * 路由跳转封装
  * 根据 Taro 环境使用 navigateTo / switchTab 等
@@ -10,6 +11,7 @@ type NavigateOptions = {
 
 /** 非 TabBar 页面跳转 */
 export function navigateTo(opt: NavigateOptions) {
+  prefetchNavigateTarget(opt.url)
   return new Promise<void>((resolve, reject) => {
     wx.navigateTo({ ...opt, success: () => resolve(), fail: reject })
   })
@@ -34,6 +36,7 @@ export async function navigateToWithFeedback(opt: NavigateOptions, fallback = '�
 
 /** TabBar 页面切换 */
 export function switchTab(opt: NavigateOptions) {
+  prefetchTabTarget(opt.url)
   return new Promise<void>((resolve, reject) => {
     wx.switchTab({ ...opt, success: () => resolve(), fail: reject })
   })

@@ -1,5 +1,6 @@
 <template>
   <view class="page-category page-nav-overlay-safe" :style="navCssVars">
+    <AppFeedbackHost />
     <AppNavBar />
     <view id="category-scroll-anchor" class="search-bar page-sticky-search" :style="navSearchStickyStyle">
       <AppSearchInput
@@ -107,6 +108,7 @@ import Taro from '@tarojs/taro'
 import { usePageData } from '@/composables/usePageData'
 import { useScrollAreaBelow } from '@/composables/useScrollAreaBelow'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
+import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsSalesTagRow from '@/components/GoodsSalesTagRow.vue'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'

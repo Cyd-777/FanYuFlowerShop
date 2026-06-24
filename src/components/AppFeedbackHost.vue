@@ -1,5 +1,14 @@
 <template>
   <view
+    v-if="pullRefreshLoadingState.visible"
+    class="app-pull-refresh"
+    :style="pullRefreshStyle"
+  >
+    <view class="app-pull-refresh__track">
+      <view class="app-pull-refresh__bar" />
+    </view>
+  </view>
+  <view
     v-if="feedbackBarState.visible"
     class="app-notify-bar"
     :class="[
@@ -54,6 +63,7 @@ import {
   onNotifyAlertCancel,
   onNotifyAlertConfirm,
   onNotifyBarClose,
+  pullRefreshLoadingState,
 } from '@/utils/feedback'
 
 const topOffsetPx = ref(getNotifyBarTopOffsetPx())
@@ -83,6 +93,10 @@ const barPositionStyle = computed(() => {
   }
 })
 
+const pullRefreshStyle = computed(() => ({
+  top: `${topOffsetPx.value}px`,
+}))
+
 const alertDialogClass = computed(
   () => `app-feedback-dialog app-feedback-dialog--${feedbackAlertState.tone}`,
 )
@@ -108,6 +122,42 @@ const alertDialogClass = computed(
 .app-notify-bar__text {
   display: block;
   word-break: break-word;
+}
+
+.app-pull-refresh {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1499;
+  height: 6rpx;
+  pointer-events: none;
+}
+
+.app-pull-refresh__track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: rgba(229, 57, 53, 0.12);
+}
+
+.app-pull-refresh__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 36%;
+  height: 100%;
+  background: @color-primary;
+  animation: app-pull-refresh-slide 0.9s ease-in-out infinite;
+}
+
+@keyframes app-pull-refresh-slide {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
 }
 
 .app-notify-bar--bottom {

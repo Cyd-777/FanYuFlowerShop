@@ -59,6 +59,21 @@ export const feedbackAlertState = reactive<AlertState>({
   onCancel: null,
 })
 
+/** 下拉刷新顶栏 loading（SWR：旧 UI 保留 + 顶条指示） */
+export const pullRefreshLoadingState = reactive({ visible: false, depth: 0 })
+
+export function showPullRefreshLoading() {
+  pullRefreshLoadingState.depth += 1
+  pullRefreshLoadingState.visible = true
+}
+
+export function hidePullRefreshLoading() {
+  pullRefreshLoadingState.depth = Math.max(0, pullRefreshLoadingState.depth - 1)
+  if (pullRefreshLoadingState.depth === 0) {
+    pullRefreshLoadingState.visible = false
+  }
+}
+
 export const FEEDBACK_TONE_STYLES: Record<FeedbackTone, { background: string; color: string }> = {
   primary: { background: '#e53935', color: '#ffffff' },
   success: { background: '#2e7d32', color: '#ffffff' },

@@ -21,6 +21,7 @@ import { useGoodsBrowseRefresh } from '@/composables/useGoodsBrowseRefresh'
 import { goodsLiveSync } from '@/services/goodsLiveSync'
 import { prefetchHomeFirstScreen, readCachedHomeBannerUrls } from '@/data/prefetch/homeFirstScreen'
 import { startAggressivePrefetch } from '@/data/prefetch/aggressivePrefetch'
+import { prefetchOtherCustomerTabs } from '@/data/prefetch/routeP0'
 import { goodsRepository, wikiRepository } from '@/data/repository'
 import { suggestCustomerUnified, buildCustomerSearchPageUrl } from '@/services/customerUnifiedSearch'
 import type { CustomerUnifiedSearchScope, SearchSuggestion } from '@/types/search'
@@ -275,6 +276,7 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     await loadCategories({ force: ctx.force })
     void loadRecommend(forceNetwork)
     void startAggressivePrefetch()
+    prefetchOtherCustomerTabs('pages/home/index')
     await goodsLiveSync.resetVersionBaseline()
   }
 
