@@ -33,6 +33,9 @@
           <text class="hint">{{ uploadHint }}</text>
         </view>
       </view>
+      <view v-if="imageSlots.length < maxImages" class="image-from-lib" @click="pickFromAsset">
+        从素材库选择
+      </view>
     </view>
 
     <view class="form-card">
@@ -186,6 +189,7 @@ import {
   updateGoods,
 } from '@/services/goods'
 import { uploadAndProcessImage } from '@/services/asset'
+import { readAssetPick, markAssetPickConsumed } from '@/types/assetPick'
 import { linkStockInLineGoods } from '@/utils/stockInSession'
 import { useMerchantCategories } from '@/composables/useMerchantCategories'
 import { resolveCloudImageMap } from '@/utils/goodsImage'
@@ -361,6 +365,15 @@ async function handlePageShow() {
     applyFlowerPick(pick)
     return
   }
+
+  // 从素材库选取返回
+  const assetPick = readAssetPick()
+  if (assetPick && !assetPick.consumed && assetPick.originalFileId) {
+    markAssetPickConsumed()
+    applyAssetPick(assetPick)
+    return
+  }
+
   if (!pageBootstrapped.value) return
   await refreshMerchantCategories()
 }
@@ -576,6 +589,27 @@ async function addImages() {
   }
 }
 
+/** 从素材库选取的结果应用到图片槽 */
+function applyAssetPick(pick: { originalFileId: string; previewFileId: string; standardFileId: string }) {
+  const names = new Set(imageSlots.value.map((s) => s.fileId))
+  if (names.has(pick.originalFileId)) {
+    showToast({ title: '该素材已添加', icon: 'none' })
+    return
+  }
+  imageSlots.value.push({
+    fileId: pick.originalFileId,
+    previewFileId: pick.previewFileId,
+    standardFileId: pick.standardFileId,
+    preview: pick.originalFileId,
+  })
+  syncFormImagesFromSlots()
+  showToast({ title: '已添加', icon: 'success' })
+}
+
+function pickFromAsset() {
+  navigateTo({ url: '/pagesMerchant/asset/index?picker=1' })
+}
+
 function removeImage(index: number) {
   if (imageSlots.value.length <= 1) {
     showToast({ title: '至少保留一张主图', icon: 'none' })
@@ -777,6 +811,16 @@ async function handleDelete() {
     margin-top: 8rpx;
     font-size: 22rpx;
   }
+}
+.image-from-lib {
+  margin-top: 16rpx;
+  padding: 18rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #e53935;
+  background: #fff5f5;
+  border-radius: 12rpx;
+  border: 2rpx solid #ffcdd2;
 }
 .slot-img {
   width: 100%;

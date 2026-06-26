@@ -1,34 +1,44 @@
 <template>
   <view class="page-asset">
-    <AppNavBar />
+    <AppNavBar :title="isPicker ? '选择素材' : undefined" />
     <view class="page-asset-head">
-      <view class="page-asset-title">素材管理</view>
-      <view class="page-asset-action" @click="uploadNew">+ 上传素材</view>
+      <view class="page-asset-title">{{ isPicker ? '选择素材' : '素材管理' }}</view>
+      <view v-if="!isPicker" class="page-asset-action" @click="uploadNew">+ 上传素材</view>
     </view>
 
     <view v-if="loading" class="page-asset-loading">加载中...</view>
-    <view v-else-if="!list.length" class="page-asset-empty">暂无素材，点击右上角上传</view>
+    <view v-else-if="!list.length" class="page-asset-empty">
+      {{ isPicker ? '暂无素材' : '暂无素材，点击右上角上传' }}
+    </view>
 
     <view v-else class="asset-grid">
-      <view v-for="item in list" :key="item._id" class="asset-card">
-        <view class="asset-previews">
-          <image class="asset-img asset-img--preview" :src="item.previewUrl || ''" mode="aspectFill" />
-          <image class="asset-img asset-img--standard" :src="item.standardUrl || ''" mode="aspectFill" />
+      <view
+        v-for="item in list"
+        :key="item._id"
+        class="asset-card"
+        :class="{ 'is-picker': isPicker }"
+        @tap="isPicker ? pickAsset(item) : undefined"
+      >
+        <image class="asset-img" :src="item.standardUrl || item.previewUrl || ''" mode="aspectFill" />
+        <view class="asset-card-labels">
+          <text class="asset-tier-label">标准</text>
+          <text class="asset-tier-label asset-tier-label--preview">缩略</text>
         </view>
         <view class="asset-info">
           <input
             class="asset-name-input"
             :value="renamingId === item._id ? renameValue : item.name"
             :focus="renamingId === item._id"
-            :disabled="renamingId !== item._id"
+            :disabled="renamingId !== item._id || isPicker"
             @blur="finishRename(item._id, item.name)"
             @confirm="finishRename(item._id, item.name)"
             @input="onRenameInput"
           />
-          <view class="asset-actions">
+          <view v-if="!isPicker" class="asset-actions">
             <text class="asset-action asset-action--rename" @click="startRename(item._id, item.name)">重命名</text>
             <text class="asset-action asset-action--delete" @click="doDelete(item._id, item.name)">删除</text>
           </view>
+          <view v-else class="asset-pick-hint">点击选择此素材</view>
         </view>
       </view>
     </view>
@@ -37,6 +47,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import Taro, { useRouter } from '@tarojs/taro'
 import { showToast } from '@/utils/feedback'
 import {
   fetchAssetList,
@@ -45,6 +56,15 @@ import {
   deleteAsset,
   type AssetItem,
 } from '@/services/asset'
+import { writeAssetPick } from '@/types/assetPick'
+
+const isPicker = ref(false)
+
+const router = useRouter()
+const params = router.params as Record<string, string> | undefined
+if (params?.picker === '1') {
+  isPicker.value = true
+}
 
 const list = ref<AssetItem[]>([])
 const loading = ref(false)
@@ -69,7 +89,18 @@ async function loadList() {
   }
 }
 
+function pickAsset(item: AssetItem) {
+  writeAssetPick({
+    originalFileId: item.originalFileId,
+    previewFileId: item.previewFileId,
+    standardFileId: item.standardFileId,
+    consumed: false,
+  })
+  Taro.navigateBack()
+}
+
 async function uploadNew() {
+  // ... same as before, unchanged
   try {
     const res = await wx.chooseMedia({
       count: 1,
@@ -79,7 +110,6 @@ async function uploadNew() {
     const file = res.tempFiles[0]
     if (!file?.tempFilePath) return
 
-    // 输入名称
     const { confirm, content } = await new Promise<{ confirm: boolean; content: string }>((resolve) => {
       wx.showModal({
         title: '素材命名',
@@ -211,23 +241,43 @@ async function doDelete(id: string, name: string) {
   border-radius: 16rpx;
   overflow: hidden;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  position: relative;
 }
 
-.asset-previews {
-  display: flex;
-  gap: 4rpx;
-  height: 240rpx;
-  background: #fafafa;
+.asset-card.is-picker {
+  border: 2rpx solid transparent;
+}
+
+.asset-card.is-picker:active {
+  border-color: #e53935;
 }
 
 .asset-img {
-  flex: 1;
-  height: 100%;
+  width: 100%;
+  height: 320rpx;
   background: #f0f0f0;
+  display: block;
 }
 
-.asset-img--preview {
-  opacity: 0.85;
+.asset-card-labels {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  display: flex;
+  gap: 8rpx;
+}
+
+.asset-tier-label {
+  font-size: 20rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 8rpx;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  line-height: 1.4;
+}
+
+.asset-tier-label--preview {
+  background: rgba(0, 0, 0, 0.35);
 }
 
 .asset-info {
@@ -261,6 +311,12 @@ async function doDelete(id: string, name: string) {
 }
 
 .asset-action--delete {
+  color: #e53935;
+}
+
+.asset-pick-hint {
+  margin-top: 12rpx;
+  font-size: 24rpx;
   color: #e53935;
 }
 </style>
