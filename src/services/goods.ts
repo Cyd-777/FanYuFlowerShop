@@ -342,6 +342,8 @@ export function toGoodsPayload(form: GoodsForm) {
     flowerVarietyName: form.flowerVarietyName.trim(),
     coverImage: form.coverImage,
     images: form.images,
+    previewFileId: form.previewFileId || '',
+    standardFileId: form.standardFileId || '',
     onSale: form.onSale,
     recommend: form.recommend,
     sort: parseInt(form.sort, 10) || 0,

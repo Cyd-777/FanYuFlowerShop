@@ -1,14 +1,8 @@
 <template>
   <view class="goods-image" :class="rootClass">
-    <view v-if="showPlaceholder" class="goods-image-ph">
-      <view v-if="!failed" class="goods-image-shimmer" />
-      <text class="goods-image-emoji">{{ emoji }}</text>
-      <text v-if="showHint && failed" class="goods-image-hint">{{ hintText }}</text>
-    </view>
     <image
       v-if="currentSrc && !failed"
       class="goods-image-img"
-      :class="{ loaded }"
       :src="currentSrc"
       :mode="mode"
       @load="onLoad"
@@ -23,7 +17,10 @@ import { isCloudFileId, resolveCloudImageUrl } from '@/utils/goodsImage'
 
 const props = withDefaults(
   defineProps<{
+    /** 标准图 URL（原图或750px）。无 preview-src 时此值直接显示 */
     src?: string
+    /** 缩略图 URL（160px）。有此值时优先显示缩略图，后台升级到 src */
+    previewSrc?: string
     /** 当前 URL 失效时可凭 fileId 重新换链 */
     cloudFileId?: string
     mode?: 'aspectFill' | 'aspectFit' | 'widthFix'
@@ -34,6 +31,7 @@ const props = withDefaults(
   }>(),
   {
     src: '',
+    previewSrc: '',
     cloudFileId: '',
     mode: 'aspectFill',
     emoji: '🌷',
@@ -43,89 +41,69 @@ const props = withDefaults(
   },
 )
 
-/** 全局内存缓存：已成功加载的 URL 不再走加载动画 */
+/** 全局内存：已加载 URL 不再走加载动画 */
 const loadedUrls = new Set<string>()
 
+/** 当前实际显示在 <image> 上的 URL */
+const displaySrc = ref('')
 const loaded = ref(false)
 const failed = ref(false)
-const displaySrc = ref('')
-let retryTimer: ReturnType<typeof setTimeout> | null = null
+const upgrading = ref(false)
+
+const currentSrc = computed(() => displaySrc.value || props.previewSrc || props.src)
+
 let upgradeTimer: ReturnType<typeof setTimeout> | null = null
-const currentSrc = computed(() => displaySrc.value || props.src)
+let retryTimer: ReturnType<typeof setTimeout> | null = null
 
-const showPlaceholder = computed(() => {
-  if (failed.value) return true
-  if (!currentSrc.value?.trim()) {
-    // 有 cloudFileId 时 soon 会有图，不闪 placeholder
-    if (props.cloudFileId) return false
-    return true
-  }
-  if (loadedUrls.has(currentSrc.value)) return false
-  if (loaded.value) return false
-  return !displaySrc.value
-})
+/** 从初始化值或变化开始加载链路 */
+function startLoad() {
+  const preview = props.previewSrc?.trim()
+  const standard = props.src?.trim()
 
-function initFromProps(raw: string) {
-  const trimmed = raw.trim()
-  if (!trimmed && !props.cloudFileId) {
-    displaySrc.value = ''
-    failed.value = false
+  // 有缩略图：先显示缩略图（秒出），后台升级到标准图
+  if (preview) {
+    displaySrc.value = preview
+    loaded.value = loadedUrls.has(preview)
+    upgrading.value = true
+    scheduleUpgradeTo(standard)
     return
   }
 
-  // HTTPS 直出，同时后台升级
-  if (/^https?:\/\//.test(trimmed)) {
-    loaded.value = loadedUrls.has(trimmed)
-    if (props.cloudFileId) {
-      const fileId = props.cloudFileId
-      void resolveCloudImageUrl(fileId).then((fullUrl) => {
-        if (!fullUrl || fullUrl === trimmed) return
-        scheduleUpgrade(fullUrl)
-      })
-    }
+  // 无缩略图，直接显示标准图
+  if (standard) {
+    displaySrc.value = standard
+    loaded.value = loadedUrls.has(standard)
     return
   }
 
-  // cloud:// 需要异步换链
-  if (trimmed && isCloudFileId(trimmed)) {
-    const token = Date.now()
-    void resolveCloudImageUrl(trimmed).then((url) => {
-      if (url) displaySrc.value = url
-    })
-  }
+  // 空
+  displaySrc.value = ''
+  loaded.value = false
 }
 
-function scheduleUpgrade(fullUrl: string) {
-  if (upgradeTimer) return
+/** 等当前缩略图稳定后升级到标准图 */
+function scheduleUpgradeTo(standardUrl: string) {
+  if (!standardUrl || upgradeTimer) return
+  if (standardUrl === displaySrc.value) return
+
   const apply = () => {
     upgradeTimer = null
-    if (fullUrl !== currentSrc.value) displaySrc.value = fullUrl
+    upgrading.value = false
+    displaySrc.value = standardUrl
   }
+
   if (loaded.value) {
-    upgradeTimer = setTimeout(apply, 500)
+    upgradeTimer = setTimeout(apply, 400)
   } else {
     const stop = watch(
       () => loaded.value,
       (v) => {
         if (!v) return
         stop()
-        upgradeTimer = setTimeout(apply, 500)
+        upgradeTimer = setTimeout(apply, 400)
       },
     )
   }
-}
-
-async function retryOnError() {
-  if (retryTimer || !props.cloudFileId) return
-  retryTimer = setTimeout(() => {
-    retryTimer = null
-    void resolveCloudImageUrl(props.cloudFileId!).then((url) => {
-      if (url) {
-        displaySrc.value = url
-        failed.value = false
-      }
-    })
-  }, 1000)
 }
 
 function onLoad() {
@@ -134,18 +112,44 @@ function onLoad() {
 }
 
 function onError() {
+  // 缩略图失败：直接跳到标准图
+  if (props.previewSrc && displaySrc.value === props.previewSrc) {
+    const standard = props.src?.trim()
+    if (standard && standard !== displaySrc.value) {
+      displaySrc.value = standard
+      return
+    }
+  }
+
+  // 标准图也失败：重试
   if (props.cloudFileId) {
-    void retryOnError()
+    if (retryTimer) return
+    retryTimer = setTimeout(() => {
+      retryTimer = null
+      void resolveCloudImageUrl(props.cloudFileId!).then((url) => {
+        if (url) {
+          displaySrc.value = url
+          failed.value = false
+        }
+      })
+    }, 1000)
   } else {
     failed.value = true
   }
 }
 
-watch(() => props.src, initFromProps, { immediate: true })
+watch(
+  () => [props.src, props.previewSrc] as const,
+  () => {
+    failed.value = false
+    startLoad()
+  },
+  { immediate: true },
+)
 
 onUnmounted(() => {
-  if (retryTimer) clearTimeout(retryTimer)
   if (upgradeTimer) clearTimeout(upgradeTimer)
+  if (retryTimer) clearTimeout(retryTimer)
 })
 </script>
 
@@ -159,55 +163,9 @@ onUnmounted(() => {
   isolation: isolate;
 }
 
-.goods-image-ph {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: @color-bg-placeholder;
-  z-index: 0;
-}
-
-.goods-image-shimmer {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    @color-bg-placeholder 0%,
-    @color-bg-muted 45%,
-    @color-bg-placeholder 100%
-  );
-  background-size: 200% 100%;
-  animation: goods-image-shimmer 1.4s ease-in-out infinite;
-}
-
-@keyframes goods-image-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.goods-image-emoji {
-  position: relative;
-  z-index: 1;
-  font-size: 48rpx;
-  line-height: 1;
-  opacity: 0.55;
-}
-
-.goods-image-hint {
-  position: relative;
-  z-index: 1;
-  margin-top: 8rpx;
-  font-size: 20rpx;
-  color: @color-text-placeholder;
-}
-
 .goods-image-img {
   display: block;
   width: 100%;
   height: 100%;
-  // 不设 opacity 过渡——已缓存的图立即显示，不放 0→1 动画
 }
 </style>

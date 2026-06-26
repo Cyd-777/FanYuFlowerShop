@@ -184,8 +184,8 @@ import {
   parseGoodsStockField,
   removeGoods,
   updateGoods,
-  uploadGoodsImage,
 } from '@/services/goods'
+import { uploadAndProcessImage } from '@/services/asset'
 import { linkStockInLineGoods } from '@/utils/stockInSession'
 import { useMerchantCategories } from '@/composables/useMerchantCategories'
 import { resolveCloudImageMap } from '@/utils/goodsImage'
@@ -203,6 +203,8 @@ import { MAX_GOODS_IMAGES } from '@/types/goods'
 
 interface ImageSlot {
   fileId: string
+  previewFileId: string
+  standardFileId: string
   preview: string
 }
 
@@ -506,6 +508,9 @@ function syncFormImagesFromSlots() {
   const ids = imageSlots.value.map((item) => item.fileId)
   form.value.coverImage = ids[0] || ''
   form.value.images = ids
+  const cover = imageSlots.value[0]
+  form.value.previewFileId = cover?.previewFileId || ''
+  form.value.standardFileId = cover?.standardFileId || ''
 }
 
 async function loadImageSlotsFromGoods(goods: Goods) {
@@ -523,8 +528,11 @@ async function loadImageSlotsFromGoods(goods: Goods) {
   }
 
   const map = await resolveCloudImageMap(uniqueIds)
+  const isCover = (fileId) => fileId === goods.coverImage
   imageSlots.value = uniqueIds.map((fileId) => ({
     fileId,
+    previewFileId: isCover(fileId) ? (goods.previewFileId || '') : '',
+    standardFileId: isCover(fileId) ? (goods.standardFileId || '') : '',
     preview:
       map.get(fileId) || (/^https?:\/\//.test(fileId) ? fileId : ''),
   }))
@@ -547,9 +555,12 @@ async function addImages() {
 
     wx.showLoading({ title: '上传中' })
     for (const file of files) {
-      const fileID = await uploadGoodsImage(file.tempFilePath)
+      const name = form.value.name.trim() || `商品图_${Date.now()}`
+      const result = await uploadAndProcessImage(file.tempFilePath, name)
       imageSlots.value.push({
-        fileId: fileID,
+        fileId: result.originalFileId,
+        previewFileId: result.previewFileId,
+        standardFileId: result.standardFileId,
         preview: file.tempFilePath,
       })
     }

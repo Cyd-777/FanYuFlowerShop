@@ -14,6 +14,7 @@ import type { PublicGoodsPatchResult } from '@/services/goodsLivePatch'
 
 export interface GoodsCard extends Goods {
   imageUrl: string
+  previewUrl: string
 }
 
 const PUBLIC_GOODS_LIST_CACHE_KEY = CACHE_KEYS.goodsPublicAll

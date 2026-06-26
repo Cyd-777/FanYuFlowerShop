@@ -212,22 +212,40 @@ export async function resolveCloudImageMap(fileIds: string[]) {
   return map
 }
 
+/** 从标准 HTTPS URL 推导 160px 缩略图 URL（imageMogr2 参数） */
+export function derivePreviewUrl(standardUrl: string): string {
+  const url = (standardUrl || '').trim()
+  if (!url || !/^https?:\/\//.test(url)) return ''
+  const sep = url.includes('?') ? '&' : '?'
+  return `${url}${sep}imageMogr2/thumbnail/160x/quality/25/format/webp`
+}
+
 /** 顾客端公开数据：云函数已换链的封面 HTTPS（同一资源） */
 export function pickPublicCoverUrl(item: {
   coverImage?: string
   coverImageUrl?: string
+  standardImageUrl?: string
+  previewImageUrl?: string
   images?: string[]
   imageUrls?: string[]
 }) {
-  if (item.coverImageUrl) return item.coverImageUrl
-  if (item.imageUrls?.length) return item.imageUrls[0]
-  return ''
+  return item.standardImageUrl || item.coverImageUrl || item.imageUrls?.[0] || ''
+}
+
+/** 顾客端缩略图 HTTPS */
+export function pickPublicPreviewUrl(item: {
+  previewImageUrl?: string
+  coverImageUrl?: string
+  imageUrls?: string[]
+}): string {
+  return item.previewImageUrl || derivePreviewUrl(item.coverImageUrl || item.imageUrls?.[0] || '')
 }
 
 /** 顾客端展示 URL：优先云端 HTTPS，其次 cloud:// */
 export function pickDisplayImageForGoods(item: {
   coverImage?: string
   coverImageUrl?: string
+  standardImageUrl?: string
   images?: string[]
   imageUrls?: string[]
 }) {
@@ -258,12 +276,17 @@ export function pickCoverFileId(item: { coverImage?: string; images?: string[] }
 
 /** 同步从本地缓存还原封面 URL，供有业务缓存时首屏直出 */
 export function attachGoodsCoverImagesFromCache<
-  T extends { coverImage?: string; coverImageUrl?: string; images?: string[]; imageUrls?: string[] },
->(list: T[]): Array<T & { imageUrl: string }> {
-  return list.map((item) => ({
-    ...item,
-    imageUrl: pickDisplayImageForGoods(item) || pickCoverFileId(item),
-  }))
+  T extends { coverImage?: string; coverImageUrl?: string; images?: string[]; imageUrls?: string[]; previewImageUrl?: string; standardImageUrl?: string },
+>(list: T[]): Array<T & { imageUrl: string; previewUrl: string }> {
+  return list.map((item) => {
+    const url = pickPublicCoverUrl(item) || item.coverImageUrl || pickCoverFileId(item)
+    const prevUrl = pickPublicPreviewUrl(item) || derivePreviewUrl(url)
+    return {
+      ...item,
+      imageUrl: url,
+      previewUrl: prevUrl,
+    }
+  })
 }
 
 /** 异步解决列表封面 URL：优先 item 自带的 coverImageUrl/imageUrls，不足时批量换链 */
@@ -274,11 +297,13 @@ export async function attachGoodsCoverImages<
     coverImageUrl?: string
     images?: string[]
     imageUrls?: string[]
+    previewImageUrl?: string
+    standardImageUrl?: string
   },
 >(
   list: T[],
   previous?: Array<T & { imageUrl?: string }>,
-): Promise<Array<T & { imageUrl: string }>> {
+): Promise<Array<T & { imageUrl: string; previewUrl: string }>> {
   const prevById = new Map(
     (previous || [])
       .filter((item) => item._id)
@@ -312,7 +337,9 @@ export async function attachGoodsCoverImages<
       imageUrl = prev.imageUrl
     }
 
-    return { ...item, imageUrl }
+    const prevUrl = item.previewImageUrl || derivePreviewUrl(imageUrl)
+
+    return { ...item, imageUrl, previewUrl: prevUrl }
   })
 }
 

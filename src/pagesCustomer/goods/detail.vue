@@ -7,6 +7,7 @@
         <nut-swiper-item v-for="(fileId, idx) in imageFileIds" :key="fileId || idx">
           <GoodsImage
             :src="images[idx] || ''"
+            :preview-src="idx === 0 ? images[0] : ''"
             :cloud-file-id="fileId"
             root-class="swiper-img"
           />

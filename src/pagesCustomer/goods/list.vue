@@ -20,11 +20,12 @@
         :key="item._id"
         class="goods-card"
         :class="{ 'is-sold-out': item.stock <= 0 }"
-        @click="goDetail(item._id, item.imageUrl, item.coverImage || item.images?.[0])"
+        @click="goDetail(item._id, item.previewUrl, item.coverImage || item.images?.[0])"
       >
         <view class="goods-img-wrap">
           <GoodsImage
             :src="item.imageUrl"
+            :preview-src="item.previewUrl"
             :cloud-file-id="item.coverImage || item.images?.[0]"
             root-class="goods-img"
           />

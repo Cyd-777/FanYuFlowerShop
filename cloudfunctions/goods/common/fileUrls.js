@@ -128,44 +128,71 @@ function collectGoodsImageIds(goodsList) {
         ids.add(img)
       }
     }
+    // 新版三档 fileId
+    if (typeof goods?.previewFileId === 'string' && goods.previewFileId.startsWith('cloud://')) {
+      ids.add(goods.previewFileId)
+    }
+    if (typeof goods?.standardFileId === 'string' && goods.standardFileId.startsWith('cloud://')) {
+      ids.add(goods.standardFileId)
+    }
   }
 
   return [...ids]
 }
 
-function toPublicImageUrl(fileId, urlMap, tier = 'preview') {
+function toPublicImageUrl(fileId, urlMap) {
   if (!fileId) return ''
   const base = urlMap[fileId] || (/^https?:\/\//.test(fileId) ? stripImageStyle(fileId) : '')
-  if (!base) return ''
-  return applyImageStyle(base, tier)
+  return base
 }
 
-function applyPublicImageUrls(goods, urlMap, options = {}) {
-  const tier = options.tier || 'preview'
-  const listSlim = options.listSlim === true
+function applyPublicImageUrls(goods, urlMap) {
   const imageIds = Array.isArray(goods.images) ? goods.images : []
 
+  // coverImageUrl = 原始 HTTPS（无处理参数）
+  const coverRaw = toPublicImageUrl(goods.coverImage || '', urlMap)
   const result = {
     ...goods,
-    coverImageUrl: toPublicImageUrl(goods.coverImage || '', urlMap, tier),
+    coverImageUrl: coverRaw,
+    // previewImageUrl = 160px 缩略图
+    previewImageUrl: coverRaw ? makePreviewUrl(coverRaw) : '',
+    standardImageUrl: coverRaw,
   }
 
-  if (!listSlim) {
-    result.imageUrls = imageIds.map((id) => toPublicImageUrl(id, urlMap, tier))
+  if (Array.isArray(goods.images) && goods.images.length) {
+    result.imageUrls = imageIds.map((id) => toPublicImageUrl(id, urlMap))
+    result.previewImageUrls = result.imageUrls.map((u) => (u ? makePreviewUrl(u) : ''))
+  }
+
+  // 新版 goods 持有独立的 previewFileId/standardFileId -> 优先使用
+  if (goods.previewFileId && goods.standardFileId) {
+    const previewRaw = toPublicImageUrl(goods.previewFileId, urlMap)
+    const standardRaw = toPublicImageUrl(goods.standardFileId, urlMap)
+    if (previewRaw) result.previewImageUrl = previewRaw
+    if (standardRaw) {
+      result.coverImageUrl = standardRaw
+      result.standardImageUrl = standardRaw
+    }
   }
 
   return result
 }
 
-async function enrichPublicGoodsList(list, options = {}) {
+/** 从 HTTPS 推导 160px 缩略图 URL */
+function makePreviewUrl(rawUrl) {
+  if (!rawUrl || !/^https?:\/\//.test(rawUrl)) return ''
+  const sep = rawUrl.includes('?') ? '&' : '?'
+  return `${rawUrl}${sep}imageMogr2/thumbnail/160x/quality/25/format/webp`
+}
+
+async function enrichPublicGoodsList(list) {
   if (!Array.isArray(list) || !list.length) return list
-  const tier = options.tier || 'preview'
   const urlMap = await resolveFileUrls(collectGoodsImageIds(list))
-  return list.map((goods) => applyPublicImageUrls(goods, urlMap, { ...options, tier }))
+  return list.map((goods) => applyPublicImageUrls(goods, urlMap))
 }
 
 async function enrichPublicGoods(goods) {
-  const [item] = await enrichPublicGoodsList([goods], { tier: 'full', listSlim: false })
+  const [item] = await enrichPublicGoodsList([goods])
   return item
 }
 

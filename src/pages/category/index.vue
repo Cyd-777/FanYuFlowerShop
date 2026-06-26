@@ -86,11 +86,12 @@
                 :key="item._id"
                 class="goods-item"
                 :class="{ 'is-sold-out': item.stock <= 0 }"
-                @tap="goDetail(item._id, item.imageUrl, item.coverImage || item.images?.[0])"
+                @tap="goDetail(item._id, item.previewUrl, item.coverImage || item.images?.[0])"
               >
                 <view class="thumb-wrap">
                   <GoodsImage
                     :src="item.imageUrl"
+                    :preview-src="item.previewUrl"
                     :cloud-file-id="item.coverImage || item.images?.[0]"
                     root-class="thumb"
                   />

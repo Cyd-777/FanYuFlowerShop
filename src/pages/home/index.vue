@@ -100,11 +100,12 @@
         v-for="item in goodsList"
         :key="item._id"
         class="goods-card"
-        @tap="goDetail(item._id, item.imageUrl, item.coverImage || item.images?.[0])"
+        @tap="goDetail(item._id, item.previewUrl, item.coverImage || item.images?.[0])"
       >
         <view class="goods-img-wrap">
           <GoodsImage
             :src="item.imageUrl"
+            :preview-src="item.previewUrl"
             :cloud-file-id="item.coverImage || item.images?.[0]"
             root-class="goods-img"
           />

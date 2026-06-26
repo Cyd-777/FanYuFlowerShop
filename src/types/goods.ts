@@ -51,12 +51,20 @@ export interface Goods {
   flowerVarietyName?: string
   coverImage: string
   images: string[]
+  /** 新版缩略图 fileID（160px webp） */
+  previewFileId?: string
+  /** 新版标准图 fileID（750px webp） */
+  standardFileId?: string
   /** @deprecated 与 coverImage 同源，仅兼容旧响应；不做商家双上传 */
   coverThumb?: string
   /** @deprecated 等同 coverImageUrl */
   coverThumbUrl?: string
   /** 顾客端公开接口：云函数侧已换链的封面 HTTPS */
   coverImageUrl?: string
+  /** 顾客端公开接口：云函数侧已换链的 160px 缩略图 HTTPS */
+  previewImageUrl?: string
+  /** 顾客端公开接口：云函数侧已换链的 750px 标准图 HTTPS */
+  standardImageUrl?: string
   /** 顾客端公开接口：云函数侧已换链的多图 HTTPS */
   imageUrls?: string[]
   onSale: boolean
@@ -84,6 +92,8 @@ export interface GoodsForm {
   flowerVarietyName: string
   coverImage: string
   images: string[]
+  previewFileId?: string
+  standardFileId?: string
   onSale: boolean
   recommend: boolean
   sort: string

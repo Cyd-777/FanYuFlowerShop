@@ -8,11 +8,12 @@
         v-for="item in list"
         :key="item._id"
         class="goods-card"
-        @click="goDetail(item._id, item.imageUrl, item.coverImage || item.images?.[0])"
+        @click="goDetail(item._id, item.previewUrl, item.coverImage || item.images?.[0])"
       >
         <view class="goods-img-wrap">
           <GoodsImage
             :src="item.imageUrl"
+            :preview-src="item.previewUrl"
             :cloud-file-id="item.coverImage || item.images?.[0]"
             root-class="goods-img"
           />
@@ -53,7 +54,7 @@ import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 import type { Goods } from '@/types/goods'
 
-type FavoriteCard = Goods & { imageUrl: string }
+type FavoriteCard = Goods & { imageUrl: string; previewUrl: string }
 
 const list = ref<FavoriteCard[]>([])
 const loading = ref(false)

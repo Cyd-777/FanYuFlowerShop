@@ -507,7 +507,7 @@ exports.main = async (event) => {
         })
         return {
           success: true,
-          list: await enrichPublicGoodsList(page.list, { listSlim: true }),
+          list: await enrichPublicGoodsList(page.list),
           hasMore: page.hasMore,
           nextCursor: page.nextCursor,
           total: page.total,
