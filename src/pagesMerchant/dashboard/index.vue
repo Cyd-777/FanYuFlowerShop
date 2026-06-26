@@ -65,6 +65,10 @@
           <view class="action-icon">⚙️</view>
           <view class="action-label">店铺设置</view>
         </view>
+        <view class="action-item" @click="go('asset')">
+          <view class="action-icon">🖼️</view>
+          <view class="action-label">素材管理</view>
+        </view>
       </view>
     </view>
 
@@ -160,6 +164,7 @@ function go(page: string) {
     verify: '/pagesMerchant/verify/index',
     staff: '/pagesMerchant/staff/index',
     salesStrategy: '/pagesMerchant/shop/sales-strategy/index',
+    asset: '/pagesMerchant/asset/index',
     setting: '/pagesMerchant/shop/setting',
   }
   const url = routes[page]

@@ -58,6 +58,7 @@ export default defineAppConfig({
         'shop/sales-strategy/index',
         'shop/sales-strategy/edit',
         'shop/goods-picker',
+        'asset/index',
       ],
     },
   ],

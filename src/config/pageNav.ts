@@ -80,6 +80,7 @@ export const PAGE_NAV: Record<string, PageNavConfig> = {
   'pagesMerchant/shop/sales-strategy/index': { title: '销售策略' },
   'pagesMerchant/shop/sales-strategy/edit': { title: '主题编辑' },
   'pagesMerchant/shop/goods-picker': { title: '选择折扣商品' },
+  'pagesMerchant/asset/index': { title: '素材管理' },
 }
 
 const DEFAULT_NAV: PageNavConfig = {

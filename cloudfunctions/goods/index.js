@@ -7,6 +7,51 @@ const {
   enrichPublicGoods,
 } = require('./common/fileUrls')
 
+/**
+ * 通过 imageMogr2 URL 参数下载处理后图片并上传回云储存
+ * @param {string} baseUrl - 原图 HTTPS URL（已换链）
+ * @param {string} ops - imageMogr2 参数，如 imageMogr2/thumbnail/160x/quality/25/format/webp
+ * @param {string} targetCloudPath - 上传路径，如 assets/红玫瑰__preview.webp
+ * @returns {Promise<string>} 云存储 fileID
+ */
+async function downloadProcessedAndUpload(baseUrl, ops, targetCloudPath) {
+  const https = require('https')
+  const fs = require('fs')
+  const path = require('path')
+
+  const sep = baseUrl.includes('?') ? '&' : '?'
+  const processedUrl = `${baseUrl}${sep}${ops}`
+
+  const tmpPath = path.join('/tmp', `proc_${Date.now()}.webp`)
+
+  await new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(tmpPath)
+    https.get(processedUrl, (res) => {
+      if (res.statusCode !== 200) {
+        reject(new Error(`download failed: ${res.statusCode}`))
+        return
+      }
+      res.pipe(file)
+      file.on('finish', () => {
+        file.close()
+        resolve()
+      })
+    }).on('error', (err) => {
+      fs.unlink(tmpPath, () => {})
+      reject(err)
+    })
+  })
+
+  const { fileID } = await cloud.uploadFile({
+    cloudPath: targetCloudPath,
+    filePath: tmpPath,
+  })
+
+  try { fs.unlink(tmpPath, () => {}) } catch {}
+
+  return fileID
+}
+
 async function safeBumpCacheModule(module) {
   try {
     await bumpCacheModule(module)
@@ -912,6 +957,194 @@ exports.main = async (event) => {
     }))
 
     return { success: true, list }
+  }
+
+  if (action === 'processImageUpload') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限上传素材' }
+    }
+
+    const fileId = String(event.fileId || '').trim()
+    const rawName = String(event.name || '').trim()
+    if (!fileId || !rawName) {
+      return { success: false, errMsg: '缺少 fileId 或 name' }
+    }
+    if (!fileId.startsWith('cloud://')) {
+      return { success: false, errMsg: 'fileId 格式错误' }
+    }
+
+    // 解析扩展名
+    const extMatch = rawName.match(/\.(\w+)$/)
+    const ext = extMatch?.[1] || 'jpg'
+
+    // 构建云存储路径（去掉 cloud:// 前缀的环境部分）
+    const nameBase = rawName.replace(/\.\w+$/, '').replace(/[^\w\u4e00-\u9fff_-]/g, '_')
+
+    try {
+      // 换链原图
+      const urlMap = {}
+      const resolved = await resolveFileUrls([fileId])
+      const baseUrl = resolved[fileId]
+      if (!baseUrl) throw new Error('换链失败')
+
+      // 预览图 160px, q=25, webp
+      const previewPath = `assets/${nameBase}__preview.webp`
+      let previewFileId = ''
+      try {
+        previewFileId = await downloadProcessedAndUpload(
+          baseUrl,
+          'imageMogr2/thumbnail/160x/quality/25/format/webp',
+          previewPath,
+        )
+      } catch (err) {
+        console.warn('[goods] preview generation failed:', err.message || err)
+      }
+
+      // 标准图 750px, q=80, webp
+      const standardPath = `assets/${nameBase}__standard.webp`
+      let standardFileId = ''
+      try {
+        standardFileId = await downloadProcessedAndUpload(
+          baseUrl,
+          'imageMogr2/thumbnail/750x/quality/80/format/webp',
+          standardPath,
+        )
+      } catch (err) {
+        console.warn('[goods] standard generation failed:', err.message || err)
+      }
+
+      // 记录到 asset_meta
+      await ensureCollection('asset_meta')
+      const now = db.serverDate()
+      await db.collection('asset_meta').add({
+        data: {
+          name: rawName,
+          originalFileId: fileId,
+          previewFileId: previewFileId || fileId,
+          standardFileId: standardFileId || fileId,
+          createdAt: now,
+          updatedAt: now,
+        },
+      })
+
+      return {
+        success: true,
+        previewFileId: previewFileId || fileId,
+        standardFileId: standardFileId || fileId,
+        originalFileId: fileId,
+      }
+    } catch (err) {
+      console.error('[goods] processImageUpload failed:', err.message || err)
+      // 降级：返回原图
+      return {
+        success: true,
+        previewFileId: fileId,
+        standardFileId: fileId,
+        originalFileId: fileId,
+        degraded: true,
+      }
+    }
+  }
+
+  if (action === 'assetList') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限查看素材' }
+    }
+
+    await ensureCollection('asset_meta')
+
+    const { data } = await db.collection('asset_meta')
+      .orderBy('createdAt', 'desc')
+      .get()
+
+    const list = (data || []).map((doc) => ({
+      _id: doc._id,
+      name: doc.name || '',
+      originalFileId: doc.originalFileId || '',
+      previewFileId: doc.previewFileId || '',
+      standardFileId: doc.standardFileId || '',
+      createdAt: doc.createdAt,
+    }))
+
+    // 批量换链显示 URL
+    const allFileIds = []
+    for (const item of list) {
+      if (item.previewFileId) allFileIds.push(item.previewFileId)
+      if (item.standardFileId) allFileIds.push(item.standardFileId)
+    }
+    const urlMap = allFileIds.length ? await resolveFileUrls(allFileIds) : {}
+
+    for (const item of list) {
+      item.previewUrl = urlMap[item.previewFileId] || ''
+      item.standardUrl = urlMap[item.standardFileId] || ''
+    }
+
+    return { success: true, list }
+  }
+
+  if (action === 'assetRename') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限修改素材' }
+    }
+
+    const assetId = String(event.assetId || '').trim()
+    const newName = String(event.name || '').trim()
+    if (!assetId || !newName) {
+      return { success: false, errMsg: '缺少参数' }
+    }
+
+    await ensureCollection('asset_meta')
+
+    const { data } = await db.collection('asset_meta').doc(assetId).get()
+    if (!data) {
+      return { success: false, errMsg: '素材不存在' }
+    }
+
+    await db.collection('asset_meta').doc(assetId).update({
+      data: {
+        name: newName,
+        updatedAt: db.serverDate(),
+      },
+    })
+
+    return { success: true }
+  }
+
+  if (action === 'assetDelete') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限删除素材' }
+    }
+
+    const assetId = String(event.assetId || '').trim()
+    if (!assetId) {
+      return { success: false, errMsg: '缺少参数' }
+    }
+
+    await ensureCollection('asset_meta')
+
+    const { data } = await db.collection('asset_meta').doc(assetId).get()
+    if (!data) {
+      return { success: false, errMsg: '素材不存在' }
+    }
+
+    // 删除云存储中的文件
+    const toDelete = [data.originalFileId, data.previewFileId, data.standardFileId]
+      .filter(Boolean)
+    if (toDelete.length) {
+      try {
+        await cloud.deleteFile({ fileList: toDelete })
+      } catch (err) {
+        console.warn('[goods] asset delete files failed:', err.message || err)
+      }
+    }
+
+    await db.collection('asset_meta').doc(assetId).remove()
+
+    return { success: true }
   }
 
   return { success: false, errMsg: '未知操作' }
