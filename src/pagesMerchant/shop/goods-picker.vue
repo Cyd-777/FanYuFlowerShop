@@ -22,7 +22,7 @@
         />
         <view class="info" @tap.stop="toggle(item._id)">
           <view class="name">{{ item.name }}</view>
-          <view class="price">¥{{ formatPrice(item.price) }}</view>
+          <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="price" />
         </view>
       </view>
     </view>
@@ -38,12 +38,12 @@
 import { usePageData } from '@/composables/usePageData'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
+import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 
 const {
   displayList,
   loading,
   selectedIds,
-  formatPrice,
   isSelected,
   toggle,
   confirm,
@@ -73,7 +73,7 @@ const {
 .thumb { width: 96rpx; height: 96rpx; border-radius: 8rpx; background: #f0f0f0; flex-shrink: 0; }
 .info { flex: 1; margin-left: 16rpx; min-width: 0; }
 .name { font-size: 26rpx; color: #333; }
-.price { margin-top: 6rpx; font-size: 24rpx; color: #e53935; }
+.price { margin-top: 6rpx; color: #e53935; }
 .action-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex; align-items: center; padding: 16rpx 24rpx;

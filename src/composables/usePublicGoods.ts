@@ -86,6 +86,10 @@ export function usePublicGoods() {
       const { data } = await goodsRepository.ensurePublicList({
         force: options?.force,
         onUpdate: (list) => {
+          if (!list.length) return
+          if (loading.value && list.length) {
+            loading.value = false
+          }
           void applySourceGoods(list as Goods[], sourceGoods.value).then((items) => {
             if (items !== sourceGoods.value) sourceGoods.value = items
           })

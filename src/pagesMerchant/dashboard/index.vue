@@ -2,8 +2,19 @@
   <view class="page-dashboard">
     <AppFeedbackHost />
     <view class="header" :style="headerStyle">
-      <view class="greeting">👋 早上好，店长</view>
-      <view class="shop-name">{{ shopStore.shopName }}</view>
+      <view class="header-row">
+        <image
+          v-if="avatarDisplay"
+          class="header-avatar"
+          :src="avatarDisplay"
+          mode="aspectFill"
+        />
+        <view v-else class="header-avatar placeholder">👤</view>
+        <view class="header-text">
+          <view class="greeting">👋 {{ greetingText }}，{{ displayName }}</view>
+          <view class="shop-name">{{ shopStore.shopName }}</view>
+        </view>
+      </view>
     </view>
 
     <!-- 数据概览 -->
@@ -70,6 +81,8 @@ import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
 import { getMerchantOrderStats } from '@/services/order'
+import { getMerchantSelf } from '@/services/staff'
+import { resolveAvatarDisplayPath } from '@/services/userProfile'
 import { useShopDisplay } from '@/composables/useShopDisplay'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
@@ -89,10 +102,32 @@ const stats = ref({
 })
 
 const statsLoading = ref(false)
+const displayName = ref('店长')
+const avatarDisplay = ref('')
+
+const greetingText = computed(() => {
+  const hour = new Date().getHours()
+  if (hour < 12) return '早上好'
+  if (hour < 18) return '下午好'
+  return '晚上好'
+})
 
 useDidShow(() => {
   void loadStats()
+  void loadMerchantProfile()
 })
+
+async function loadMerchantProfile() {
+  try {
+    const self = await getMerchantSelf()
+    displayName.value = self.name || self.nickName || '工作人员'
+    avatarDisplay.value = self.avatarUrl
+      ? await resolveAvatarDisplayPath(self.avatarUrl)
+      : ''
+  } catch (err) {
+    console.warn('[dashboard] load merchant profile failed:', err)
+  }
+}
 
 async function loadStats() {
   statsLoading.value = true
@@ -146,6 +181,29 @@ function previewCustomer() {
 .header {
   padding: 48rpx 32rpx 32rpx;
   background: linear-gradient(135deg, #667eea, #764ba2);
+  .header-row {
+    display: flex;
+    align-items: center;
+  }
+  .header-avatar {
+    flex-shrink: 0;
+    width: 88rpx;
+    height: 88rpx;
+    margin-right: 20rpx;
+    border-radius: 50%;
+    border: 4rpx solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.2);
+    &.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40rpx;
+    }
+  }
+  .header-text {
+    flex: 1;
+    min-width: 0;
+  }
   .greeting { font-size: 36rpx; font-weight: 600; color: #fff; }
   .shop-name { margin-top: 8rpx; font-size: 28rpx; color: rgba(255,255,255,0.8); }
 }

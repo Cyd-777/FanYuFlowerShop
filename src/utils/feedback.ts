@@ -1,5 +1,4 @@
 import { reactive } from 'vue'
-import { getCurrentPageRoute } from '@/config/pageNav'
 import { getNavBarLayout } from '@/utils/navBarLayout'
 import type {
   AppToastOptions,
@@ -59,7 +58,7 @@ export const feedbackAlertState = reactive<AlertState>({
   onCancel: null,
 })
 
-/** 下拉刷新顶栏 loading（SWR：旧 UI 保留 + 顶条指示） */
+/** 下拉刷新顶栏 loading（SWR：回弹后显示滑动条） */
 export const pullRefreshLoadingState = reactive({ visible: false, depth: 0 })
 
 export function showPullRefreshLoading() {
@@ -86,16 +85,14 @@ function hideBar() {
   feedbackBarState.visible = false
 }
 
-/** 无 AppNavBar 的 Tab 页（仅 AppFeedbackHost）：提示条贴 statusBar 下沿 */
-const FEEDBACK_ONLY_TAB_ROUTES = new Set(['pages/home/index', 'pages/mine/index'])
+/** 下拉刷新条：贴屏幕最上沿（statusBar 之上，各页一致） */
+export function getPullRefreshTopOffsetPx() {
+  return 0
+}
 
-/** 顶部提示条 top 偏移：子页/带 Head 页 = Head 总高；首页/我的 = statusBar + 间距 */
+/** 顶部提示条：固定贴在 Head 占位下沿（无论 Head 是否渲染/可见，如百科吸顶藏 Head） */
 export function getNotifyBarTopOffsetPx(forceLayout = false) {
-  const layout = getNavBarLayout(forceLayout)
-  if (FEEDBACK_ONLY_TAB_ROUTES.has(getCurrentPageRoute())) {
-    return layout.statusBarHeight + 8
-  }
-  return layout.totalHeight
+  return getNavBarLayout(forceLayout).totalHeight
 }
 
 let barTimer: ReturnType<typeof setTimeout> | null = null

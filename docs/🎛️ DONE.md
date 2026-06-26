@@ -26,6 +26,8 @@
 
 - **批量管理** — 未选中时底部批量操作置灰；「全选当前」改 `view`+`@tap`（修复 `text`/`@click` 不触发）
 - 批量管理与筛选互斥（点一个自动关闭另一个）
+- **批量出库** — 商品列表批量管理 → `stock-out` 计数器页 → `goods.stockOut`；可售数不足服务端拦截
+- **仓储流水** — 云库 `warehouse_ledger`（`stock_in` / `stock_out`、操作人、前后库存）；入库 `stockIn` 同步写入
 
 ---
 
@@ -77,6 +79,25 @@
 - **订单列表 Tab 白条** — 顾客/商户订单列表用 `OrderListStatusTabs` 替换空 `nut-tabs` 内容区
 - **分类商品列表搜索位** — `pagesCustomer/goods/list` 去掉 spacer 页重复的 `page-nav-overlay-safe`；商城 Tab 分栏首帧兜底含 Head 高
 - **花材选择器对齐智库** — 商品编辑花卉 picker 以 `flower_wiki` 为数据源，侧栏顺序与百科 Tab 一致（`buildFlowerCatalogFromWiki`）
+
+---
+
+## 加载策略（Banner / 进页即见 / 缓存）
+
+`2026-06-17` · **体验版暂且通过** · 自 CURRENT 暂时归档 · **Banner 空白问题 2026-06-17 结案**
+
+- **进页即见** + 全局加载权重（[data-loading §4.0](./data-loading.md#40-进页即见--定义定稿)）；预取强度 **拉满**（§4.0.6）
+- P0 链：`onLaunch` / home `ensure` 100→110→120→200；Tab/路由 P0-Sync；Banner `img:banner`（110）
+- P0 后 `startAggressivePrefetch` — goods:all、wiki:list、全 Tab P0、detail 队列、batch cover URL
+- 下拉刷新 SWR（顶栏 loading 条 + 回弹后刷新）
+- **Phase C** — `goods.publicList` cursor；`fetchAllPublicGoodsIndexPages` 流式 onUpdate；`GoodsImage` 同 URL 不 blank
+- 云处理 preview/full 双档 URL（imageMogr2 零控制台配置）；详情 **首次** preview→full、**再次**直出 full；列表 nav preview 防占位闪
+- Issue #1 SWR 深路径防闪 — 主线已覆盖，不再单独做；**Phase C 续**（滚动成组 + intersection）搁置，列表量上来再议
+- ~~商家双上传 thumb~~ 已取消（同一 `coverImage` 分阶段清晰度）
+- **Banner 顾客端不显示（Issue #2）** — 多轮体验版复测已无复现；根因倾向 **加载逻辑**（`ensure` 未 await `img:banner` 即展示），非 ACL；权重 110 为辅助。若复发：查 home ensure 链与 `img:banner` 缓存。
+
+**复开条件**（非必做）：弱网/Banner 边缘 case 复现；列表规模上来再评估 Phase C 续  
+**2026-06-26 已复开**：CURRENT **加载策略 · 图片加载**（商品封面 / preview-full / 懒加载，真机仍不达标）
 
 ---
 

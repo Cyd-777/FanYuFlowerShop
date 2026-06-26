@@ -129,6 +129,30 @@ async function findMerchantByUserId(userId) {
   return data[0] || null
 }
 
+async function findMerchantByOpenid(openid) {
+  if (!openid) return null
+  await ensureCollection('merchants')
+  const { data } = await db.collection('merchants').where({ openid }).limit(1).get()
+  return data[0] || null
+}
+
+async function resolveMerchantUserId(item) {
+  if (item.userId) return item.userId
+  if (!item.openid) return ''
+
+  const user = await resolveUserByWechatMp(item.openid)
+  const userId = user?.userId || ''
+  if (userId && item._id) {
+    await db.collection('merchants').doc(item._id).update({
+      data: {
+        userId,
+        updatedAt: db.serverDate(),
+      },
+    })
+  }
+  return userId
+}
+
 async function isOwner(operatorOpenid) {
   if (OWNER_OPENIDS.includes(operatorOpenid)) return true
 
@@ -178,12 +202,21 @@ async function markInviteExpired(doc) {
   })
 }
 
-function mapStaffItem(item) {
+async function mapStaffItemWithProfile(item) {
+  const userId = await resolveMerchantUserId(item)
+  if (!userId) return null
+
+  const user = await getUserById(userId)
+  const role = item.role || (OWNER_OPENIDS.includes(item.openid) ? 'owner' : 'staff')
+
   return {
     _id: item._id,
-    userId: item.userId || '',
-    name: item.name || '工作人员',
-    role: item.role || 'staff',
+    userId,
+    name: item.name || user?.nickName || '工作人员',
+    nickName: user?.nickName || '',
+    avatarUrl: user?.avatarUrl || '',
+    role,
+    roleLabel: role === 'owner' ? '店长' : (ROLE_LABELS[role] || ROLE_LABELS.staff),
     createdAt: item.createdAt,
   }
 }
@@ -328,6 +361,35 @@ exports.main = async (event) => {
     }
   }
 
+  if (action === 'getSelf') {
+    const user = await resolveUserByWechatMp(operatorOpenid)
+    const userId = user?.userId || ''
+    let merchant = userId ? await findMerchantByUserId(userId) : null
+    if (!merchant) {
+      merchant = await findMerchantByOpenid(operatorOpenid)
+    }
+
+    const isWhitelistedOwner = OWNER_OPENIDS.includes(operatorOpenid)
+    if (!isWhitelistedOwner && !merchant) {
+      return { success: false, errMsg: '非商家账号' }
+    }
+
+    const role = merchant?.role || (isWhitelistedOwner ? 'owner' : 'staff')
+    const name = merchant?.name || user?.nickName || (isWhitelistedOwner ? '店长' : '工作人员')
+
+    return {
+      success: true,
+      self: {
+        userId,
+        name,
+        nickName: user?.nickName || '',
+        avatarUrl: user?.avatarUrl || '',
+        role,
+        roleLabel: role === 'owner' ? '店长' : (ROLE_LABELS[role] || ROLE_LABELS.staff),
+      },
+    }
+  }
+
   if (action === 'list') {
     const canManage = await isOwner(operatorOpenid)
     if (!canManage) {
@@ -336,9 +398,9 @@ exports.main = async (event) => {
 
     await ensureCollection('merchants')
     const { data } = await db.collection('merchants').get()
-    const list = data
-      .map(mapStaffItem)
-      .filter((item) => item.userId)
+    const mapped = await Promise.all(data.map(mapStaffItemWithProfile))
+    const list = mapped
+      .filter(Boolean)
       .sort((a, b) => {
         const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0
         const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0

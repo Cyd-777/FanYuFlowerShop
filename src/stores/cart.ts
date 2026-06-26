@@ -112,6 +112,7 @@ export const useCartStore = defineStore('cart', () => {
     } else {
       items.value.push(line)
     }
+    refreshBadge()
   }
 
   function addCustomBouquet(draft: CustomBouquetDraft): string {
@@ -145,6 +146,7 @@ export const useCartStore = defineStore('cart', () => {
       customDraft: { ...draft },
     }
     items.value.push(line)
+    refreshBadge()
     return lineKey
   }
 

@@ -1,12 +1,18 @@
 import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
+import Taro, { useRouter } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
 import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
 import { goodsLiveSync } from '@/services/goodsLiveSync'
 import { goodsRepository, wikiRepository } from '@/data/repository'
 import { goodsPublicDetailKey } from '@/data/cacheKeys'
-import { hasCacheEntry } from '@/utils/cache'
-import { resolveCloudImageMap, pickPublicImageUrls, attachGoodsCoverImages, pickCoverFileId } from '@/utils/goodsImage'
+import { hasCacheEntry, readCacheEntry } from '@/utils/cache'
+import {
+  isCloudFileId,
+  pickCoverFileId,
+  resolveCloudImageMap,
+  attachGoodsCoverImages,
+} from '@/utils/goodsImage'
 import { hasGoodsLiveDiff, mergeGoodsLivePatch } from '@/utils/goodsLiveMerge'
 import type { Goods } from '@/types/goods'
 import type { FlowerWiki } from '@/types/wiki'
@@ -30,38 +36,118 @@ const EMPTY_GOODS: Goods = {
   sort: 0,
 }
 
+function collectImageFileIds(data: Goods) {
+  if (data.images?.length) return data.images.filter(Boolean)
+  if (data.coverImage) return [data.coverImage]
+  return []
+}
+
+function buildPreviewDisplayUrls(
+  data: Goods,
+  fileIds: string[],
+  options?: { coverPreview?: string; previous?: string[] },
+) {
+  const coverPreview = options?.coverPreview?.trim() || ''
+  return fileIds.map((fileId, index) => {
+    // 第一张图优先用导航参数中来自列表的小图（0延迟，不白）
+    if (index === 0 && coverPreview) return coverPreview
+    // 其次云函数返回的商品自带链接
+    const fromData = index === 0 ? data.coverImageUrl : data.imageUrls?.[index]
+    if (fromData) return fromData
+    return options?.previous?.[index] || fileId
+  })
+}
+
 export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unknown> {
   const wikiSectionTitle = '花卉百科'
 
   const goods = ref<Goods>({ ...EMPTY_GOODS })
+  /** 传给 GoodsImage 的 preview 档 URL（非 full） */
   const images = ref<string[]>([])
   const imageFileIds = ref<string[]>([])
   const goodsId = ref('')
+  const coverPreviewFromNav = ref('')
+  const coverFileIdFromNav = ref('')
   const loading = ref(false)
+
+  // setup 阶段同步读路由参数，让第一帧渲染就能显示小图（不白）
+  const routeParams = useRouter().params as Record<string, string | undefined> | undefined
+  const qPreview = routeParams?.coverPreview
+    ? decodeURIComponent(routeParams.coverPreview)
+    : ''
+  const qFileId = routeParams?.coverFileId
+    ? decodeURIComponent(routeParams.coverFileId)
+    : ''
+  if (qPreview) {
+    images.value = [qPreview]
+    imageFileIds.value = [qFileId || '']
+    coverPreviewFromNav.value = qPreview
+    coverFileIdFromNav.value = qFileId || ''
+  }
   const wikiEntry = ref<FlowerWiki | null>(null)
 
-  function onLoad(query: Record<string, string | undefined>) {
-    goodsId.value = query.id || ''
+  function syncImageSlots(data: Goods, coverPreview?: string) {
+    const fileIds = collectImageFileIds(data)
+    imageFileIds.value = fileIds
+    images.value = buildPreviewDisplayUrls(data, fileIds, {
+      coverPreview: coverPreview ?? coverPreviewFromNav.value,
+      previous: images.value,
+    })
   }
 
-  async function applyGoodsImages(data: Goods) {
-    const fileIds = data.images.length
-      ? data.images
-      : data.coverImage
-        ? [data.coverImage]
-        : []
-    imageFileIds.value = fileIds
+  function hydrateDetailFromCache(id: string) {
+    if (!id) return
+    const cached = readCacheEntry<Goods>(goodsPublicDetailKey(id))
+    if (!cached?.data) return
+    goods.value = cached.data
+    syncImageSlots(cached.data)
+  }
 
-    const publicUrls = pickPublicImageUrls(data)
-    if (publicUrls.length) {
-      images.value = publicUrls
+  function applyNavHeroPreview() {
+    const preview = coverPreviewFromNav.value.trim()
+    if (!preview) return
+
+    const fileId = coverFileIdFromNav.value.trim()
+      || pickCoverFileId(goods.value)
+      || (isCloudFileId(preview) ? preview : '')
+
+    if (fileId && isCloudFileId(fileId)) {
+      if (!imageFileIds.value.length) imageFileIds.value = [fileId]
+      images.value = buildPreviewDisplayUrls(goods.value, imageFileIds.value, { coverPreview: preview })
       return
     }
 
-    const imageMap = await resolveCloudImageMap(fileIds)
-    images.value = fileIds.length
-      ? fileIds.map((fileId) => imageMap.get(fileId) || (/^https?:\/\//.test(fileId) ? fileId : ''))
-      : []
+    if (!imageFileIds.value.length) imageFileIds.value = ['']
+    images.value = [preview]
+  }
+
+  function onLoad(query: Record<string, string | undefined>) {
+    goodsId.value = query.id || ''
+
+    // 路由参数在 setup 已读（第一帧渲染），onLoad 再补一次确保覆盖
+    if (query.coverPreview) {
+      coverPreviewFromNav.value = decodeURIComponent(query.coverPreview)
+    }
+    if (query.coverFileId) {
+      coverFileIdFromNav.value = decodeURIComponent(query.coverFileId)
+    }
+
+    hydrateDetailFromCache(goodsId.value)
+    applyNavHeroPreview()
+    if (imageFileIds.value.length) {
+      syncImageSlots(goods.value, coverPreviewFromNav.value)
+    }
+  }
+
+  async function applyGoodsImages(data: Goods) {
+    syncImageSlots(data, coverPreviewFromNav.value)
+
+    const fileIds = imageFileIds.value
+    if (!fileIds.length) return
+
+    void resolveCloudImageMap(fileIds).catch((err) => {
+      console.warn('[goodsDetail] prefetch full urls failed:', err)
+    })
   }
 
   async function loadMatchedWiki() {
@@ -84,7 +170,8 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
 
   async function loadGoods(force = false) {
     if (!goodsId.value) return
-    loading.value = force ? true : !hasCacheEntry(goodsPublicDetailKey(goodsId.value))
+    const hasHero = imageFileIds.value.length > 0 || !!coverPreviewFromNav.value.trim()
+    loading.value = force ? true : !hasHero && !hasCacheEntry(goodsPublicDetailKey(goodsId.value))
     try {
       const { data } = await goodsRepository.ensurePublicDetail(goodsId.value, {
         force,
@@ -154,6 +241,8 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
     })
   }
 
+  const heroReady = () => imageFileIds.value.length > 0 || !!coverPreviewFromNav.value.trim()
+
   return {
     ensure,
     onLoad,
@@ -165,6 +254,7 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
     imageFileIds,
     goodsId,
     loading,
+    heroReady,
     wikiEntry,
     formatPrice,
     goWikiFull,

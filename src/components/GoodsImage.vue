@@ -1,16 +1,15 @@
 <template>
   <view class="goods-image" :class="rootClass">
-    <view v-show="showPlaceholder" class="goods-image-ph">
-      <view v-if="isLoading" class="goods-image-shimmer" />
+    <view v-if="showPlaceholder" class="goods-image-ph">
+      <view v-if="!failed" class="goods-image-shimmer" />
       <text class="goods-image-emoji">{{ emoji }}</text>
-      <text v-if="showHint && !isLoading" class="goods-image-hint">{{ hintText }}</text>
+      <text v-if="showHint && failed" class="goods-image-hint">{{ hintText }}</text>
     </view>
     <image
-      v-if="displaySrc && !failed"
-      :key="imageRenderKey"
+      v-if="currentSrc && !failed"
       class="goods-image-img"
       :class="{ loaded }"
-      :src="displaySrc"
+      :src="currentSrc"
       :mode="mode"
       @load="onLoad"
       @error="onError"
@@ -19,17 +18,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import {
-  fetchPublicImageLocalPath,
-  isCloudFileId,
-  resolveImageDisplayPath,
-} from '@/utils/goodsImage'
+import { computed, onUnmounted, ref, watch } from 'vue'
+import { isCloudFileId, resolveCloudImageUrl } from '@/utils/goodsImage'
 
 const props = withDefaults(
   defineProps<{
     src?: string
-    /** cloud:// 文件 ID，HTTPS 换链失败时用云函数代理读取 */
+    /** 当前 URL 失效时可凭 fileId 重新换链 */
     cloudFileId?: string
     mode?: 'aspectFill' | 'aspectFit' | 'widthFix'
     emoji?: string
@@ -48,98 +43,110 @@ const props = withDefaults(
   },
 )
 
+/** 全局内存缓存：已成功加载的 URL 不再走加载动画 */
+const loadedUrls = new Set<string>()
+
 const loaded = ref(false)
 const failed = ref(false)
 const displaySrc = ref('')
-const triedProxy = ref(false)
-let resolveToken = 0
+let retryTimer: ReturnType<typeof setTimeout> | null = null
+let upgradeTimer: ReturnType<typeof setTimeout> | null = null
+const currentSrc = computed(() => displaySrc.value || props.src)
 
-const imageRenderKey = computed(
-  () => `${props.cloudFileId || ''}|${props.src || ''}`,
-)
+const showPlaceholder = computed(() => {
+  if (failed.value) return true
+  if (!currentSrc.value?.trim()) {
+    // 有 cloudFileId 时 soon 会有图，不闪 placeholder
+    if (props.cloudFileId) return false
+    return true
+  }
+  if (loadedUrls.has(currentSrc.value)) return false
+  if (loaded.value) return false
+  return !displaySrc.value
+})
 
-const isLoading = computed(
-  () => !!props.src?.trim() && !loaded.value && !failed.value && !displaySrc.value,
-)
-
-const showPlaceholder = computed(
-  () => !props.src?.trim() || failed.value || !loaded.value || !displaySrc.value,
-)
-
-function pickCloudFileId() {
-  if (props.cloudFileId && isCloudFileId(props.cloudFileId)) return props.cloudFileId
-  const trimmed = (props.src || '').trim()
-  if (isCloudFileId(trimmed)) return trimmed
-  return ''
-}
-
-async function tryPublicImageProxy() {
-  const fileId = pickCloudFileId()
-  if (!fileId || triedProxy.value) return ''
-  triedProxy.value = true
-  return fetchPublicImageLocalPath(fileId)
-}
-
-async function resolveDisplaySrc(raw: string) {
+function initFromProps(raw: string) {
   const trimmed = raw.trim()
-  if (!trimmed) {
+  if (!trimmed && !props.cloudFileId) {
     displaySrc.value = ''
-    loaded.value = false
     failed.value = false
     return
   }
 
-  if (loaded.value && displaySrc.value === trimmed) return
-
-  const token = ++resolveToken
-  loaded.value = false
-  failed.value = false
-  displaySrc.value = ''
-  triedProxy.value = false
-
-  const localPath = await resolveImageDisplayPath(trimmed)
-  if (token !== resolveToken) return
-
-  if (localPath) {
-    displaySrc.value = localPath
-    return
-  }
-
-  const proxyPath = await tryPublicImageProxy()
-  if (token !== resolveToken) return
-  if (proxyPath) {
-    displaySrc.value = proxyPath
-    return
-  }
-
+  // HTTPS 直出，同时后台升级
   if (/^https?:\/\//.test(trimmed)) {
-    displaySrc.value = trimmed
+    loaded.value = loadedUrls.has(trimmed)
+    if (props.cloudFileId) {
+      const fileId = props.cloudFileId
+      void resolveCloudImageUrl(fileId).then((fullUrl) => {
+        if (!fullUrl || fullUrl === trimmed) return
+        scheduleUpgrade(fullUrl)
+      })
+    }
+    return
+  }
+
+  // cloud:// 需要异步换链
+  if (trimmed && isCloudFileId(trimmed)) {
+    const token = Date.now()
+    void resolveCloudImageUrl(trimmed).then((url) => {
+      if (url) displaySrc.value = url
+    })
   }
 }
 
-watch(
-  () => [props.src, props.cloudFileId] as const,
-  ([next]) => {
-    void resolveDisplaySrc(next || '')
-  },
-  { immediate: true },
-)
+function scheduleUpgrade(fullUrl: string) {
+  if (upgradeTimer) return
+  const apply = () => {
+    upgradeTimer = null
+    if (fullUrl !== currentSrc.value) displaySrc.value = fullUrl
+  }
+  if (loaded.value) {
+    upgradeTimer = setTimeout(apply, 500)
+  } else {
+    const stop = watch(
+      () => loaded.value,
+      (v) => {
+        if (!v) return
+        stop()
+        upgradeTimer = setTimeout(apply, 500)
+      },
+    )
+  }
+}
+
+async function retryOnError() {
+  if (retryTimer || !props.cloudFileId) return
+  retryTimer = setTimeout(() => {
+    retryTimer = null
+    void resolveCloudImageUrl(props.cloudFileId!).then((url) => {
+      if (url) {
+        displaySrc.value = url
+        failed.value = false
+      }
+    })
+  }, 1000)
+}
 
 function onLoad() {
   loaded.value = true
+  if (currentSrc.value) loadedUrls.add(currentSrc.value)
 }
 
-async function onError() {
-  const proxyPath = await tryPublicImageProxy()
-  if (proxyPath) {
-    failed.value = false
-    loaded.value = false
-    displaySrc.value = proxyPath
-    return
+function onError() {
+  if (props.cloudFileId) {
+    void retryOnError()
+  } else {
+    failed.value = true
   }
-  failed.value = true
-  console.warn('[GoodsImage] image render failed, src=', (props.src || '').slice(0, 120))
 }
+
+watch(() => props.src, initFromProps, { immediate: true })
+
+onUnmounted(() => {
+  if (retryTimer) clearTimeout(retryTimer)
+  if (upgradeTimer) clearTimeout(upgradeTimer)
+})
 </script>
 
 <style lang="less">
@@ -160,6 +167,7 @@ async function onError() {
   align-items: center;
   justify-content: center;
   background: @color-bg-placeholder;
+  z-index: 0;
 }
 
 .goods-image-shimmer {
@@ -176,12 +184,8 @@ async function onError() {
 }
 
 @keyframes goods-image-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .goods-image-emoji {
@@ -204,10 +208,6 @@ async function onError() {
   display: block;
   width: 100%;
   height: 100%;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  &.loaded {
-    opacity: 1;
-  }
+  // 不设 opacity 过渡——已缓存的图立即显示，不放 0→1 动画
 }
 </style>

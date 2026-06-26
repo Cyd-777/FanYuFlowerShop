@@ -30,7 +30,7 @@ export type GoodsSalesTagSource = Pick<
 export interface CollectGoodsSalesTagsOptions {
   /** 展示分类名（商户列表另有分类行时可关闭） */
   includeCategory?: boolean
-  /** 展示销售类型（单支/成组/捆扎/其他） */
+  /** 展示销售类型（默认关闭，单位改在价格行展示） */
   includeSalesType?: boolean
 }
 
@@ -57,7 +57,7 @@ export function collectGoodsSalesTags(
   goods: GoodsSalesTagSource,
   options: CollectGoodsSalesTagsOptions = {},
 ): GoodsSalesTagItem[] {
-  const { includeCategory = true, includeSalesType = true } = options
+  const { includeCategory = true, includeSalesType = false } = options
   const list: GoodsSalesTagItem[] = []
 
   if (isNewListing(goods)) {

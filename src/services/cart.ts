@@ -2,7 +2,6 @@ import { getPublicGoods, validateGoodsForPurchase } from '@/services/goods'
 import {
   isCloudFileId,
   pickCoverFileId,
-  pickDisplayImage,
   pickPublicCoverUrl,
   pickDisplayImageForGoods,
   resolveCloudImageMap,
@@ -70,7 +69,7 @@ export async function syncCartWithServer(items: CartLineItem[]): Promise<CartSyn
     const map = await resolveCloudImageMap(cloudIds)
     next.forEach((item) => {
       if (isCloudFileId(item.image)) {
-        item.image = pickDisplayImage(item.image, map)
+        item.image = map.get(item.image) || item.image
       }
     })
   }
@@ -97,5 +96,6 @@ export async function addGoodsToCart(
   const cartStore = useCartStore()
   const fresh = await validateGoodsForPurchase(goodsId)
   cartStore.addItem(fresh, displayImage, count)
+  cartStore.refreshBadge()
   return fresh
 }

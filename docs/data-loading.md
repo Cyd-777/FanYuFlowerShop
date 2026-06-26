@@ -64,7 +64,7 @@ L2 关联（按需）       如 wiki:match:{kindId}:{varietyId}
 
 ## 4. 加载优先级（P0～P3）
 
-> **定稿**：`2026-06-17` · 与面板 **「加载策略（Banner / 进页即见 / 缓存）」** 对齐 · §4.0 进页即见 + **§4.0.6 预取拉满** + §4.4 商品图双档/流式成组 · Banner 根因已确认为**加载权重**，非存储 ACL
+> **定稿**：`2026-06-17` · 与面板 **「加载策略（Banner / 进页即见 / 缓存）」** 对齐 · §4.0 进页即见 + **§4.0.6 预取拉满** + §4.4 商品图分阶段/流式成组 · Banner 根因：**加载逻辑**（`ensure` 链 / `img:banner` 时机）为主，权重 110 为辅助；非存储 ACL · **2026-06-17 体验版多轮复测已无复现，见 [DONE](./🎛️%20DONE.md#加载策略banner--进页即见--缓存)**
 
 ### 4.0 进页即见 · 定义（定稿）
 
@@ -110,7 +110,7 @@ L2 关联（按需）       如 wiki:match:{kindId}:{varietyId}
 | **110** | `img:banner` | 当前主题 Banner **已解析 URL 列表**（`bannerImageUrls` 或 fileId→URL 缓存） | L0 衍生 | **P0-Sync + P0-Block**（须排在 recommend 之前） |
 | **120** | `categories:public` | 顾客端分类 Tab / 左侧分类条 | L0 | P0-Sync + P0-Block |
 | **200** | `goods:public:recommend` | 首页推荐商品列表 JSON | L0 | P0-Sync；网络校验 P1（不阻塞 Banner） |
-| **210** | `img:goods-cover:thumb:visible` | 进页即见区内 card **低清 thumb** URL（第一视口约 4～6 张；详情 full 见 §4.4） | L0 衍生 | P1（有 URL 缓存则 Sync 直出） |
+| **210** | `img:goods-cover:preview:visible` | 进页即见区内 card 封面 preview URL | P1（有 URL 缓存则 Sync 直出） |
 | **300** | `goods:public:all` | 全量商品索引（分类 Tab / 搜索） | L0 | 分类页 P0-Block；首页 **P2** |
 | **300** | `wiki:public:list` | 百科列表索引 | L0 | 百科 Tab P0-Block；首页 **P2** |
 | **350** | `flower:catalog:list` | 花材 picker 智库 catalog | L0 | 进 picker 页 P0-Block |
@@ -124,10 +124,10 @@ L2 关联（按需）       如 wiki:match:{kindId}:{varietyId}
 
 ```text
 shop:settings ──► img:banner（读 decoration 内 fileId → 换链）
-goods:public:recommend ──► img:goods-cover:thumb:visible（读 coverThumb fileId）
+goods:public:recommend ──► img:goods-cover:preview:visible（读 coverImage fileId，preview 换链）
 ```
 
-**Banner 口径（Issue #2 对齐）**：非 ACL 问题；进页即见链未跑完 `img:banner` 时空白，**全屏下拉**因 `ensure` 跑完 P0-Block 后才出现。
+**Banner 口径（Issue #2 对齐，2026-06-17 结案）**：非 ACL；**加载逻辑**为主——进页即见链未跑完 `img:banner` 时空白，全屏下拉因 `ensure` 跑完 P0-Block 后才出现；权重 110 为辅助修复。体验版多轮复测已无复现。
 
 #### 4.0.3 各路由「进页即见」↔ 数据包
 
@@ -135,7 +135,7 @@ goods:public:recommend ──► img:goods-cover:thumb:visible（读 coverThumb 
 
 | 页面 | 进页即见应看到 | P0-Sync（setup 直读） | P0-Block（ensure 优先 await） | P1 同页延伸 | P2 后台 |
 |------|----------------|----------------------|------------------------------|-------------|---------|
-| **首页** | 整页框架：欢迎区、**Banner**、搜索、分类 chips、推荐区（有缓存则含卡片） | `shop:settings`、`img:banner`、`categories:public`、有则 `goods:recommend` | ① `shop:settings` ② **`img:banner`** ③ `categories:public` | `goods:recommend` 网络 SWR、`img:goods-cover:thumb:visible` | `goods:public:all`、`wiki:public:list`、搜索预判 catalog |
+| **首页** | 整页框架：欢迎区、**Banner**、搜索、分类 chips、推荐区（有缓存则含卡片） | `shop:settings`、`img:banner`、`categories:public`、有则 `goods:recommend` | ① `shop:settings` ② **`img:banner`** ③ `categories:public` | `goods:recommend` 网络 SWR、`img:goods-cover:preview:visible` | `goods:public:all`、`wiki:public:list`、搜索预判 catalog |
 | **分类 Tab** | 搜索 + 左 Tab + 右侧商品列表（有缓存即列表） | `categories:public`、`goods:public:all` 缓存 | ① `categories:public` ② `goods:public:all` | visible cover、搜索预判 | 推荐 detail |
 | **百科 Tab** | 搜索 + Tag + 卡片列表 | `wiki:public:list` | ① `wiki:public:list` | — | `wiki:public:detail:*` idle |
 | **购物车** | 购物车列表 | Pinia 本地 | — | — | — |
@@ -207,7 +207,7 @@ cache:meta (50, 并行)
 |------|----------|
 | **调度** | 仅 **P0 未完成** 时 idle 让路；P0 一旦可展示，**不**因省流量暂停 P2/P3 |
 | **JSON** | 全量索引、邻 Tab P0、detail 队列、搜索 catalog、分页下一页 — **连续拉** |
-| **图片 URL** | idle **batch** `resolveFileUrls`：已入本地索引的 thumb/full **尽量全部换链**，不只第一视口 |
+| **图片 URL** | idle **batch** `resolveFileUrls`：已入本地索引的封面 **preview 换链 + full 预取**，不只第一视口 |
 | **图片像素** | 有 URL 即可后台让 `<image>` / `downloadFile` 预热；**不为省流量跳过** idle 换链；DOM 仍可按视口挂载以免节点爆炸 |
 | **存储 10MB** | 仍是硬上限；拉满指 **网络侧尽量预取**，触顶时走 §9 淘汰，**不**提前人为限速 |
 
@@ -221,7 +221,7 @@ P0 链：100 → 110 → 120 → 200（同 §4.0.4）
   → 顾客端全 Tab P0 包（分类/百科/搜索 catalog 等）
   → wiki:public:detail:* 全量队列
   → goods:public:detail:*（推荐位优先，随后 indexed id 排队）
-  → img:goods-cover:thumb:* batch（索引内尽量全部换链）
+  → img:goods-cover:preview:* batch（索引内尽量全部换链 + full 预取）
   → [Phase C] goods:public:index:page:* 连续 cursor 直到 hasMore=false
 ```
 
@@ -231,7 +231,7 @@ P0 链：100 → 110 → 120 → 200（同 §4.0.4）
 |------|----------|
 | 首页 P0 完成 | 立刻 void 上述 P2 队列（含现有 `loadSearchSuggestCatalogs` 语义，但排在 110 之后） |
 | 停留在任意 Tab | 预取**其余所有**顾客 Tab 的 P0 + 该 Tab 的 P1/P2 |
-| 列表滚动 | 除成组加载外，idle **连续**拉下一页直至结束，并 batch 换链新页 thumb |
+| 列表滚动 | 除成组加载外，idle **连续**拉下一页直至结束，并 batch 换链新页 preview |
 | 点击商品前 | 预取 `goods:public:detail:{id}` + full URL（已有 scheduler 能力，推广到全表 id） |
 
 **不做的「省流量」策略（默认关闭）**
@@ -246,7 +246,7 @@ P0 链：100 → 110 → 120 → 200（同 §4.0.4）
 
 | 页面 | P0-Block（Must-Load） | P1 / P2 |
 |------|----------------------|---------|
-| 首页 | `shop:settings` → **`img:banner`** → `categories:public` | P1：`goods:public:recommend`、`img:goods-cover:thumb:visible`；P2：`goods:public:all` |
+| 首页 | `shop:settings` → **`img:banner`** → `categories:public` | P1：`goods:public:recommend`、`img:goods-cover:preview:visible`；P2：`goods:public:all` |
 | 分类 Tab | `categories:public`、`goods:public:all` | visible cover；推荐 detail |
 | 百科 Tab | `wiki:public:list` | `wiki:public:detail:{id}` 队列 |
 | 百科详情 | `wiki:public:detail:{id}` | 相邻条目（可选） |
@@ -270,7 +270,7 @@ P0 链：100 → 110 → 120 → 200（同 §4.0.4）
 | **小图标**（约 30～40 个，几乎不变） | Base64 PNG 打进分包 / 代码注册表；零网络请求 | 随包启动即可用 |
 | **Tab 大图标** | `images/` 源图 + 构建脚本同步到 `dist/` | 随包 / Tab |
 | **Banner URL** | 云端 fileId → HTTPS（`img:banner`，权重 **110**） | **P0**，须先于推荐列表 |
-| **商品 cover thumb URL** | 列表/卡片低清换链（`img:goods-cover:thumb:visible`） | **P1**，进页即见区内优先；详情 full 见 §4.4 |
+| **商品 cover preview URL** | 列表/卡片同一 `coverImage` preview 换链（`img:goods-cover:preview:visible`） | **P1**；详情 full 见 §4.4 |
 | **核心智库索引 JSON** | 分包静态包；本地命中优先，未命中走云 | P1（规划） |
 | **轻量 AI 模型**（规划） | 首次 `downloadFile` 到本地 | P2，不挡 P0 |
 
@@ -287,81 +287,102 @@ P0 链：100 → 110 → 120 → 200（同 §4.0.4）
 - Head 返回等：`AppIcon` + `APP_ICONS`（中文 `type`），见 `src/assets/icons/index.ts`。
 - 规划中的 30～40 个 icon 全量 Base64 分包：**未做**，仍待设计资产就绪后按注册表扩展。
 
-### 4.4 商品图双档与列表流式成组（定稿）
+### 4.4 商品图分阶段加载与列表流式成组（定稿）
 
-> **定稿**：`2026-06-17` · 策略原话：[功能实施策略 §7.3](./功能实施策略.md#73-模型部署与加载) · [§7.4 归纳](./功能实施策略.md#74-图片与性能策略) · 面板 **加载策略**  
-> **与 §4.0 关系**：§4.0 解决「进哪页先看到什么」；本节解决「同一页内 JSON / 图片如何**分档、分批**加载」。
+> **定稿**：`2026-06-17` · **修订**：`2026-06-17` — 取消「商家双上传 thumb 管线」；以产品口径 **同一资源、分阶段清晰度** 为准  
+> 策略原话：[功能实施策略 §7.3](./功能实施策略.md#73-模型部署与加载) · [§7.4 归纳](./功能实施策略.md#74-图片与性能策略) · 面板 **加载策略**  
+> **与 §4.0 关系**：§4.0 解决「进哪页先看到什么」；本节解决「同一页内 JSON / 图片如何**分批、分阶段**加载」。
 
 #### 4.4.1 策略原话（产品口径）
 
 - 商品列表采用**分阶段加载**，**信息和图片分开加载**；上传时限制图片大小。
 - 数据**批量下载**；图片**懒加载**及与**流式布局相同的滑动成组**策略。
-- **滑不到的不加载**；卡片用**缩略图**，**进详情再补全**为高质量图。
+- **滑不到的不加载**；列表与详情是**同一张封面图**（同一 `coverImage` / fileId），列表先**低清晰度呈现**，进详情或在项目内**再加载完整清晰度**。
 
-#### 4.4.2 图片双档（清晰度）
+#### 4.4.2 同一资源 · 云处理分档（preview / full）
 
-| 场景 | 字段 / 包 | 像素档 | 档位 |
-|------|-----------|--------|------|
-| 列表 / 卡片 / 推荐位 | `coverThumb` → `img:goods-cover:thumb:{id}` | 低清（如宽 400～600px 或云存储缩略规格） | P1；**第一视口**内 P0 换链 |
-| 商品详情 hero / 多图 | `coverImage` / `imageUrls` → `img:goods-cover:full:*` | 原图或高质量 | 详情页 **P0-Block** |
-| Banner | 仍单档 URL 列表 | 全宽展示 | §4.0 权重 **110** |
+> **定稿补充**：`2026-06-17` — 采用 **做法 A（双 URL 分档）**；默认 **imageMogr2 URL 参数**，**无需控制台建样式**  
+> 代码见 `src/config/imageProcessing.ts`（`CLOUD_IMAGE_PROCESS_MODE = 'url'`）。可选改 `style` 模式 + 控制台「渐近显示」。
+
+| 场景 | 资源 | 呈现阶段 | 档位 |
+|------|------|----------|------|
+| 列表 / 卡片 / 推荐位 | **同一** `coverImage` fileId | **preview**：`tempFileURL?imageMogr2/thumbnail/400x/quality/80` | P1 |
+| 商品详情 hero / 多图 | **同一** fileId | 先 **preview** 秒出 → 再 **full**（原图 tempFileURL，无参数） | 详情 **P0-Block** |
+| Banner | 单 URL 列表 | 全宽展示 | §4.0 权重 **110** |
 
 **原则**
 
-- 列表接口 **只带** `coverThumb`（+ 必要索引字段）；**不带**完整 `imageUrls` / 长描述。
-- 详情接口再返回 `imageUrls` 全量；进详情后异步升档，**不**用列表大图顶替 hero。
-- 商家上传：保存时生成并持久化 `coverThumb`（或 CDN 缩略参数规则写死）；替换素材时删旧 fileId（与 Issue #2 唯一命名一致）。
+- **不做**商家侧「主图 + 缩略图」双上传；商户只维护 **`coverImage`（+ `images`）**。
+- 列表 `publicList` 瘦字段：只带封面索引字段；云端 `enrichPublicGoodsList` 返回 **preview 档** `coverImageUrl`。
+- 详情 `publicGet` 返回 **full 档** `imageUrls`；客户端 `GoodsImage` `clarity="full"` 先 preview 再升 full，**不走**「同 URL 再 downloadFile」。
+- preview 展示后 **idle 预取 full 档 HTTPS**（非 downloadFile），进详情可复用；SWR 时 **fileId 不变则不 blank**（Issue #1）。
+- `downloadFile` / `publicImage` 仅作 HTTPS 加载失败兜底。
+- 素材替换仍须删旧 fileId、唯一命名（Issue #2）。
+
+**云处理（默认零配置）**
+
+- 换链后自动拼 **imageMogr2**（COS 数据万象 URL 处理，[文档](https://docs.cloudbase.net/storage/ci-cos-processing)）
+- **不用**去控制台添加样式；部署 `goods` 云函数 + 发版小程序即可
+- 若 temp URL 已有 `?sign=…`，代码用 `&imageMogr2/…` 拼接
+- 云环境须已开通存储图片处理（按量计费环境一般默认可用）；未开通时回退 plain URL
+
+**可选增强（非必须）**
+
+- `CLOUD_IMAGE_PROCESS_MODE = 'style'` + 控制台建 `goods-preview` / `goods-full`（full 可勾「渐近显示」）
+
+**明确不做**
+
+- ~~商家上传 pipeline：单独生成 / 持久化 `coverThumb`~~（**已取消**）
+- ~~列表 / 详情各用不同云存储文件作为常规路径~~
+- ~~列表 preview 后再对同一 URL 做 downloadFile 预取 full~~
 
 **与当前实现的差距**
 
 | 现状 | 目标 |
 |------|------|
-| 仅 `coverImageUrl` 单 URL | 列表 `coverThumbUrl`，详情 `imageUrls` |
-| `publicList` 一次全表 | cursor 分页 + 本地 manifest 断点（Phase C） |
-| 列表渲染即请求 cover 像素 | 视口内 `<image>` 才请求；URL 仍走 L1 TTL 缓存 |
+| ~~列表与详情同 URL，均走 downloadFile~~ | 列表 preview HTTPS；详情 preview→full HTTPS（**已接代码**） |
+| `publicList` 一次全表 | cursor 分页 + 流式 onUpdate（**已首波**） |
+| ~~无云处理样式~~ | imageMogr2 自动分档（**已接代码，零配置**） |
 
 #### 4.4.3 列表流式成组（与流式布局同滑动逻辑）
 
 **成组**：以**一屏高度 + 流式列数**为一批（非固定条数），与分类 Tab / 商城滚动切换分类的滑动语义一致。
 
-| 时机 | JSON | 图片 URL | 图片像素 |
-|------|------|----------|----------|
-| 进页 / Tab 到分类 | 第一批索引（cursor page 1） | 第一视口 card 的 **thumb** URL | 仅视口内 card |
-| 用户向下滚动接近底部 | 下一 cursor **静默**拉取 | 为新进入视口的 id 换链 thumb | 仅新进入视口的 card |
-| 上一 Tab 停留 / idle | 预取邻 Tab 或下一页索引（P2） | 不预拉像素，可预换链下一屏 thumb | — |
-| 进商品详情 | 已有索引可复用 | 详情 **full** URL P0 | hero + 多图 |
+| 时机 | JSON | 图片（同一 coverImage） |
+|------|------|-------------------------|
+| 进页 / Tab 到分类 | 第一批索引（cursor page 1） | 视口内 card **preview** |
+| 用户向下滚动接近底部 | 下一 cursor **静默**拉取 | 新进入视口 id **preview** + 换链 |
+| 上一 Tab 停留 / idle | 预取邻 Tab / 下一页索引（P2） | **batch 换链** + 后台 **full 预取** |
+| 进商品详情 | 可复用索引 | **full** P0 |
 
 **调度**
 
-- 与 `CacheSyncScheduler` 共用 generation：滚动触发的「下一组」为 **P1**，不抢占当前页 **P0-Block**（Banner / 进页即见）。
-- **拉满模式（§4.0.6）**：idle **连续**拉下一页 JSON 直至 `hasMore=false`；对已入索引的 id **batch 换链 thumb URL**（不限第一视口）。
-- DOM：card 可按视口懒挂载以控节点数；**换链与 JSON 预取不因「未滚到」而跳过**。
+- 与 `CacheSyncScheduler` 共用 generation：滚动触发的「下一组」为 **P1**，不抢占当前页 **P0-Block**。
+- **拉满模式（§4.0.6）**：idle **连续**拉下一页 JSON；对已入索引 id **换链 + full 预取**（不限第一视口）。
 
 #### 4.4.4 数据包补充（权重）
 
-在 §4.0.2 基础上细化商品图包（权重不变，拆 ID）：
-
 | 权重 | 数据包 ID | 内容 | 档位 |
 |------|-----------|------|------|
-| **210** | `img:goods-cover:thumb:visible` | 第一视口 card 的 thumb HTTPS | P1（进页即见区） |
-| **215** | `img:goods-cover:thumb:next-window` | 滚动下一组成组 thumb URL | P1（滚动触发） |
-| **410** | `img:goods-cover:full:{id}` | 详情 hero / 多图 full URL | 详情 P0-Block |
+| **210** | `img:goods-cover:preview:visible` | 第一视口 card 封面 **preview** 换链 | P1 |
+| **215** | `img:goods-cover:preview:next-window` | 滚动下一屏 preview 换链 | P1 |
+| **410** | `img:goods-cover:full:{id}` | 同一 fileId **full 档 HTTPS**（`goods-full` 样式） | 详情 P0 / idle 预取 |
 
-`goods:public:all` 在 Phase C 后拆为：
+`goods:public:all` 分页：
 
 | 权重 | 数据包 ID | 内容 |
 |------|-----------|------|
-| **300** | `goods:public:index:page:{cursor}` | 分页索引（瘦字段 + `coverThumb`） |
+| **300** | `goods:public:index:page:{cursor}` | 分页索引（瘦字段 + `coverImage`） |
 
 #### 4.4.5 体验与 Issue 对齐
 
 | 反馈 | 本节如何覆盖 |
 |------|----------------|
-| Issue #2「每次打开都加载图片」 | 列表只拉 thumb + 视口内像素；全量索引改分页 |
-| Issue #1「本地有图仍闪一下」 | SWR / patch 时 `coverThumbUrl` 不变则 **不**改 `<image>` key；见 §6 UI 原则 |
-| §4.0 进页即见 | 第一批 JSON + 第一视口 thumb 仍属 P0/P1，不等待全库 |
+| Issue #2「每次打开都加载图片」 | 列表 preview + 分页索引；full 后台 / 进详情 |
+| Issue #1「本地有图仍闪一下」 | 同 fileId / 同 URL 不 blank；见 §6 |
+| §4.0 进页即见 | 第一批 JSON + 第一视口 preview |
 
-**实现入口（待建）**：`src/composables/usePublicGoods.ts`（分页 + 成组）、`src/components/GoodsImage.vue`（`thumbSrc` / `fullSrc`）、`cloudfunctions/goods` `publicList` cursor、`Phase C` manifest。
+**实现入口**：`src/config/imageProcessing.ts`、`src/utils/cloudImageStyle.ts`、`src/components/GoodsImage.vue`、`src/utils/goodsImage.ts`、`cloudfunctions/common/fileUrls.js`、`src/data/prefetch/goodsIndexPages.ts`、`cloudfunctions/goods` `publicList` cursor。
 
 ---
 
@@ -469,8 +490,8 @@ IStorage / IApi                         ← 端适配（待抽象）
 | 版本号 | `meta` 云函数 + `cache_meta` | 保持 |
 | 列表 | 多数 `publicList` 一次全表 | 增加 `cursor` + `limit` + `hasMore` |
 | 增量 | 无 | `sinceVersion` 或 `updatedAfter` 返回 patch |
-| 字段裁剪 | wiki list 有 preview | goods list 瘦字段 + **`coverThumb`**（列表不带 `imageUrls`） |
-| 图片双档 | 单 URL | 列表 thumb / 详情 full（§4.4） |
+| 字段裁剪 | wiki list 有 preview | goods list 瘦字段 + **`coverImage`**（列表不带 `imageUrls`） |
+| 图片分阶段 | 单 URL 同资源 | 列表 preview / 详情 full（§4.4） |
 | App 出口 | 仅 `wx.cloud` | HTTP 网关封装云函数（导出 App 前） |
 
 分页响应建议形态：
@@ -564,13 +585,13 @@ interface ILifecycle {
 - [x] 方案 A：`pageRegistry` + `usePageData()` + `src/data/pages/*`（含商品详情、商家分类/选品、销售策略编辑）
 - [x] 与快照比较、图片 URL 缓存配合（见 `goodsImage` / `goodsListSnapshot`）
 
-### Phase C · 服务端分页与增量（含 §4.4 双档 + 流式成组）
+### Phase C · 服务端分页与增量（含 §4.4 分阶段 + 流式成组）
 
-- [ ] `goods` / `wiki` `publicList` 支持 `cursor` + `limit`（瘦字段；goods 含 `coverThumb`）
-- [ ] 商家上传 pipeline：`coverThumb` 生成 / 持久化；上传尺寸上限
-- [ ] 客户端：列表滚动成组拉取 + intersection 懒挂载 `<image>`；详情升档 full URL
-- [ ] `GoodsImage`：`thumbSrc` / `fullSrc`；同 URL 不整卡重载（Issue #1 闪一下）
-- [ ] manifest `phase: index` 支持分页断点（`goods:public:index:page:*`）
+- [x] `goods` `publicList` 支持 `cursor` + `limit`（瘦字段 + `coverImage`）
+- [ ] `wiki` `publicList` 支持 `cursor` + `limit`
+- [ ] `GoodsImage`：`clarity` preview / full；同 fileId 不整卡重载（Issue #1）
+- [ ] 列表滚动成组 + intersection 懒挂载
+- [ ] manifest `phase: index` 分页断点（`goods:public:index:page:*`）
 - [ ] 评估 `sinceVersion` 增量接口
 
 ### Phase D · 三端适配与 App
@@ -589,8 +610,8 @@ interface ILifecycle {
 | Tab/路由跳转 | 部分页有 L1 直出 | **进页即见**：目标路由 P0-Sync 在 setup 完成 |
 | 进百科 Tab | 拉整表 list | list L1 直出 + detail 后台队列 |
 | 百科详情二次进入 | 单键缓存秒进 | 保持；未访问条目由队列预取 |
-| 商品列表变大 | 单键全量 | 索引 **cursor 成组** + thumb 列表 / full 详情 + detail LRU |
-| 列表商品图 | 单档 `coverImageUrl` 全列表换链 | **thumb** 视口内懒加载；详情 **full** 升档 |
+| 商品列表变大 | 单键全量 | 索引 **cursor 成组** + preview 列表 / full 详情 + detail LRU |
+| 列表商品图 | 单档 `coverImageUrl` 全列表换链 | **preview** 直出 + idle **full** 预取；详情 **full** |
 | 导出 App | 依赖 `wx.cloud` | HTTP + SQLite |
 
 ---

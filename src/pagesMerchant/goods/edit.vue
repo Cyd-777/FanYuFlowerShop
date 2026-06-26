@@ -36,21 +36,6 @@
     </view>
 
     <view class="form-card">
-      <view class="sales-type-card">
-        <view class="card-title">{{ labelSalesType }}</view>
-        <view class="sales-type-list">
-          <view
-            v-for="item in salesTypeOptions"
-            :key="item.value"
-            class="sales-type-option"
-            :class="{ active: form.salesType === item.value }"
-            @click="selectSalesType(item.value)"
-          >
-            {{ item.label }}
-          </view>
-        </view>
-      </view>
-
       <nut-form>
         <nut-form-item v-if="showFlowerPicker" :label="labelFlower">
           <view class="picker-cell" @click="openFlowerPicker">
@@ -68,14 +53,44 @@
         </nut-form-item>
 
         <nut-form-item :label="labelPrice">
-          <nut-input v-model="form.price" placeholder="0.00" type="digit" />
+          <view class="price-slider-wrap">
+            <text class="price-slider-value">¥{{ priceDisplayLabel }}</text>
+            <slider
+              class="price-slider"
+              :min="priceSliderMin"
+              :max="priceSliderMax"
+              :step="priceSliderStep"
+              :value="priceSliderValue"
+              activeColor="#e53935"
+              backgroundColor="#ececec"
+              block-size="20"
+              @changing="onPriceSliderChanging"
+              @change="onPriceSliderChange"
+            />
+          </view>
+        </nut-form-item>
+
+        <nut-form-item :label="labelUnit">
+          <view class="unit-list">
+            <view
+              v-for="item in unitOptions"
+              :key="item.value"
+              class="unit-option"
+              :class="{ active: form.unit === item.value }"
+              @click="selectUnit(item.value)"
+            >
+              {{ item.label }}
+            </view>
+          </view>
         </nut-form-item>
 
         <nut-form-item :label="labelStock">
-          <nut-input v-model="form.stock" placeholder="0" type="number" />
+          <view class="form-field-end">
+            <FormStepCounter v-model="stockNum" :quick-steps="stockQuickSteps" />
+          </view>
         </nut-form-item>
 
-        <nut-form-item v-if="form.salesType === 'group'" :label="labelUnitsPerGroup">
+        <nut-form-item v-if="form.unit === '组'" :label="labelUnitsPerGroup">
           <nut-input
             v-model="form.unitsPerGroup"
             :placeholder="unitsPerGroupPlaceholder"
@@ -94,18 +109,21 @@
         <nut-form-item :label="labelSort">
           <nut-input v-model="form.sort" :placeholder="sortPlaceholder" type="number" />
         </nut-form-item>
-
-        <nut-form-item :label="labelOnSale">
-          <nut-switch v-model="form.onSale" />
-        </nut-form-item>
-
-        <nut-form-item :label="labelRecommend">
-          <view class="recommend-row">
-            <nut-switch v-model="form.recommend" />
-            <text class="recommend-hint">{{ recommendHint }}</text>
-          </view>
-        </nut-form-item>
       </nut-form>
+
+      <view class="switch-section">
+        <view class="switch-row">
+          <text class="switch-label">{{ labelOnSale }}</text>
+          <nut-switch v-model="form.onSale" />
+        </view>
+        <view class="switch-row">
+          <view class="switch-label-block">
+            <text class="switch-label">{{ labelRecommend }}</text>
+            <text class="switch-hint">{{ recommendHint }}</text>
+          </view>
+          <nut-switch v-model="form.recommend" />
+        </view>
+      </view>
     </view>
 
     <view class="category-card">
@@ -159,9 +177,11 @@ import { showToast } from '@/utils/feedback'
 import { ref, computed } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import { navigateBack, navigateTo } from '@/utils/router'
+import FormStepCounter from '@/components/FormStepCounter.vue'
 import {
   createGoods,
   getMerchantGoods,
+  parseGoodsStockField,
   removeGoods,
   updateGoods,
   uploadGoodsImage,
@@ -171,11 +191,12 @@ import { useMerchantCategories } from '@/composables/useMerchantCategories'
 import { resolveCloudImageMap } from '@/utils/goodsImage'
 import type { FlowerPickResult } from '@/types/flower'
 import { FLOWER_PICK_STORAGE_KEY } from '@/types/flower'
-import type { Goods, GoodsForm, GoodsSalesType } from '@/types/goods'
+import type { Goods, GoodsForm, GoodsUnit } from '@/types/goods'
 import {
-  GOODS_SALES_TYPE_OPTIONS,
+  GOODS_UNIT_OPTIONS,
   inferSalesType,
-  needsFlowerPickForSalesType,
+  needsFlowerPickForUnit,
+  salesTypeFromUnit,
   unitFromSalesType,
 } from '@/types/goods'
 import { MAX_GOODS_IMAGES } from '@/types/goods'
@@ -191,7 +212,7 @@ const coverBadgeText = '主图'
 const setCoverText = '设为主图'
 const plusText = '+'
 const uploadHint = '添加图片'
-const labelSalesType = '商品类'
+const labelUnit = '单位'
 const labelFlower = '花卉选择'
 const flowerPlaceholder = '请选择品类与品种'
 const arrowText = '›'
@@ -199,6 +220,9 @@ const labelName = '品名'
 const namePlaceholder = '如：春日混搭花束'
 const labelPrice = '价格（元）'
 const labelStock = '库存'
+const priceSliderMin = 0
+const priceSliderStep = 1
+const stockQuickSteps = [5, 10]
 const labelUnitsPerGroup = '每组数量'
 const unitsPerGroupPlaceholder = '如 10（表示每组 10 支）'
 const labelDescription = '商品简介'
@@ -226,14 +250,14 @@ const imageSlots = ref<ImageSlot[]>([])
 const maxImages = MAX_GOODS_IMAGES
 const { categories: categoryOptions, loadCategoriesQuiet: refreshMerchantCategories } =
   useMerchantCategories()
-const salesTypeOptions = GOODS_SALES_TYPE_OPTIONS
+const unitOptions = GOODS_UNIT_OPTIONS
 
 const form = ref<GoodsForm>({
   name: '',
   price: '',
   salesType: 'bouquet',
   unit: '束',
-  stock: '',
+  stock: '0',
   description: '',
   categoryId: '',
   flowerKindId: '',
@@ -249,12 +273,55 @@ const form = ref<GoodsForm>({
 })
 
 const isEdit = computed(() => !!goodsId.value)
-const showFlowerPicker = computed(() => needsFlowerPickForSalesType(form.value.salesType))
+const showFlowerPicker = computed(() => needsFlowerPickForUnit(form.value.unit))
 const hasFlowerSelection = computed(
   () => !!(form.value.flowerVarietyId || (form.value.flowerKindName && form.value.flowerVarietyName)),
 )
 const enabledCategories = computed(() => categoryOptions.value.filter((item) => item.enabled))
 const saveButtonText = computed(() => (isEdit.value ? saveEditButtonText : createButtonText))
+
+const priceNum = computed({
+  get() {
+    const n = Number(form.value.price)
+    return Number.isNaN(n) ? 0 : n
+  },
+  set(v: number) {
+    const clamped = Math.max(0, Math.round(v * 100) / 100)
+    form.value.price = String(clamped)
+  },
+})
+
+const priceSliderMax = computed(() =>
+  Math.max(999, Math.ceil(priceNum.value / 100) * 100),
+)
+
+const priceSliderValue = computed(() =>
+  Math.min(Math.max(priceNum.value, priceSliderMin), priceSliderMax.value),
+)
+
+const priceDisplayLabel = computed(() => {
+  const n = priceSliderValue.value
+  return Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.00$/, '')
+})
+
+function onPriceSliderChanging(e: { detail: { value: number } }) {
+  priceNum.value = e.detail.value
+}
+
+function onPriceSliderChange(e: { detail: { value: number } }) {
+  priceNum.value = e.detail.value
+}
+
+const stockNum = computed({
+  get() {
+    const n = parseInt(form.value.stock, 10)
+    return Number.isNaN(n) ? 0 : n
+  },
+  set(v: number) {
+    form.value.stock = String(Math.max(0, Math.round(v)))
+  },
+})
+
 const pageBootstrapped = ref(false)
 /** 防止进行中的 loadGoods 在花卉选择之后覆盖表单 */
 let goodsLoadSeq = 0
@@ -314,14 +381,14 @@ function clearFlowerSelection() {
   form.value.flowerVarietyName = ''
 }
 
-function selectSalesType(type: GoodsSalesType) {
-  if (form.value.salesType === type) return
-  form.value.salesType = type
-  form.value.unit = unitFromSalesType(type)
-  if (type !== 'group') {
+function selectUnit(unit: GoodsUnit) {
+  if (form.value.unit === unit) return
+  form.value.unit = unit
+  form.value.salesType = salesTypeFromUnit(unit)
+  if (unit !== '组') {
     form.value.unitsPerGroup = ''
   }
-  if (!needsFlowerPickForSalesType(type)) {
+  if (!needsFlowerPickForUnit(unit)) {
     clearFlowerSelection()
   }
 }
@@ -332,7 +399,6 @@ function applyFlowerPick(pick: FlowerPickResult) {
   form.value.flowerKindName = pick.flowerKindName
   form.value.flowerVarietyId = pick.flowerVarietyId
   form.value.flowerVarietyName = pick.flowerVarietyName
-  form.value.unit = unitFromSalesType(form.value.salesType)
   if (!form.value.name.trim()) {
     form.value.name = pick.name
   }
@@ -343,11 +409,11 @@ function applyFlowerPick(pick: FlowerPickResult) {
 }
 
 function applyGoodsToForm(goods: Goods) {
-  const salesType = inferSalesType(goods)
-  form.value.salesType = salesType
+  const unit = goods.unit || unitFromSalesType(inferSalesType(goods))
+  form.value.unit = unit
+  form.value.salesType = salesTypeFromUnit(unit)
   form.value.name = goods.name
   form.value.price = String(goods.price)
-  form.value.unit = unitFromSalesType(salesType)
   form.value.stock = String(goods.stock)
   form.value.description = goods.description
   form.value.categoryId = goods.categoryId || enabledCategories.value[0]?._id || ''
@@ -525,8 +591,8 @@ function previewImages(index: number) {
 }
 
 function validateForm() {
-  if (!form.value.salesType) {
-    showToast({ title: '请选择商品类', icon: 'none' })
+  if (!form.value.unit) {
+    showToast({ title: '请选择单位', icon: 'none' })
     return false
   }
   if (showFlowerPicker.value && !form.value.flowerVarietyId) {
@@ -549,11 +615,12 @@ function validateForm() {
     showToast({ title: '请填写有效价格', icon: 'none' })
     return false
   }
-  if (Number.isNaN(parseInt(form.value.stock, 10)) || parseInt(form.value.stock, 10) < 0) {
+  const stock = parseGoodsStockField(form.value.stock)
+  if (Number.isNaN(stock) || stock < 0) {
     showToast({ title: '请填写有效库存', icon: 'none' })
     return false
   }
-  if (form.value.salesType === 'group') {
+  if (form.value.unit === '组') {
     const perGroup = parseInt(form.value.unitsPerGroup, 10)
     if (Number.isNaN(perGroup) || perGroup <= 0) {
       showToast({ title: '请填写每组数量', icon: 'none' })
@@ -640,15 +707,14 @@ async function handleDelete() {
   background: #fff;
   margin-bottom: 16rpx;
 }
-.sales-type-card {
-  padding: 24rpx 32rpx 8rpx;
-}
-.sales-type-list {
+.sales-type-card,
+.unit-list {
   display: flex;
   flex-wrap: wrap;
   gap: 16rpx;
 }
-.sales-type-option {
+.sales-type-option,
+.unit-option {
   padding: 12rpx 24rpx;
   border-radius: 32rpx;
   background: #f5f5f5;
@@ -788,14 +854,53 @@ async function handleDelete() {
   line-height: 1;
   flex-shrink: 0;
 }
-.recommend-row {
+.form-field-end {
   display: flex;
-  align-items: center;
-  gap: 16rpx;
+  justify-content: flex-end;
   width: 100%;
 }
-.recommend-hint {
+.price-slider-wrap {
+  width: 100%;
+  padding: 4rpx 0 8rpx;
+}
+.price-slider-value {
+  display: block;
+  margin-bottom: 12rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #e53935;
+  text-align: right;
+}
+.price-slider {
+  width: 100%;
+  margin: 0;
+}
+.switch-section {
+  padding: 8rpx 32rpx 24rpx;
+  border-top: 2rpx solid #f5f5f5;
+}
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  min-height: 88rpx;
+  &:not(:last-child) {
+    margin-bottom: 8rpx;
+  }
+}
+.switch-label-block {
   flex: 1;
+  min-width: 0;
+}
+.switch-label {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+}
+.switch-hint {
+  display: block;
+  margin-top: 6rpx;
   font-size: 22rpx;
   color: #999;
   line-height: 1.4;

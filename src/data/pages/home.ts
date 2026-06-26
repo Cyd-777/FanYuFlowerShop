@@ -15,11 +15,11 @@ import { mergeGoodsLivePatch } from '@/utils/goodsLiveMerge'
 import { isSameGoodsListSnapshot } from '@/utils/goodsListSnapshot'
 import { resolveActiveTheme } from '@/types/shopTheme'
 import { applyDiscountPrice, getThemeDiscountRate } from '@/utils/themeDiscount'
-import { navigateTo, navigateToWithFeedback } from '@/utils/router'
+import { navigateTo, navigateToGoodsDetail, navigateToWithFeedback } from '@/utils/router'
 import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
 import { useGoodsBrowseRefresh } from '@/composables/useGoodsBrowseRefresh'
 import { goodsLiveSync } from '@/services/goodsLiveSync'
-import { prefetchHomeFirstScreen, readCachedHomeBannerUrls } from '@/data/prefetch/homeFirstScreen'
+import { prefetchHomeFirstScreen, readCachedHomeBannerUrls, readHomeBannerFileIds } from '@/data/prefetch/homeFirstScreen'
 import { startAggressivePrefetch } from '@/data/prefetch/aggressivePrefetch'
 import { prefetchOtherCustomerTabs } from '@/data/prefetch/routeP0'
 import { goodsRepository, wikiRepository } from '@/data/repository'
@@ -54,6 +54,24 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
   )
   const loading = ref(!goodsList.value.length && !hasCacheEntry(PUBLIC_RECOMMEND_CACHE_KEY))
   const bannerUrls = ref<string[]>(readCachedHomeBannerUrls())
+  const bannerFileIds = computed(() =>
+    resolveActiveTheme(shopStore.settings.decoration).bannerImages.filter(Boolean),
+  )
+  const bannerPending = computed(
+    () => bannerFileIds.value.length > 0 && bannerUrls.value.length === 0,
+  )
+
+  function priorityResolveBannerUrls() {
+    if (bannerUrls.value.length) return
+    const fileIds = readHomeBannerFileIds()
+    if (!fileIds.length) return
+    void Promise.all(fileIds.map((id) => resolveCloudImageUrl(id))).then((urls) => {
+      const next = urls.filter(Boolean)
+      if (next.length) bannerUrls.value = next
+    })
+  }
+
+  priorityResolveBannerUrls()
 
   const themePreset = computed(() => resolveActiveTheme(shopStore.settings.decoration))
   const sectionTitle = computed(() =>
@@ -63,6 +81,19 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     background: `linear-gradient(135deg, ${themePreset.value.headerGradient[0]}, ${themePreset.value.headerGradient[1]})`,
   }))
   const themeChipBg = computed(() => `${themePreset.value.headerGradient[0]}`)
+
+  /** 单张 Banner 加载失败时重试换链 */
+  function onBannerError(idx: number) {
+    if (idx < 0 || idx >= bannerFileIds.value.length) return
+    const fileId = bannerFileIds.value[idx]
+    if (!fileId) return
+    void resolveCloudImageUrl(fileId).then((url) => {
+      if (!url) return
+      const next = [...bannerUrls.value]
+      next[idx] = url
+      bannerUrls.value = next
+    })
+  }
 
   function syncBannerFromCache() {
     const resolvedList = shopStore.settings.bannerImageUrls?.filter(Boolean)
@@ -87,29 +118,21 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
   }
 
   async function refreshBannerUrls(forceNetwork = false) {
-    const resolvedList = shopStore.settings.bannerImageUrls?.filter(Boolean)
-    if (resolvedList?.length) {
-      bannerUrls.value = resolvedList
-      return
-    }
-    const resolved = shopStore.settings.bannerImageUrl
-    if (resolved) {
-      bannerUrls.value = [resolved]
-      return
-    }
-    const fileIds = themePreset.value.bannerImages
-    if (!fileIds.length) {
-      bannerUrls.value = []
-      return
-    }
+    // 优先展示缓存（即时显示，不白屏）
     syncBannerFromCache()
-    if (bannerUrls.value.length && !forceNetwork) {
+
+    // 同时总在后台刷新链接（SWR 模式）
+    const fileIds = themePreset.value.bannerImages
+    if (!fileIds.length) return
+
+    if (!forceNetwork && bannerUrls.value.length) {
       void Promise.all(fileIds.map((id) => resolveCloudImageUrl(id))).then((urls) => {
         const next = urls.filter(Boolean)
         if (next.length) bannerUrls.value = next
       })
       return
     }
+
     const urls = await Promise.all(fileIds.map((id) => resolveCloudImageUrl(id)))
     bannerUrls.value = urls.filter(Boolean)
   }
@@ -275,7 +298,9 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     await applyThemeUi(forceNetwork)
     await loadCategories({ force: ctx.force })
     void loadRecommend(forceNetwork)
-    void startAggressivePrefetch()
+    setTimeout(() => {
+      startAggressivePrefetch()
+    }, 2000)
     prefetchOtherCustomerTabs('pages/home/index')
     await goodsLiveSync.resetVersionBaseline()
   }
@@ -296,19 +321,21 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     navigateTo({ url: '/pagesCustomer/goods/list?categoryId=' + cat._id })
   }
 
-  function goDetail(id: string) {
-    navigateTo({ url: '/pagesCustomer/goods/detail?id=' + id })
+  function goDetail(id: string, coverPreview?: string, coverFileId?: string) {
+    void navigateToGoodsDetail(id, coverPreview, coverFileId)
   }
 
   return {
     ensure,
-    pullDownRefresh: true,
+    pullDownRefresh: 'page' as const,
     refreshOnShow: true,
     shopStore,
     categories,
     goodsList,
     loading,
     bannerUrls,
+    bannerPending,
+    bannerFileIdsList: bannerFileIds,
     themePreset,
     sectionTitle,
     headerStyle,
@@ -326,5 +353,6 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     goCategory,
     goDetail,
     browseTouchHandlers,
+    onBannerError,
   }
 }

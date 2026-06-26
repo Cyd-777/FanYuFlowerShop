@@ -2,7 +2,7 @@
   <view class="page-home">
     <AppFeedbackHost />
     <view
-      v-if="isSearchStuck"
+      v-if="statusBarFillStyle"
       class="overlay-status-bar-fill"
       :style="statusBarFillStyle"
     />
@@ -16,7 +16,7 @@
     <view
       id="home-search-sticky"
       class="home-search page-sticky-search"
-      :class="{ 'is-stuck': isSearchStuck }"
+      :class="searchStuckClass"
       :style="searchStickyStyle"
     >
       <AppSearchInput
@@ -36,22 +36,31 @@
       />
     </view>
 
+    <view v-if="bannerPending" class="theme-banner theme-banner-ph">
+      <view class="theme-banner-shimmer" />
+    </view>
     <nut-swiper
-      v-if="bannerUrls.length"
+      v-else-if="bannerUrls.length"
       class="theme-banner-swiper"
       :init-page="0"
       :pagination-visible="bannerUrls.length > 1"
       pagination-color="#e53935"
     >
       <nut-swiper-item v-for="(url, idx) in bannerUrls" :key="idx">
-        <image class="theme-banner" :src="url" mode="aspectFill" />
+        <image
+          class="theme-banner"
+          :src="url"
+          mode="aspectFill"
+          @error="onBannerError(idx)"
+        />
       </nut-swiper-item>
     </nut-swiper>
 
     <view
       v-if="categories.length"
+      id="home-categories-wrap"
       class="categories-wrap page-sticky-tabs"
-      :class="{ 'is-search-stuck': isSearchStuck }"
+      :class="tabsStuckClass"
       :style="tabsStickyStyle"
     >
       <scroll-view
@@ -91,7 +100,7 @@
         v-for="item in goodsList"
         :key="item._id"
         class="goods-card"
-        @tap="goDetail(item._id)"
+        @tap="goDetail(item._id, item.imageUrl, item.coverImage || item.images?.[0])"
       >
         <view class="goods-img-wrap">
           <GoodsImage
@@ -104,12 +113,17 @@
         <view class="goods-name">{{ item.name }}</view>
         <GoodsSalesTagRow :goods="item" />
         <view class="goods-price" :style="{ color: themePreset.primaryColor }">
-          <text v-if="item.discountPrice != null" class="price-sale">
-            ¥{{ formatPrice(item.discountPrice) }}
-          </text>
-          <text :class="{ 'price-origin': item.discountPrice != null }">
-            ¥{{ formatPrice(item.price) }}
-          </text>
+          <GoodsPriceLabel
+            v-if="item.discountPrice != null"
+            :price="item.discountPrice"
+            :unit="item.unit"
+            root-class="price-sale"
+          />
+          <GoodsPriceLabel
+            :price="item.price"
+            :unit="item.unit"
+            :root-class="item.discountPrice != null ? 'price-origin' : undefined"
+          />
         </view>
       </view>
     </view>
@@ -121,7 +135,8 @@
 import AppSearchInput from '@/components/AppSearchInput.vue'
 import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
-import { useOverlayStickySearch } from '@/composables/useOverlayStickySearch'
+import { useStickyStack } from '@/composables/useStickyStack'
+import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
 import { rpxToPx } from '@/composables/usePageSticky'
 import { useScrollXTrack } from '@/composables/useScrollXTrack'
 import { usePageData } from '@/composables/usePageData'
@@ -130,6 +145,7 @@ import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsSalesTagRow from '@/components/GoodsSalesTagRow.vue'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
+import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 
 const {
   shopStore,
@@ -137,6 +153,7 @@ const {
   goodsList,
   loading,
   bannerUrls,
+  bannerPending,
   themePreset,
   sectionTitle,
   headerStyle,
@@ -154,18 +171,27 @@ const {
   goCategory,
   goDetail,
   browseTouchHandlers,
+  onBannerError,
 } = usePageData()
 
+useCartTabBadgeSync()
+
 const { statusBarHeightPx } = useNavBarLayout()
-const {
-  isSearchStuck,
-  statusBarFillStyle,
-  searchStickyStyle,
-  searchTriggerStyle,
-  tabsStickyStyle,
-} = useOverlayStickySearch({
-  searchSelector: '#home-search-sticky',
-  wrapPadYRpx: 24,
+
+const stickyStack = useStickyStack({
+  order: [
+    {
+      id: 'search',
+      selector: '#home-search-sticky',
+      reserveCapsule: true,
+      pageHorizontalPadRpx: 24,
+    },
+    {
+      id: 'tabs',
+      selector: '#home-categories-wrap',
+    },
+  ],
+  scrollMode: 'page',
   background: '#f8f8f8',
   remeasureDeps: [
     () => loading.value,
@@ -175,6 +201,13 @@ const {
     () => shopStore.shopName,
   ],
 })
+
+const statusBarFillStyle = stickyStack.statusBarFillStyle
+const searchStickyStyle = stickyStack.stickyStyle('search')
+const tabsStickyStyle = stickyStack.stickyStyle('tabs')
+const searchStuckClass = stickyStack.stuckClass('search')
+const tabsStuckClass = stickyStack.stuckClass('tabs')
+const searchTriggerStyle = stickyStack.triggerStyle('search')
 
 const homeHeaderStyle = computed(() => ({
   ...headerStyle.value,
@@ -236,6 +269,25 @@ const categoriesScroll = useScrollXTrack({
 .theme-banner-swiper {
   width: 100%;
   background: #f0f0f0;
+}
+.theme-banner-ph {
+  position: relative;
+  overflow: hidden;
+}
+.theme-banner-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #ececec 0%, #f5f5f5 45%, #ececec 100%);
+  background-size: 200% 100%;
+  animation: home-banner-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes home-banner-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 .theme-banner {
   width: 100%;
@@ -316,12 +368,9 @@ const categoriesScroll = useScrollXTrack({
   }
   .goods-price {
     padding: 0 16rpx 16rpx;
-    font-size: 28rpx;
-    font-weight: 600;
   }
   .price-sale { margin-right: 8rpx; }
   .price-origin {
-    font-size: 22rpx;
     color: #999;
     font-weight: 400;
     text-decoration: line-through;

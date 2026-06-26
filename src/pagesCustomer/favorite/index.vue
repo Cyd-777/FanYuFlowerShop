@@ -8,7 +8,7 @@
         v-for="item in list"
         :key="item._id"
         class="goods-card"
-        @click="goDetail(item._id)"
+        @click="goDetail(item._id, item.imageUrl, item.coverImage || item.images?.[0])"
       >
         <view class="goods-img-wrap">
           <GoodsImage
@@ -20,7 +20,7 @@
           <GoodsSoldOutBadge :stock="item.stock" :on-sale="item.onSale" />
         </view>
         <view class="goods-name">{{ item.name }}</view>
-        <view class="goods-price">¥{{ formatPrice(item.price) }}</view>
+        <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="goods-price" />
         <nut-button
           size="small"
           type="primary"
@@ -41,7 +41,7 @@
 import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
-import { navigateTo } from '@/utils/router'
+import { navigateToGoodsDetail } from '@/utils/router'
 import { listFavoriteGoods } from '@/services/favorite'
 import { addGoodsToCart } from '@/services/cart'
 import { hasToken } from '@/services/auth'
@@ -50,6 +50,7 @@ import { isGoodsPurchasable } from '@/utils/goodsAvailability'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
 import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
+import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 import type { Goods } from '@/types/goods'
 
 type FavoriteCard = Goods & { imageUrl: string }
@@ -82,10 +83,6 @@ async function loadList() {
   }
 }
 
-function formatPrice(price: number) {
-  return Number(price).toFixed(2).replace(/\.00$/, '')
-}
-
 function canAddToCart(item: FavoriteCard) {
   return isGoodsPurchasable(item)
 }
@@ -102,8 +99,8 @@ async function addToCart(item: FavoriteCard) {
   }
 }
 
-function goDetail(id: string) {
-  navigateTo({ url: `/pagesCustomer/goods/detail?id=${id}` })
+function goDetail(id: string, coverPreview?: string, coverFileId?: string) {
+  void navigateToGoodsDetail(id, coverPreview, coverFileId)
 }
 </script>
 
@@ -148,8 +145,6 @@ function goDetail(id: string) {
   white-space: nowrap;
 }
 .goods-price {
-  font-size: 28rpx;
-  font-weight: 600;
   color: #e53935;
   margin: 8rpx 0;
 }

@@ -22,6 +22,9 @@
       <view class="manage-toolbar__bar">
         <text class="manage-toolbar__count">共 {{ goodsList.length }} 件</text>
         <view class="manage-toolbar__actions">
+          <view class="tool-btn" hover-class="tool-btn--active" @tap.stop="goWarehouseHistory">
+            仓储历史
+          </view>
           <view class="tool-btn" hover-class="tool-btn--active" @tap.stop="goStockInImport">
             进货单入库
           </view>
@@ -74,7 +77,7 @@
           <view class="goods-name">{{ item.name }}</view>
           <GoodsSalesTagRow :goods="item" />
           <view class="goods-meta">
-            <view class="goods-price">¥{{ formatPrice(item.price) }}</view>
+            <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="goods-price" />
             <view class="goods-stock">库存 {{ item.stock }}</view>
           </view>
         </view>
@@ -127,6 +130,12 @@
           @tap.stop="runQuickBatch('recommendOff')"
         >取消推荐</view>
         <!-- TODO: 批量修改弹层待格式确定后恢复（MerchantGoodsBatchEditSheet） -->
+        <view
+          class="batch-action"
+          :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
+          hover-class="batch-action--active"
+          @tap.stop="goBatchStockOut"
+        >批量出库</view>
         <view
           class="batch-action"
           :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
@@ -345,6 +354,7 @@ import {
 } from '@/utils/goodsListFilter'
 import type { MerchantShelfStatus, MerchantStockStatus } from '@/utils/goodsListFilter'
 import { buildSelectStockInSession, writeStockInSession } from '@/utils/stockInSession'
+import { buildSelectStockOutSession, writeStockOutSession } from '@/utils/stockOutSession'
 import type { GoodsBatchPatch, GoodsBatchQuickAction } from '@/types/goodsBatch'
 import {
   GOODS_SALES_TYPE_OPTIONS,
@@ -353,6 +363,7 @@ import {
 } from '@/types/goods'
 import { getMerchantGoodsImageOverlay } from '@/utils/goodsAvailability'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
+import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsSalesTagRow from '@/components/GoodsSalesTagRow.vue'
 import GoodsNameTypeahead from '@/components/GoodsNameTypeahead.vue'
@@ -819,9 +830,27 @@ function goBatchStockIn() {
   void navigateToWithFeedback({ url: '/pagesMerchant/goods/stock-in' })
 }
 
+function goBatchStockOut() {
+  const ids = requireSelection()
+  if (!ids) return
+  const session = buildSelectStockOutSession(ids, catalogList.value)
+  if (!session.lines.length) {
+    showToast({ title: '所选商品无效', icon: 'none' })
+    return
+  }
+  writeStockOutSession(session)
+  batchMode.value = false
+  selectedIds.value = []
+  void navigateToWithFeedback({ url: '/pagesMerchant/goods/stock-out' })
+}
+
 /** 粘贴进货单前置页（识别后再进入计数器列表） */
 function goStockInImport() {
   void navigateToWithFeedback({ url: '/pagesMerchant/goods/stock-in-import' })
+}
+
+function goWarehouseHistory() {
+  void navigateToWithFeedback({ url: '/pagesMerchant/goods/warehouse-history' })
 }
 
 function onSearchKeyword(value: string) {
@@ -1263,8 +1292,6 @@ function editGoods(id: string) {
   padding: 0 16rpx 16rpx;
 }
 .goods-price {
-  font-size: 28rpx;
-  font-weight: 600;
   color: #e53935;
 }
 .goods-stock {

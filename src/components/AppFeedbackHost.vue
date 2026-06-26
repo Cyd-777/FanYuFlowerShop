@@ -60,16 +60,19 @@ import {
   feedbackAlertState,
   feedbackBarState,
   getNotifyBarTopOffsetPx,
+  getPullRefreshTopOffsetPx,
   onNotifyAlertCancel,
   onNotifyAlertConfirm,
   onNotifyBarClose,
   pullRefreshLoadingState,
 } from '@/utils/feedback'
 
-const topOffsetPx = ref(getNotifyBarTopOffsetPx())
+const notifyTopPx = ref(getNotifyBarTopOffsetPx())
+const pullRefreshTopPx = ref(getPullRefreshTopOffsetPx())
 
 function refreshTopOffset() {
-  topOffsetPx.value = getNotifyBarTopOffsetPx(true)
+  notifyTopPx.value = getNotifyBarTopOffsetPx(true)
+  pullRefreshTopPx.value = getPullRefreshTopOffsetPx()
 }
 
 useDidShow(refreshTopOffset)
@@ -87,14 +90,14 @@ const barPositionStyle = computed(() => {
     }
   }
   return {
-    top: `${topOffsetPx.value}px`,
+    top: `${notifyTopPx.value}px`,
     background: colors.background,
     color: colors.color,
   }
 })
 
 const pullRefreshStyle = computed(() => ({
-  top: `${topOffsetPx.value}px`,
+  top: `${pullRefreshTopPx.value}px`,
 }))
 
 const alertDialogClass = computed(

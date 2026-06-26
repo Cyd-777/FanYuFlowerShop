@@ -46,6 +46,8 @@ export default defineAppConfig({
         'goods/edit',
         'goods/stock-in',
         'goods/stock-in-import',
+        'goods/stock-out',
+        'goods/warehouse-history',
         'category/list',
         'category/edit',
         'flower/picker',

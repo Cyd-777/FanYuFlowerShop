@@ -20,7 +20,7 @@
         :key="item._id"
         class="goods-card"
         :class="{ 'is-sold-out': item.stock <= 0 }"
-        @click="goDetail(item._id)"
+        @click="goDetail(item._id, item.imageUrl, item.coverImage || item.images?.[0])"
       >
         <view class="goods-img-wrap">
           <GoodsImage
@@ -32,7 +32,7 @@
           <GoodsSoldOutBadge :stock="item.stock" :on-sale="item.onSale" />
         </view>
         <view class="goods-name">{{ item.name }}</view>
-        <view class="goods-price">¥{{ formatPrice(item.price) }}</view>
+        <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="goods-price" />
       </view>
     </view>
     <nut-empty v-if="!loading && !goodsList.length" description="暂无商品" />
@@ -47,6 +47,7 @@ import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
+import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 import GoodsNameTypeahead from '@/components/GoodsNameTypeahead.vue'
 
 const { cssVars: navCssVars } = useNavBarLayout()
@@ -108,5 +109,5 @@ const {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.goods-price { padding: 0 16rpx 16rpx; font-size: 28rpx; font-weight: 600; color: #e53935; }
+.goods-price { padding: 0 16rpx 16rpx; color: #e53935; }
 </style>

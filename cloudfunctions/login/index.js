@@ -60,10 +60,19 @@ async function resolveMerchant(userId, operatorOpenid) {
 
   try {
     await ensureCollection('merchants')
-    const { data } = await db.collection('merchants').where({ userId }).limit(1).get()
-    if (data.length > 0) {
-      isMerchant = true
-      merchantName = data[0].name || ''
+    if (userId) {
+      const { data } = await db.collection('merchants').where({ userId }).limit(1).get()
+      if (data.length > 0) {
+        isMerchant = true
+        merchantName = data[0].name || ''
+      }
+    }
+    if (!merchantName && operatorOpenid) {
+      const { data } = await db.collection('merchants').where({ openid: operatorOpenid }).limit(1).get()
+      if (data.length > 0) {
+        isMerchant = true
+        merchantName = data[0].name || ''
+      }
     }
   } catch (err) {
     if (!isCollectionMissingError(err)) throw err

@@ -62,6 +62,14 @@
 - **做法**：`GoodsSalesTagRow` + `goodsSalesTags`（新上架、推荐种类名等）。  
 - **状态**：✅  
 
+### Banner 顾客端展示（归档）
+
+- **用户侧问题**：首页 Banner 常空白；全屏下拉刷新后才出现。  
+- **排查结论**：多轮测试后倾向 **加载逻辑**（`ensure` 链未跑完 `img:banner` 即渲染），非云存储 ACL；权重调度（110 先于 recommend）为辅助修复。  
+- **做法**：P0-Block 链 `shop:settings` → `img:banner` → `categories:public`（见 [data-loading §4.0](./data-loading.md#40-进页即见--定义定稿)、[DONE · 加载策略](./🎛️%20DONE.md#加载策略banner--进页即见--缓存)）。  
+- **状态**：✅ 体验版多轮复测已无复现（2026-06-17 归档）。  
+- **若再被反馈**：查 home `ensure` 是否 await `img:banner`、本地 `img:banner` 缓存是否有 URL；弱网边缘 case 见 DONE 复开条件。
+
 ---
 
 ## 部分完成 / 待你广验
@@ -76,12 +84,6 @@
 ---
 
 ## 已识别 · 待做（Issue #2 等测试反馈）
-
-### Banner 顾客端展示
-
-- **问题**：Banner 常不显示；云存储曾仅创建者可读；加载排在较后。  
-- **方向**：存储权限「所有用户可读」；首屏加载优先级提前（见 `data-loading.md` Splash 批次）。  
-- **状态**：📋  
 
 ### 商家商品新建表单
 
@@ -108,7 +110,7 @@
 ### B 端人员展示
 
 - **问题**：人员列表、工作台欢迎头缺头像与昵称。  
-- **状态**：📋  
+- **状态**：✅ 已实现（`staff/index`、`staff/detail`、`dashboard` 头像 + `nickName`）
 
 ### 智库搜索
 

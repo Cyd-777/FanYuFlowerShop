@@ -26,7 +26,7 @@ const props = withDefaults(
   {
     compact: false,
     includeCategory: true,
-    includeSalesType: true,
+    includeSalesType: false,
   },
 )
 

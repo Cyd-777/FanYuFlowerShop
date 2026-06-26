@@ -1,8 +1,9 @@
 import Taro from '@tarojs/taro'
 
 /** overlay：虚化透明浮层，不占文档高度（Tab 页） */
-/** spacer：带占位块，填补关闭系统导航栏后的高度（子页） */
-export type NavBarMode = 'overlay' | 'spacer'
+/** spacer：带占位块，fixed 条 + 占位（子页） */
+/** flow：文档流内嵌，随页面/scroll-view 滚动（百科 Tab） */
+export type NavBarMode = 'overlay' | 'spacer' | 'flow'
 
 export type NavBarBackground = 'transparent' | 'blur' | 'white'
 
@@ -32,7 +33,7 @@ export const PAGE_NAV: Record<string, PageNavConfig> = {
   'pages/login/index': { title: '登录', showBack: false, mode: 'spacer' },
   'pages/home/index': { mode: 'overlay', background: 'transparent', title: '' },
   'pages/category/index': { title: '商城', background: 'blur' },
-  'pages/wiki/index': { mode: 'spacer', background: 'white', title: '花卉百科', showBack: false },
+  'pages/wiki/index': { title: '花卉百科', background: 'blur', showBack: false },
   'pages/cart/index': { title: '购物车', background: 'blur' },
   'pages/mine/index': { mode: 'overlay', background: 'transparent', title: '' },
   'pages/invite/staff/index': { title: '商家邀请', showBack: true },
@@ -67,6 +68,8 @@ export const PAGE_NAV: Record<string, PageNavConfig> = {
   'pagesMerchant/goods/edit': { title: '编辑商品' },
   'pagesMerchant/goods/stock-in': { title: '批量入库' },
   'pagesMerchant/goods/stock-in-import': { title: '进货单入库' },
+  'pagesMerchant/goods/stock-out': { title: '批量出库' },
+  'pagesMerchant/goods/warehouse-history': { title: '仓储历史' },
   'pagesMerchant/category/list': { title: '分类管理' },
   'pagesMerchant/category/edit': { title: '编辑分类' },
   'pagesMerchant/flower/picker': { title: '选择花卉' },

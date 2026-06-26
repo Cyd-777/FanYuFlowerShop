@@ -1,7 +1,7 @@
 import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { navigateTo, switchTab } from '@/utils/router'
+import { navigateToGoodsDetail, switchTab } from '@/utils/router'
 import { useCartStore } from '@/stores/cart'
 import { fetchGoodsForCartIncrease, syncCartWithServer } from '@/services/cart'
 import { CUSTOM_CART_GOODS_ID } from '@/types/cart'
@@ -78,7 +78,7 @@ export function useCartPanelActions() {
 
   function openItem(item: CartLineItem) {
     if (item.kind === 'custom' || item.goodsId === CUSTOM_CART_GOODS_ID) return
-    navigateTo({ url: `/pagesCustomer/goods/detail?id=${item.goodsId}` })
+    navigateToGoodsDetail(item.goodsId, item.image)
   }
 
   function goHome() {

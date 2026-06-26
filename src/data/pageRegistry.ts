@@ -1,3 +1,5 @@
+import type { Ref } from 'vue'
+import type { usePullRefresh } from '@/composables/usePullRefresh'
 import type { PageEnsureContext } from './types'
 
 export interface PageSetupResult {
@@ -9,10 +11,15 @@ export interface PageSetupResult {
   refreshOnShow?: boolean
   /** useDidShow 额外回调（不触发 ensure，如收藏态刷新） */
   onShow?: (ctx: PageEnsureContext) => void | Promise<void>
-  /** 内容区 scroll-view 下拉（Head 不随动），由页面 bind 到 scroll-view */
-  contentPullRefresh?: ReturnType<typeof useContentPullRefresh>
-  /** 页面级原生下拉（触发后立即 stop 复位） */
+  /** 页面使用 AppNavBar 等自定义 Head */
+  customHead?: boolean
+  /**
+   * 下拉刷新：true / 'page' = 整页原生；'content' = scroll-view 内手势下拉（无原生 refresher）。
+   * 有 customHead 且 disableScroll 时自动走 content。
+   */
   pullDownRefresh?: boolean | 'page' | 'content'
+  /** content 模式：刷新前清空的 scroll-top（百科 Head 收起） */
+  pullRefreshScrollTopRef?: Ref<number | undefined>
 }
 
 export type PageSetupFactory = () => PageSetupResult & Record<string, unknown>
@@ -35,3 +42,5 @@ function getCurrentRouteKeyFromPages(): string {
   const page = pages[pages.length - 1] as { route?: string } | undefined
   return page?.route || ''
 }
+
+export type PagePullRefresh = ReturnType<typeof usePullRefresh>

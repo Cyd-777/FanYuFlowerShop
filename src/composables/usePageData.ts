@@ -1,8 +1,8 @@
 import { ref } from 'vue'
-import { stopPullDownRefresh, useDidShow, useLoad, usePullDownRefresh } from '@tarojs/taro'
+import { useDidShow, useLoad } from '@tarojs/taro'
 import { isTabBarRoute, getCurrentPageRoute } from '@/config/pageNav'
 import { prefetchOtherCustomerTabs } from '@/data/prefetch/routeP0'
-import { useContentPullRefresh, runPagePullRefresh } from '@/composables/useContentPullRefresh'
+import { usePullRefresh, type PullRefreshMode } from '@/composables/usePullRefresh'
 import { registerAllPageSetups } from '@/data/registerPages'
 import { resolvePageSetupFactory } from '@/data/pageRegistry'
 import { normalizePageQuery } from '@/data/routeUtils'
@@ -16,10 +16,12 @@ const noopSetup: PageSetupResult & Record<string, unknown> = {
   pullDownRefresh: false,
 }
 
-function resolvePullMode(page: PageSetupResult): 'page' | 'content' | false {
+function resolvePullMode(page: PageSetupResult): PullRefreshMode | false {
   const flag = page.pullDownRefresh
   if (!flag) return false
   if (flag === 'content') return 'content'
+  if (flag === 'page') return 'page'
+  if (page.customHead) return 'content'
   return 'page'
 }
 
@@ -62,19 +64,17 @@ export function usePageData(routeKey?: string) {
   })
 
   const pullMode = resolvePullMode(page)
-  const contentPullRefresh =
-    pullMode === 'content' ? useContentPullRefresh((force) => refresh(force)) : undefined
-
-  if (pullMode === 'page') {
-    usePullDownRefresh(() => {
-      runPagePullRefresh((force) => refresh(force), stopPullDownRefresh)
-    })
-  }
+  const pullRefresh =
+    pullMode !== false
+      ? usePullRefresh((force) => refresh(force), pullMode, {
+          scrollTopRef: page.pullRefreshScrollTopRef,
+        })
+      : undefined
 
   return {
     ...page,
     ensuring,
     refresh,
-    contentPullRefresh,
+    pullRefresh,
   }
 }

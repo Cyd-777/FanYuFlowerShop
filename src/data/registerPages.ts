@@ -9,6 +9,8 @@ import { setupCustomizePickPageData } from './pages/customizePick'
 import { setupMerchantGoodsListPageData } from './pages/merchantGoodsList'
 import { setupMerchantGoodsStockInPageData } from './pages/merchantGoodsStockIn'
 import { setupMerchantGoodsStockInImportPageData } from './pages/merchantGoodsStockInImport'
+import { setupMerchantGoodsStockOutPageData } from './pages/merchantGoodsStockOut'
+import { setupMerchantWarehouseHistoryPageData } from './pages/merchantWarehouseHistory'
 import { setupFlowerPickerPageData } from './pages/flowerPicker'
 import { setupGoodsDetailPageData } from './pages/goodsDetail'
 import { setupMerchantCategoryListPageData } from './pages/merchantCategoryList'
@@ -33,6 +35,8 @@ export function registerAllPageSetups() {
   registerPageSetup('pagesMerchant/goods/list', setupMerchantGoodsListPageData)
   registerPageSetup('pagesMerchant/goods/stock-in', setupMerchantGoodsStockInPageData)
   registerPageSetup('pagesMerchant/goods/stock-in-import', setupMerchantGoodsStockInImportPageData)
+  registerPageSetup('pagesMerchant/goods/stock-out', setupMerchantGoodsStockOutPageData)
+  registerPageSetup('pagesMerchant/goods/warehouse-history', setupMerchantWarehouseHistoryPageData)
   registerPageSetup('pagesMerchant/category/list', setupMerchantCategoryListPageData)
   registerPageSetup('pagesMerchant/flower/picker', setupFlowerPickerPageData)
   registerPageSetup('pagesMerchant/shop/goods-picker', setupMerchantGoodsPickerPageData)

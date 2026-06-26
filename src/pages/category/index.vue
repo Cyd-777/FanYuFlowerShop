@@ -51,19 +51,24 @@
       </view>
 
       <scroll-view
+        id="category-content-scroll"
         class="right"
         :scroll-y="true"
+        :enhanced="true"
+        :bounces="false"
         :show-scrollbar="false"
         :style="rightScrollStyle"
-        :refresher-enabled="true"
-        :refresher-triggered="contentPullRefresh?.refresherTriggered ?? false"
-        refresher-default-style="none"
-        @refresherrefresh="contentPullRefresh?.onRefresherRefresh()"
-        @touchstart="browseTouchHandlers.onTouchStart"
-        @touchmove="browseTouchHandlers.onTouchMove"
-        @touchend="browseTouchHandlers.onTouchEnd"
-        @touchcancel="browseTouchHandlers.onTouchCancel"
+        @scroll="pullRefresh?.trackContentScroll"
+        @touchstart="contentTouchHandlers.onTouchStart"
+        @touchmove="contentTouchHandlers.onTouchMove"
+        @touchend="contentTouchHandlers.onTouchEnd"
+        @touchcancel="contentTouchHandlers.onTouchCancel"
       >
+        <view
+          class="content-pull-wrap"
+          :style="pullRefresh?.contentPullWrapStyle"
+          @transitionend="pullRefresh?.onPullWrapTransitionEnd"
+        >
         <view class="right-inner">
           <view v-if="activeIdx === -1" class="customize-panel">
             <view class="customize-title">定制花束</view>
@@ -81,7 +86,7 @@
                 :key="item._id"
                 class="goods-item"
                 :class="{ 'is-sold-out': item.stock <= 0 }"
-                @tap="goDetail(item._id)"
+                @tap="goDetail(item._id, item.imageUrl, item.coverImage || item.images?.[0])"
               >
                 <view class="thumb-wrap">
                   <GoodsImage
@@ -94,12 +99,13 @@
                 <view class="info">
                   <view class="name">{{ item.name }}</view>
                   <GoodsSalesTagRow :goods="item" compact />
-                  <view class="price">¥{{ formatPrice(item.price) }}</view>
+                  <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="price" />
                 </view>
               </view>
               <view v-if="!goodsList.length" class="empty-tip">{{ emptyText }}</view>
             </template>
           </template>
+        </view>
         </view>
       </scroll-view>
     </view>
@@ -110,18 +116,23 @@
 import { computed, watch } from 'vue'
 import Taro from '@tarojs/taro'
 import { usePageData } from '@/composables/usePageData'
+import { mergeTouchHandlers } from '@/composables/usePullRefresh'
 import { useScrollAreaBelow } from '@/composables/useScrollAreaBelow'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsSalesTagRow from '@/components/GoodsSalesTagRow.vue'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
+import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 import AppSearchInput from '@/components/AppSearchInput.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { usePageSticky } from '@/composables/usePageSticky'
+import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
 
 const { cssVars: navCssVars } = useNavBarLayout()
 const { navSearchStickyStyle } = usePageSticky()
+
+useCartTabBadgeSync()
 
 const LEFT_WIDTH_RPX = 180
 
@@ -179,8 +190,13 @@ const {
   onSearchModalOpen,
   goDetail,
   browseTouchHandlers,
-  contentPullRefresh,
+  pullRefresh,
 } = usePageData()
+
+const contentTouchHandlers = mergeTouchHandlers(
+  pullRefresh?.contentPullHandlers,
+  browseTouchHandlers,
+)
 
 const leftScrollIntoView = computed(() => {
   if (activeIdx.value === -1) return 'left-tab-customize'
@@ -320,8 +336,6 @@ watch(
   }
   .price {
     margin-top: 8rpx;
-    font-size: 28rpx;
-    font-weight: 600;
     color: @color-primary;
   }
 }

@@ -94,6 +94,7 @@ import { getCachedRole, hasToken } from '@/services/auth'
 import { fetchUserProfile, resolveAvatarDisplayPath } from '@/services/userProfile'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
+import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
 import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 
 const { statusBarHeightPx } = useNavBarLayout()
@@ -122,6 +123,8 @@ const joinStaffDesc = '输入店长发来的邀请码，自行加入商家团队
 const isLoggedIn = ref(hasToken())
 const displayNickName = ref(defaultNickname)
 const avatarDisplay = ref('')
+
+useCartTabBadgeSync()
 
 useDidShow(() => {
   isLoggedIn.value = hasToken()

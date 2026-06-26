@@ -48,10 +48,20 @@
         class="staff-item"
         @click="goDetail(item)"
       >
+        <image
+          v-if="item.avatarDisplay"
+          class="staff-avatar"
+          :src="item.avatarDisplay"
+          mode="aspectFill"
+        />
+        <view v-else class="staff-avatar placeholder">👤</view>
         <view class="staff-info">
           <view class="staff-name">
             {{ item.name }}
             <text class="role-tag" :class="item.role">{{ roleLabel(item.role) }}</text>
+          </view>
+          <view v-if="item.nickName && item.nickName !== item.name" class="staff-nick">
+            {{ item.nickName }}
           </view>
         </view>
         <text class="item-arrow">›</text>
@@ -81,11 +91,14 @@ import {
   type StaffInviteCreated,
   type StaffMember,
 } from '@/services/staff'
+import { resolveAvatarDisplayPath } from '@/services/userProfile'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
+
+type StaffListItem = StaffMember & { avatarDisplay?: string }
 
 const { cssVars: navCssVars } = useNavBarLayout()
 
-const staffList = ref<StaffMember[]>([])
+const staffList = ref<StaffListItem[]>([])
 const loading = ref(false)
 const creating = ref(false)
 const activeInvite = ref<StaffInviteCreated | null>(null)
@@ -133,7 +146,15 @@ function roleLabel(role: StaffRole) {
 async function loadStaff() {
   loading.value = true
   try {
-    staffList.value = await listStaff()
+    const list = await listStaff()
+    staffList.value = await Promise.all(
+      list.map(async (item) => ({
+        ...item,
+        avatarDisplay: item.avatarUrl
+          ? await resolveAvatarDisplayPath(item.avatarUrl)
+          : '',
+      })),
+    )
   } catch (err) {
     showToast({
       title: err instanceof Error ? err.message : '加载失败',
@@ -306,6 +327,21 @@ function copyInvitePath() {
   background: #fff;
   border-radius: 16rpx;
 }
+.staff-avatar {
+  flex-shrink: 0;
+  width: 80rpx;
+  height: 80rpx;
+  margin-right: 20rpx;
+  border-radius: 50%;
+  background: #f0f0f0;
+  &.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36rpx;
+    color: #bbb;
+  }
+}
 .staff-info {
   flex: 1;
   min-width: 0;
@@ -314,6 +350,11 @@ function copyInvitePath() {
   font-size: 28rpx;
   font-weight: 500;
   color: #333;
+}
+.staff-nick {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: #999;
 }
 .role-tag {
   margin-left: 12rpx;

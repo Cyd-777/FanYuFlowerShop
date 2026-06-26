@@ -2,7 +2,6 @@ import { STORAGE_KEYS } from '@/utils/constants'
 import { readCachedImageUrl, resolveCloudImageUrl } from '@/utils/goodsImage'
 import { resolveActiveTheme } from '@/types/shopTheme'
 import type { ShopSettings } from '@/types/shop'
-import { shopRepository } from '@/data/repository/shopRepository'
 import { goodsRepository } from '@/data/repository/goodsRepository'
 import { categoriesRepository } from '@/data/repository/categoriesRepository'
 import { startAggressivePrefetch } from './aggressivePrefetch'
@@ -14,6 +13,13 @@ function readLocalShopSettings(): ShopSettings | null {
   } catch {
     return null
   }
+}
+
+/** 同步读本地 decoration 里的 Banner fileId（用于占位 / 优先换链） */
+export function readHomeBannerFileIds(): string[] {
+  const local = readLocalShopSettings()
+  if (!local?.decoration) return []
+  return resolveActiveTheme(local.decoration).bannerImages.filter(Boolean)
 }
 
 async function ensureBannerImageUrls(settings: ShopSettings | null, force?: boolean) {
@@ -58,14 +64,16 @@ export async function prefetchHomeP0Chain(options?: { force?: boolean }) {
     })
 }
 
-/** 启动时：P0 链完成后立即拉满预取 */
+/** 启动时：P0 链完成后再延迟拉满预取，避免与 Banner 换链抢带宽 */
 export function prefetchHomeFirstScreen() {
   void prefetchHomeP0Chain()
     .catch((err) => {
       console.warn('[prefetch] home P0 chain failed:', err)
     })
     .finally(() => {
-      startAggressivePrefetch()
+      setTimeout(() => {
+        startAggressivePrefetch()
+      }, 2000)
     })
 }
 

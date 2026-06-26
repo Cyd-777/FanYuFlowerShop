@@ -15,7 +15,7 @@
         <GoodsImage :src="item.imageUrl" root-class="thumb" />
         <view class="info">
           <view class="name">{{ item.name }}</view>
-          <view class="price">¥{{ formatPrice(item.price) }}/{{ item.unit }}</view>
+          <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="price" />
         </view>
       </view>
     </view>
@@ -34,6 +34,7 @@
 import { usePageData } from '@/composables/usePageData'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
+import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 
 const {
   pickTip,
@@ -43,7 +44,6 @@ const {
   emptyTip,
   isSelected,
   toggleItem,
-  formatPrice,
   confirmPick,
 } = usePageData()
 </script>
@@ -66,7 +66,7 @@ const {
 .thumb { width: 120rpx; height: 120rpx; border-radius: 8rpx; background: #f0f0f0; }
 .info { flex: 1; margin-left: 16rpx; }
 .name { font-size: 26rpx; color: #333; }
-.price { margin-top: 8rpx; font-size: 28rpx; color: #e53935; font-weight: 600; }
+.price { margin-top: 8rpx; color: #e53935; }
 .empty { padding: 80rpx 32rpx; text-align: center; font-size: 26rpx; color: #999; line-height: 1.6; }
 .action-bar {
   position: fixed; bottom: 0; left: 0; right: 0;

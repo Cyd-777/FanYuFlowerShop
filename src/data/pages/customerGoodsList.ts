@@ -4,7 +4,7 @@ import { usePublicCategories } from '@/composables/usePublicCategories'
 import { useGoodsLiveSync } from '@/composables/useGoodsLiveSync'
 import { useGoodsBrowseRefresh } from '@/composables/useGoodsBrowseRefresh'
 import { goodsLiveSync } from '@/services/goodsLiveSync'
-import { navigateTo } from '@/utils/router'
+import { navigateToGoodsDetail } from '@/utils/router'
 import type { GoodsNameSuggestion } from '@/utils/goodsNameSuggest'
 import type { PageEnsureContext } from '../types'
 import type { PageSetupResult } from '../pageRegistry'
@@ -57,8 +57,8 @@ export function setupCustomerGoodsListPageData(): PageSetupResult & Record<strin
     return Number(price).toFixed(2).replace(/\.00$/, '')
   }
 
-  function goDetail(id: string) {
-    navigateTo({ url: '/pagesCustomer/goods/detail?id=' + id })
+  function goDetail(id: string, coverPreview?: string, coverFileId?: string) {
+    void navigateToGoodsDetail(id, coverPreview, coverFileId)
   }
 
   function onSearchKeyword(value: string) {

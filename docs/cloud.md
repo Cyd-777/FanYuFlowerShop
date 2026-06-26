@@ -166,7 +166,8 @@ npm run sync:wiki-profiles
 
 - `batchRemove` — 批量删除
 - `batchUpdate` — 批量更新（上下架、推荐等）
-- `stockIn` — 批量增加可售数
+- `stockOut` — 批量减少可售数（校验不足、写 `warehouse_ledger`、记录操作人）
+- `listWarehouseLedger` — 仓储历史（入库含 `order_rollback`，出库含 `order_out`）
 - `publicImage` — 顾客端图片代理（仅创建者可读存储）
 
 ### 集合增补

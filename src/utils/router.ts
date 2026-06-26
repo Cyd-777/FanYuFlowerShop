@@ -1,5 +1,6 @@
 import { showToast } from '@/utils/feedback'
 import { prefetchNavigateTarget, prefetchTabTarget } from '@/data/prefetch/routeP0'
+import { useCartStore } from '@/stores/cart'
 /**
  * 路由跳转封装
  * 根据 Taro 环境使用 navigateTo / switchTab 等
@@ -14,6 +15,31 @@ export function navigateTo(opt: NavigateOptions) {
   prefetchNavigateTarget(opt.url)
   return new Promise<void>((resolve, reject) => {
     wx.navigateTo({ ...opt, success: () => resolve(), fail: reject })
+  })
+}
+
+/** 顾客端商品详情（携带列表 preview URL + fileId，进页即见小图） */
+export function buildGoodsDetailUrl(
+  id: string,
+  options?: { coverPreview?: string; coverFileId?: string },
+) {
+  const base = `/pagesCustomer/goods/detail?id=${encodeURIComponent(id)}`
+  const preview = options?.coverPreview?.trim()
+  const fileId = options?.coverFileId?.trim()
+  const params: string[] = []
+  if (preview) params.push(`coverPreview=${encodeURIComponent(preview)}`)
+  if (fileId) params.push(`coverFileId=${encodeURIComponent(fileId)}`)
+  if (!params.length) return base
+  return `${base}&${params.join('&')}`
+}
+
+export function navigateToGoodsDetail(
+  id: string,
+  coverPreview?: string,
+  coverFileId?: string,
+) {
+  return navigateTo({
+    url: buildGoodsDetailUrl(id, { coverPreview, coverFileId }),
   })
 }
 
@@ -51,5 +77,10 @@ export function redirectTo(opt: NavigateOptions) {
 
 /** 返回上一页 */
 export function navigateBack(delta = 1) {
-  wx.navigateBack({ delta })
+  wx.navigateBack({
+    delta,
+    success: () => {
+      setTimeout(() => useCartStore().refreshBadge(), 0)
+    },
+  })
 }

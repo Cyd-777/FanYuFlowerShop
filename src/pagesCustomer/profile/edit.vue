@@ -208,10 +208,6 @@ async function saveProfile() {
   display: flex;
   align-items: center;
   padding: 28rpx 0;
-  border-bottom: 2rpx solid @color-border;
-  &:last-child {
-    border-bottom: none;
-  }
 }
 .form-label {
   width: 120rpx;

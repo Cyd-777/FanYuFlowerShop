@@ -8,8 +8,18 @@ import type { Goods, GoodsForm, GoodsListFilter } from '@/types/goods'
 import { goodsListMissingPublicImageUrls } from '@/utils/goodsImage'
 import type { GoodsBatchPatch } from '@/types/goodsBatch'
 import type { StockInSubmitItem } from '@/types/stockIn'
-import { unitFromSalesType } from '@/types/goods'
+import type { StockOutSubmitItem } from '@/types/stockOut'
+import { salesTypeFromUnit } from '@/types/goods'
 import { CACHE_KEYS, goodsPublicDetailKey } from '@/data/cacheKeys'
+
+/** 表单可售数：空视为 0，允许零库存建品后再进货单累加 */
+export function parseGoodsStockField(raw: string | number | undefined | null): number {
+  if (raw === undefined || raw === null) return 0
+  const text = String(raw).trim()
+  if (!text) return 0
+  const n = parseInt(text, 10)
+  return Number.isNaN(n) ? Number.NaN : Math.max(0, n)
+}
 
 function publicGoodsCacheKey() {
   return CACHE_KEYS.goodsPublicAll
@@ -20,6 +30,18 @@ interface GoodsCloudResult {
   errMsg?: string
   list?: Goods[]
   goods?: Goods
+  hasMore?: boolean
+  nextCursor?: number | null
+  total?: number
+}
+
+export const PUBLIC_GOODS_INDEX_PAGE_SIZE = 24
+
+export interface PublicGoodsPageResult {
+  list: Goods[]
+  hasMore: boolean
+  nextCursor: number | null
+  total?: number
 }
 
 async function callGoods<T = GoodsCloudResult>(data: Record<string, unknown>): Promise<T> {
@@ -69,6 +91,60 @@ export async function listPublicGoods(keyword = '', categoryId = ''): Promise<Go
   return Array.isArray(result.list) ? result.list : []
 }
 
+/** cursor 分页索引（瘦字段 + coverImage）；旧云函数无分页字段时整表回退 */
+export async function listPublicGoodsPage(options: {
+  cursor?: number
+  limit?: number
+  keyword?: string
+  categoryId?: string
+  recommendOnly?: boolean
+  inStockOnly?: boolean
+} = {}): Promise<PublicGoodsPageResult> {
+  const result = await callGoods({
+    action: 'publicList',
+    slim: true,
+    cursor: options.cursor ?? 0,
+    limit: options.limit ?? PUBLIC_GOODS_INDEX_PAGE_SIZE,
+    keyword: options.keyword ?? '',
+    categoryId: options.categoryId ?? '',
+    recommendOnly: options.recommendOnly ?? false,
+    inStockOnly: options.inStockOnly ?? false,
+  })
+
+  if (result.success !== true) {
+    throw new Error(result.errMsg || '获取商品列表失败')
+  }
+
+  const list = Array.isArray(result.list) ? result.list : []
+  const hasPagination = result.nextCursor !== undefined || result.hasMore !== undefined
+
+  if (!hasPagination) {
+    return { list, hasMore: false, nextCursor: null, total: list.length }
+  }
+
+  return {
+    list,
+    hasMore: result.hasMore === true,
+    nextCursor: result.nextCursor ?? null,
+    total: result.total,
+  }
+}
+
+/** 优先 cursor 分页合并；失败时回退整表 publicList */
+export async function fetchPublicGoodsIndexFull(options?: {
+  onPage?: (merged: Goods[]) => void
+}): Promise<Goods[]> {
+  try {
+    const { fetchAllPublicGoodsIndexPages } = await import('@/data/prefetch/goodsIndexPages')
+    return await fetchAllPublicGoodsIndexPages(options)
+  } catch (err) {
+    console.warn('[goods] paginated index failed, fallback full list:', err)
+    const list = await listPublicGoods('', '')
+    options?.onPage?.(list)
+    return list
+  }
+}
+
 /** 结构化顾客端商品搜索 */
 export async function searchPublicGoods(query: GoodsQuery): Promise<Goods[]> {
   const result = await callGoods({
@@ -116,7 +192,7 @@ export async function syncRecommendListFromCloud(): Promise<Goods[]> {
 export async function syncPublicGoodsListFromCloud(): Promise<Goods[]> {
   const [versions, data] = await Promise.all([
     fetchCacheVersions(true),
-    listPublicGoods('', ''),
+    fetchPublicGoodsIndexFull(),
   ])
   writeCacheEntry(publicGoodsCacheKey(), {
     data,
@@ -152,7 +228,10 @@ export async function listPublicGoodsCached(
     loadWithCache({
       module: 'goods',
       cacheKey: publicGoodsCacheKey(),
-      fetcher: () => listPublicGoods('', ''),
+      fetcher: () =>
+        fetchPublicGoodsIndexFull({
+          onPage: (merged) => options?.onUpdate?.(merged),
+        }),
       force: force ?? options?.force,
       onUpdate: options?.onUpdate,
     })
@@ -244,15 +323,17 @@ export async function getMerchantGoods(id: string): Promise<Goods> {
 }
 
 export function toGoodsPayload(form: GoodsForm) {
-  const salesType = form.salesType
+  const unit = form.unit
+  const salesType = salesTypeFromUnit(unit)
   const unitsPerGroup =
-    salesType === 'group' ? parseInt(form.unitsPerGroup, 10) : undefined
+    unit === '组' ? parseInt(form.unitsPerGroup, 10) : undefined
+  const stock = parseGoodsStockField(form.stock)
   return {
     name: form.name.trim(),
     price: Number(form.price),
     salesType,
-    unit: unitFromSalesType(salesType),
-    stock: parseInt(form.stock, 10),
+    unit,
+    stock: Number.isNaN(stock) ? 0 : stock,
     description: form.description.trim(),
     categoryId: form.categoryId.trim(),
     flowerKindId: form.flowerKindId.trim(),
@@ -335,6 +416,18 @@ export async function submitStockIn(items: StockInSubmitItem[]): Promise<number>
   })
   if (!result.success) {
     throw new Error(result.errMsg || '提交进货单失败')
+  }
+  invalidateCacheModule('goods')
+  return Number((result as { applied?: number }).applied) || items.length
+}
+
+export async function submitStockOut(items: StockOutSubmitItem[]): Promise<number> {
+  const result = await callGoods({
+    action: 'stockOut',
+    items,
+  })
+  if (!result.success) {
+    throw new Error(result.errMsg || '提交出库单失败')
   }
   invalidateCacheModule('goods')
   return Number((result as { applied?: number }).applied) || items.length

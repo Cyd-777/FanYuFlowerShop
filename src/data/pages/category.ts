@@ -8,7 +8,7 @@ import { goodsRepository, wikiRepository } from '@/data/repository'
 import { startAggressivePrefetch } from '@/data/prefetch/aggressivePrefetch'
 import { prefetchOtherCustomerTabs } from '@/data/prefetch/routeP0'
 import { suggestCustomerUnified, buildCustomerSearchPageUrl } from '@/services/customerUnifiedSearch'
-import { navigateTo, navigateToWithFeedback } from '@/utils/router'
+import { navigateTo, navigateToWithFeedback, navigateToGoodsDetail } from '@/utils/router'
 import type { CustomerUnifiedSearchScope, SearchSuggestion } from '@/types/search'
 import type { FlowerWikiListItem } from '@/types/wiki'
 import type { Goods } from '@/types/goods'
@@ -132,12 +132,13 @@ export function setupCategoryPageData(): PageSetupResult & Record<string, unknow
     goSearchWithKeyword(item.label)
   }
 
-  function goDetail(id: string) {
-    navigateTo({ url: '/pagesCustomer/goods/detail?id=' + id })
+  function goDetail(id: string, coverPreview?: string, coverFileId?: string) {
+    void navigateToGoodsDetail(id, coverPreview, coverFileId)
   }
 
   return {
     ensure,
+    customHead: true,
     pullDownRefresh: 'content',
     refreshOnShow: true,
     keyword,

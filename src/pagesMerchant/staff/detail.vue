@@ -4,6 +4,20 @@
     <view v-if="loading" class="loading-tip">加载中…</view>
 
     <template v-else-if="member">
+      <view class="profile-card">
+        <image
+          v-if="avatarDisplay"
+          class="profile-avatar"
+          :src="avatarDisplay"
+          mode="aspectFill"
+        />
+        <view v-else class="profile-avatar placeholder">👤</view>
+        <view class="profile-meta">
+          <view class="profile-name">{{ member.name }}</view>
+          <view v-if="member.nickName" class="profile-nick">{{ member.nickName }}</view>
+        </view>
+      </view>
+
       <view class="form-card">
         <nut-form>
           <nut-form-item label="用户 ID">
@@ -71,9 +85,11 @@ import {
   updateStaffRole,
   type StaffMember,
 } from '@/services/staff'
+import { resolveAvatarDisplayPath } from '@/services/userProfile'
 
 const targetUserId = ref('')
 const member = ref<StaffMember | null>(null)
+const avatarDisplay = ref('')
 const loading = ref(true)
 const saving = ref(false)
 const deleting = ref(false)
@@ -112,6 +128,9 @@ async function loadMember() {
     if (member.value) {
       form.value.name = member.value.name
       form.value.role = member.value.role
+      avatarDisplay.value = member.value.avatarUrl
+        ? await resolveAvatarDisplayPath(member.value.avatarUrl)
+        : ''
     }
   } catch (err) {
     showToast({
@@ -197,6 +216,43 @@ async function handleRemove() {
 .loading-tip {
   padding: 80rpx 32rpx;
   text-align: center;
+  font-size: 26rpx;
+  color: #999;
+}
+.profile-card {
+  display: flex;
+  align-items: center;
+  margin: 16rpx;
+  padding: 32rpx;
+  background: #fff;
+  border-radius: 16rpx;
+}
+.profile-avatar {
+  flex-shrink: 0;
+  width: 96rpx;
+  height: 96rpx;
+  margin-right: 24rpx;
+  border-radius: 50%;
+  background: #f0f0f0;
+  &.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44rpx;
+    color: #bbb;
+  }
+}
+.profile-meta {
+  flex: 1;
+  min-width: 0;
+}
+.profile-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+.profile-nick {
+  margin-top: 6rpx;
   font-size: 26rpx;
   color: #999;
 }

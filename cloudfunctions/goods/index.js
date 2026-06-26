@@ -1,5 +1,6 @@
 const cloud = require('wx-server-sdk')
 const { bumpCacheModule } = require('./common/cacheMeta')
+const { resolveUserByWechatMp } = require('./common/account')
 const {
   resolveFileUrls,
   enrichPublicGoodsList,
@@ -19,6 +20,7 @@ cloud.init({
 })
 
 const db = cloud.database()
+const _ = db.command
 
 const OWNER_OPENIDS = [
   'oiDICxmmuGHJTKQzDsG9X32n2fAs',
@@ -63,6 +65,98 @@ async function isMerchant(openid) {
     if (isCollectionMissingError(err)) return OWNER_OPENIDS.includes(openid)
     throw err
   }
+}
+
+async function resolveOperatorProfile(openid) {
+  if (!openid) {
+    return { openid: '', userId: '', name: '未知' }
+  }
+
+  let name = '工作人员'
+  let userId = ''
+
+  try {
+    const user = await resolveUserByWechatMp(openid)
+    userId = user?.userId || ''
+    if (user?.nickName) name = user.nickName
+  } catch (err) {
+    console.error('[goods] resolve operator user failed:', err.message || err)
+  }
+
+  try {
+    await ensureCollection('merchants')
+    const { data: byOpenid } = await db.collection('merchants').where({ openid }).limit(1).get()
+    if (byOpenid[0]?.name) {
+      name = byOpenid[0].name
+    } else if (userId) {
+      const { data: byUser } = await db.collection('merchants').where({ userId }).limit(1).get()
+      if (byUser[0]?.name) name = byUser[0].name
+    }
+  } catch (err) {
+    console.error('[goods] resolve operator merchant failed:', err.message || err)
+  }
+
+  return { openid, userId, name }
+}
+
+async function appendWarehouseLedger(entry) {
+  await ensureCollection('warehouse_ledger')
+  await db.collection('warehouse_ledger').add({
+    data: {
+      ...entry,
+      createdAt: db.serverDate(),
+    },
+  })
+}
+
+async function applyStockMovement({
+  goodsId,
+  delta,
+  direction,
+  operatorOpenid,
+  operator,
+}) {
+  const { data: doc } = await db.collection('goods').doc(goodsId).get()
+  if (!doc) {
+    return { ok: false, errMsg: '商品不存在' }
+  }
+
+  const stockBefore = Number(doc.stock) || 0
+  const signedDelta = direction === 'in' ? delta : -delta
+  const stockAfter = stockBefore + signedDelta
+
+  if (delta <= 0) {
+    return { ok: false, errMsg: '数量无效' }
+  }
+  if (direction === 'out' && stockAfter < 0) {
+    return {
+      ok: false,
+      errMsg: `「${doc.name || '商品'}」可售数不足（当前 ${stockBefore}）`,
+    }
+  }
+
+  await db.collection('goods').doc(goodsId).update({
+    data: {
+      stock: db.command.inc(signedDelta),
+      updatedAt: db.serverDate(),
+      updatedBy: operatorOpenid,
+    },
+  })
+
+  await appendWarehouseLedger({
+    type: direction === 'in' ? 'stock_in' : 'stock_out',
+    goodsId,
+    goodsName: doc.name || '',
+    unit: doc.unit || '件',
+    delta,
+    stockBefore,
+    stockAfter,
+    operatorOpenid,
+    operatorUserId: operator.userId || '',
+    operatorName: operator.name || '工作人员',
+  })
+
+  return { ok: true }
 }
 
 const VALID_SALES_TYPES = new Set(['stem', 'group', 'bouquet', 'other'])
@@ -119,6 +213,7 @@ function pickGoods(doc) {
     flowerVarietyId: doc.flowerVarietyId || '',
     flowerVarietyName: doc.flowerVarietyName || '',
     coverImage: doc.coverImage || (doc.images && doc.images[0]) || '',
+    coverThumb: doc.coverThumb || doc.coverImage || (doc.images && doc.images[0]) || '', // 兼容字段，等同 coverImage
     images: Array.isArray(doc.images) ? doc.images : [],
     onSale: doc.onSale !== false,
     recommend: doc.recommend === true,
@@ -155,7 +250,8 @@ function normalizeGoodsInput(input) {
   const price = Number(input.price)
   const salesType = normalizeSalesType(input.salesType) || inferSalesType(input)
   const unit = normalizeUnit(input.unit, salesType)
-  const stock = parseInt(input.stock, 10)
+  const stockParsed = parseInt(input.stock, 10)
+  const stock = Number.isNaN(stockParsed) ? 0 : stockParsed
   const description = String(input.description || '').trim()
   const categoryId = String(input.categoryId || '').trim()
   const coverImage = String(input.coverImage || '').trim()
@@ -181,7 +277,7 @@ function normalizeGoodsInput(input) {
     throw new Error('请输入有效的商品价格')
   }
   if (Number.isNaN(stock) || stock < 0) {
-    throw new Error('请输入有效的库存数量')
+    throw new Error('库存不能为负数')
   }
   if (needsFlowerPick && !flowerVarietyId) {
     throw new Error('单支或成组花材请选择花卉品种')
@@ -233,6 +329,75 @@ const {
   filterPublicGoodsList,
 } = require('./goodsPublicSearch')
 
+function toGoodsListItem(item) {
+  return {
+    _id: item._id,
+    name: item.name,
+    price: item.price,
+    salesType: item.salesType,
+    unit: item.unit,
+    stock: item.stock,
+    categoryId: item.categoryId,
+    categoryName: item.categoryName,
+    flowerKindId: item.flowerKindId,
+    flowerKindName: item.flowerKindName,
+    flowerVarietyId: item.flowerVarietyId,
+    flowerVarietyName: item.flowerVarietyName,
+    coverThumb: item.coverThumb || item.coverImage,
+    coverImage: item.coverImage,
+    onSale: item.onSale,
+    recommend: item.recommend,
+    sort: item.sort,
+    listedAt: item.listedAt,
+    unitsPerGroup: item.unitsPerGroup,
+  }
+}
+
+function sortPublicGoodsList(list) {
+  return [...list].sort((a, b) => {
+    const sortDiff = (Number(b.sort) || 0) - (Number(a.sort) || 0)
+    if (sortDiff) return sortDiff
+    const ta = Date.parse(a.listedAt || a.createdAt || '') || 0
+    const tb = Date.parse(b.listedAt || b.createdAt || '') || 0
+    if (tb !== ta) return tb - ta
+    return String(a._id).localeCompare(String(b._id))
+  })
+}
+
+async function listOnSaleGoodsPaginated(options = {}) {
+  const {
+    cursor = 0,
+    limit = 24,
+    slim = false,
+    keyword = '',
+    categoryId = '',
+    recommendOnly = false,
+    inStockOnly = false,
+    query,
+  } = options
+
+  const filtered = await listOnSaleGoods({
+    keyword,
+    categoryId,
+    recommendOnly,
+    inStockOnly,
+    query,
+  })
+  const sorted = sortPublicGoodsList(filtered)
+  const start = Math.max(0, Number(cursor) || 0)
+  const pageLimit = Math.min(Math.max(Number(limit) || 24, 1), 100)
+  const slice = sorted.slice(start, start + pageLimit)
+  const nextCursor = start + slice.length < sorted.length ? start + slice.length : null
+  const list = slim ? slice.map(toGoodsListItem) : slice
+
+  return {
+    list,
+    hasMore: nextCursor != null,
+    nextCursor,
+    total: sorted.length,
+  }
+}
+
 async function listOnSaleGoods(options = {}) {
   const {
     keyword = '',
@@ -276,7 +441,34 @@ exports.main = async (event) => {
         recommendOnly = false,
         inStockOnly = false,
         query,
+        cursor,
+        limit,
+        slim,
       } = event
+
+      const usePagination =
+        cursor != null || limit != null || slim === true || slim === 'true'
+
+      if (usePagination) {
+        const page = await listOnSaleGoodsPaginated({
+          keyword,
+          categoryId,
+          recommendOnly,
+          inStockOnly,
+          query,
+          cursor: cursor != null ? Number(cursor) : 0,
+          limit: limit != null ? Number(limit) : 24,
+          slim: slim !== false && slim !== 'false',
+        })
+        return {
+          success: true,
+          list: await enrichPublicGoodsList(page.list, { listSlim: true }),
+          hasMore: page.hasMore,
+          nextCursor: page.nextCursor,
+          total: page.total,
+        }
+      }
+
       const list = await listOnSaleGoods({
         keyword,
         categoryId,
@@ -601,29 +793,125 @@ exports.main = async (event) => {
     }
 
     await ensureCollection('goods')
+    const operator = await resolveOperatorProfile(operatorOpenid)
     let applied = 0
+    const errors = []
 
     for (const raw of items) {
       const id = String(raw?.goodsId || raw?.id || '').trim()
       const delta = parseInt(raw?.delta, 10)
       if (!id || Number.isNaN(delta) || delta <= 0) continue
 
-      await db.collection('goods').doc(id).update({
-        data: {
-          stock: db.command.inc(delta),
-          updatedAt: db.serverDate(),
-          updatedBy: operatorOpenid,
-        },
+      const result = await applyStockMovement({
+        goodsId: id,
+        delta,
+        direction: 'in',
+        operatorOpenid,
+        operator,
       })
-      applied += 1
+      if (result.ok) {
+        applied += 1
+      } else if (result.errMsg) {
+        errors.push(result.errMsg)
+      }
     }
 
     if (!applied) {
-      return { success: false, errMsg: '没有有效的入库项' }
+      return {
+        success: false,
+        errMsg: errors[0] || '没有有效的入库项',
+      }
     }
 
     await safeBumpCacheModule('goods')
     return { success: true, applied }
+  }
+
+  if (action === 'stockOut') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限出库' }
+    }
+
+    const items = Array.isArray(event.items) ? event.items : []
+    if (!items.length) {
+      return { success: false, errMsg: '请填写出库数量' }
+    }
+
+    await ensureCollection('goods')
+    const operator = await resolveOperatorProfile(operatorOpenid)
+    let applied = 0
+    const errors = []
+
+    for (const raw of items) {
+      const id = String(raw?.goodsId || raw?.id || '').trim()
+      const delta = parseInt(raw?.delta, 10)
+      if (!id || Number.isNaN(delta) || delta <= 0) continue
+
+      const result = await applyStockMovement({
+        goodsId: id,
+        delta,
+        direction: 'out',
+        operatorOpenid,
+        operator,
+      })
+      if (result.ok) {
+        applied += 1
+      } else if (result.errMsg) {
+        errors.push(result.errMsg)
+      }
+    }
+
+    if (!applied) {
+      return {
+        success: false,
+        errMsg: errors[0] || '没有有效的出库项',
+      }
+    }
+
+    await safeBumpCacheModule('goods')
+    return { success: true, applied }
+  }
+
+  if (action === 'listWarehouseLedger') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限查看仓储历史' }
+    }
+
+    const type = String(event.type || '').trim()
+    const limit = Math.min(100, Math.max(1, parseInt(event.limit, 10) || 50))
+    const skip = Math.max(0, parseInt(event.skip, 10) || 0)
+
+    await ensureCollection('warehouse_ledger')
+
+    let query = db.collection('warehouse_ledger')
+    if (type === 'stock_in') {
+      query = query.where({ type: _.in(['stock_in', 'order_rollback']) })
+    } else if (type === 'stock_out') {
+      query = query.where({ type: _.in(['stock_out', 'order_out']) })
+    }
+
+    const { data } = await query.orderBy('createdAt', 'desc').skip(skip).limit(limit).get()
+
+    const list = (data || []).map((doc) => ({
+      _id: doc._id,
+      type: doc.type || 'stock_in',
+      goodsId: doc.goodsId || '',
+      goodsName: doc.goodsName || '',
+      unit: doc.unit || '件',
+      delta: Number(doc.delta) || 0,
+      stockBefore: Number(doc.stockBefore) || 0,
+      stockAfter: Number(doc.stockAfter) || 0,
+      operatorOpenid: doc.operatorOpenid || '',
+      operatorUserId: doc.operatorUserId || '',
+      operatorName: doc.operatorName || '',
+      orderId: doc.orderId || '',
+      orderNo: doc.orderNo || '',
+      createdAt: doc.createdAt,
+    }))
+
+    return { success: true, list }
   }
 
   return { success: false, errMsg: '未知操作' }

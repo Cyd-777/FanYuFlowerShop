@@ -28,7 +28,7 @@
             v-for="item in goodsResults"
             :key="item._id"
             class="goods-card surface-card"
-            @tap="goGoodsDetail(item._id)"
+            @tap="goGoodsDetail(item._id, item.imageUrl, item.coverImage || item.images?.[0])"
           >
             <GoodsImage
               :src="item.imageUrl"
@@ -36,7 +36,7 @@
               root-class="goods-img"
             />
             <view class="goods-name">{{ item.name }}</view>
-            <view class="goods-price">¥{{ formatPrice(item.price) }}</view>
+            <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="goods-price" />
           </view>
         </view>
       </view>
@@ -76,6 +76,7 @@ import GoodsImage from '@/components/GoodsImage.vue'
 import { usePageSticky } from '@/composables/usePageSticky'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { usePageData } from '@/composables/usePageData'
+import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 
 const { cssVars: navCssVars } = useNavBarLayout()
 const { navSearchStickyStyle } = usePageSticky()
@@ -163,8 +164,6 @@ const {
   }
   .goods-price {
     padding: 0 16rpx 16rpx;
-    font-size: 28rpx;
-    font-weight: 600;
     color: #e53935;
   }
 }

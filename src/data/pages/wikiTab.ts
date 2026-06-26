@@ -187,7 +187,8 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
   return {
     ensure,
     onLoad,
-    pullDownRefresh: true,
+    customHead: true,
+    pullDownRefresh: 'page',
     refreshOnShow: true,
     pageTitle,
     pageSubtitle,

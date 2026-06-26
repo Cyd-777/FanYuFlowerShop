@@ -5,6 +5,19 @@ export type GoodsUnit = '支' | '组' | '束' | '件'
 
 export const GOODS_UNITS: GoodsUnit[] = ['支', '组', '束', '件']
 
+export interface GoodsUnitOption {
+  value: GoodsUnit
+  /** 表单/卡片展示文案（支 → 枝） */
+  label: string
+}
+
+export const GOODS_UNIT_OPTIONS: GoodsUnitOption[] = [
+  { value: '支', label: '枝' },
+  { value: '组', label: '组' },
+  { value: '束', label: '束' },
+  { value: '件', label: '件' },
+]
+
 export interface GoodsSalesTypeOption {
   value: GoodsSalesType
   label: string
@@ -38,6 +51,10 @@ export interface Goods {
   flowerVarietyName?: string
   coverImage: string
   images: string[]
+  /** @deprecated 与 coverImage 同源，仅兼容旧响应；不做商家双上传 */
+  coverThumb?: string
+  /** @deprecated 等同 coverImageUrl */
+  coverThumbUrl?: string
   /** 顾客端公开接口：云函数侧已换链的封面 HTTPS */
   coverImageUrl?: string
   /** 顾客端公开接口：云函数侧已换链的多图 HTTPS */
@@ -85,6 +102,25 @@ export function needsFlowerPickForSalesType(type: GoodsSalesType): boolean {
 
 export function unitFromSalesType(type: GoodsSalesType): GoodsUnit {
   return getSalesTypeOption(type).unit
+}
+
+export function salesTypeFromUnit(unit: GoodsUnit): GoodsSalesType {
+  if (unit === '支') return 'stem'
+  if (unit === '组') return 'group'
+  if (unit === '件') return 'other'
+  return 'bouquet'
+}
+
+export function needsFlowerPickForUnit(unit: GoodsUnit): boolean {
+  return unit === '支' || unit === '组'
+}
+
+/** 顾客端/表单展示用单位文案 */
+export function getGoodsUnitLabel(unit: GoodsUnit | string | undefined | null): string {
+  const opt = GOODS_UNIT_OPTIONS.find((item) => item.value === unit)
+  if (opt) return opt.label
+  if (unit === '支') return '枝'
+  return typeof unit === 'string' && unit.trim() ? unit : '束'
 }
 
 /** 旧数据无 salesType 时按 unit / 花卉信息推断 */

@@ -1,18 +1,17 @@
 <template>
   <view class="page-wiki" :style="navCssVars">
     <AppFeedbackHost />
-    <AppNavBar hide-back :bar-visible="!isSearchStuck" />
-
     <view
-      v-if="isSearchStuck"
+      v-if="statusBarFillStyle"
       class="overlay-status-bar-fill"
       :style="statusBarFillStyle"
     />
+    <AppNavBar hide-back />
 
     <view
-      id="wiki-search-sticky"
+      id="wiki-scroll-anchor"
       class="wiki-search page-sticky-search"
-      :class="{ 'is-stuck': isSearchStuck }"
+      :class="searchStuckClass"
       :style="searchStickyStyle"
     >
       <AppSearchInput
@@ -30,12 +29,13 @@
     </view>
 
     <view
-      v-if="!isSearchMode"
+      id="wiki-tabs-anchor"
       class="kind-tabs-wrap page-sticky-tabs"
-      :class="{ 'is-search-stuck': isSearchStuck }"
+      :class="[tabsStuckClass, { 'is-collapsed': isSearchMode }]"
       :style="tabsStickyStyle"
     >
       <scroll-view
+        v-if="!isSearchMode"
         id="wiki-kind-tabs-scroll"
         class="kind-tabs-scroll"
         :scroll-x="true"
@@ -71,45 +71,47 @@
       </scroll-view>
     </view>
 
-    <view v-if="loading" class="loading-text">{{ loadingText }}</view>
+    <view class="wiki-body content-pad-x">
+      <view v-if="loading" class="loading-text">{{ loadingText }}</view>
 
-    <view v-else class="wiki-body content-pad-x">
-      <view v-if="wikiAnswer" class="wiki-answer-wrap">
-        <WikiAnswerCard :answer="wikiAnswer" />
-      </view>
-
-      <view v-if="isSearchMode" class="card-flow">
-        <view
-          v-for="item in wikiList"
-          :key="item._id"
-          class="wiki-kind-card surface-card"
-          @tap="goDetail(item._id)"
-        >
-          <view class="wiki-kind-card-icon">{{ item.icon }}</view>
-          <view class="wiki-kind-card-name">{{ displayName(item) }}</view>
-          <view v-if="displaySubtitle(item)" class="wiki-kind-card-sub">{{ displaySubtitle(item) }}</view>
-          <view class="wiki-kind-card-preview">{{ cardPreview(item) }}</view>
+      <template v-else>
+        <view v-if="wikiAnswer" class="wiki-answer-wrap">
+          <WikiAnswerCard :answer="wikiAnswer" />
         </view>
-        <view v-if="!wikiList.length && !wikiAnswer" class="empty-text">{{ emptyText }}</view>
-      </view>
 
-      <view v-else class="card-flow">
-        <view
-          v-for="item in browseFlow"
-          :key="item._id"
-          class="wiki-kind-card surface-card"
-          :class="{ 'is-kind': isWikiKindEntry(item) }"
-          @tap="goDetail(item._id)"
-        >
-          <view class="wiki-kind-card-icon">{{ item.icon }}</view>
-          <view class="wiki-kind-card-name">{{ displayName(item) }}</view>
-          <view v-if="item.varietyName && displaySubtitle(item)" class="wiki-kind-card-sub">
-            {{ displaySubtitle(item) }}
+        <view v-if="isSearchMode" class="card-flow">
+          <view
+            v-for="item in wikiList"
+            :key="item._id"
+            class="wiki-kind-card surface-card"
+            @tap="goDetail(item._id)"
+          >
+            <view class="wiki-kind-card-icon">{{ item.icon }}</view>
+            <view class="wiki-kind-card-name">{{ displayName(item) }}</view>
+            <view v-if="displaySubtitle(item)" class="wiki-kind-card-sub">{{ displaySubtitle(item) }}</view>
+            <view class="wiki-kind-card-preview">{{ cardPreview(item) }}</view>
           </view>
-          <view class="wiki-kind-card-preview">{{ cardPreview(item) }}</view>
+          <view v-if="!wikiList.length && !wikiAnswer" class="empty-text">{{ emptyText }}</view>
         </view>
-        <view v-if="!browseFlow.length" class="empty-text">{{ filterEmptyText }}</view>
-      </view>
+
+        <view v-else class="card-flow">
+          <view
+            v-for="item in browseFlow"
+            :key="item._id"
+            class="wiki-kind-card surface-card"
+            :class="{ 'is-kind': isWikiKindEntry(item) }"
+            @tap="goDetail(item._id)"
+          >
+            <view class="wiki-kind-card-icon">{{ item.icon }}</view>
+            <view class="wiki-kind-card-name">{{ displayName(item) }}</view>
+            <view v-if="item.varietyName && displaySubtitle(item)" class="wiki-kind-card-sub">
+              {{ displaySubtitle(item) }}
+            </view>
+            <view class="wiki-kind-card-preview">{{ cardPreview(item) }}</view>
+          </view>
+          <view v-if="!browseFlow.length" class="empty-text">{{ filterEmptyText }}</view>
+        </view>
+      </template>
     </view>
   </view>
 </template>
@@ -121,15 +123,18 @@ import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import AppSearchInput from '@/components/AppSearchInput.vue'
 import WikiAnswerCard from '@/components/WikiAnswerCard.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
-import { useOverlayStickySearch } from '@/composables/useOverlayStickySearch'
+import { useStickyStack } from '@/composables/useStickyStack'
 import { usePageData } from '@/composables/usePageData'
 import {
   estimateTagRowsTrackWidthPx,
   useScrollXTrack,
 } from '@/composables/useScrollXTrack'
 import { splitTwoRowsColumnMajor } from '@/utils/splitTwoRowsColumnMajor'
+import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
 
-const { cssVars: navCssVars, layout: navLayout } = useNavBarLayout()
+const { cssVars: navCssVars } = useNavBarLayout()
+
+useCartTabBadgeSync()
 
 const {
   searchPlaceholder,
@@ -156,29 +161,35 @@ const {
   isWikiKindEntry,
 } = usePageData()
 
-const {
-  isSearchStuck,
-  statusBarFillStyle,
-  searchStickyStyle,
-  searchTriggerStyle,
-  tabsStickyStyle,
-} = useOverlayStickySearch({
-  searchSelector: '#wiki-search-sticky',
-  wrapPadYRpx: 24,
+const stickyStack = useStickyStack({
+  scrollMode: 'page',
   background: '#fff5f5',
-  remeasureDeps: [
-    () => loading.value,
-    () => isSearchMode.value,
-    () => navLayout.value.totalHeight,
+  order: [
+    {
+      id: 'search',
+      selector: '#wiki-scroll-anchor',
+      reserveCapsule: true,
+    },
+    {
+      id: 'tabs',
+      selector: '#wiki-tabs-anchor',
+    },
   ],
+  remeasureDeps: [isSearchMode, kindTabItems],
 })
+
+const statusBarFillStyle = stickyStack.statusBarFillStyle
+const searchStickyStyle = stickyStack.stickyStyle('search')
+const tabsStickyStyle = stickyStack.stickyStyle('tabs')
+const searchStuckClass = stickyStack.stuckClass('search')
+const tabsStuckClass = stickyStack.stuckClass('tabs')
+const searchTriggerStyle = stickyStack.triggerStyle('search')
 
 function isKindTabActive(kindName: string | null) {
   if (kindName == null) return selectedKindName.value == null
   return selectedKindName.value === kindName
 }
 
-/** 按列优先拆成两行（全部/玫瑰、百合/康乃馨…） */
 const kindTabRows = computed(() => splitTwoRowsColumnMajor(kindTabItems))
 
 const kindTabsScroll = useScrollXTrack({
@@ -201,19 +212,24 @@ const kindTabsScroll = useScrollXTrack({
 @import '@/styles/tokens.less';
 
 .page-wiki {
-  min-height: 100vh;
+  min-height: 100%;
   background: @color-bg-page;
   box-sizing: border-box;
   width: 100%;
-  padding-bottom: 48rpx;
+  padding-top: var(--nav-total-height, 0px);
 }
 
 .wiki-search {
+  left: 0;
+  right: 0;
+  z-index: 95;
   padding: 12rpx 24rpx;
   background: linear-gradient(180deg, #fff5f5 0%, @color-bg-page 100%);
+  box-sizing: border-box;
 
   &.is-stuck {
-    background: #fff5f5;
+    background: @color-bg-page;
+    box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
   }
 }
 
@@ -222,12 +238,12 @@ const kindTabsScroll = useScrollXTrack({
   width: 100%;
   overflow: hidden;
 
-  &.is-search-stuck {
-    background: #fff5f5;
+  &.is-collapsed {
+    height: 0;
+    overflow: hidden;
   }
 }
 
-/** 视口宽高由 scrollViewportStyle 注入 px；勿仅用 100% */
 .kind-tabs-scroll {
   box-sizing: border-box;
 }
@@ -291,7 +307,8 @@ const kindTabsScroll = useScrollXTrack({
 }
 
 .wiki-body {
-  padding-bottom: 24rpx;
+  padding-top: 16rpx;
+  padding-bottom: 48rpx;
 }
 
 .wiki-answer-wrap {

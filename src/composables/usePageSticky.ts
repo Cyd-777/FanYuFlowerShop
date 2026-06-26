@@ -15,7 +15,7 @@ export function rpxToPx(rpx: number) {
 
 /**
  * 带 AppNavBar 子页的吸顶 top（搜索条 / 次级 Tab）。
- * Tab 浮层页请用 useOverlayStickySearch。
+ * Tab 浮层页整页滚动吸顶请用 useStickyStack（flow-sticky）。
  */
 export function usePageSticky() {
   const { layout, statusBarHeightPx, totalHeightPx } = useNavBarLayout()

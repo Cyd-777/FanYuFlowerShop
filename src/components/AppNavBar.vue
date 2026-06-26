@@ -33,7 +33,7 @@
     <view
       v-if="mode === 'spacer'"
       class="app-nav-bar__placeholder"
-      :style="{ height: `${layout.totalHeight}px` }"
+      :style="{ height: `${placeholderHeightPx}px` }"
     />
 
     <AppFeedbackHost />
@@ -66,7 +66,7 @@ const props = withDefaults(
     mode?: NavBarMode
     background?: NavBarBackground
     titleAlign?: NavBarTitleAlign
-    /** false 时隐藏 fixed 导航条（占位块仍保留，供 Tab 页滚动吸顶切换） */
+    /** false 时隐藏 fixed 导航条（占位仅保留状态栏高度，收回导航内容区体积） */
     barVisible?: boolean
   }>(),
   {
@@ -116,9 +116,26 @@ const resolvedBackground = computed(
   () => props.background ?? routeNav.value.background ?? 'white',
 )
 
-const barStyle = computed(() => ({
-  display: props.barVisible ? 'block' : 'none',
-}))
+const barStyle = computed(() => {
+  if (mode.value === 'flow') return {}
+  if (props.barVisible) {
+    return {
+      opacity: '1',
+      pointerEvents: 'auto' as const,
+      transform: 'translate3d(0, 0, 0)',
+    }
+  }
+  return {
+    opacity: '0',
+    pointerEvents: 'none' as const,
+    transform: 'translate3d(0, -100%, 0)',
+  }
+})
+
+/** 隐藏 fixed 条时只保留状态栏占位，收回自定义导航内容区体积 */
+const placeholderHeightPx = computed(() =>
+  props.barVisible ? layout.value.totalHeight : layout.value.statusBarHeight,
+)
 
 const backWidthPx = computed(() =>
   Math.max(layout.value.capsuleHeight + 16, 44),
@@ -188,6 +205,8 @@ function onBack() {
   z-index: 100;
   box-sizing: border-box;
   pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  will-change: opacity, transform;
 
   &--bg-transparent {
     background: transparent;
@@ -205,6 +224,14 @@ function onBack() {
 
   &--overlay {
     box-shadow: none;
+  }
+
+  &--flow {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+    transition: none;
+    will-change: auto;
   }
 
   &--spacer.app-nav-bar--bg-white,

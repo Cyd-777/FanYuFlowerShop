@@ -5,8 +5,20 @@ export interface StaffMember {
   _id: string
   userId: string
   name: string
+  nickName?: string
+  avatarUrl?: string
   role: StaffRole
+  roleLabel?: string
   createdAt?: string
+}
+
+export interface MerchantSelf {
+  userId: string
+  name: string
+  nickName: string
+  avatarUrl: string
+  role: StaffRole
+  roleLabel: string
 }
 
 export type StaffInviteStatus = 'pending' | 'used' | 'expired' | 'invalid'
@@ -32,6 +44,7 @@ interface StaffCloudResult {
   success: boolean
   errMsg?: string
   list?: StaffMember[]
+  self?: MerchantSelf
   invite?: StaffInvitePreview
   token?: string
   code?: string
@@ -69,6 +82,14 @@ export async function listStaff(): Promise<StaffMember[]> {
     throw new Error(result.errMsg || '获取工作人员列表失败')
   }
   return result.list || []
+}
+
+export async function getMerchantSelf(): Promise<MerchantSelf> {
+  const result = await callStaff({ action: 'getSelf' })
+  if (!result.success || !result.self) {
+    throw new Error(result.errMsg || '获取商家资料失败')
+  }
+  return result.self
 }
 
 const STAFF_INVITE_CODE_PATTERN = /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}$/

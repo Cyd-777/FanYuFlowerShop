@@ -12,7 +12,7 @@
       <view v-for="(item, idx) in goodsList" :key="idx" class="goods-card" @click="goDetail(item.id)">
         <image class="goods-img" :src="item.image" mode="aspectFill" />
         <view class="goods-name">{{ item.name }}</view>
-        <view class="goods-price">¥{{ item.price }}</view>
+        <GoodsPriceLabel :price="item.price" root-class="goods-price" />
         <view class="goods-tag" v-if="item.tag">{{ item.tag }}</view>
       </view>
     </view>
@@ -22,6 +22,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { navigateTo } from '@/utils/router'
+import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 
 const themeName = ref('情人节')
 const banners = ref<{ image: string }[]>([])
@@ -43,7 +44,7 @@ function goDetail(id: number) {
   background: #fff; border-radius: 16rpx; overflow: hidden; position: relative;
   .goods-img { width: 100%; height: 340rpx; background: #f0f0f0; }
   .goods-name { padding: 12rpx 16rpx 4rpx; font-size: 26rpx; color: #333; }
-  .goods-price { padding: 0 16rpx 16rpx; font-size: 28rpx; font-weight: 600; color: #e53935; }
+  .goods-price { padding: 0 16rpx 16rpx; color: #e53935; }
   .goods-tag {
     position: absolute; top: 8rpx; left: 8rpx;
     background: #e53935; color: #fff; font-size: 20rpx;

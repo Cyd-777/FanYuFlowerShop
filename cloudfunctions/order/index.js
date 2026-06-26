@@ -180,22 +180,71 @@ async function loadGoodsMap(goodsIds) {
   return map
 }
 
+async function appendWarehouseLedger(entry) {
+  await ensureCollection('warehouse_ledger')
+  await db.collection('warehouse_ledger').add({
+    data: {
+      ...entry,
+      createdAt: db.serverDate(),
+    },
+  })
+}
+
+async function writeOrderOutLedgers(entries, orderId, orderNo) {
+  for (const entry of entries) {
+    await appendWarehouseLedger({
+      type: 'order_out',
+      goodsId: entry.goodsId,
+      goodsName: entry.goodsName || '',
+      unit: entry.unit || '件',
+      delta: entry.count,
+      stockBefore: entry.stockBefore,
+      stockAfter: entry.stockAfter,
+      operatorOpenid: '',
+      operatorUserId: '',
+      operatorName: '',
+      orderId: orderId || '',
+      orderNo: orderNo || '',
+    })
+  }
+}
+
 async function applyStockDeductions(deductionMap) {
   const applied = []
 
   for (const [goodsId, count] of deductionMap.entries()) {
+    const { data: doc } = await db.collection('goods').doc(goodsId).get()
+    if (!doc) {
+      throw new Error(`商品不存在：${goodsId}`)
+    }
+
+    const stockBefore = Number(doc.stock) || 0
+    const stockAfter = stockBefore - count
+    if (stockAfter < 0) {
+      throw new Error(`「${doc.name || goodsId}」库存不足，剩余 ${stockBefore}${doc.unit || ''}`)
+    }
+
     await db.collection('goods').doc(goodsId).update({
       data: {
         stock: _.inc(-count),
         updatedAt: db.serverDate(),
       },
     })
-    applied.push({ goodsId, count })
+
+    applied.push({
+      goodsId,
+      count,
+      stockBefore,
+      stockAfter,
+      goodsName: doc.name || '',
+      unit: doc.unit || '件',
+    })
   }
 
   return applied
 }
 
+/** 下单失败回滚：只恢复库存，不写流水（订单未成立） */
 async function rollbackStock(applied) {
   for (const { goodsId, count } of applied) {
     try {
@@ -204,6 +253,44 @@ async function rollbackStock(applied) {
           stock: _.inc(count),
           updatedAt: db.serverDate(),
         },
+      })
+    } catch (err) {
+      console.error('[order] rollback stock failed:', goodsId, err.message || err)
+    }
+  }
+}
+
+/** 取消订单：恢复库存并记 order_rollback 流水 */
+async function rollbackStockWithLedger(deductions, orderDoc) {
+  for (const { goodsId, count } of deductions) {
+    if (!goodsId || !count) continue
+    try {
+      const { data: doc } = await db.collection('goods').doc(goodsId).get()
+      if (!doc) continue
+
+      const stockBefore = Number(doc.stock) || 0
+      const stockAfter = stockBefore + count
+
+      await db.collection('goods').doc(goodsId).update({
+        data: {
+          stock: _.inc(count),
+          updatedAt: db.serverDate(),
+        },
+      })
+
+      await appendWarehouseLedger({
+        type: 'order_rollback',
+        goodsId,
+        goodsName: doc.name || '',
+        unit: doc.unit || '件',
+        delta: count,
+        stockBefore,
+        stockAfter,
+        operatorOpenid: '',
+        operatorUserId: '',
+        operatorName: '',
+        orderId: orderDoc._id || '',
+        orderNo: orderDoc.orderNo || '',
       })
     } catch (err) {
       console.error('[order] rollback stock failed:', goodsId, err.message || err)
@@ -319,10 +406,10 @@ async function createOrder(event, customerOpenid) {
 
   let applied = []
   try {
-    applied = await applyStockDeductions(deductionMap)
-
     await ensureCollection('orders')
     const orderNo = generateOrderNo()
+    applied = await applyStockDeductions(deductionMap)
+
     const addRes = await db.collection('orders').add({
       data: {
         orderNo,
@@ -333,11 +420,13 @@ async function createOrder(event, customerOpenid) {
         totalAmount: Math.round(totalAmount * 100) / 100,
         remark,
         address,
-        stockDeductions: applied,
+        stockDeductions: applied.map(({ goodsId, count }) => ({ goodsId, count })),
         createdAt: db.serverDate(),
         updatedAt: db.serverDate(),
       },
     })
+
+    await writeOrderOutLedgers(applied, addRes._id, orderNo)
 
     const { data } = await db.collection('orders').doc(addRes._id).get()
     await safeBumpCacheModule('goods')
@@ -426,7 +515,7 @@ async function updateOrderStatus(event, operatorOpenid) {
       throw new Error('当前状态无法取消订单')
     }
 
-    await rollbackStock(resolveStockDeductions(orderDoc))
+    await rollbackStockWithLedger(resolveStockDeductions(orderDoc), orderDoc)
     await db.collection('orders').doc(id).update({
       data: {
         status: 'cancelled',

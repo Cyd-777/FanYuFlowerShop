@@ -80,3 +80,27 @@ export function mergeGoodsListById<T extends Goods & { imageUrl?: string }>(
 
   return changed ? next : current
 }
+
+/** 分页索引合并：保留顺序，追加新 id，同 id 则浅合并更新 */
+export function appendPublicGoodsIndexPage<T extends Goods>(
+  current: T[],
+  incoming: T[],
+): T[] {
+  if (!incoming.length) return current
+  if (!current.length) return [...incoming]
+
+  const indexById = new Map(current.map((item, index) => [item._id, index]))
+  const next = [...current]
+
+  for (const item of incoming) {
+    const idx = indexById.get(item._id)
+    if (idx !== undefined) {
+      next[idx] = { ...next[idx], ...item }
+    } else {
+      indexById.set(item._id, next.length)
+      next.push(item)
+    }
+  }
+
+  return next
+}

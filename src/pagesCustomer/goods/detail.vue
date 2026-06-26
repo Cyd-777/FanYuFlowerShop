@@ -1,25 +1,26 @@
 <template>
   <view class="page-goods-detail">
     <AppNavBar />
-    <view v-if="loading" class="loading-wrap">
-      <nut-skeleton rows="10" animated />
-    </view>
 
-    <template v-else>
-    <view v-if="images.length" class="swiper-wrap">
-      <nut-swiper :init-page="0" :pagination-visible="true" pagination-color="#e53935">
-        <nut-swiper-item v-for="(img, idx) in images" :key="idx">
+    <view v-if="imageFileIds.length || images.length" class="swiper-wrap">
+      <nut-swiper :init-page="0" :pagination-visible="imageFileIds.length > 1" pagination-color="#e53935">
+        <nut-swiper-item v-for="(fileId, idx) in imageFileIds" :key="fileId || idx">
           <GoodsImage
-            :src="img"
-            :cloud-file-id="imageFileIds[idx]"
+            :src="images[idx] || ''"
+            :cloud-file-id="fileId"
             root-class="swiper-img"
           />
         </nut-swiper-item>
       </nut-swiper>
-      <GoodsNewListingBadge :goods="goods" />
+      <GoodsNewListingBadge v-if="goods._id" :goods="goods" />
     </view>
-    <GoodsImage v-else root-class="swiper-img" show-hint />
+    <GoodsImage v-else-if="!loading" root-class="swiper-img" show-hint />
 
+    <view v-if="loading && !goods.name" class="loading-wrap">
+      <nut-skeleton rows="8" animated />
+    </view>
+
+    <template v-else>
     <view class="info-section">
       <view class="name-row">
         <view class="name">{{ goods.name }}</view>
@@ -27,7 +28,7 @@
           {{ favorited ? '♥' : '♡' }}
         </view>
       </view>
-      <view class="price">¥{{ formatPrice(goods.price) }}/{{ goods.unit || '束' }}</view>
+      <view class="price">{{ formatGoodsPriceWithUnit(goods.price, goods.unit) }}</view>
       <view v-if="flowerTags.length" class="flower-tags">
         <text v-for="tag in flowerTags" :key="tag" class="flower-tag">{{ tag }}</text>
       </view>
@@ -36,7 +37,7 @@
         <template v-if="isOffSale">商品已下架</template>
         <template v-else-if="isSoldOut">已售罄，暂时无法购买</template>
         <template v-else>
-          库存 {{ goods.stock }}{{ goods.unit || '束' }}
+          库存 {{ goods.stock }}{{ getGoodsUnitLabel(goods.unit) }}
           <text v-if="cartCount > 0" class="in-cart-tip">（购物车中 {{ cartCount }}）</text>
         </template>
       </view>
@@ -79,6 +80,8 @@ import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
 import WikiEntryPanel from '@/components/wiki/WikiEntryPanel.vue'
 import { useAddToCart } from '@/composables/useAddToCart'
 import { usePageData } from '@/composables/usePageData'
+import { formatGoodsPriceWithUnit } from '@/utils/goodsPrice'
+import { getGoodsUnitLabel } from '@/types/goods'
 import {
   isGoodsOffSale,
   isGoodsPurchasable,

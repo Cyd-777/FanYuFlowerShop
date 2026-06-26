@@ -14,7 +14,7 @@ import {
 import type { FlowerWikiListItem } from '@/types/wiki'
 import type { Goods } from '@/types/goods'
 import type { CustomerUnifiedSearchScope, SearchSuggestion, WikiAnswerSnippet } from '@/types/search'
-import { navigateTo } from '@/utils/router'
+import { navigateTo, navigateToGoodsDetail } from '@/utils/router'
 import type { PageEnsureContext } from '../types'
 import type { PageSetupResult } from '../pageRegistry'
 
@@ -178,8 +178,8 @@ export function setupCustomerSearchPageData(): PageSetupResult & Record<string, 
     return getWikiTabPreview(item, 'care') || getWikiTabPreview(item, 'atlas') || '暂无简介'
   }
 
-  function goGoodsDetail(id: string) {
-    navigateTo({ url: `/pagesCustomer/goods/detail?id=${id}` })
+  function goGoodsDetail(id: string, coverPreview?: string, coverFileId?: string) {
+    void navigateToGoodsDetail(id, coverPreview, coverFileId)
   }
 
   function goWikiDetail(id: string) {

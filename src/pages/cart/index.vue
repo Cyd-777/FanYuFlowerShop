@@ -23,7 +23,7 @@
         <view class="info" @tap="openItem(item)">
           <view class="name">{{ item.name }}</view>
           <view v-if="item.customSummary" class="custom-summary">{{ item.customSummary }}</view>
-          <view class="price">¥{{ formatPrice(item.price) }}/{{ item.unit }}</view>
+          <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="price" />
           <template v-if="item.kind === 'goods'">
             <view class="stock-tip sold-out" v-if="item.stock <= 0">已售罄</view>
             <view class="stock-tip" v-else-if="item.count >= item.stock">已达库存上限</view>
@@ -58,10 +58,11 @@
 
 <script setup lang="ts">
 import { useDidShow } from '@tarojs/taro'
-import { useCartStore } from '@/stores/cart'
 import { useCartPanelActions } from '@/composables/useCartPanelActions'
 import GoodsImage from '@/components/GoodsImage.vue'
+import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
+import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
 
 const { cssVars: navCssVars } = useNavBarLayout()
 const goHomeText = '去逛逛'
@@ -69,7 +70,6 @@ const allCheckText = '全选'
 const totalLabel = '合计:'
 const checkoutText = '结算'
 
-const cartStore = useCartStore()
 const {
   items,
   allChecked,
@@ -87,8 +87,9 @@ const {
   goCheckout,
 } = useCartPanelActions()
 
+useCartTabBadgeSync()
+
 useDidShow(() => {
-  cartStore.refreshBadge()
   void syncCart()
 })
 </script>
@@ -168,7 +169,7 @@ useDidShow(() => {
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .price { font-size: 28rpx; font-weight: 600; color: @color-primary; margin: 8rpx 0; }
+  .price { color: @color-primary; margin: 8rpx 0; }
   .stock-tip { font-size: 22rpx; color: @color-text-tertiary; margin-bottom: 8rpx; }
   .stock-tip.sold-out { color: @color-primary; }
   .qty { display: flex; align-items: center; gap: 16rpx; }
