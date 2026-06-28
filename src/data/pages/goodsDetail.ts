@@ -42,28 +42,39 @@ function collectImageFileIds(data: Goods) {
   return []
 }
 
-function buildPreviewDisplayUrls(
+function buildImageUrls(
   data: Goods,
   fileIds: string[],
   options?: { coverPreview?: string; previous?: string[] },
 ) {
   const coverPreview = options?.coverPreview?.trim() || ''
-  return fileIds.map((fileId, index) => {
-    // 第一张图优先用导航参数中来自列表的小图（0延迟，不白）
-    if (index === 0 && coverPreview) return coverPreview
-    // 其次云函数返回的商品自带链接
-    const fromData = index === 0 ? data.coverImageUrl : data.imageUrls?.[index]
-    if (fromData) return fromData
-    return options?.previous?.[index] || fileId
-  })
+  const previews: string[] = []
+  const standards: string[] = []
+  for (let i = 0; i < fileIds.length; i++) {
+    const id = fileIds[i]
+    // preview：第一张优先导航小图，否则 coverImageUrl 上加 160px 参数（或 API 返回的）
+    let preview = ''
+    if (i === 0 && coverPreview) {
+      preview = coverPreview
+    } else {
+      preview = i === 0 ? (data.previewImageUrl || data.coverImageUrl || '') : (data.previewImageUrls?.[i] || data.imageUrls?.[i] || '')
+    }
+    previews.push(preview)
+    // standard：云函数返回的原始 HTTPS
+    const standard = i === 0 ? (data.coverImageUrl || data.standardImageUrl || '') : (data.imageUrls?.[i] || '')
+    standards.push(standard)
+  }
+  return { previews, standards }
 }
 
 export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unknown> {
   const wikiSectionTitle = '花卉百科'
 
   const goods = ref<Goods>({ ...EMPTY_GOODS })
-  /** 传给 GoodsImage 的 preview 档 URL（非 full） */
+  /** 传给 GoodsImage preview-src 的缩略图 URL（160px） */
   const images = ref<string[]>([])
+  /** 传给 GoodsImage src 的标准图 URL（750px） */
+  const standardImages = ref<string[]>([])
   const imageFileIds = ref<string[]>([])
   const goodsId = ref('')
   const coverPreviewFromNav = ref('')
@@ -80,6 +91,7 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
     : ''
   if (qPreview) {
     images.value = [qPreview]
+    standardImages.value = [qPreview]
     imageFileIds.value = [qFileId || '']
     coverPreviewFromNav.value = qPreview
     coverFileIdFromNav.value = qFileId || ''
@@ -89,10 +101,12 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
   function syncImageSlots(data: Goods, coverPreview?: string) {
     const fileIds = collectImageFileIds(data)
     imageFileIds.value = fileIds
-    images.value = buildPreviewDisplayUrls(data, fileIds, {
+    const { previews, standards } = buildImageUrls(data, fileIds, {
       coverPreview: coverPreview ?? coverPreviewFromNav.value,
       previous: images.value,
     })
+    images.value = previews
+    standardImages.value = standards
   }
 
   function hydrateDetailFromCache(id: string) {
@@ -113,12 +127,15 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
 
     if (fileId && isCloudFileId(fileId)) {
       if (!imageFileIds.value.length) imageFileIds.value = [fileId]
-      images.value = buildPreviewDisplayUrls(goods.value, imageFileIds.value, { coverPreview: preview })
+      const { previews, standards } = buildImageUrls(goods.value, imageFileIds.value, { coverPreview: preview })
+      images.value = previews
+      standardImages.value = standards
       return
     }
 
     if (!imageFileIds.value.length) imageFileIds.value = ['']
     images.value = [preview]
+    standardImages.value = [preview]
   }
 
   function onLoad(query: Record<string, string | undefined>) {
@@ -251,6 +268,7 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
     wikiSectionTitle,
     goods,
     images,
+    standardImages,
     imageFileIds,
     goodsId,
     loading,

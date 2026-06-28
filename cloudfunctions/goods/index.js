@@ -1,4 +1,5 @@
 const cloud = require('wx-server-sdk')
+const sharp = require('sharp')
 const { bumpCacheModule } = require('./common/cacheMeta')
 const { resolveUserByWechatMp } = require('./common/account')
 const {
@@ -8,46 +9,57 @@ const {
 } = require('./common/fileUrls')
 
 /**
- * 通过 imageMogr2 URL 参数下载处理后图片并上传回云储存
- * @param {string} baseUrl - 原图 HTTPS URL（已换链）
- * @param {string} ops - imageMogr2 参数，如 imageMogr2/thumbnail/160x/quality/25/format/webp
- * @param {string} targetCloudPath - 上传路径，如 assets/红玫瑰__preview.webp
+ * 下载原图 → sharp 缩放+转 webp → 上传回云储存
+ * @param {string} baseUrl - 原图 HTTPS URL
+ * @param {number} width - 目标宽度（px）
+ * @param {number} quality - WebP 质量（1-100）
+ * @param {string} targetCloudPath - 上传路径
  * @returns {Promise<string>} 云存储 fileID
  */
-async function downloadProcessedAndUpload(baseUrl, ops, targetCloudPath) {
+async function downloadProcessedAndUpload(baseUrl, width, quality, targetCloudPath) {
   const https = require('https')
   const fs = require('fs')
   const path = require('path')
 
-  const sep = baseUrl.includes('?') ? '&' : '?'
-  const processedUrl = `${baseUrl}${sep}${ops}`
+  const tmpSrc = path.join('/tmp', `src_${Date.now()}`)
+  const tmpOut = path.join('/tmp', `out_${Date.now()}.webp`)
 
-  const tmpPath = path.join('/tmp', `proc_${Date.now()}.webp`)
-
+  // 下载原图
   await new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(tmpPath)
-    https.get(processedUrl, (res) => {
+    const file = fs.createWriteStream(tmpSrc)
+    https.get(baseUrl, (res) => {
       if (res.statusCode !== 200) {
         reject(new Error(`download failed: ${res.statusCode}`))
         return
       }
       res.pipe(file)
-      file.on('finish', () => {
-        file.close()
-        resolve()
-      })
+      file.on('finish', () => { file.close(); resolve() })
     }).on('error', (err) => {
-      fs.unlink(tmpPath, () => {})
+      fs.unlink(tmpSrc, () => {})
       reject(err)
     })
   })
 
+  // sharp 缩放 + webp
+  try {
+    const info = await sharp(tmpSrc)
+      .resize({ width, withoutEnlargement: true })
+      .webp({ quality })
+      .toFile(tmpOut)
+    if (!info?.size || info.size === 0) throw new Error('sharp output empty')
+  } catch (err) {
+    try { fs.unlink(tmpSrc, () => {}) } catch {}
+    try { fs.unlink(tmpOut, () => {}) } catch {}
+    throw err
+  }
+
   const { fileID } = await cloud.uploadFile({
     cloudPath: targetCloudPath,
-    filePath: tmpPath,
+    filePath: tmpOut,
   })
 
-  try { fs.unlink(tmpPath, () => {}) } catch {}
+  try { fs.unlink(tmpSrc, () => {}) } catch {}
+  try { fs.unlink(tmpOut, () => {}) } catch {}
 
   return fileID
 }
@@ -981,6 +993,11 @@ exports.main = async (event) => {
     // 构建云存储路径（去掉 cloud:// 前缀的环境部分）
     const nameBase = rawName.replace(/\.\w+$/, '').replace(/[^\w\u4e00-\u9fff_-]/g, '_')
 
+    const assetType = String(event.type || 'goods').trim()
+    const validTypes = ['goods', 'banner']
+    const type = validTypes.includes(assetType) ? assetType : 'goods'
+    const isBanner = type === 'banner'
+
     try {
       // 换链原图
       const urlMap = {}
@@ -988,30 +1005,34 @@ exports.main = async (event) => {
       const baseUrl = resolved[fileId]
       if (!baseUrl) throw new Error('换链失败')
 
-      // 预览图 160px, q=25, webp
-      const previewPath = `assets/${nameBase}__preview.webp`
-      let previewFileId = ''
-      try {
-        previewFileId = await downloadProcessedAndUpload(
-          baseUrl,
-          'imageMogr2/thumbnail/160x/quality/25/format/webp',
-          previewPath,
-        )
-      } catch (err) {
-        console.warn('[goods] preview generation failed:', err.message || err)
-      }
-
-      // 标准图 750px, q=80, webp
+      // 标准图 750px, q=80, webp（所有类型都需要）
       const standardPath = `assets/${nameBase}__standard.webp`
       let standardFileId = ''
       try {
         standardFileId = await downloadProcessedAndUpload(
           baseUrl,
-          'imageMogr2/thumbnail/750x/quality/80/format/webp',
+          750,
+          80,
           standardPath,
         )
       } catch (err) {
         console.warn('[goods] standard generation failed:', err.message || err)
+      }
+
+      // 预览图 160px, q=25, webp（仅商品图需要，Banner 不需要缩略图）
+      let previewFileId = ''
+      if (!isBanner) {
+        const previewPath = `assets/${nameBase}__preview.webp`
+        try {
+          previewFileId = await downloadProcessedAndUpload(
+            baseUrl,
+            160,
+            25,
+            previewPath,
+          )
+        } catch (err) {
+          console.warn('[goods] preview generation failed:', err.message || err)
+        }
       }
 
       // 记录到 asset_meta
@@ -1020,8 +1041,9 @@ exports.main = async (event) => {
       await db.collection('asset_meta').add({
         data: {
           name: rawName,
+          type,
           originalFileId: fileId,
-          previewFileId: previewFileId || fileId,
+          previewFileId: previewFileId || (isBanner ? '' : fileId),
           standardFileId: standardFileId || fileId,
           createdAt: now,
           updatedAt: now,
@@ -1030,7 +1052,7 @@ exports.main = async (event) => {
 
       return {
         success: true,
-        previewFileId: previewFileId || fileId,
+        previewFileId: previewFileId || (isBanner ? '' : fileId),
         standardFileId: standardFileId || fileId,
         originalFileId: fileId,
       }
@@ -1055,13 +1077,17 @@ exports.main = async (event) => {
 
     await ensureCollection('asset_meta')
 
-    const { data } = await db.collection('asset_meta')
-      .orderBy('createdAt', 'desc')
-      .get()
+    const assetType = String(event.type || '').trim()
+    let query = db.collection('asset_meta')
+    if (assetType === 'goods' || assetType === 'banner') {
+      query = query.where({ type: assetType })
+    }
+    const { data } = await query.orderBy('createdAt', 'desc').get()
 
     const list = (data || []).map((doc) => ({
       _id: doc._id,
       name: doc.name || '',
+      type: doc.type || 'goods',
       originalFileId: doc.originalFileId || '',
       previewFileId: doc.previewFileId || '',
       standardFileId: doc.standardFileId || '',
@@ -1077,11 +1103,45 @@ exports.main = async (event) => {
     const urlMap = allFileIds.length ? await resolveFileUrls(allFileIds) : {}
 
     for (const item of list) {
-      item.previewUrl = urlMap[item.previewFileId] || ''
+      item.previewUrl = item.previewFileId ? (urlMap[item.previewFileId] || '') : ''
       item.standardUrl = urlMap[item.standardFileId] || ''
     }
 
     return { success: true, list }
+  }
+
+  if (action === 'assetCleanup') {
+    const canManage = await isMerchant(operatorOpenid)
+    if (!canManage) {
+      return { success: false, errMsg: '无权限' }
+    }
+
+    await ensureCollection('asset_meta')
+    const { data } = await db.collection('asset_meta').get()
+    const toDelete = []
+    for (const doc of data || []) {
+      if (doc.originalFileId) toDelete.push(doc.originalFileId)
+      if (doc.previewFileId && doc.previewFileId !== doc.originalFileId) toDelete.push(doc.previewFileId)
+      if (doc.standardFileId && doc.standardFileId !== doc.originalFileId) toDelete.push(doc.standardFileId)
+    }
+
+    let deletedCount = 0
+    if (toDelete.length) {
+      try {
+        const batchSize = 50
+        for (let i = 0; i < toDelete.length; i += batchSize) {
+          const batch = toDelete.slice(i, i + batchSize)
+          await cloud.deleteFile({ fileList: batch })
+          deletedCount += batch.length
+        }
+      } catch (err) {
+        console.warn('[goods] cleanup delete files failed:', err.message || err)
+      }
+    }
+
+    await db.collection('asset_meta').drop().catch(() => {})
+
+    return { success: true, deletedFileCount: deletedCount, deletedMetaCount: (data || []).length }
   }
 
   if (action === 'assetRename') {

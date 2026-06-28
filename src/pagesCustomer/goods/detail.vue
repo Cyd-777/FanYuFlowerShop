@@ -6,8 +6,8 @@
       <nut-swiper :init-page="0" :pagination-visible="imageFileIds.length > 1" pagination-color="#e53935">
         <nut-swiper-item v-for="(fileId, idx) in imageFileIds" :key="fileId || idx">
           <GoodsImage
-            :src="images[idx] || ''"
-            :preview-src="idx === 0 ? images[0] : ''"
+            :src="standardImages[idx] || images[idx] || ''"
+            :preview-src="images[idx] || ''"
             :cloud-file-id="fileId"
             root-class="swiper-img"
           />
@@ -92,6 +92,7 @@ import {
 const {
   goods,
   images,
+  standardImages,
   imageFileIds,
   goodsId,
   loading,

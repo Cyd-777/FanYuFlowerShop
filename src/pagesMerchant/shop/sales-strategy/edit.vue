@@ -25,12 +25,21 @@
     <view class="section">
       <view class="section-head">
         <view class="section-title">轮播 Banner</view>
-        <view
-          class="link"
-          :class="{ disabled: banners.length >= maxBanners }"
-          @click="chooseBanner"
-        >
-          + 上传
+        <view class="link-group">
+          <view
+            class="link"
+            :class="{ disabled: banners.length >= maxBanners }"
+            @click="chooseBanner"
+          >
+            + 上传
+          </view>
+          <view
+            class="link"
+            :class="{ disabled: banners.length >= maxBanners }"
+            @click="pickFromAssetBanner"
+          >
+            素材库
+          </view>
         </view>
       </view>
       <view v-if="!banners.length" class="banner-empty">暂无轮播图，点击右上角上传</view>
@@ -83,7 +92,8 @@ import { ref, watch } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
 import { usePageData } from '@/composables/usePageData'
-import { uploadGoodsImage } from '@/services/goods'
+import { uploadAndProcessImage } from '@/services/asset'
+import { readAssetPick, markAssetPickConsumed } from '@/types/assetPick'
 import { resolveCloudImageUrl } from '@/utils/goodsImage'
 import { getShopThemePreset, resolveThemeBannerFileIds } from '@/types/shopTheme'
 import {
@@ -136,6 +146,7 @@ watch(
 
 useDidShow(() => {
   applyPickResult()
+  applyAssetBannerPick()
 })
 
 function applyPickResult() {
@@ -254,9 +265,10 @@ async function chooseBanner() {
     wx.showLoading({ title: '上传中' })
     for (const file of files) {
       if (!file?.tempFilePath) continue
-      const fileID = await uploadGoodsImage(file.tempFilePath)
+      const name = `Banner_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
+      const result = await uploadAndProcessImage(file.tempFilePath, name, 'banner')
       banners.value.push({
-        fileId: fileID,
+        fileId: result.originalFileId,
         preview: file.tempFilePath,
       })
     }
@@ -269,6 +281,25 @@ async function chooseBanner() {
   } finally {
     wx.hideLoading()
   }
+}
+
+function pickFromAssetBanner() {
+  navigateTo({ url: '/pagesMerchant/asset/index?picker=1&type=banner' })
+}
+
+function applyAssetBannerPick() {
+  const pick = readAssetPick()
+  if (!pick || pick.consumed) return
+  markAssetPickConsumed()
+  if (banners.value.length >= MAX_BANNERS) {
+    showToast({ title: `最多 ${MAX_BANNERS} 张 Banner`, icon: 'none' })
+    return
+  }
+  banners.value.push({
+    fileId: pick.originalFileId,
+    preview: pick.originalFileId,
+  })
+  showToast({ title: '已添加 Banner', icon: 'success' })
 }
 
 function parseRateText(text: string): number | null {
@@ -332,6 +363,7 @@ async function save() {
 }
 .section { background: #fff; margin-bottom: 16rpx; padding: 24rpx; box-sizing: border-box; }
 .section-head { display: flex; justify-content: space-between; align-items: center; }
+.link-group { display: flex; gap: 16rpx; }
 .section-title { font-size: 28rpx; font-weight: 600; color: #333; margin-bottom: 16rpx; }
 .link { font-size: 26rpx; color: #e53935; }
 .link.disabled { color: #ccc; }

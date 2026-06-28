@@ -4,6 +4,7 @@ import { showToast } from '@/utils/feedback'
 export interface AssetItem {
   _id: string
   name: string
+  type: string
   originalFileId: string
   previewFileId: string
   standardFileId: string
@@ -32,6 +33,7 @@ interface AssetListResult {
 export async function uploadAndProcessImage(
   localPath: string,
   name: string,
+  type = 'goods',
 ): Promise<{
   originalFileId: string
   previewFileId: string
@@ -47,7 +49,7 @@ export async function uploadAndProcessImage(
 
   const res = await getCloud().callFunction({
     name: 'goods',
-    data: { action: 'processImageUpload', fileId: originalFileId, name },
+    data: { action: 'processImageUpload', fileId: originalFileId, name, type },
     ...(getCloudCallConfig() ? { config: getCloudCallConfig() } : {}),
   })
 
@@ -67,11 +69,14 @@ export async function uploadAndProcessImage(
   }
 }
 
-/** 获取素材列表（含已换链的显示 URL） */
-export async function fetchAssetList(): Promise<AssetItem[]> {
+/** 获取素材列表（含已换链的显示 URL），可选 type 过滤 */
+export async function fetchAssetList(type?: string): Promise<AssetItem[]> {
+  const data: Record<string, string> = { action: 'assetList' }
+  if (type) data.type = type
+
   const res = await getCloud().callFunction({
     name: 'goods',
-    data: { action: 'assetList' },
+    data,
     ...(getCloudCallConfig() ? { config: getCloudCallConfig() } : {}),
   })
 
@@ -108,5 +113,24 @@ export async function deleteAsset(assetId: string): Promise<void> {
   const result = parseCloudResult<{ success: boolean }>(res.result)
   if (!result.success) {
     throw new Error(result.err_msg || '删除失败')
+  }
+}
+
+/** 清理全部素材（云端文件 + 元数据集合），用于重新上传 */
+export async function cleanupAllAssets(): Promise<{ deletedFileCount: number; deletedMetaCount: number }> {
+  const res = await getCloud().callFunction({
+    name: 'goods',
+    data: { action: 'assetCleanup' },
+    ...(getCloudCallConfig() ? { config: getCloudCallConfig() } : {}),
+  })
+
+  const result = parseCloudResult<{ success: boolean; deletedFileCount: number; deletedMetaCount: number }>(res.result)
+  if (!result.success) {
+    throw new Error(result.err_msg || '清理失败')
+  }
+
+  return {
+    deletedFileCount: result.deletedFileCount || 0,
+    deletedMetaCount: result.deletedMetaCount || 0,
   }
 }

@@ -607,7 +607,7 @@ function applyAssetPick(pick: { originalFileId: string; previewFileId: string; s
 }
 
 function pickFromAsset() {
-  navigateTo({ url: '/pagesMerchant/asset/index?picker=1' })
+  navigateTo({ url: '/pagesMerchant/asset/index?picker=1&type=goods' })
 }
 
 function removeImage(index: number) {
