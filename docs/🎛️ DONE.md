@@ -101,6 +101,21 @@
 
 ---
 
+## 加载策略 · 图片加载修复
+
+`2026-06-28` · **用户验收通过**
+
+- **Banner 缓存过期修复** — `isBannerUrlsEntryFresh` 判断移除，SWR 模式（先显示缓存，后台刷新）；`saveThemeConfig`/`setActiveTheme` 返回也带 `bannerImageUrls`；`@error` 重试机制
+- **详情页缓存过期修复** — `buildPreviewDisplayUrls` 优先用商品自带 `coverImageUrl`/`imageUrls`，不再只看 90min 小缓存
+- **GoodsImage 双层叠加** — 预览层（缩略图）始终显示 + 标准层 opacity 淡入，消除升级闪烁
+- **列表仅缩略图** — 列表/卡片只传 `preview-src`，不触发升级，不闪
+- **详情推入秒出** — swiper 容器加 `background-image`（CSS 背景在组件挂载前即可见）
+- **图片预取** — `aggressivePrefetch` 和 `CacheSyncScheduler` 预取 goods detail 后同步 `wx.getImageInfo` 预热图片到微信缓存
+- **WebP 转换** — 云函数内 `sharp` 缩放 + webp（部署安装依赖后生效；原生 JPG 方案亦可接受）
+- **双图叠加（行业标准）** — preview（160px）→ standard（750px），详情秒出不白
+
+---
+
 ## 项目策略参考（16 段）
 
 `2026-06-17`
