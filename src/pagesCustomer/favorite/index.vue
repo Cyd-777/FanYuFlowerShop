@@ -12,7 +12,6 @@
       >
         <view class="goods-img-wrap">
           <GoodsImage
-            :src="item.imageUrl"
             :preview-src="item.previewUrl"
             :cloud-file-id="item.coverImage || item.images?.[0]"
             root-class="goods-img"

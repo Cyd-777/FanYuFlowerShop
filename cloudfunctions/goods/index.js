@@ -1,5 +1,4 @@
 const cloud = require('wx-server-sdk')
-const sharp = require('sharp')
 const { bumpCacheModule } = require('./common/cacheMeta')
 const { resolveUserByWechatMp } = require('./common/account')
 const {
@@ -40,7 +39,13 @@ async function downloadProcessedAndUpload(baseUrl, width, quality, targetCloudPa
     })
   })
 
-  // sharp 缩放 + webp
+  // sharp 缩放 + webp（按需加载，不破坏其他 action）
+  let sharp
+  try {
+    sharp = require('sharp')
+  } catch (e) {
+    throw new Error('sharp 未安装，请先部署依赖：npm install sharp')
+  }
   try {
     const info = await sharp(tmpSrc)
       .resize({ width, withoutEnlargement: true })

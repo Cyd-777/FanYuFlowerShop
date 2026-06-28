@@ -9,6 +9,12 @@ import {
 } from '../syncManifest'
 import type { SyncManifest } from '../types'
 
+/** 预加载一张图片到微信缓存中 */
+function warmImageCache(url: string) {
+  if (!url || !/^https?:\/\//.test(url)) return
+  wx.getImageInfo({ src: url }).catch(() => {/* ignore */})
+}
+
 const IDLE_START_DELAY_MS = 2000
 
 type BackgroundKind = 'wiki-details' | 'goods-recommend-details'
@@ -223,7 +229,22 @@ class CacheSyncScheduler {
     }
     return this.runDetailPrefetch('goods', startGeneration, async (id) => {
       const { getPublicGoodsCached } = await import('@/services/goods')
-      return getPublicGoodsCached(id)
+      const result = await getPublicGoodsCached(id)
+
+      // 预取详情页封面图到微信缓存
+      const goods = result?.data as { coverImage?: string; coverImageUrl?: string } | undefined
+      if (goods?.coverImage || goods?.coverImageUrl) {
+        const { isCloudFileId, resolveCloudImageUrl } = await import('@/utils/goodsImage')
+        if (goods.coverImageUrl) {
+          warmImageCache(goods.coverImageUrl)
+        } else if (goods.coverImage && isCloudFileId(goods.coverImage)) {
+          resolveCloudImageUrl(goods.coverImage).then((url) => {
+            if (url) warmImageCache(url)
+          })
+        }
+      }
+
+      return result
     })
   }
 

@@ -45,13 +45,14 @@
       :init-page="0"
       :pagination-visible="bannerUrls.length > 1"
       pagination-color="#e53935"
+      :loop="false"
+      :autoplay="false"
     >
       <nut-swiper-item v-for="(url, idx) in bannerUrls" :key="idx">
         <image
           class="theme-banner"
           :src="url"
           mode="aspectFill"
-          @error="onBannerError(idx)"
         />
       </nut-swiper-item>
     </nut-swiper>
@@ -104,7 +105,6 @@
       >
         <view class="goods-img-wrap">
           <GoodsImage
-            :src="item.imageUrl"
             :preview-src="item.previewUrl"
             :cloud-file-id="item.coverImage || item.images?.[0]"
             root-class="goods-img"
@@ -172,7 +172,7 @@ const {
   goCategory,
   goDetail,
   browseTouchHandlers,
-  onBannerError,
+  bannerFileIdsList,
 } = usePageData()
 
 useCartTabBadgeSync()

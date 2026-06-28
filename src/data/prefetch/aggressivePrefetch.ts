@@ -42,13 +42,23 @@ export function startAggressivePrefetch() {
 }
 
 async function batchResolveGoodsCoverUrls(
-  list: Array<{ coverImage?: string; images?: string[] }>,
+  list: Array<{ coverImage?: string; images?: string[]; coverImageUrl?: string }>,
 ) {
   const fileIds = list.map(pickCoverFileId).filter(Boolean)
   const needFetch = fileIds.filter((id) => !readCachedImageUrl(id))
+
+  // 预热已有缓存的图片
+  for (const id of fileIds) {
+    const cached = readCachedImageUrl(id)
+    if (cached) wx.getImageInfo({ src: cached }).catch(() => {/* ignore */})
+  }
+
   if (!needFetch.length) return
   try {
-    await resolveCloudImageMap(needFetch)
+    const map = await resolveCloudImageMap(needFetch)
+    map.forEach((url) => {
+      if (url) wx.getImageInfo({ src: url }).catch(() => {/* ignore */})
+    })
   } catch (err) {
     console.warn('[prefetch] batch cover urls failed:', err)
   }

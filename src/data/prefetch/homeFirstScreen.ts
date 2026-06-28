@@ -29,18 +29,28 @@ async function ensureBannerImageUrls(settings: ShopSettings | null, force?: bool
   const fileIds = resolveActiveTheme(decoration).bannerImages.filter(Boolean)
   if (!fileIds.length) return
 
+  // 预热已有缓存的图片
+  for (const id of fileIds) {
+    const cached = readCachedImageUrl(id)
+    if (cached) wx.getImageInfo({ src: cached }).catch(() => {})
+  }
+
   const targets = force
     ? fileIds
     : fileIds.filter((id) => !readCachedImageUrl(id))
   if (!targets.length) return
 
-  await Promise.all(
+  const urls = await Promise.all(
     targets.map((id) =>
       resolveCloudImageUrl(id).catch((err) => {
         console.warn('[prefetch] banner url failed:', id, err)
       }),
     ),
   )
+  // 新换链的也预热
+  for (const url of urls) {
+    if (url) wx.getImageInfo({ src: url }).catch(() => {})
+  }
 }
 
 /**

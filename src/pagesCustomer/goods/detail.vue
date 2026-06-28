@@ -2,7 +2,11 @@
   <view class="page-goods-detail">
     <AppNavBar />
 
-    <view v-if="imageFileIds.length || images.length" class="swiper-wrap">
+    <view
+      v-if="imageFileIds.length || images.length"
+      class="swiper-wrap"
+      :style="heroBgStyle"
+    >
       <nut-swiper :init-page="0" :pagination-visible="imageFileIds.length > 1" pagination-color="#e53935">
         <nut-swiper-item v-for="(fileId, idx) in imageFileIds" :key="fileId || idx">
           <GoodsImage
@@ -102,6 +106,17 @@ const {
 } = usePageData()
 
 const { adding, cartStore, addToCart: addGoodsToCart, buyNow: buyGoodsNow } = useAddToCart()
+
+/** 首张图作为 swiper-wrap 的 background-image，页面推入时即显示，不等组件挂载 */
+const heroBgStyle = computed(() => {
+  const first = images.value[0] || ''
+  if (!first) return {}
+  return {
+    backgroundImage: `url(${first})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  }
+})
 
 const quantity = ref(1)
 const favorited = ref(false)

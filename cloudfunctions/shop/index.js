@@ -200,6 +200,19 @@ function pickSettings(doc) {
   }
 }
 
+async function attachBannerUrls(settings) {
+  const activeThemeId = settings.decoration.activeThemeId
+  const bannerIds = resolveThemeBannerIds(
+    settings.decoration.themeConfigs[activeThemeId],
+  )
+  if (bannerIds.length) {
+    const urls = await resolveBannerUrls(bannerIds)
+    settings.bannerImageUrls = urls
+    settings.bannerImageUrl = urls[0] || ''
+  }
+  return settings
+}
+
 async function getOrCreateShopDoc() {
   await ensureCollection('shops')
 
@@ -249,16 +262,7 @@ exports.main = async (event) => {
   if (action === 'get') {
     try {
       const doc = await getOrCreateShopDoc()
-      const settings = pickSettings(doc)
-      const activeThemeId = settings.decoration.activeThemeId
-      const bannerIds = resolveThemeBannerIds(
-        settings.decoration.themeConfigs[activeThemeId],
-      )
-      if (bannerIds.length) {
-        const urls = await resolveBannerUrls(bannerIds)
-        settings.bannerImageUrls = urls
-        settings.bannerImageUrl = urls[0] || ''
-      }
+      const settings = await attachBannerUrls(pickSettings(doc))
       return {
         success: true,
         settings,
@@ -345,7 +349,7 @@ exports.main = async (event) => {
 
       return {
         success: true,
-        settings: pickSettings({ ...doc, ...next }),
+        settings: await attachBannerUrls(pickSettings({ ...doc, ...next })),
       }
     } catch (err) {
       return {
@@ -377,7 +381,7 @@ exports.main = async (event) => {
 
       return {
         success: true,
-        settings: pickSettings({ ...doc, ...next }),
+        settings: await attachBannerUrls(pickSettings({ ...doc, ...next })),
       }
     } catch (err) {
       return {

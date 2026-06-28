@@ -73,6 +73,11 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
 
   priorityResolveBannerUrls()
 
+  // 预热已有缓存的 Banner 图
+  for (const url of bannerUrls.value) {
+    if (url) wx.getImageInfo({ src: url }).catch(() => {})
+  }
+
   const themePreset = computed(() => resolveActiveTheme(shopStore.settings.decoration))
   const sectionTitle = computed(() =>
     themePreset.value.id === 'default' ? '推荐花束' : `${themePreset.value.name}推荐`,
@@ -81,19 +86,6 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     background: `linear-gradient(135deg, ${themePreset.value.headerGradient[0]}, ${themePreset.value.headerGradient[1]})`,
   }))
   const themeChipBg = computed(() => `${themePreset.value.headerGradient[0]}`)
-
-  /** 单张 Banner 加载失败时重试换链 */
-  function onBannerError(idx: number) {
-    if (idx < 0 || idx >= bannerFileIds.value.length) return
-    const fileId = bannerFileIds.value[idx]
-    if (!fileId) return
-    void resolveCloudImageUrl(fileId).then((url) => {
-      if (!url) return
-      const next = [...bannerUrls.value]
-      next[idx] = url
-      bannerUrls.value = next
-    })
-  }
 
   function syncBannerFromCache() {
     const resolvedList = shopStore.settings.bannerImageUrls?.filter(Boolean)
@@ -108,7 +100,7 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     }
     const fileIds = themePreset.value.bannerImages
     if (!fileIds.length) {
-      bannerUrls.value = []
+      if (!bannerUrls.value.length) bannerUrls.value = []
       return
     }
     const cached = fileIds
@@ -134,7 +126,8 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     }
 
     const urls = await Promise.all(fileIds.map((id) => resolveCloudImageUrl(id)))
-    bannerUrls.value = urls.filter(Boolean)
+    const next = urls.filter(Boolean)
+    if (next.length) bannerUrls.value = next
   }
 
   async function applyThemeUi(forceNetwork = false) {
@@ -353,6 +346,5 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     goCategory,
     goDetail,
     browseTouchHandlers,
-    onBannerError,
   }
 }

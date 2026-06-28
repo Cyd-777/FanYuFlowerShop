@@ -324,6 +324,29 @@ exports.main = async (event) => {
       return { success: true, wiki }
     }
 
+    if (action === 'updateCoverImage') {
+      const canManage = await isMerchant(operatorOpenid)
+      if (!canManage) {
+        return { success: false, errMsg: '无权限修改智库配图' }
+      }
+
+      const wikiId = String(event.wikiId || '').trim()
+      const fileId = String(event.fileId || '').trim()
+      if (!wikiId || !fileId) {
+        return { success: false, errMsg: '缺少参数' }
+      }
+
+      await ensureCollection('flower_wiki')
+      await db.collection('flower_wiki').doc(wikiId).update({
+        data: {
+          coverImage: fileId,
+          updatedAt: db.serverDate(),
+        },
+      })
+
+      return { success: true }
+    }
+
     return { success: false, errMsg: '未知操作' }
   } catch (err) {
     return {

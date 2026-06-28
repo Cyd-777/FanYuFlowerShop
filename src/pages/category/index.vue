@@ -33,10 +33,10 @@
           <view
             id="left-tab-customize"
             class="left-item customize-entry"
-            :class="{ active: activeIdx === -1 }"
+            :class="{ active: activeIdx === -1, 'is-hidden': !customizeVisible }"
             @tap="showCustomizePanel"
           >
-            ✨ 定制花束
+            ✨ 自选花束
           </view>
           <view
             v-for="(tab, idx) in tabs"
@@ -58,7 +58,8 @@
         :bounces="false"
         :show-scrollbar="false"
         :style="rightScrollStyle"
-        @scroll="pullRefresh?.trackContentScroll"
+        @scroll="onRightScroll"
+        @scrolltolower="onRightScrollToLower"
         @touchstart="contentTouchHandlers.onTouchStart"
         @touchmove="contentTouchHandlers.onTouchMove"
         @touchend="contentTouchHandlers.onTouchEnd"
@@ -90,7 +91,6 @@
               >
                 <view class="thumb-wrap">
                   <GoodsImage
-                    :src="item.imageUrl"
                     :preview-src="item.previewUrl"
                     :cloud-file-id="item.coverImage || item.images?.[0]"
                     root-class="thumb"
@@ -114,7 +114,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import Taro from '@tarojs/taro'
 import { usePageData } from '@/composables/usePageData'
 import { mergeTouchHandlers } from '@/composables/usePullRefresh'
@@ -129,6 +129,9 @@ import AppSearchInput from '@/components/AppSearchInput.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { usePageSticky } from '@/composables/usePageSticky'
 import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
+
+const CUSTOMIZE_ENTRY_IDX = -1
+const SCROLL_DIRECTION_EPSILON_PX = 4
 
 const { cssVars: navCssVars } = useNavBarLayout()
 const { navSearchStickyStyle } = usePageSticky()
@@ -171,6 +174,13 @@ const rightScrollStyle = computed(() => ({
   height: `${heightPx.value}px`,
 }))
 
+/** 自选花束卡片的显隐 */
+const customizeVisible = ref(true)
+let lastRightScrollTop = 0
+
+/** 连续滚动：避免重复触发切换 */
+let switchingCategory = false
+
 const {
   keyword,
   searchPlaceholder,
@@ -200,15 +210,37 @@ const contentTouchHandlers = mergeTouchHandlers(
 )
 
 const leftScrollIntoView = computed(() => {
-  if (activeIdx.value === -1) return 'left-tab-customize'
+  if (activeIdx.value === CUSTOMIZE_ENTRY_IDX) return 'left-tab-customize'
   return `left-tab-${activeIdx.value}`
 })
 
+function onRightScroll(event: { detail?: { scrollTop?: number } }) {
+  const scrollTop = event.detail?.scrollTop || 0
+  const delta = scrollTop - lastRightScrollTop
+  lastRightScrollTop = scrollTop
+
+  // 自选花束卡片显隐：上滑隐藏，下滑显示
+  if (Math.abs(delta) > SCROLL_DIRECTION_EPSILON_PX) {
+    customizeVisible.value = delta <= 0
+  }
+
+  // 同步给下拉刷新
+  pullRefresh?.trackContentScroll?.(event)
+}
+
+function onRightScrollToLower() {
+  if (switchingCategory || activeIdx.value < 0) return
+  const nextIdx = activeIdx.value + 1
+  if (nextIdx < tabs.value.length) {
+    switchingCategory = true
+    switchCategory(nextIdx)
+    setTimeout(() => { switchingCategory = false }, 600)
+  }
+}
+
 watch(
   () => tabs.value.length,
-  () => {
-    remeasure()
-  },
+  () => { remeasure() },
 )
 </script>
 
@@ -266,6 +298,16 @@ watch(
 
 .customize-entry {
   font-size: 24rpx;
+  transition: opacity 0.25s ease, max-height 0.25s ease, padding 0.25s ease;
+  overflow: hidden;
+  max-height: 100rpx;
+  &.is-hidden {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    pointer-events: none;
+  }
 }
 
 .right {
