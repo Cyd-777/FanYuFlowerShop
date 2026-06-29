@@ -180,6 +180,16 @@ export function setupGoodsDetailPageData(): PageSetupResult & Record<string, unk
         { onUpdate: (wiki) => { wikiEntry.value = wiki } },
       )
       wikiEntry.value = data
+
+      // 品种关联主图：如果商品暂无图，尝试用智库词条配图
+      if (data?.coverImage && !imageFileIds.value.length) {
+        const fileId = data.coverImage
+        imageFileIds.value = [fileId]
+        const { readCachedImageUrl } = await import('@/utils/goodsImage')
+        const cached = readCachedImageUrl(fileId)
+        images.value = [cached || fileId]
+        standardImages.value = [cached || fileId]
+      }
     } catch {
       wikiEntry.value = null
     }

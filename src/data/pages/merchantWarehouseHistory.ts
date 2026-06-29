@@ -1,25 +1,32 @@
 import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
 import { listWarehouseLedger } from '@/services/warehouse'
-import type { WarehouseLedgerFilter, WarehouseLedgerRecord } from '@/types/stockOut'
+import type { WarehouseLedgerBatch, WarehouseLedgerFilter } from '@/types/stockOut'
 import type { PageEnsureContext } from '../types'
 import type { PageSetupResult } from '../pageRegistry'
 
 export function setupMerchantWarehouseHistoryPageData(): PageSetupResult & Record<string, unknown> {
-  const records = ref<WarehouseLedgerRecord[]>([])
+  const batches = ref<WarehouseLedgerBatch[]>([])
   const loading = ref(false)
+  const errorMsg = ref('')
   const filterType = ref<WarehouseLedgerFilter>('')
 
   async function loadRecords() {
     loading.value = true
+    errorMsg.value = ''
     try {
-      records.value = await listWarehouseLedger({
+      const result = await listWarehouseLedger({
         type: filterType.value,
         limit: 80,
       })
+      batches.value = result || []
+      if (!batches.value.length) {
+        errorMsg.value = '暂无仓储流水记录'
+      }
     } catch (err) {
+      errorMsg.value = err instanceof Error ? err.message : '加载失败'
       showToast({
-        title: err instanceof Error ? err.message : '加载失败',
+        title: errorMsg.value,
         icon: 'none',
       })
     } finally {
@@ -42,8 +49,9 @@ export function setupMerchantWarehouseHistoryPageData(): PageSetupResult & Recor
     ensure,
     refreshOnShow: true,
     pullDownRefresh: false,
-    records,
+    batches,
     loading,
+    errorMsg,
     filterType,
     setFilter,
     reload: loadRecords,

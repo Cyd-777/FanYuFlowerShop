@@ -45,7 +45,11 @@
       <view v-if="!banners.length" class="banner-empty">暂无轮播图，点击右上角上传</view>
       <view v-else class="banner-grid">
         <view v-for="(item, index) in banners" :key="item.fileId" class="banner-thumb">
-          <image class="banner-thumb-img" :src="item.preview" mode="aspectFill" />
+          <GoodsImage
+            :preview-src="item.preview"
+            root-class="banner-thumb-img"
+            mode="aspectFill"
+          />
           <view class="banner-thumb-remove" @click.stop="removeBanner(index)">×</view>
         </view>
       </view>
@@ -95,6 +99,7 @@ import { usePageData } from '@/composables/usePageData'
 import { uploadAndProcessImage } from '@/services/asset'
 import { readAssetPick, markAssetPickConsumed } from '@/types/assetPick'
 import { resolveCloudImageUrl } from '@/utils/goodsImage'
+import GoodsImage from '@/components/GoodsImage.vue'
 import { getShopThemePreset, resolveThemeBannerFileIds } from '@/types/shopTheme'
 import {
   readMerchantGoodsPick,

@@ -190,10 +190,11 @@ async function appendWarehouseLedger(entry) {
   })
 }
 
-async function writeOrderOutLedgers(entries, orderId, orderNo) {
+async function writeOrderOutLedgers(entries, orderId, orderNo, batchId) {
   for (const entry of entries) {
     await appendWarehouseLedger({
       type: 'order_out',
+      batchId,
       goodsId: entry.goodsId,
       goodsName: entry.goodsName || '',
       unit: entry.unit || '件',
@@ -261,7 +262,7 @@ async function rollbackStock(applied) {
 }
 
 /** 取消订单：恢复库存并记 order_rollback 流水 */
-async function rollbackStockWithLedger(deductions, orderDoc) {
+async function rollbackStockWithLedger(deductions, orderDoc, batchId) {
   for (const { goodsId, count } of deductions) {
     if (!goodsId || !count) continue
     try {
@@ -280,6 +281,7 @@ async function rollbackStockWithLedger(deductions, orderDoc) {
 
       await appendWarehouseLedger({
         type: 'order_rollback',
+        batchId,
         goodsId,
         goodsName: doc.name || '',
         unit: doc.unit || '件',
@@ -426,7 +428,9 @@ async function createOrder(event, customerOpenid) {
       },
     })
 
-    await writeOrderOutLedgers(applied, addRes._id, orderNo)
+    const batchId = `order_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
+
+    await writeOrderOutLedgers(applied, addRes._id, orderNo, batchId)
 
     const { data } = await db.collection('orders').doc(addRes._id).get()
     await safeBumpCacheModule('goods')
@@ -515,7 +519,7 @@ async function updateOrderStatus(event, operatorOpenid) {
       throw new Error('当前状态无法取消订单')
     }
 
-    await rollbackStockWithLedger(resolveStockDeductions(orderDoc), orderDoc)
+    await rollbackStockWithLedger(resolveStockDeductions(orderDoc), orderDoc, `rollback_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`)
     await db.collection('orders').doc(id).update({
       data: {
         status: 'cancelled',

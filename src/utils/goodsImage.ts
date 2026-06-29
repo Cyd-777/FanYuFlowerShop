@@ -4,8 +4,20 @@ import Taro from '@tarojs/taro'
 const IMAGE_URL_STORAGE_PREFIX = 'fyfs:img:cache:v2:'
 /** @deprecated 旧版缓存，读取时迁移 */
 const IMAGE_URL_LEGACY_STORAGE_PREFIX = 'fyfs:img:base:v1:'
-/** 云临时链接有效期约 2h，本地缓存存久一些以便离线展示 */
+/** 云临时链接有效期约 2h，本地缓存略短以便后台刷新 */
 const IMAGE_URL_TTL_MS = 100 * 60 * 1000
+/** 全局计数器：每次 App onShow 递增，通知组件刷新过期链接 */
+let appResumeCount = 0
+
+/** 获取当前 App 激活计数（用于组件判断是否需要刷新） */
+export function getAppResumeCount() {
+  return appResumeCount
+}
+
+/** App 切前台时调一次，通知 GoodsImage 重新检查链接有效性 */
+export function notifyAppResume() {
+  appResumeCount += 1
+}
 const FILE_URL_BATCH_SIZE = 50
 
 interface ResolveFileUrlsResult {

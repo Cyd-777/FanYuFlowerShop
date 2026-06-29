@@ -53,6 +53,7 @@
           class="theme-banner"
           :src="url"
           mode="aspectFill"
+          @error="retryBannerUrl(idx)"
         />
       </nut-swiper-item>
     </nut-swiper>
@@ -172,7 +173,7 @@ const {
   goCategory,
   goDetail,
   browseTouchHandlers,
-  bannerFileIdsList,
+  retryBannerUrl,
 } = usePageData()
 
 useCartTabBadgeSync()

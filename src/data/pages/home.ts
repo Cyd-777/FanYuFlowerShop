@@ -87,6 +87,19 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
   }))
   const themeChipBg = computed(() => `${themePreset.value.headerGradient[0]}`)
 
+  /** 单张 Banner 加载失败时用 fileId 重新换链 */
+  function retryBannerUrl(idx: number) {
+    if (idx < 0 || idx >= bannerFileIds.value.length) return
+    const fileId = bannerFileIds.value[idx]
+    if (!fileId) return
+    void resolveCloudImageUrl(fileId).then((url) => {
+      if (!url) return
+      const next = [...bannerUrls.value]
+      next[idx] = url
+      bannerUrls.value = next
+    })
+  }
+
   function syncBannerFromCache() {
     const resolvedList = shopStore.settings.bannerImageUrls?.filter(Boolean)
     if (resolvedList?.length) {
@@ -288,6 +301,13 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     await shopStore.hydrate({ force: ctx.force })
     const forceNetwork = !!ctx.force
     syncBannerFromCache()
+    // 切前台时强制刷新 banner 链接（防止后台长时间挂起后图片过期）
+    if (bannerFileIds.value.length) {
+      void Promise.all(bannerFileIds.value.map((id) => resolveCloudImageUrl(id))).then((urls) => {
+        const next = urls.filter(Boolean)
+        if (next.length) bannerUrls.value = next
+      })
+    }
     await applyThemeUi(forceNetwork)
     await loadCategories({ force: ctx.force })
     void loadRecommend(forceNetwork)
@@ -346,5 +366,6 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
     goCategory,
     goDetail,
     browseTouchHandlers,
+    retryBannerUrl,
   }
 }

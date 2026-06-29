@@ -61,7 +61,6 @@
     <WikiEntryPanel
       v-if="wikiEntry"
       :wiki="wikiEntry"
-      default-tab="care"
       @open-full="goWikiFull"
     />
 

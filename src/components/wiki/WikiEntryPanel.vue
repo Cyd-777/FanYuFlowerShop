@@ -9,41 +9,57 @@
       </view>
     </view>
 
-    <WikiDetailContent v-model="activeTab" :wiki="wiki" compact />
+    <!-- 精简摘要：养护提示 + 花语（两行以内） -->
+    <view class="wiki-entry-summary">
+      <view v-if="careSummary" class="summary-row">
+        <text class="summary-label">🌱 养护</text>
+        <text class="summary-text">{{ careSummary }}</text>
+      </view>
+      <view v-if="languageSummary" class="summary-row">
+        <text class="summary-label">💬 花语</text>
+        <text class="summary-text">{{ languageSummary }}</text>
+      </view>
+    </view>
 
-    <view v-if="showFullLink" class="wiki-entry-foot" @tap="emit('open-full')">
-      <text class="wiki-entry-foot-text">查看完整百科</text>
-      <text class="wiki-entry-foot-arrow">›</text>
+    <view class="wiki-entry-foot" @tap="emit('open-full')">
+      <text class="wiki-entry-foot-text">查看养护指南 ›</text>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import WikiDetailContent from '@/components/wiki/WikiDetailContent.vue'
-import type { FlowerWiki, WikiTab } from '@/types/wiki'
+import { computed } from 'vue'
+import type { FlowerWiki } from '@/types/wiki'
 import { getWikiDisplayName, getWikiSubtitle } from '@/types/wiki'
 
-const props = withDefaults(
-  defineProps<{
-    wiki: FlowerWiki
-    defaultTab?: WikiTab
-    showFullLink?: boolean
-  }>(),
-  {
-    defaultTab: 'care',
-    showFullLink: true,
-  },
-)
+const props = defineProps<{
+  wiki: FlowerWiki
+}>()
 
 const emit = defineEmits<{
   'open-full': []
 }>()
 
-const activeTab = ref<WikiTab>(props.defaultTab)
 const displayName = computed(() => getWikiDisplayName(props.wiki))
 const displaySubtitle = computed(() => getWikiSubtitle(props.wiki))
 const scientificName = computed(() => props.wiki.names?.scientificName?.trim() || '')
+
+/** 养护摘要：取 vaseLife 或浇水和日照的简短描述 */
+const careSummary = computed(() => {
+  const w = props.wiki
+  if (w.careVase?.vaseLife) return `水养期约 ${w.careVase.vaseLife}`
+  if (w.careVase?.waterChange) return w.careVase.waterChange
+  if (w.careSoil?.watering) return w.careSoil.watering
+  return ''
+})
+
+/** 花语摘要 */
+const languageSummary = computed(() => {
+  const w = props.wiki
+  if (w.language?.meaning) return w.language.meaning
+  if (w.language?.giftScenario) return w.language.giftScenario
+  return ''
+})
 </script>
 
 <style lang="less">
@@ -57,61 +73,58 @@ const scientificName = computed(() => props.wiki.names?.scientificName?.trim() |
   display: flex;
   align-items: center;
   gap: 16rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: 16rpx;
 }
 
 .wiki-entry-icon {
-  width: 72rpx;
-  height: 72rpx;
-  line-height: 72rpx;
-  text-align: center;
-  font-size: 36rpx;
-  background: #fff5f5;
-  border-radius: 12rpx;
-  flex-shrink: 0;
+  width: 72rpx; height: 72rpx; line-height: 72rpx; text-align: center;
+  font-size: 36rpx; background: #fff5f5; border-radius: 12rpx; flex-shrink: 0;
 }
 
-.wiki-entry-titles {
+.wiki-entry-titles { flex: 1; min-width: 0; }
+.wiki-entry-name { font-size: 30rpx; font-weight: 600; color: #333; }
+.wiki-entry-sub { margin-top: 4rpx; font-size: 22rpx; color: #e53935; }
+.wiki-entry-scientific { margin-top: 4rpx; font-size: 22rpx; font-style: italic; color: #888; }
+
+.wiki-entry-summary {
+  background: #fafafa;
+  border-radius: 12rpx;
+  padding: 16rpx;
+}
+
+.summary-row {
+  display: flex;
+  gap: 8rpx;
+  font-size: 24rpx;
+  line-height: 1.5;
+  & + & { margin-top: 8rpx; }
+}
+
+.summary-label {
+  color: #888;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.summary-text {
+  color: #555;
   flex: 1;
   min-width: 0;
-}
-
-.wiki-entry-name {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
-}
-
-.wiki-entry-sub {
-  margin-top: 4rpx;
-  font-size: 22rpx;
-  color: #e53935;
-}
-
-.wiki-entry-scientific {
-  margin-top: 4rpx;
-  font-size: 22rpx;
-  font-style: italic;
-  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .wiki-entry-foot {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-top: 20rpx;
-  padding-top: 16rpx;
+  margin-top: 16rpx;
+  padding-top: 14rpx;
   border-top: 1rpx solid #f5e8e8;
 }
 
 .wiki-entry-foot-text {
   font-size: 24rpx;
-  color: #e53935;
-}
-
-.wiki-entry-foot-arrow {
-  margin-left: 4rpx;
-  font-size: 28rpx;
   color: #e53935;
 }
 </style>

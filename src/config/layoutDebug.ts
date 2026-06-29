@@ -8,4 +8,8 @@ export const layoutDebugConfig = {
   showNavLayoutDebugBg: false,
   backBg: '#ffe8e8',
   titleBg: '#e8f0ff',
+  /** 仓储历史时间轴调试底色 */
+  showTimelineDebug: false,
+  timeCellBg: '#fff3e0',
+  axisCellBg: 'rgba(255, 0, 0, 0.12)',
 } as const

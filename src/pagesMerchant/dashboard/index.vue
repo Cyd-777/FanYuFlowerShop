@@ -65,6 +65,10 @@
           <view class="action-icon">⚙️</view>
           <view class="action-label">店铺设置</view>
         </view>
+        <view class="action-item" @click="go('warehouse')">
+          <view class="action-icon">📦</view>
+          <view class="action-label">仓储历史</view>
+        </view>
         <view class="action-item" @click="go('asset')">
           <view class="action-icon">🖼️</view>
           <view class="action-label">素材管理</view>
@@ -164,6 +168,7 @@ function go(page: string) {
     verify: '/pagesMerchant/verify/index',
     staff: '/pagesMerchant/staff/index',
     salesStrategy: '/pagesMerchant/shop/sales-strategy/index',
+    warehouse: '/pagesMerchant/goods/warehouse-history',
     asset: '/pagesMerchant/asset/index',
     setting: '/pagesMerchant/shop/setting',
   }

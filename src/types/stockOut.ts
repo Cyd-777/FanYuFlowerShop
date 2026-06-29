@@ -54,3 +54,22 @@ export interface WarehouseLedgerRecord {
   orderId?: string
   orderNo?: string
 }
+
+/** 按批次归并的仓储记录 */
+export interface WarehouseLedgerBatch {
+  batchId: string
+  type: WarehouseLedgerType
+  createdAt?: string | number
+  operatorName: string
+  operatorAvatar?: string
+  orderId: string
+  orderNo: string
+  items: Array<{
+    goodsId: string
+    goodsName: string
+    unit: string
+    delta: number
+    stockBefore: number
+    stockAfter: number
+  }>
+}

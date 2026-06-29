@@ -106,6 +106,13 @@ function init() {
     if (cached) {
       standardUrl.value = cached
     }
+    // 后台重新解析，如果链接已过期则更新
+    void resolveCloudImageUrl(props.cloudFileId).then((url) => {
+      if (url && url !== standardUrl.value) {
+        standardUrl.value = url
+        if (!s) previewLoaded.value = true
+      }
+    })
   }
 }
 

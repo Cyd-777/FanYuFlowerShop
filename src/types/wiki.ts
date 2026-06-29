@@ -278,7 +278,6 @@ export interface WikiNames {
 }
 
 export const WIKI_TAXONOMY_LABELS: { key: keyof WikiTaxonomy; label: string }[] = [
-  { key: 'kingdom', label: '界' },
   { key: 'phylum', label: '门' },
   { key: 'taxonomicClass', label: '纲' },
   { key: 'order', label: '目' },
@@ -405,6 +404,7 @@ export interface FlowerWiki {
   names?: WikiNames
   /** @deprecated 见 careVase / careSoil */
   careGuide: WikiCareGuide
+  /** 语言/花语 */
   language: WikiLanguage
   keywords: string[]
   aliases: string[]
@@ -471,7 +471,6 @@ export function getWikiSoilBloomDisplay(wiki: FlowerWiki) {
 export function formatWikiTaxonomy(taxonomy?: WikiTaxonomy): string {
   if (!taxonomy) return ''
   return [
-    taxonomy.kingdom,
     taxonomy.phylum,
     taxonomy.taxonomicClass,
     taxonomy.order,
