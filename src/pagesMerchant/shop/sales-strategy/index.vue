@@ -2,7 +2,7 @@
   <view class="page-sales-strategy">
     <AppNavBar />
     <view class="toolbar">
-      <view class="toolbar-title">节日主题</view>
+      <view class="toolbar-title">{{ uiText_c943f5 }}</view>
       <nut-button
         size="small"
         :type="replaceMode ? 'primary' : 'default'"
@@ -11,7 +11,7 @@
         {{ replaceMode ? '取消切换' : '切换主题' }}
       </nut-button>
     </view>
-    <view v-if="replaceMode" class="replace-tip">请选择要启用的节日主题</view>
+    <view v-if="replaceMode" class="replace-tip">{{ uiText_909316 }}</view>
 
     <view class="theme-grid">
       <view
@@ -31,7 +31,7 @@
           <text class="theme-emoji">{{ theme.emoji }}</text>
         </view>
         <view class="theme-name">{{ theme.name }}</view>
-        <view v-if="activeThemeId === theme.id" class="active-badge">使用中</view>
+        <view v-if="activeThemeId === theme.id" class="active-badge">{{ inUseBadgeText }}</view>
         <view v-else-if="theme.promoTag" class="theme-tag">{{ theme.promoTag }}</view>
       </view>
     </view>
@@ -59,6 +59,10 @@ import { navigateTo } from '@/utils/router'
 import { useShopStore } from '@/stores/shop'
 import { SHOP_THEME_PRESETS, resolveActiveTheme } from '@/types/shopTheme'
 import type { ShopThemeId } from '@/types/shopTheme'
+
+const inUseBadgeText = '使用中'
+const uiText_909316 = '请选择要启用的节日主题'
+const uiText_c943f5 = '节日主题'
 
 const shopStore = useShopStore()
 const themes = SHOP_THEME_PRESETS

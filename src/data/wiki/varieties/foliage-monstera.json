@@ -1,0 +1,92 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "叶材，清洁水质"
+  },
+  "careBaseRef": "care.foliage.vase_base",
+  "careVaseOverride": {
+    "summary": "龟背竹叶材；清洁水质，轻拿轻放，避免浸水过久。",
+    "tips": [
+      "避免叶片长期浸水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.foliage",
+      "identity": {
+        "scientificName": "Monstera deliciosa",
+        "namingNote": "大叶配材，热带风、开业与家居常见",
+        "horticulturalGroup": "group.cut_foliage"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "深绿大叶，裂刻明显，热带感强",
+        "scent": "几乎无香",
+        "stem": "以叶材线条与层次为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.tropical_leaf"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "尤加利",
+        "difference": "最常用配叶，与此品种形态或色调不同"
+      },
+      {
+        "name": "雪柳",
+        "difference": "春季线性花材，与此品种形态或色调不同"
+      },
+      {
+        "name": "龟背竹",
+        "difference": "大叶配材，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花配叶",
+      "namingNote": "大叶配材，热带风、开业与家居常见"
+    }
+  },
+  "language": {
+    "meaning": "热带、线条与「很大气的叶」",
+    "paragraphs": [
+      "龟背竹叶适合热带风、现代开业花束——一片叶就能定调，与白色、绿色花材极搭。",
+      "叶缘易损，轻拿；清洁水质，避免叶浸水过久。"
+    ],
+    "occasions": [
+      "开业",
+      "热带风",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "深绿",
+        "meaning": "热带、大气"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "热带",
+        "flowers": [
+          "白玫瑰",
+          "绿康"
+        ],
+        "note": "绿白"
+      }
+    ],
+    "caution": "叶大易损；轻拿轻放。"
+  },
+  "names": {
+    "scientificName": "Monstera deliciosa",
+    "commonNames": [
+      "Monstera",
+      "龟背竹"
+    ]
+  }
+}

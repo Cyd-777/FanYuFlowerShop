@@ -4,23 +4,6 @@ export enum UserRole {
   Merchant = 'merchant',
 }
 
-/** 云数据库集合名 */
-export const CLOUD_COLLECTIONS = {
-  Merchants: 'merchants',
-  Users: 'users',
-  UserAuth: 'user_auth',
-  SmsCodes: 'sms_codes',
-  Shops: 'shops',
-  Goods: 'goods',
-  Categories: 'categories',
-  Orders: 'orders',
-  Customers: 'customers',
-  Addresses: 'addresses',
-  Favorites: 'favorites',
-  PointsLog: 'points_log',
-  Members: 'members',
-} as const
-
 /** 缓存 key */
 export const STORAGE_KEYS = {
   UserId: 'user_id',

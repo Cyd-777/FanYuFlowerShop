@@ -1,6 +1,5 @@
 <template>
-  <view class="page-wiki" :style="navCssVars">
-    <AppFeedbackHost />
+  <view class="page-wiki" :style="navCssVars" id="wiki-page-scroll-body">
     <view
       v-if="statusBarFillStyle"
       class="overlay-status-bar-fill"
@@ -11,7 +10,7 @@
     <view
       id="wiki-scroll-anchor"
       class="wiki-search page-sticky-search"
-      :class="searchStuckClass"
+      :class="[searchStuckClass, { 'search-modal-host-open': searchModalHostOpen }]"
       :style="searchStickyStyle"
     >
       <AppSearchInput
@@ -28,57 +27,26 @@
       />
     </view>
 
-    <view
-      id="wiki-tabs-anchor"
-      class="kind-tabs-wrap page-sticky-tabs"
-      :class="[tabsStuckClass, { 'is-collapsed': isSearchMode }]"
-      :style="tabsStickyStyle"
-    >
-      <scroll-view
-        v-if="!isSearchMode"
-        id="wiki-kind-tabs-scroll"
-        class="kind-tabs-scroll"
-        :scroll-x="true"
-        :style="kindTabsScroll.scrollViewportStyle"
-        :show-scrollbar="false"
-      >
-        <view class="kind-tabs-track" :style="kindTabsScroll.trackStyle">
-          <view id="wiki-kind-tabs-row-top" class="kind-tabs-row">
-            <view
-              v-for="tab in kindTabRows.top"
-              :key="tab.kindName ?? '__all__'"
-              class="kind-tab"
-              :class="{ active: isKindTabActive(tab.kindName) }"
-              @tap="selectKindTab(tab.kindName)"
-            >
-              <text v-if="tab.icon" class="kind-tab-icon">{{ tab.icon }}</text>
-              <text class="kind-tab-label">{{ tab.label }}</text>
-            </view>
-          </view>
-          <view id="wiki-kind-tabs-row-bottom" class="kind-tabs-row">
-            <view
-              v-for="tab in kindTabRows.bottom"
-              :key="tab.kindName ?? '__all__'"
-              class="kind-tab"
-              :class="{ active: isKindTabActive(tab.kindName) }"
-              @tap="selectKindTab(tab.kindName)"
-            >
-              <text v-if="tab.icon" class="kind-tab-icon">{{ tab.icon }}</text>
-              <text class="kind-tab-label">{{ tab.label }}</text>
+    <view class="wiki-body content-pad-x">
+      <view v-if="loading" class="wiki-loading-skeleton">
+        <view v-for="i in 4" :key="i" class="ws-section">
+          <view class="ws-section-head sk-shimmer" />
+          <view class="ws-section-cards">
+            <view v-for="j in 2" :key="j" class="ws-card">
+              <view class="ws-card-icon sk-shimmer" />
+              <view class="ws-card-line sk-shimmer" />
+              <view class="ws-card-line ws-card-line--short sk-shimmer" />
             </view>
           </view>
         </view>
-      </scroll-view>
-    </view>
-
-    <view class="wiki-body content-pad-x">
-      <view v-if="loading" class="loading-text">{{ loadingText }}</view>
+      </view>
 
       <template v-else>
         <view v-if="wikiAnswer" class="wiki-answer-wrap">
           <WikiAnswerCard :answer="wikiAnswer" />
         </view>
 
+        <!-- 搜索模式：平铺结果 -->
         <view v-if="isSearchMode" class="card-flow">
           <view
             v-for="item in wikiList"
@@ -87,50 +55,72 @@
             @tap="goDetail(item._id)"
           >
             <view class="wiki-kind-card-icon">{{ item.icon }}</view>
-            <view class="wiki-kind-card-name">{{ displayName(item) }}</view>
-            <view v-if="displaySubtitle(item)" class="wiki-kind-card-sub">{{ displaySubtitle(item) }}</view>
+            <view class="wiki-kind-card-name">{{ displaySearchName(item) }}</view>
+            <WikiKindCardTags :item="item" />
             <view class="wiki-kind-card-preview">{{ cardPreview(item) }}</view>
           </view>
           <view v-if="!wikiList.length && !wikiAnswer" class="empty-text">{{ emptyText }}</view>
         </view>
 
-        <view v-else class="card-flow">
+        <!-- 浏览模式：按种类折叠区 -->
+        <view v-else class="browse-sections">
           <view
-            v-for="item in browseFlow"
-            :key="item._id"
-            class="wiki-kind-card surface-card"
-            :class="{ 'is-kind': isWikiKindEntry(item) }"
-            @tap="goDetail(item._id)"
+            v-for="group in groupedBrowseFlow"
+            :key="group.kindName"
+            class="kind-section"
           >
-            <view class="wiki-kind-card-icon">{{ item.icon }}</view>
-            <view class="wiki-kind-card-name">{{ displayName(item) }}</view>
-            <view v-if="item.varietyName && displaySubtitle(item)" class="wiki-kind-card-sub">
-              {{ displaySubtitle(item) }}
+            <view class="kind-section-head" @tap="toggleKindCollapse(group.kindName)">
+              <text class="kind-section-icon">{{ group.icon }}</text>
+              <text class="kind-section-label">{{ group.kindName }}</text>
+              <AppIcon
+                class="kind-section-toggle"
+                :type="collapsedKinds.has(group.kindName) ? '三角右' : '三角下'"
+                :size="20"
+              />
             </view>
-            <view class="wiki-kind-card-preview">{{ cardPreview(item) }}</view>
+            <view v-show="!collapsedKinds.has(group.kindName)" class="kind-section-body card-flow">
+              <view
+                v-for="item in group.items"
+                :key="item._id"
+                class="wiki-kind-card surface-card"
+                :class="{ 'is-kind': isWikiKindEntry(item) }"
+                @tap="goDetail(item._id)"
+              >
+                <view class="wiki-kind-card-icon">{{ item.icon }}</view>
+                <view class="wiki-kind-card-name">{{ displayName(item) }}</view>
+                <view v-if="displaySubtitle(item)" class="wiki-kind-card-sub">
+                  {{ displaySubtitle(item) }}
+                </view>
+                <WikiKindCardTags :item="item" />
+                <view class="wiki-kind-card-preview">{{ cardPreview(item) }}</view>
+              </view>
+            </view>
           </view>
-          <view v-if="!browseFlow.length" class="empty-text">{{ filterEmptyText }}</view>
+          <view v-if="!groupedBrowseFlow.length" class="empty-text">{{ filterEmptyText }}</view>
         </view>
       </template>
     </view>
+    <ScrollListTailSpacer
+      content-selector="#wiki-page-scroll-body"
+      tab-bar
+      :watch-key="`${loading}-${wikiList.length}-${groupedBrowseFlow.length}-${isSearchMode}`"
+    />
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import AppNavBar from '@/components/AppNavBar.vue'
-import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import AppSearchInput from '@/components/AppSearchInput.vue'
+import AppIcon from '@/components/AppIcon.vue'
 import WikiAnswerCard from '@/components/WikiAnswerCard.vue'
+import WikiKindCardTags from '@/components/wiki/WikiKindCardTags.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { useStickyStack } from '@/composables/useStickyStack'
 import { usePageData } from '@/composables/usePageData'
-import {
-  estimateTagRowsTrackWidthPx,
-  useScrollXTrack,
-} from '@/composables/useScrollXTrack'
-import { splitTwoRowsColumnMajor } from '@/utils/splitTwoRowsColumnMajor'
 import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
+import { buildWikiGroupedBrowseFlow } from '@/types/wiki'
+import { searchModalHostOpen } from '@/utils/searchModalHost'
 
 const { cssVars: navCssVars } = useNavBarLayout()
 
@@ -139,24 +129,21 @@ useCartTabBadgeSync()
 const {
   searchPlaceholder,
   suggestTitle,
-  loadingText,
   emptyText,
-  kindTabItems,
-  selectedKindName,
   isSearchMode,
   keyword,
   loading,
   wikiList,
+  wikiCatalog,
   wikiAnswer,
-  browseFlow,
   filterEmptyText,
   displayName,
+  displaySearchName,
   displaySubtitle,
   cardPreview,
   wikiSuggest,
   onSearchKeyword,
   onPickSuggestion,
-  selectKindTab,
   goDetail,
   isWikiKindEntry,
 } = usePageData()
@@ -170,42 +157,29 @@ const stickyStack = useStickyStack({
       selector: '#wiki-scroll-anchor',
       reserveCapsule: true,
     },
-    {
-      id: 'tabs',
-      selector: '#wiki-tabs-anchor',
-    },
   ],
-  remeasureDeps: [isSearchMode, kindTabItems],
+  remeasureDeps: [isSearchMode],
 })
 
 const statusBarFillStyle = stickyStack.statusBarFillStyle
 const searchStickyStyle = stickyStack.stickyStyle('search')
-const tabsStickyStyle = stickyStack.stickyStyle('tabs')
 const searchStuckClass = stickyStack.stuckClass('search')
-const tabsStuckClass = stickyStack.stuckClass('tabs')
 const searchTriggerStyle = stickyStack.triggerStyle('search')
 
-function isKindTabActive(kindName: string | null) {
-  if (kindName == null) return selectedKindName.value == null
-  return selectedKindName.value === kindName
+/** 按种类名分组浏览流数据 */
+const groupedBrowseFlow = computed(() =>
+  isSearchMode.value ? [] : buildWikiGroupedBrowseFlow(wikiCatalog.value),
+)
+
+/** 折叠状态（默认全部展开） */
+const collapsedKinds = ref(new Set<string>())
+
+function toggleKindCollapse(kindName: string) {
+  const next = new Set(collapsedKinds.value)
+  if (next.has(kindName)) next.delete(kindName)
+  else next.add(kindName)
+  collapsedKinds.value = next
 }
-
-const kindTabRows = computed(() => splitTwoRowsColumnMajor(kindTabItems))
-
-const kindTabsScroll = useScrollXTrack({
-  heightRpx: 176,
-  measure: {
-    rowSelectors: ['#wiki-kind-tabs-row-top', '#wiki-kind-tabs-row-bottom'],
-    horizontalPaddingRpx: 48,
-  },
-  estimateTrackWidthPx: () =>
-    estimateTagRowsTrackWidthPx(
-      [kindTabRows.value.top, kindTabRows.value.bottom],
-      16,
-      48,
-    ),
-  watchSources: [kindTabItems],
-})
 </script>
 
 <style lang="less">
@@ -233,71 +207,6 @@ const kindTabsScroll = useScrollXTrack({
   }
 }
 
-.kind-tabs-wrap {
-  background: @color-bg-page;
-  width: 100%;
-  overflow: hidden;
-
-  &.is-collapsed {
-    height: 0;
-    overflow: hidden;
-  }
-}
-
-.kind-tabs-scroll {
-  box-sizing: border-box;
-}
-
-.kind-tabs-track {
-  box-sizing: border-box;
-  padding: 12rpx 24rpx 16rpx;
-}
-
-.kind-tabs-row {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 16rpx;
-  width: fit-content;
-
-  & + & {
-    margin-top: 16rpx;
-  }
-}
-
-.kind-tab {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8rpx;
-  padding: 12rpx 20rpx;
-  background: @color-bg-card;
-  border: 2rpx solid @color-border;
-  border-radius: @radius-pill;
-  box-sizing: border-box;
-  color: @color-text-secondary;
-  white-space: nowrap;
-
-  &.active {
-    background: @color-primary-light;
-    border-color: @color-primary-border;
-    color: @color-primary;
-    font-weight: 600;
-  }
-}
-
-.kind-tab-icon {
-  font-size: 28rpx;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.kind-tab-label {
-  font-size: 26rpx;
-  line-height: 1.2;
-}
-
 .loading-text,
 .empty-text {
   padding: 80rpx 32rpx;
@@ -322,6 +231,108 @@ const kindTabsScroll = useScrollXTrack({
   box-sizing: border-box;
 }
 
+/* ─── 加载骨架 ─── */
+@keyframes ws-shimmer-kf {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.sk-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 0%, #e6e6e6 20%, #f5f5f5 40%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: ws-shimmer-kf 1.4s ease-in-out infinite;
+}
+
+.wiki-loading-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  padding: 0 24rpx;
+}
+.ws-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.ws-section-head {
+  height: 72rpx;
+  border-radius: 16rpx;
+}
+.ws-section-cards {
+  display: flex;
+  gap: 16rpx;
+}
+.ws-card {
+  width: calc((100% - 16rpx) / 2);
+  padding: 20rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.ws-card-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 12rpx;
+}
+.ws-card-line {
+  height: 24rpx;
+  margin-top: 12rpx;
+  border-radius: 6rpx;
+  width: 60%;
+}
+.ws-card-line--short {
+  width: 36%;
+}
+
+/* ─── 折叠区 ─── */
+.browse-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.kind-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 22rpx 24rpx;
+  margin-bottom: 12rpx;
+  background: #fff5f5;
+  border-radius: 16rpx;
+  border: 2rpx solid #fce4ec;
+  cursor: pointer;
+  user-select: none;
+}
+
+.kind-section-head:active {
+  opacity: 0.7;
+}
+
+.kind-section-icon {
+  font-size: 32rpx;
+  flex-shrink: 0;
+}
+
+.kind-section-label {
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: @color-text-primary;
+}
+
+.kind-section-toggle {
+  flex-shrink: 0;
+  opacity: 0.55;
+}
+
+.kind-section-body {
+  padding: 0 0 8rpx;
+}
+
+/* ─── 词条卡片 ─── */
 .wiki-kind-card {
   width: calc((100% - 16rpx) / 2);
   min-width: 0;

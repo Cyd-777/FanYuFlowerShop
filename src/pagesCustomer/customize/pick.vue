@@ -1,5 +1,5 @@
 <template>
-  <view class="page-customize-pick">
+  <view class="page-customize-pick" id="customize-pick-scroll-body">
     <AppNavBar />
     <view class="tip">{{ pickTip }}</view>
     <GoodsCardSkeleton v-if="loading" variant="row" :count="5" />
@@ -21,6 +21,12 @@
     </view>
     <view v-else class="empty">{{ emptyTip }}</view>
 
+    <ScrollListTailSpacer
+      content-selector="#customize-pick-scroll-body"
+      :bottom-inset-px="actionBarInsetPx"
+      :watch-key="`${loading}-${goodsList.length}-${selectedIds.length}`"
+    />
+
     <view class="action-bar">
       <view class="count">已选 {{ selectedIds.length }} 件</view>
       <nut-button type="primary" :disabled="!selectedIds.length" @click="confirmPick">
@@ -35,6 +41,9 @@ import { usePageData } from '@/composables/usePageData'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
+import { scrollTailActionBarInsetPx } from '@/utils/scrollListTailSpacer'
+
+const actionBarInsetPx = scrollTailActionBarInsetPx()
 
 const {
   pickTip,
@@ -49,7 +58,7 @@ const {
 </script>
 
 <style lang="less">
-.page-customize-pick { min-height: 100vh; background: #f8f8f8; padding-bottom: 120rpx; }
+.page-customize-pick { min-height: 100vh; background: #f8f8f8; }
 .tip { padding: 20rpx 24rpx; font-size: 24rpx; color: #666; }
 .goods-list { padding: 0 16rpx; }
 .goods-item {

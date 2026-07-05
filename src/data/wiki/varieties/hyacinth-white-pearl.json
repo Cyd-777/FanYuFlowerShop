@@ -1,0 +1,109 @@
+{
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "白色风信子",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.hyacinth.vase_base",
+  "careVaseOverride": {
+    "summary": "白珍珠白色风信子；浅水冷凉，勤换水。",
+    "tips": [
+      "勤换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.hyacinth",
+      "identity": {
+        "scientificName": "Hyacinthus 'White Pearl'",
+        "namingNote": "白色风信子，洁净穗形",
+        "horticulturalGroup": "group.hyacinth_cut",
+        "breeder": "荷兰球根花卉育种",
+        "introducedYear": "球根切花长期商用品种"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "纯白，穗形，密集",
+        "scent": "浓香",
+        "stem": "穗形花序，整体紧凑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "穗长 8 至 15 cm"
+      }
+    },
+    "featureRefs": [
+      "trait.strong_scent",
+      "trait.pure_white"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "蓝星",
+        "difference": "蓝色风信子，与此品种形态或色调不同"
+      },
+      {
+        "name": "粉珍珠",
+        "difference": "粉色风信子，与此品种形态或色调不同"
+      },
+      {
+        "name": "白珍珠",
+        "difference": "白色风信子，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花风信子",
+      "namingNote": "白色风信子，洁净穗形"
+    }
+  },
+  "language": {
+    "meaning": "纯洁、春日与「很干净的香」",
+    "paragraphs": [
+      "白珍珠适合婚礼配花、家居——白穗形比百合更「春」，比玫瑰更「甜香」。",
+      "浅水、冷凉；单品种插瓶也足够。"
+    ],
+    "occasions": [
+      "婚礼",
+      "春日",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "纯白",
+        "meaning": "纯洁、春日"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼",
+        "flowers": [
+          "蓝星",
+          "粉珍珠"
+        ],
+        "note": "白蓝粉"
+      }
+    ],
+    "caution": "浓香；花粉敏感者慎选。"
+  },
+  "names": {
+    "scientificName": "Hyacinthus 'White Pearl'",
+    "commonNames": [
+      "White Pearl",
+      "白珍珠"
+    ]
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 10—14 天",
+    "vaseNote": "粉色满天星",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.gypsophila.vase_base",
+  "careVaseOverride": {
+    "summary": "粉满天星；勤换水，通风，可制干花。",
+    "tips": [
+      "避直射防褪色"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.gypsophila",
+      "identity": {
+        "scientificName": "Gypsophila 'Pink'",
+        "namingNote": "染色调粉色满天星，少女系配花",
+        "horticulturalGroup": "group.gypsophila_cut",
+        "breeder": "厄瓜多尔切花满天星培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "厄瓜多尔",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "粉色雾状，整体轻盈",
+        "scent": "几乎无香",
+        "stem": "细枝多花，适合填充层次",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "细碎小花"
+      }
+    },
+    "featureRefs": [
+      "trait.soft_pink"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "仙女",
+        "difference": "标准白色满天星，与此品种形态或色调不同"
+      },
+      {
+        "name": "百万星",
+        "difference": "密集小星点满天星，与此品种形态或色调不同"
+      },
+      {
+        "name": "粉满天星",
+        "difference": "染色调粉色满天星，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花满天星",
+      "namingNote": "染色调粉色满天星，少女系配花"
+    }
+  },
+  "language": {
+    "meaning": "少女、梦幻与「粉色的雾」",
+    "paragraphs": [
+      "粉满天星适合生日、送女生、少女系花束——比白满天星更「甜」。",
+      "多为染色处理，勤换水；可制干花保留颜色。"
+    ],
+    "occasions": [
+      "生日",
+      "送女生",
+      "配花"
+    ],
+    "colorMeanings": [
+      {
+        "color": "粉",
+        "meaning": "少女、梦幻"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "少女",
+        "flowers": [
+          "粉钻",
+          "玫瑰"
+        ],
+        "note": "粉系"
+      }
+    ],
+    "caution": "染色品种勤换水；避阳光直射褪色。"
+  },
+  "names": {
+    "scientificName": "Gypsophila 'Pink'",
+    "commonNames": [
+      "Pink",
+      "粉满天星"
+    ]
+  }
+}

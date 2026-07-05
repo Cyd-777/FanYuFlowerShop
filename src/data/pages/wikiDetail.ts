@@ -1,11 +1,13 @@
 import { showToast } from '@/utils/feedback'
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { hasCacheEntry } from '@/utils/cache'
 import { wikiRepository } from '@/data/repository'
 import { wikiPublicDetailKey } from '@/data/cacheKeys'
-import { useWikiAnchorScroll } from '@/composables/useWikiAnchorScroll'
+import { useNavBarLayout } from '@/composables/useNavBarLayout'
+import { useWikiFloatingPanel } from '@/composables/useWikiFloatingPanel'
+import { useWikiDetailScrollLink } from '@/composables/useWikiDetailScrollLink'
 import type { FlowerWiki, WikiTab } from '@/types/wiki'
-import { getWikiDisplayName, getWikiSubtitle, WIKI_TAB_CONFIG } from '@/types/wiki'
+import { getWikiDisplayName, getWikiSubtitle } from '@/types/wiki'
 import type { PageEnsureContext } from '../types'
 import type { PageSetupResult } from '../pageRegistry'
 
@@ -13,31 +15,42 @@ export function setupWikiDetailPageData(): PageSetupResult & Record<string, unkn
   const emptySectionText = '暂无相关内容'
   const notFoundText = '未找到百科内容'
 
-  const tabs = WIKI_TAB_CONFIG.map(({ key, label }) => ({ key, label }))
-
   const wikiId = ref('')
-  const activeTab = ref<WikiTab>('atlas')
   const loading = ref(false)
   const wiki = ref<FlowerWiki | null>(null)
+  const { layout } = useNavBarLayout()
 
-  const { scrollIntoView, highlightAnchor, queueAnchor, flushAnchor, clearScrollTarget } =
-    useWikiAnchorScroll({
-      setActiveTab: (tab) => {
-        activeTab.value = tab
-      },
-      isContentReady: () => !loading.value && !!wiki.value,
-    })
+  const floatingPanel = useWikiFloatingPanel({
+    heroSelector: '#wiki-detail-hero',
+    innerScrollSelector: '#wiki-panel-scroll',
+    contentWatchKey: () => (wiki.value ? wiki.value._id : ''),
+    isContentReady: () => !loading.value && !!wiki.value,
+    navTotalHeight: () => layout.value.totalHeight,
+    /** 进入页时面板可见高度 ≈ 55vh；改此值即可调初始「弹出多少」 */
+    collapsedPeekRatio: 0.55,
+  })
+
+  const scrollLink = useWikiDetailScrollLink({
+    scrollSelector: '#wiki-panel-scroll',
+    bodySelector: '#wiki-panel-scroll-body',
+    contentWatchKey: () => (wiki.value ? wiki.value._id : ''),
+    isContentReady: () => !loading.value && !!wiki.value,
+    ensurePanelExpanded: floatingPanel.ensureExpanded,
+    onInnerScroll: floatingPanel.onPanelBodyScroll,
+  })
 
   const displayName = computed(() => (wiki.value ? getWikiDisplayName(wiki.value) : ''))
   const displaySubtitle = computed(() => (wiki.value ? getWikiSubtitle(wiki.value) : ''))
 
   function onLoad(query: Record<string, string | undefined>) {
     wikiId.value = query.id || ''
-    const tab = query.tab
+    const tab = query.tab as WikiTab | undefined
     if (tab === 'care' || tab === 'language' || tab === 'atlas') {
-      activeTab.value = tab
+      scrollLink.queueTab(tab)
     }
-    queueAnchor(query.anchor)
+    if (query.anchor) {
+      scrollLink.queueAnchor(query.anchor)
+    }
   }
 
   async function loadWiki(force = false) {
@@ -52,7 +65,7 @@ export function setupWikiDetailPageData(): PageSetupResult & Record<string, unkn
         },
       })
       wiki.value = data
-      wx.setNavigationBarTitle({ title: displayName.value || '花卉百科' })
+      wx.setNavigationBarTitle({ title: getWikiDisplayName(data) || '花卉百科' })
     } catch (err) {
       wiki.value = null
       showToast({
@@ -65,17 +78,23 @@ export function setupWikiDetailPageData(): PageSetupResult & Record<string, unkn
   }
 
   watch([wiki, loading], () => {
-    void flushAnchor()
+    void scrollLink.flushPendingScroll()
   })
 
-  function switchTab(tab: WikiTab) {
-    activeTab.value = tab
-    clearScrollTarget()
-  }
+  watch(loading, (isLoading) => {
+    if (!isLoading && wiki.value) {
+      void nextTick(() => remeasure())
+    }
+  })
 
   async function ensure(ctx: PageEnsureContext) {
     if (!wikiId.value) return
     await loadWiki(!!ctx.force)
+  }
+
+  function remeasure() {
+    floatingPanel.remeasure()
+    scrollLink.remeasure()
   }
 
   return {
@@ -85,15 +104,13 @@ export function setupWikiDetailPageData(): PageSetupResult & Record<string, unkn
     pullDownRefresh: false,
     emptySectionText,
     notFoundText,
-    tabs,
     wikiId,
-    activeTab,
     loading,
     wiki,
     displayName,
     displaySubtitle,
-    scrollIntoView,
-    highlightAnchor,
-    switchTab,
+    remeasure,
+    ...floatingPanel,
+    ...scrollLink,
   }
 }

@@ -2,13 +2,14 @@
 
 export const CACHE_KEYS = {
   shopSettings: 'shop:settings',
-  categoriesPublic: 'categories:public',
-  categoriesMerchant: 'categories:merchant',
+  categoriesPublic: 'categories:public:v3',
+  categoriesMerchant: 'categories:merchant:v3',
   /** v3：强制刷新无 coverImageUrl 的旧缓存 */
   goodsRecommend: 'goods:public:recommend:v3',
   goodsPublicAll: 'goods:public:all:v3',
   goodsMerchantAll: 'goods:merchant:all',
   wikiList: 'wiki:public:list',
+  wikiMerchantList: 'wiki:merchant:list',
   flowerCatalog: 'flower:catalog:list',
 } as const
 
@@ -17,9 +18,9 @@ export function goodsPublicDetailKey(id: string) {
 }
 
 export function wikiPublicDetailKey(id: string) {
-  return `wiki:public:detail:${id}`
+  return `wiki:public:detail:v3:${id}`
 }
 
 export function wikiPublicMatchKey(kindId = '', varietyId = '') {
-  return `wiki:public:match:${kindId || '_'}:${varietyId || '_'}`
+  return `wiki:public:match:v2:${kindId || '_'}:${varietyId || '_'}`
 }

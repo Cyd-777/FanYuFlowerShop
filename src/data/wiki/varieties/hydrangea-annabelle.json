@@ -1,0 +1,119 @@
+{
+  "bloom": {
+    "vase": "约 5—10 天",
+    "vaseNote": "圆锥绣球，野趣自然风",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.hydrangea.vase_base",
+  "careVaseOverride": {
+    "summary": "贝拉安娜为圆锥绣球；勤换水，轻拿轻放，可喷雾保湿。",
+    "tips": [
+      "佛焰苞/花序易损，避免挤压",
+      "勤换水保证吸水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.hydrangea",
+      "identity": {
+        "scientificName": "Hydrangea paniculata 'Annabelle'",
+        "namingNote": "圆锥绣球切花，白绿色、野趣自然风代表",
+        "horticulturalGroup": "group.hydrangea_mophead",
+        "breeder": "欧美园艺绣球培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "白转绿，圆锥花序，线条比大花绣球更野趣",
+        "scent": "几乎无香",
+        "stem": "茎干粗壮，吸水需求大",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "15 至 25"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white",
+      "trait.spray_ball"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "大花绣球",
+        "difference": "团状圆球，而非圆锥花序"
+      },
+      {
+        "name": "无尽夏",
+        "difference": "蓝粉可调色，而非白绿圆锥"
+      },
+      {
+        "name": "贝拉安娜",
+        "difference": "白绿圆锥、野趣，是自然风绣球代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "大花绣球",
+      "namingNote": "圆锥绣球切花，白绿色、野趣自然风代表"
+    }
+  },
+  "language": {
+    "meaning": "自然、野趣与「不刻意的美」",
+    "paragraphs": [
+      "贝拉安娜更像从花园剪下来的——适合自然风、野趣、田园系花束，与雏菊、蕾丝花、尤加利极搭。",
+      "白绿色调适合婚礼、日常家居；比蓝紫绣球更「轻」，不厚重。"
+    ],
+    "occasions": [
+      "自然风花束",
+      "婚礼",
+      "日常家居",
+      "野趣"
+    ],
+    "colorMeanings": [
+      {
+        "color": "白/绿",
+        "meaning": "自然、野趣、清新"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "野趣",
+        "flowers": [
+          "小雏菊",
+          "蕾丝花"
+        ],
+        "note": "白绿轻盈"
+      },
+      {
+        "style": "婚礼",
+        "flowers": [
+          "尤加利叶",
+          "白玫瑰"
+        ],
+        "note": "自然高级"
+      }
+    ],
+    "caution": "圆锥花序易损，轻拿轻放；保持吸水。"
+  },
+  "names": {
+    "scientificName": "Hydrangea paniculata 'Annabelle'",
+    "commonNames": [
+      "Annabelle",
+      "贝拉安娜"
+    ]
+  }
+}

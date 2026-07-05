@@ -7,7 +7,7 @@ const path = require('path')
 
 const root = path.join(__dirname, '../cloudfunctions')
 const srcDir = path.join(root, 'common')
-const commonFiles = ['cacheMeta.js', 'fileUrls.js', 'accessControl.js', 'authIdentifier.js', 'account.js', 'db.js', 'flowerSeed.js', 'ensureFlowerCatalog.js', 'wikiExcluded.js']
+const commonFiles = ['cacheMeta.js', 'fileUrls.js', 'accessControl.js', 'authIdentifier.js', 'account.js', 'db.js', 'flowerCatalogCut.js', 'flowerCatalogMerge.js', 'flowerSeed.js', 'ensureFlowerCatalog.js', 'wikiExcluded.js', 'wikiKindMatch.js']
 const targets = [
   'goods',
   'category',

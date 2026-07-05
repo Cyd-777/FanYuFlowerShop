@@ -15,10 +15,10 @@
       {{ signedToday ? '今日已签到' : '签到 +5 积分' }}
     </nut-button>
     <view class="rules">
-      <view class="title">签到规则</view>
-      <view class="rule">每日签到可获得 5 积分</view>
-      <view class="rule">连续签到 7 天额外奖励 20 积分</view>
-      <view class="rule">连续签到 30 天额外奖励 100 积分</view>
+      <view class="title">{{ uiText_fccc76 }}</view>
+      <view class="rule">{{ uiText_cf5e60 }}</view>
+      <view class="rule">{{ uiText_05e7eb }}</view>
+      <view class="rule">{{ uiText_67a818 }}</view>
     </view>
   </view>
 </template>
@@ -26,6 +26,11 @@
 <script setup lang="ts">
 import { showToast } from '@/utils/feedback'
 import { ref, computed } from 'vue'
+
+const uiText_05e7eb = '连续签到 7 天额外奖励 20 积分'
+const uiText_67a818 = '连续签到 30 天额外奖励 100 积分'
+const uiText_cf5e60 = '每日签到可获得 5 积分'
+const uiText_fccc76 = '签到规则'
 
 const signedToday = ref(false)
 

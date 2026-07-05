@@ -8,6 +8,7 @@ import { CACHE_KEYS } from '@/data/cacheKeys'
 import { attachGoodsCoverImages, attachGoodsCoverImagesFromCache } from '@/utils/goodsImage'
 import { applyPublicGoodsLivePatches } from '@/utils/applyPublicGoodsLivePatches'
 import { isSameGoodsListSnapshot } from '@/utils/goodsListSnapshot'
+import { enrichGoodsListCategoryFields } from '@/utils/goodsCategory'
 import { filterPublicGoodsList } from '@/utils/goodsListFilter'
 import type { Goods } from '@/types/goods'
 import type { PublicGoodsPatchResult } from '@/services/goodsLivePatch'
@@ -34,7 +35,8 @@ export function usePublicGoods() {
   }
 
   async function applySourceGoods(list: Goods[], previous?: GoodsCard[]) {
-    const items = await attachGoodsCoverImages(list, previous)
+    const normalized = enrichGoodsListCategoryFields(list)
+    const items = await attachGoodsCoverImages(normalized, previous)
     if (previous?.length && isSameGoodsListSnapshot(items, previous)) return previous
     return items
   }

@@ -1,0 +1,117 @@
+{
+  "bloom": {
+    "vase": "约 5—10 天",
+    "vaseNote": "可爱系卷曲绣球",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.hydrangea.vase_base",
+  "careVaseOverride": {
+    "summary": "爆米花绣球瓣缘卷曲；充足吸水，保持通风，可喷雾。",
+    "tips": [
+      "茎部十字剪增加吸水",
+      "通风防闷湿"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.hydrangea",
+      "identity": {
+        "scientificName": "Hydrangea 'Popcorn'",
+        "namingNote": "瓣缘卷曲如爆米花，可爱系绣球代表",
+        "horticulturalGroup": "group.hydrangea_mophead",
+        "breeder": "欧美园艺绣球培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "蓝或粉，小瓣卷曲密集，整体轮廓像爆米花",
+        "scent": "几乎无香",
+        "stem": "茎干粗壮，吸水需求大",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "15 至 25"
+      }
+    },
+    "featureRefs": [
+      "trait.spray_ball"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "花手鞠",
+        "difference": "重瓣大花，而非卷曲小瓣"
+      },
+      {
+        "name": "头花",
+        "difference": "标准团状，瓣缘不卷曲"
+      },
+      {
+        "name": "爆米花",
+        "difference": "卷曲小瓣、可爱，辨识度高"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "大花绣球",
+      "namingNote": "瓣缘卷曲如爆米花，可爱系绣球代表"
+    }
+  },
+  "language": {
+    "meaning": "可爱、治愈与「让人想拍照」",
+    "paragraphs": [
+      "爆米花的名字很准——瓣缘卷曲、密集、圆滚滚，适合送年轻人、做家居点缀、或想要「可爱而不是隆重」的绣球场景。",
+      "与满天星、小菊同插，整束会更「甜」；单球插瓶也足够有趣。"
+    ],
+    "occasions": [
+      "送朋友",
+      "家居",
+      "拍照",
+      "生日"
+    ],
+    "colorMeanings": [
+      {
+        "color": "蓝/粉",
+        "meaning": "可爱、治愈、轻松"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "可爱风",
+        "flowers": [
+          "满天星",
+          "小雏菊"
+        ],
+        "note": "蓝粉白"
+      },
+      {
+        "style": "单球家居",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "简约即可"
+      }
+    ],
+    "caution": "保持吸水；卷曲瓣缝易闷湿，须通风。"
+  },
+  "names": {
+    "scientificName": "Hydrangea 'Popcorn'",
+    "commonNames": [
+      "Popcorn",
+      "爆米花"
+    ]
+  }
+}

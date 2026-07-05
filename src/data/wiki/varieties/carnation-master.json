@@ -1,0 +1,126 @@
+{
+  "names": {
+    "scientificName": "Dianthus 'Master'",
+    "commonNames": [
+      "Master",
+      "马斯特康乃馨"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "经典红康乃馨，耐插，勤换水即可",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 12—14 天"
+      }
+    ]
+  },
+  "careBaseRef": "care.carnation.vase_base",
+  "careVaseOverride": {
+    "summary": "马斯特为经典红色康乃馨，耐插易养；撕去茎节叶片、避免花瓣沾水。",
+    "tips": [
+      "撕去关节处叶片，减少腐烂",
+      "远离热源与成熟水果"
+    ],
+    "commonIssues": [
+      {
+        "title": "茎节处腐烂、水浑",
+        "cause": "康乃馨关节处叶片未撕净导致细菌滋生",
+        "prevention": "务必撕去关节处叶片；2—3 天换水并斜剪根"
+      }
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.carnation",
+      "identity": {
+        "scientificName": "Dianthus 'Master'",
+        "horticulturalGroup": "group.carnation_cut",
+        "breeder": "哥伦比亚商业切花培育",
+        "introducedYear": "1970 年代起现代切花体系",
+        "namingNote": "花店「标准红康乃馨」常见Commercial名，母亲节与教师节高频"
+      },
+      "origin": {
+        "breedingOrigin": "哥伦比亚",
+        "productionRegions": [
+          "region.colombia",
+          "region.ecuador",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "petalCount": "花瓣边缘呈锯齿状，层叠繁密",
+        "bloomDiameterCm": "6 至 8",
+        "color": "正红而饱满，开放后仍较保持",
+        "stem": "茎节明显，需撕去下部叶片",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.classic_red",
+      "trait.thick_petal"
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花康乃馨",
+      "namingNote": "经典红色切花康乃馨代表"
+    },
+    "distinguishFrom": [
+      {
+        "name": "野马",
+        "difference": "复古紫色，而非正红"
+      },
+      {
+        "name": "白雪公主",
+        "difference": "白色康乃馨，场景更偏纯洁与感谢"
+      },
+      {
+        "name": "马斯特",
+        "difference": "正红、经典、耐插，是红康乃馨最常见辨识之一"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "母爱、热爱与「不会出错的红色祝福」",
+    "paragraphs": [
+      "马斯特的红康乃馨，几乎等于「母亲节标准答案」——热烈但不像玫瑰那样直白爱情，更适合表达尊敬、感恩与长久陪伴。",
+      "教师节、探望老师长辈、开业贺礼也常用；与白色、粉色康乃馨混搭，可做出层次而不单调。"
+    ],
+    "occasions": [
+      "母亲节",
+      "教师节",
+      "感恩",
+      "探望长辈",
+      "开业"
+    ],
+    "colorMeanings": [
+      {
+        "color": "正红",
+        "meaning": "母爱、感恩、祝福"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "母亲节",
+        "flowers": [
+          "粉钻",
+          "白雪公主"
+        ],
+        "note": "红粉白康乃馨经典组合"
+      },
+      {
+        "style": "感恩花束",
+        "flowers": [
+          "绿康",
+          "洋桔梗"
+        ],
+        "note": "红绿得体"
+      }
+    ],
+    "caution": "部分收花人可能更期待玫瑰；若表达爱情，请确认场景是否适合康乃馨。"
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "复古紫康乃馨，耐插 7—14 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.carnation.vase_base",
+  "careVaseOverride": {
+    "summary": "野马为复古紫康乃馨；勤换水、撕去下部叶片，保持通风。",
+    "tips": [
+      "勤换水，水质变浑立即更换",
+      "避免挤压层叠花瓣"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.carnation",
+      "identity": {
+        "scientificName": "Dianthus 'Mustang'",
+        "namingNote": "复古紫色康乃馨，辨识度高于常规红粉白",
+        "horticulturalGroup": "group.carnation_cut",
+        "breeder": "哥伦比亚商业切花培育",
+        "introducedYear": "1970 年代起现代切花体系"
+      },
+      "origin": {
+        "breedingOrigin": "哥伦比亚",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "低饱和复古紫，瓣缘锯齿，色调偏莫兰迪",
+        "scent": "淡香",
+        "stem": "茎节明显，需撕去下部叶片",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "petalCount": "花瓣边缘呈锯齿状，层叠繁密",
+        "bloomDiameterCm": "6 至 8"
+      }
+    },
+    "featureRefs": [
+      "trait.muted_retro",
+      "trait.soft_pink"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "粉钻",
+        "difference": "柔粉，而非复古紫"
+      },
+      {
+        "name": "马斯特",
+        "difference": "正红，而非紫色系"
+      },
+      {
+        "name": "野马",
+        "difference": "复古紫、特别、耐插，是紫色康乃馨代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花康乃馨",
+      "namingNote": "复古紫色康乃馨，辨识度高于常规红粉白"
+    }
+  },
+  "language": {
+    "meaning": "独特、复古与「不走寻常路的关心」",
+    "paragraphs": [
+      "野马的紫不是艳俗的紫——它带一点灰、一点旧，适合送给审美偏成熟、喜欢低调特别的人。",
+      "与尤加利、银叶类同插很有森系质感；表白场景不如玫瑰，但纪念日、感谢、送同事都很得体。"
+    ],
+    "occasions": [
+      "纪念日",
+      "感谢",
+      "送同事",
+      "家居装饰"
+    ],
+    "colorMeanings": [
+      {
+        "color": "复古紫",
+        "meaning": "独特、成熟、低调"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "森系",
+        "flowers": [
+          "尤加利叶",
+          "银芽柳"
+        ],
+        "note": "紫绿灰调"
+      },
+      {
+        "style": "特别感",
+        "flowers": [
+          "洋牡丹",
+          "翠珠"
+        ],
+        "note": "低饱和混搭"
+      }
+    ],
+    "caution": "复古色系对水质敏感，须勤换水；避免挤压花瓣。"
+  },
+  "names": {
+    "scientificName": "Dianthus 'Mustang'",
+    "commonNames": [
+      "Mustang",
+      "野马"
+    ]
+  }
+}

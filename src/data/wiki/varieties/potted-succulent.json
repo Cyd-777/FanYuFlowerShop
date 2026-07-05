@@ -1,0 +1,91 @@
+{
+  "bloom": {
+    "vase": "盆栽观赏因品种而异",
+    "vaseNote": "盆栽观赏"
+  },
+  "careBaseRef": "care.potted.vase_base",
+  "careVaseOverride": {
+    "summary": "多肉见干见湿，通风，忌积水。",
+    "tips": [
+      "少浇水",
+      "夏季避暴晒"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.potted",
+      "identity": {
+        "scientificName": "Succulent mix",
+        "namingNote": "组合多肉盆栽，低维护礼品",
+        "horticulturalGroup": "group.potted_ornamental"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "多色肉质叶，组合盆栽",
+        "scent": "几乎无香",
+        "stem": "以盆栽株形观赏为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.potted_gift"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "蝴蝶兰",
+        "difference": "高端盆栽礼品，与此品种形态或色调不同"
+      },
+      {
+        "name": "富贵竹",
+        "difference": "水培/土培皆可，与此品种形态或色调不同"
+      },
+      {
+        "name": "多肉",
+        "difference": "组合多肉盆栽，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "室内盆栽",
+      "namingNote": "组合多肉盆栽，低维护礼品"
+    }
+  },
+  "language": {
+    "meaning": "治愈、低维护与「桌面小生态」",
+    "paragraphs": [
+      "多肉组合适合送同事、学生、桌面——养护简单，「少浇水」反而是优点。",
+      "见干见湿，通风，忌积水；夏季避暴晒。"
+    ],
+    "occasions": [
+      "送同事",
+      "桌面",
+      "家居",
+      "赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "治愈、低维护"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "桌面",
+        "flowers": [],
+        "note": "单盆即可"
+      }
+    ],
+    "caution": "忌积水；夏季通风避暴晒。"
+  },
+  "names": {
+    "scientificName": "Succulent mix",
+    "commonNames": [
+      "Succulent",
+      "多肉"
+    ]
+  }
+}

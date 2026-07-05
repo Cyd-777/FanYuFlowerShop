@@ -1,0 +1,90 @@
+{
+  "bloom": {
+    "vase": "盆栽观赏因品种而异",
+    "vaseNote": "盆栽观赏"
+  },
+  "careBaseRef": "care.potted.vase_base",
+  "careVaseOverride": {
+    "summary": "发财树见干见湿，明亮散射光，忌积水。",
+    "tips": [
+      "忌积水闷根"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.potted",
+      "identity": {
+        "scientificName": "Pachira aquatica",
+        "namingNote": "大型盆栽，开业礼品常见",
+        "horticulturalGroup": "group.potted_ornamental"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "掌状绿叶，株形大气",
+        "scent": "几乎无香",
+        "stem": "以盆栽株形观赏为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.tropical_leaf",
+      "trait.potted_gift"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "蝴蝶兰",
+        "difference": "高端盆栽礼品，与此品种形态或色调不同"
+      },
+      {
+        "name": "富贵竹",
+        "difference": "水培/土培皆可，与此品种形态或色调不同"
+      },
+      {
+        "name": "发财树",
+        "difference": "大型盆栽，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "室内盆栽",
+      "namingNote": "大型盆栽，开业礼品常见"
+    }
+  },
+  "language": {
+    "meaning": "招财、气场与「很大的一盆绿」",
+    "paragraphs": [
+      "发财树适合开业、乔迁——株形大气，寓意明确；适合前台、客厅。",
+      "见干见湿，忌积水；明亮散射光。"
+    ],
+    "occasions": [
+      "开业",
+      "乔迁",
+      "办公"
+    ],
+    "colorMeanings": [
+      {
+        "color": "绿",
+        "meaning": "招财、气场"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "开业",
+        "flowers": [],
+        "note": "单盆即可"
+      }
+    ],
+    "caution": "忌积水；冬季减少浇水。"
+  },
+  "names": {
+    "scientificName": "Pachira aquatica",
+    "commonNames": [
+      "Pachira",
+      "发财树"
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import { NOTIFY_TONE_ICON_SRC } from '@/assets/icons/notify'
 import { getNavBarLayout } from '@/utils/navBarLayout'
 import type {
   AppToastOptions,
@@ -73,11 +74,38 @@ export function hidePullRefreshLoading() {
   }
 }
 
-export const FEEDBACK_TONE_STYLES: Record<FeedbackTone, { background: string; color: string }> = {
-  primary: { background: '#e53935', color: '#ffffff' },
-  success: { background: '#2e7d32', color: '#ffffff' },
-  warning: { background: '#e65100', color: '#ffffff' },
-  danger: { background: '#c62828', color: '#ffffff' },
+export interface FeedbackToneStyle {
+  background: string
+  color: string
+  borderColor: string
+  iconSrc: string
+}
+
+export const FEEDBACK_TONE_STYLES: Record<FeedbackTone, FeedbackToneStyle> = {
+  primary: {
+    background: '#ffffff',
+    color: '#333333',
+    borderColor: 'rgba(229, 57, 53, 0.22)',
+    iconSrc: NOTIFY_TONE_ICON_SRC.primary,
+  },
+  success: {
+    background: '#ffffff',
+    color: '#333333',
+    borderColor: 'rgba(46, 125, 50, 0.22)',
+    iconSrc: NOTIFY_TONE_ICON_SRC.success,
+  },
+  warning: {
+    background: '#ffffff',
+    color: '#333333',
+    borderColor: 'rgba(230, 81, 0, 0.22)',
+    iconSrc: NOTIFY_TONE_ICON_SRC.warning,
+  },
+  danger: {
+    background: '#ffffff',
+    color: '#333333',
+    borderColor: 'rgba(198, 40, 40, 0.22)',
+    iconSrc: NOTIFY_TONE_ICON_SRC.danger,
+  },
 }
 
 function hideBar() {
@@ -124,18 +152,6 @@ export function showNotifyBar(options: NotifyBarOptions) {
   feedbackBarState.visible = false
   feedbackBarState.visible = true
   scheduleBarHide(feedbackBarState.duration)
-}
-
-export function showSuccessBar(message: string, options?: Omit<NotifyBarOptions, 'message' | 'tone'>) {
-  showNotifyBar({ ...options, message, tone: 'success' })
-}
-
-export function showWarningBar(message: string, options?: Omit<NotifyBarOptions, 'message' | 'tone'>) {
-  showNotifyBar({ ...options, message, tone: 'warning' })
-}
-
-export function showDangerBar(message: string, options?: Omit<NotifyBarOptions, 'message' | 'tone'>) {
-  showNotifyBar({ ...options, message, tone: 'danger' })
 }
 
 function resetAlertHandlers() {

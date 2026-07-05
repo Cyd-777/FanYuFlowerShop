@@ -9,6 +9,7 @@ import {
   attachGoodsCoverImages,
   attachGoodsCoverImagesFromCache,
 } from '@/utils/goodsImage'
+import { enrichGoodsListCategoryFields } from '@/utils/goodsCategory'
 import { isSameGoodsListSnapshot } from '@/utils/goodsListSnapshot'
 import {
   DEFAULT_MERCHANT_GOODS_FILTER,
@@ -71,12 +72,16 @@ export function useMerchantGoods(categories?: Ref<Category[]>) {
       const { data } = await merchantGoodsRepository.ensureList({
         force: options?.force,
         onUpdate: (list) => {
-          void withCoverImages(list, sourceGoods.value).then((items) => {
+          void withCoverImages(
+            enrichGoodsListCategoryFields(list, categories?.value ?? []),
+            sourceGoods.value,
+          ).then((items) => {
             if (items !== sourceGoods.value) sourceGoods.value = items
           })
         },
       })
-      sourceGoods.value = await withCoverImages(data, previous)
+      const enriched = enrichGoodsListCategoryFields(data, categories?.value ?? [])
+      sourceGoods.value = await withCoverImages(enriched, previous)
     } catch (err) {
       console.error('[goods] merchant load failed:', err)
       if (!sourceGoods.value.length) {

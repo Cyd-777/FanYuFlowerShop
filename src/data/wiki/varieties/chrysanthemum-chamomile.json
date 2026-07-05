@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 10—14 天",
+    "vaseNote": "迷你菊，配花常用",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.chrysanthemum.vase_base",
+  "careVaseOverride": {
+    "summary": "洋甘菊迷你扁瓣；勤换水，轻拿轻放。",
+    "tips": [
+      "可倒挂制干花"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.chrysanthemum",
+      "identity": {
+        "scientificName": "Chrysanthemum 'Chamomile'",
+        "namingNote": "迷你扁瓣菊，森系与配花常用",
+        "horticulturalGroup": "group.chrysanthemum_cut",
+        "breeder": "中国切花菊培育",
+        "introducedYear": "1990 年代起切花菊体系"
+      },
+      "origin": {
+        "breedingOrigin": "中国",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "白心黄芯，瓣细，整体迷你",
+        "scent": "淡草香",
+        "stem": "茎干挺直，耐插",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "5 至 12"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "乒乓菊",
+        "difference": "球形小菊，与此品种形态或色调不同"
+      },
+      {
+        "name": "小雏菊",
+        "difference": "扁瓣小菊，与此品种形态或色调不同"
+      },
+      {
+        "name": "洋甘菊",
+        "difference": "迷你扁瓣菊，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花菊",
+      "namingNote": "迷你扁瓣菊，森系与配花常用"
+    }
+  },
+  "language": {
+    "meaning": "治愈、森系与「像小太阳的白」",
+    "paragraphs": [
+      "洋甘菊适合森系、法式混搭——不是主花，但能让整束「会呼吸」。",
+      "与尤加利、小雏菊同插；也可倒挂制干花。"
+    ],
+    "occasions": [
+      "森系",
+      "配花",
+      "干花"
+    ],
+    "colorMeanings": [
+      {
+        "color": "白黄",
+        "meaning": "治愈、轻"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "森系",
+        "flowers": [
+          "尤加利叶",
+          "小雏菊"
+        ],
+        "note": "迷你白"
+      }
+    ],
+    "caution": "瓣细易损；勤换水。"
+  },
+  "names": {
+    "scientificName": "Chrysanthemum 'Chamomile'",
+    "commonNames": [
+      "Chamomile",
+      "洋甘菊"
+    ]
+  }
+}

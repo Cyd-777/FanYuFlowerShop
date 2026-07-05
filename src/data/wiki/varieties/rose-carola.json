@@ -1,0 +1,126 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Carola'",
+    "commonNames": [
+      "Carola",
+      "超级红玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "经典高杯红玫瑰，勤换水可稳定保持花型",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "经典高杯红玫瑰，勤换水可稳定保持花型。",
+    "tips": [
+      "丝绒质感花瓣忌触碰与挤压",
+      "花头较大，醒花时间建议不少于 4 小时"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Carola'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "breeder": "德国 W. Kordes",
+        "introducedYear": "1980 年代",
+        "namingNote": "花店语境里「超级红玫瑰」的经典指代，情人节与庆典高频花材"
+      },
+      "origin": {
+        "breedingOrigin": "德国",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "正红而均匀，高杯型开放，花瓣厚实带丝绒质感，是辨识度极高的「标准红玫瑰」",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.high_cup",
+      "trait.classic_red",
+      "trait.velvet_texture"
+    ],
+    "origin": "育种德国；主产区厄瓜多尔、哥伦比亚、中国云南",
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "Kordes",
+      "introducedYear": "1980 年代"
+    },
+    "distinguishFrom": [
+      {
+        "name": "弗洛伊德",
+        "difference": "玫红丝绒，而非正红高杯"
+      },
+      {
+        "name": "高盛",
+        "difference": "红调偏暗，更接近暗红"
+      },
+      {
+        "name": "卡罗拉",
+        "difference": "正红、高杯、丝绒质感，是花店「标准红玫瑰」最常见辨识"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "热烈、经典与「就是玫瑰本身」的告白",
+    "paragraphs": [
+      "卡罗拉的正红几乎没有学习成本——收到的人立刻知道「这是玫瑰，而且是很标准的那种」。它适合情人节、纪念日、表白，以及一切需要「明确表达爱意」的场合。",
+      "若对方偏好低调，卡罗拉可能略张扬；但对多数人来说，这是最稳妥、最不出错的红玫瑰选择。与满天星、尤加利或纯红单品种花束都很经典。"
+    ],
+    "occasions": [
+      "情人节",
+      "表白",
+      "纪念日",
+      "求婚",
+      "庆典"
+    ],
+    "colorMeanings": [
+      {
+        "color": "正红",
+        "meaning": "经典、热烈、明确；花店标准红玫瑰"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "经典告白",
+        "flowers": [
+          "满天星",
+          "尤加利叶"
+        ],
+        "note": "红绿白永不过时"
+      },
+      {
+        "style": "隆重花束",
+        "flowers": [
+          "白雪山",
+          "洋桔梗"
+        ],
+        "note": "红白对比，适合庆典"
+      }
+    ],
+    "caution": "丝绒花瓣忌挤压；运输后建议醒花再插瓶。"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "names": {
+    "scientificName": "Rosa 'Pink Floyd'",
+    "commonNames": ["Pink Floyd", "弗洛伊德玫瑰"]
+  },
+  "bloom": {
+    "vase": "夏季约 7—10 天，冬季悉心照料可至 15 天",
+    "vaseNote": "花期长短直接取决于养护是否到位",
+    "vaseBySeason": [
+      { "season": "夏季", "days": "约 7—10 天" },
+      { "season": "冬季", "days": "约 10—15 天", "note": "悉心照料下" }
+    ]
+  },
+  "careBaseRef": "care.rose.vase_base",
+  "careVaseOverride": {
+    "summary": "弗洛伊德对水质极为敏感，养护到位是延长花期的关键。",
+    "waterChange": "每日换水；弗洛伊德对水质极为敏感，不换水极易导致烂瓣；每次换水须彻底清洗花瓶",
+    "waterDepth": "日常花瓶水位维持在 1/2 到 2/3",
+    "commonIssues": [
+      {
+        "title": "水质稍浑即烂瓣",
+        "cause": "弗洛伊德对水质极为敏感，不换水或花瓶未洗净时细菌迅速滋生",
+        "prevention": "每日换水；每次彻底清洗花瓶；发现水质变浑立即换水并斜剪根"
+      }
+    ],
+    "environment": {
+      "light": "避开阳光直射",
+      "airflow": "远离空调出风口",
+      "avoid": ["与苹果、香蕉等释放乙烯气体的成熟水果放在一起"]
+    },
+    "tips": ["丝绒质感花瓣忌触碰与挤压", "发现水质变浑立即换水并斜剪根"]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Pink Floyd'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "breeder": "荷兰 Schreurs 公司",
+        "introducedYear": "2008 年前后",
+        "namingNote": "品种名致敬了英国传奇摇滚乐队平克·弗洛伊德，取其音乐中迷幻、深邃、充满张力的艺术气质"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": ["region.ecuador", "region.colombia", "region.yunnan"]
+      },
+      "morphology": {
+        "flowerForm": ["trait.cup_heart"],
+        "petalCount": "35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "纯正浓郁的玫红色调，花瓣表面覆盖着一层独特的丝绒光泽，质地极其厚重，边缘常带有自然的微卷波浪",
+        "stem": "茎干粗壮挺直，刺少而大，便于花艺处理",
+        "foliage": "叶片为深绿色，革质有光泽",
+        "scent": "整体带有淡淡的清甜香气，不浓烈刺鼻"
+      }
+    },
+    "featureRefs": [
+      "trait.cup_heart",
+      "trait.velvet_magenta",
+      "trait.few_thorns",
+      "trait.light_sweet_scent"
+    ],
+    "origin": "育种荷兰；主产区厄瓜多尔、哥伦比亚、中国云南",
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "荷兰 Schreurs",
+      "introducedYear": "2008 年前后",
+      "namingNote": "品种名致敬平克·弗洛伊德乐队"
+    },
+    "distinguishFrom": [
+      { "name": "高盛", "difference": "红调偏暗，更接近暗红" },
+      { "name": "罗德斯", "difference": "正红偏黑" },
+      {
+        "name": "弗洛伊德",
+        "difference": "纯正、明亮、带有丝绒感的玫红色，辨识度最高"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "你是我最深的爱恋；不容置疑的信仰与充满激情的魅力",
+    "paragraphs": [
+      "它的玫红色，被认为是红色系中非常高级且纯正的存在。不同于正红的热烈直白，这种带着丝绒质感和复古腔调的玫红，传达出的是一种兼具激情浓度与灵魂深度的爱。它的美，如同它所纪念的音乐一样，不追求喧闹的表达，却丝丝入扣，令人沉迷且无法自拔。",
+      "它非常适合用在表白或求婚的场合，以「你是我最坚定的选择」作为情感的宣言。在纪念日和情人节，它能营造出一种有别于传统红玫瑰的高级浪漫。将它送给具备独特魅力的女性友人或者长辈，也非常得体，寓意对方拥有历经时光沉淀后的高雅品味。即便是在道歉或寻求复合的时刻，它强势中包裹着的温柔，也能替人表达出那份重归于好的深切渴望。"
+    ],
+    "occasions": ["表白", "求婚", "纪念日", "情人节", "道歉", "复合", "送长辈", "送友人"],
+    "colorMeanings": [
+      {
+        "color": "玫红",
+        "meaning": "比正红更高级纯正；丝绒复古，激情与灵魂深度并存"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "极简对比",
+        "flowers": ["马蹄莲", "蝴蝶兰"],
+        "note": "利用色彩极简对比，最大程度凸显玫红色，干净而纯粹"
+      },
+      {
+        "style": "复古油画",
+        "flowers": ["尤加利叶", "喷泉草", "复古色洋牡丹"],
+        "note": "营造仿佛古典油画般的质感"
+      },
+      {
+        "style": "酷感冲击",
+        "flowers": ["黑种草", "商陆", "暗色海芋"],
+        "note": "适合个性鲜明的酷女孩，令人过目不忘"
+      }
+    ],
+    "caution": "送花前留意对方是否极度偏爱素雅或极简风格；若是，这份浓烈的美丽或许会显得有些过于张扬。"
+  }
+}

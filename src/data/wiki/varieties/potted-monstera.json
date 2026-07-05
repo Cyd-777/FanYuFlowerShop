@@ -1,0 +1,90 @@
+{
+  "bloom": {
+    "vase": "盆栽观赏因品种而异",
+    "vaseNote": "盆栽观赏"
+  },
+  "careBaseRef": "care.potted.vase_base",
+  "careVaseOverride": {
+    "summary": "龟背竹盆栽见干见湿，明亮散射光，忌积水。",
+    "tips": [
+      "忌积水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.potted",
+      "identity": {
+        "scientificName": "Monstera deliciosa",
+        "namingNote": "观叶盆栽，北欧家居热门",
+        "horticulturalGroup": "group.potted_ornamental"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "深绿裂刻叶，热带北欧风",
+        "scent": "几乎无香",
+        "stem": "以盆栽株形观赏为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.tropical_leaf",
+      "trait.potted_gift"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "蝴蝶兰",
+        "difference": "高端盆栽礼品，与此品种形态或色调不同"
+      },
+      {
+        "name": "富贵竹",
+        "difference": "水培/土培皆可，与此品种形态或色调不同"
+      },
+      {
+        "name": "龟背竹盆栽",
+        "difference": "观叶盆栽，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "室内盆栽",
+      "namingNote": "观叶盆栽，北欧家居热门"
+    }
+  },
+  "language": {
+    "meaning": "家居、格调与「很好看的叶」",
+    "paragraphs": [
+      "龟背竹盆栽是家居网红——适合喜欢绿植但不想太「传统」的人，与北欧、现代风空间极搭。",
+      "见干见湿，散射光，忌积水。"
+    ],
+    "occasions": [
+      "家居",
+      "乔迁",
+      "赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "深绿",
+        "meaning": "格调、家居"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "家居",
+        "flowers": [],
+        "note": "单盆即可"
+      }
+    ],
+    "caution": "忌积水与暴晒。"
+  },
+  "names": {
+    "scientificName": "Monstera deliciosa",
+    "commonNames": [
+      "Monstera Potted",
+      "龟背竹盆栽"
+    ]
+  }
+}

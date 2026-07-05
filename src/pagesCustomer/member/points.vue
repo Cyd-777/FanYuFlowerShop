@@ -2,7 +2,7 @@
   <view class="page-points">
     <AppNavBar />
     <view class="total-card">
-      <view class="label">当前积分</view>
+      <view class="label">{{ uiText_701a03 }}</view>
       <view class="value">{{ points }}</view>
     </view>
     <view class="list">
@@ -20,6 +20,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+
+const uiText_701a03 = '当前积分'
 
 const points = ref(120)
 const logs = ref<{ desc: string; time: string; type: string; amount: number }[]>([])

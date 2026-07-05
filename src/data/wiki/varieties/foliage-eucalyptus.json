@@ -1,0 +1,94 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "叶材保持清洁水质与通风"
+  },
+  "careBaseRef": "care.foliage.vase_base",
+  "careVaseOverride": {
+    "summary": "尤加利为常用配叶，保持清洁水质与通风，部分品种可倒挂制干花。",
+    "tips": [
+      "可倒挂风干制干花"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.foliage",
+      "identity": {
+        "scientificName": "Eucalyptus spp.",
+        "namingNote": "最常用配叶，森系/北欧/开业花束几乎必备",
+        "horticulturalGroup": "group.cut_foliage"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "灰绿叶片，线条修长，整体清凉",
+        "scent": "几乎无花香气，叶片有清凉叶香",
+        "stem": "以叶材线条与层次为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.cut_foliage",
+      "trait.muted_retro"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "龟背竹",
+        "difference": "大叶配材，与此品种形态或色调不同"
+      },
+      {
+        "name": "雪柳",
+        "difference": "春季线性花材，与此品种形态或色调不同"
+      },
+      {
+        "name": "尤加利",
+        "difference": "最常用配叶，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花配叶",
+      "namingNote": "最常用配叶，森系/北欧/开业花束几乎必备"
+    }
+  },
+  "language": {
+    "meaning": "层次、森系与「把主花托起来」",
+    "paragraphs": [
+      "尤加利是花店万能配叶——几乎任何主花加它，立刻有层次和风格；部分品种可倒挂制干花。",
+      "保持清洁水质与通风；叶材收到后斜剪根部即可。"
+    ],
+    "occasions": [
+      "配花",
+      "森系",
+      "干花",
+      "开业"
+    ],
+    "colorMeanings": [
+      {
+        "color": "灰绿",
+        "meaning": "清凉、层次"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "森系",
+        "flowers": [
+          "玫瑰",
+          "洋桔梗"
+        ],
+        "note": "万能配叶"
+      }
+    ],
+    "caution": "部分品种可制干花；勤换水，通风。"
+  },
+  "names": {
+    "scientificName": "Eucalyptus spp.",
+    "commonNames": [
+      "Eucalyptus",
+      "尤加利"
+    ]
+  }
+}

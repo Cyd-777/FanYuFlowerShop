@@ -1,6 +1,6 @@
 import type { FlowerWikiListItem } from '@/types/wiki'
 import type { Goods } from '@/types/goods'
-import { getWikiDisplayName } from '@/types/wiki'
+import { getWikiDisplayName, getWikiFullLabel } from '@/types/wiki'
 import { suggestGoodsNames } from '@/utils/goodsNameSuggest'
 import { suggestWikiEntries } from '@/utils/wikiSuggest'
 
@@ -41,7 +41,9 @@ export function extractQuerySubjects(
 
   for (const entry of wiki) {
     const display = getWikiDisplayName(entry).trim()
+    const full = getWikiFullLabel(entry).trim()
     if (display.length >= 2) candidates.push(display)
+    if (full.length >= 2 && full !== display) candidates.push(full)
     if (entry.kindName?.trim()) candidates.push(entry.kindName.trim())
     if (entry.varietyName?.trim()) candidates.push(entry.varietyName.trim())
   }
@@ -110,7 +112,7 @@ export function suggestQueryCompletions(
   }
 
   for (const entry of wiki) {
-    const name = getWikiDisplayName(entry).trim()
+    const name = getWikiFullLabel(entry).trim()
     if (name.startsWith(q)) add(name)
   }
 

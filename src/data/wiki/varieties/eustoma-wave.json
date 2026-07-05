@@ -1,0 +1,109 @@
+{
+  "bloom": {
+    "vase": "约 7—12 天",
+    "vaseNote": "波浪洋桔梗",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.eustoma.vase_base",
+  "careVaseOverride": {
+    "summary": "波浪系列洋桔梗；轻拿轻放，清洁水质。",
+    "tips": [
+      "避免挤压瓣缘"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.eustoma",
+      "identity": {
+        "scientificName": "Eustoma 'Wave'",
+        "namingNote": "瓣缘波浪状洋桔梗，形态更柔",
+        "horticulturalGroup": "group.eustoma_cut",
+        "breeder": "日本洋桔梗育种体系",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "日本",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色，瓣缘呈波浪，整体轻盈",
+        "scent": "几乎无香",
+        "stem": "茎干纤细，花瓣娇嫩",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "6 至 8"
+      }
+    },
+    "featureRefs": [
+      "trait.soft_pink",
+      "trait.cup_trumpet"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "露西塔系列",
+        "difference": "洋桔梗露西塔系列，与此品种形态或色调不同"
+      },
+      {
+        "name": "花束系列",
+        "difference": "多朵同枝洋桔梗，与此品种形态或色调不同"
+      },
+      {
+        "name": "波浪系列",
+        "difference": "瓣缘波浪状洋桔梗，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花洋桔梗",
+      "namingNote": "瓣缘波浪状洋桔梗，形态更柔"
+    }
+  },
+  "language": {
+    "meaning": "轻盈、浪漫与「瓣缘会动的美」",
+    "paragraphs": [
+      "波浪系列的辨识度在瓣缘——适合法式、浪漫系花束，与蕾丝花、小菊极搭。",
+      "养护同洋桔梗：轻拿、清洁水、避挤压。"
+    ],
+    "occasions": [
+      "婚礼",
+      "法式",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "浪漫、轻盈"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "法式",
+        "flowers": [
+          "蕾丝花",
+          "小雏菊"
+        ],
+        "note": "轻"
+      }
+    ],
+    "caution": "瓣缘易损；轻拿轻放。"
+  },
+  "names": {
+    "scientificName": "Eustoma 'Wave'",
+    "commonNames": [
+      "Wave",
+      "波浪系列"
+    ]
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "bloom": {
+    "vase": "约 5—8 天",
+    "vaseNote": "奶油色向日葵",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.sunflower.vase_base",
+  "careVaseOverride": {
+    "summary": "奶油色向日葵；高瓶支撑，勤换水。",
+    "tips": [
+      "高瓶支撑"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.sunflower",
+      "identity": {
+        "scientificName": "Helianthus 'Cream'",
+        "namingNote": "奶油色瓣向日葵，低饱和温柔",
+        "horticulturalGroup": "group.sunflower_cut",
+        "breeder": "商业切花向日葵培育",
+        "introducedYear": "2000 年代起切花向日葵"
+      },
+      "origin": {
+        "breedingOrigin": "商业化种植",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "奶油黄瓣，色调低饱和，更温柔",
+        "scent": "几乎无香",
+        "stem": "茎干粗壮，花盘重，需高瓶支撑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "10 至 20"
+      }
+    },
+    "featureRefs": [
+      "trait.champagne_tone",
+      "trait.yellow_gold"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "泰迪熊",
+        "difference": "重瓣矮生向日葵，与此品种形态或色调不同"
+      },
+      {
+        "name": "文森特",
+        "difference": "标准切花向日葵，与此品种形态或色调不同"
+      },
+      {
+        "name": "奶油向日葵",
+        "difference": "奶油色瓣向日葵，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花向日葵",
+      "namingNote": "奶油色瓣向日葵，低饱和温柔"
+    }
+  },
+  "language": {
+    "meaning": "温柔、阳光与「不刺眼的亮」",
+    "paragraphs": [
+      "奶油向日葵适合婚礼、家居——有向日葵的形，但没有那么「黄」，更莫兰迪、更温柔。",
+      "与白色、绿色花材同插，色调高级。"
+    ],
+    "occasions": [
+      "婚礼",
+      "家居",
+      "纪念日"
+    ],
+    "colorMeanings": [
+      {
+        "color": "奶油黄",
+        "meaning": "温柔、阳光"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼",
+        "flowers": [
+          "白玫瑰",
+          "尤加利叶"
+        ],
+        "note": "奶油白绿"
+      }
+    ],
+    "caution": "高瓶支撑；勤换水。"
+  },
+  "names": {
+    "scientificName": "Helianthus 'Cream'",
+    "commonNames": [
+      "Cream",
+      "奶油向日葵"
+    ]
+  }
+}

@@ -3,12 +3,16 @@
  */
 
 const { bumpCacheModule } = require('./common/cacheMeta')
+const { mergeFlowerCatalog } = require('./common/flowerCatalogMerge')
 const { isExcludedWikiKind } = require('./common/wikiExcluded')
 const { fetchAllDocs } = require('./common/db')
 const { getKindProfile, WIKI_KIND_PROFILES } = require('./wikiKindProfiles')
+const { getVarietyProfile } = require('./wikiVarietyProfiles')
+const { mergeVarietyArticleIntoDraft } = require('./wikiVarietyArticles')
+const { isRoseKind, applyRoseCareToDraft } = require('./wikiRoseCare')
 const { buildSearchText, emptyWikiPayload } = require('./wikiSchema')
 
-const PROFILE_SYNC_VERSION = 1
+const PROFILE_SYNC_VERSION = 4
 
 function asStringArray(value) {
   if (!Array.isArray(value)) return []
@@ -81,11 +85,63 @@ function buildBloomFromProfile(profile) {
   }
 }
 
+function mergeVarietyAliases(existingAliases, varietyProfile, names) {
+  let merged = mergeAliases(existingAliases, names)
+  if (!varietyProfile?.aliases?.length) return merged
+  const seen = new Set(merged.map((item) => item.toLowerCase()))
+  for (const alias of varietyProfile.aliases) {
+    const text = String(alias || '').trim()
+    if (!text) continue
+    const key = text.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    merged.push(text)
+  }
+  return merged
+}
+
+function applyVarietyProfileSections(varietyProfile, varietyName, varietyDesc, atlas, language) {
+  if (!varietyProfile) return
+  const name = String(varietyName || '').trim()
+  const desc = String(varietyDesc || '').trim()
+  const color = String(varietyProfile.color || '').trim()
+  const features = asStringArray(varietyProfile.features)
+
+  if (features.length) {
+    atlas.features = features
+  }
+
+  const summaryParts = [name]
+  if (color && color !== '多色') summaryParts.push(color)
+  if (features.length) summaryParts.push(features.slice(0, 4).join('、'))
+  const generatedSummary = summaryParts.filter(Boolean).join('，')
+  if (desc) {
+    atlas.summary = desc
+  } else if (generatedSummary) {
+    atlas.summary = generatedSummary
+  }
+
+  if (desc || generatedSummary) {
+    language.summary = desc || generatedSummary
+  }
+
+  const colorToken = color.split('/')[0]?.replace(/带.*/, '').trim()
+  if (colorToken && colorToken !== '多色' && language.colorMeanings?.length) {
+    const matched = language.colorMeanings.find((item) =>
+      String(item?.color || '').includes(colorToken.slice(0, 1)),
+    )
+    if (matched?.meaning) {
+      language.meaning = `${colorToken}：${matched.meaning}`.replace(/^：/, '')
+    }
+  }
+}
+
 function buildWikiProfilePatch(doc, profile, varietyDoc) {
   const varietyName = String(doc.varietyName || '').trim()
   const varietyDesc = String(varietyDoc?.description || '').trim()
+  const varietyProfile = doc.varietyId ? getVarietyProfile(doc.kindName, varietyName) : null
   const names = mergeNames(profile, varietyName)
-  const aliases = mergeAliases(doc.aliases, names)
+  const aliases = mergeVarietyAliases(doc.aliases, varietyProfile, names)
   const atlas = cloneObject(profile.atlas)
   const bloom = buildBloomFromProfile(profile)
   const careVase = cloneObject(profile.careVase)
@@ -95,17 +151,13 @@ function buildWikiProfilePatch(doc, profile, varietyDoc) {
     ? buildVarietyLanguage(profile, varietyName, varietyDesc)
     : cloneObject(profile.language)
   const taxonomy = cloneObject(profile.taxonomy)
-  const occasions = asStringArray(language.occasions)
 
-  const wikiDraft = {
-    kindName: doc.kindName || '',
-    varietyName,
-    taxonomy,
+  if (varietyProfile) {
+    applyVarietyProfileSections(varietyProfile, varietyName, varietyDesc, atlas, language)
+  }
+
+  const sectionsDraft = {
     names,
-    aliases,
-    keywords: asStringArray(doc.keywords),
-    tags: asStringArray(doc.tags),
-    occasions,
     bloom,
     careVase,
     careSoil,
@@ -113,18 +165,48 @@ function buildWikiProfilePatch(doc, profile, varietyDoc) {
     careGuide,
     language,
   }
+  if (doc.varietyId && varietyName) {
+    mergeVarietyArticleIntoDraft(sectionsDraft, doc.kindName, varietyName)
+  } else if (isRoseKind(doc.kindName)) {
+    applyRoseCareToDraft(sectionsDraft, varietyName)
+  }
+
+  const keywords = varietyProfile
+    ? asStringArray(varietyProfile.keywords)
+    : asStringArray(doc.keywords)
+  const tags = varietyProfile ? asStringArray(varietyProfile.tags) : asStringArray(doc.tags)
+  const occasions = asStringArray(sectionsDraft.language.occasions)
+
+  const wikiDraft = {
+    kindName: doc.kindName || '',
+    varietyName,
+    taxonomy,
+    names: sectionsDraft.names,
+    aliases,
+    keywords,
+    tags,
+    occasions,
+    bloom: sectionsDraft.bloom,
+    careVase: sectionsDraft.careVase,
+    careSoil: sectionsDraft.careSoil,
+    atlas: sectionsDraft.atlas,
+    careGuide: sectionsDraft.careGuide,
+    language: sectionsDraft.language,
+  }
   wikiDraft.searchText = buildSearchText(wikiDraft)
 
   return {
     taxonomy,
-    names,
-    atlas,
-    bloom,
-    careVase,
-    careSoil,
-    careGuide,
-    language,
+    names: sectionsDraft.names,
+    atlas: sectionsDraft.atlas,
+    bloom: sectionsDraft.bloom,
+    careVase: sectionsDraft.careVase,
+    careSoil: sectionsDraft.careSoil,
+    careGuide: sectionsDraft.careGuide,
+    language: sectionsDraft.language,
     aliases,
+    keywords,
+    tags,
     occasions,
     searchText: wikiDraft.searchText,
     profileSyncVersion: PROFILE_SYNC_VERSION,
@@ -160,7 +242,7 @@ function buildNewWikiDoc(kind, variety, profile, sections) {
     varietyName: variety?.name || '',
     icon: kind.icon || '🌷',
     coverImage: '',
-    plantForm: 'cut',
+    plantForm: kind.name === '盆栽' ? 'potted' : 'cut',
     taxonomy: sections.taxonomy,
     names,
     atlas: sections.atlas,
@@ -249,6 +331,8 @@ async function ensureMissingWikiEntries(db) {
 }
 
 async function syncAllKindProfiles(db) {
+  const mergeStats = await mergeFlowerCatalog(db)
+
   const [wikiDocs, varieties] = await Promise.all([
     fetchAllDocs(db, 'flower_wiki'),
     fetchAllDocs(db, 'flower_varieties'),
@@ -283,15 +367,54 @@ async function syncAllKindProfiles(db) {
 
   const created = await ensureMissingWikiEntries(db)
   await bumpCacheModule('wiki')
+  await bumpCacheModule('categories')
 
   return {
     updated,
     skipped,
     created,
     total: wikiDocs.length,
+    mergeStats,
     profileKinds: Object.keys(WIKI_KIND_PROFILES),
     skippedKinds,
     profileSyncVersion: PROFILE_SYNC_VERSION,
+  }
+}
+
+/** 仅写回「玫瑰」分类养护（试点；不动其它种类词条正文） */
+async function syncRoseCareProfiles(db) {
+  const wikiDocs = await fetchAllDocs(db, 'flower_wiki')
+  const varieties = await fetchAllDocs(db, 'flower_varieties')
+  const varietyMap = new Map(varieties.map((item) => [item._id, item]))
+  const roseDocs = wikiDocs.filter((doc) => isRoseKind(doc.kindName) && !isExcludedWikiKind(doc.kindName))
+  let updated = 0
+
+  for (const doc of roseDocs) {
+    const profile = getKindProfile(doc.kindName || '')
+    if (!profile) continue
+    const varietyDoc = doc.varietyId ? varietyMap.get(doc.varietyId) : null
+    const patch = buildWikiProfilePatch(doc, profile, varietyDoc)
+    await db.collection('flower_wiki').doc(doc._id).update({
+      data: {
+        careVase: patch.careVase,
+        bloom: patch.bloom,
+        searchText: patch.searchText,
+        profileSyncVersion: PROFILE_SYNC_VERSION,
+        roseCareSyncVersion: 1,
+        updatedAt: db.serverDate(),
+      },
+    })
+    updated += 1
+  }
+
+  await bumpCacheModule('wiki')
+  await bumpCacheModule('categories')
+
+  return {
+    updated,
+    total: roseDocs.length,
+    profileSyncVersion: PROFILE_SYNC_VERSION,
+    pilotVarieties: Object.keys(require('./wikiRoseCare').ROSE_VARIETY_CARE),
   }
 }
 
@@ -299,5 +422,6 @@ module.exports = {
   PROFILE_SYNC_VERSION,
   buildWikiProfilePatch,
   syncAllKindProfiles,
+  syncRoseCareProfiles,
   ensureMissingWikiEntries,
 }

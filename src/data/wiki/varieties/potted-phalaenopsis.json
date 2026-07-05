@@ -1,0 +1,92 @@
+{
+  "bloom": {
+    "vase": "盆栽观赏因品种而异",
+    "vaseNote": "盆栽观赏因品种而异"
+  },
+  "careBaseRef": "care.potted.vase_base",
+  "careVaseOverride": {
+    "summary": "蝴蝶兰以盆栽观赏为主，见干见湿、明亮散射光、忌积水。",
+    "tips": [
+      "忌叶心长期积水",
+      "礼品包装注意底部通风"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.potted",
+      "identity": {
+        "scientificName": "Phalaenopsis spp.",
+        "namingNote": "高端盆栽礼品，花期长，办公室与家居常见",
+        "horticulturalGroup": "group.potted_ornamental"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "多色，蝴蝶形花朵，序列开放",
+        "scent": "淡香或几乎无香",
+        "stem": "以盆栽株形观赏为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.huge_flower",
+      "trait.potted_gift"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "富贵竹",
+        "difference": "水培/土培皆可，与此品种形态或色调不同"
+      },
+      {
+        "name": "发财树",
+        "difference": "大型盆栽，与此品种形态或色调不同"
+      },
+      {
+        "name": "蝴蝶兰",
+        "difference": "高端盆栽礼品，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "室内盆栽",
+      "namingNote": "高端盆栽礼品，花期长，办公室与家居常见"
+    }
+  },
+  "language": {
+    "meaning": "高雅、长久与「可养可赏的礼品」",
+    "paragraphs": [
+      "蝴蝶兰是盆栽礼品代表——适合开业、贺寿、商务赠礼，强调「可以养很久」。",
+      "见干见湿，明亮散射光，忌叶心长期积水；礼品包装注意底部通风。"
+    ],
+    "occasions": [
+      "开业",
+      "贺寿",
+      "商务礼品",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "高雅、长久"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "礼品",
+        "flowers": [],
+        "note": "单盆即可"
+      }
+    ],
+    "caution": "忌叶心积水；忌暴晒与闷根。"
+  },
+  "names": {
+    "scientificName": "Phalaenopsis spp.",
+    "commonNames": [
+      "Phalaenopsis",
+      "蝴蝶兰"
+    ]
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 10—14 天",
+    "vaseNote": "蓝色满天星",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.gypsophila.vase_base",
+  "careVaseOverride": {
+    "summary": "蓝满天星；勤换水，通风。",
+    "tips": [
+      "可制干花"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.gypsophila",
+      "identity": {
+        "scientificName": "Gypsophila 'Blue'",
+        "namingNote": "染色调蓝色满天星，个性配花",
+        "horticulturalGroup": "group.gypsophila_cut",
+        "breeder": "厄瓜多尔切花满天星培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "厄瓜多尔",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "蓝色雾状，视觉清凉",
+        "scent": "几乎无香",
+        "stem": "细枝多花，适合填充层次",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "细碎小花"
+      }
+    },
+    "featureRefs": [
+      "trait.muted_retro"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "仙女",
+        "difference": "标准白色满天星，与此品种形态或色调不同"
+      },
+      {
+        "name": "百万星",
+        "difference": "密集小星点满天星，与此品种形态或色调不同"
+      },
+      {
+        "name": "蓝满天星",
+        "difference": "染色调蓝色满天星，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花满天星",
+      "namingNote": "染色调蓝色满天星，个性配花"
+    }
+  },
+  "language": {
+    "meaning": "清凉、个性与「蓝色的雾」",
+    "paragraphs": [
+      "蓝满天星适合酷感、现代风花束——与白色、银色花材极搭。",
+      "染色品种，勤换水；可制干花。"
+    ],
+    "occasions": [
+      "个性花束",
+      "配花",
+      "干花"
+    ],
+    "colorMeanings": [
+      {
+        "color": "蓝",
+        "meaning": "清凉、个性"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "酷感",
+        "flowers": [
+          "白玫瑰",
+          "银芽柳"
+        ],
+        "note": "蓝白"
+      }
+    ],
+    "caution": "染色品种勤换水。"
+  },
+  "names": {
+    "scientificName": "Gypsophila 'Blue'",
+    "commonNames": [
+      "Blue",
+      "蓝满天星"
+    ]
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "银灰线性花材"
+  },
+  "careBaseRef": "care.foliage.vase_base",
+  "careVaseOverride": {
+    "summary": "银芽柳；清洁水质，可干插观赏。",
+    "tips": [
+      "可干插"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.foliage",
+      "identity": {
+        "scientificName": "Salix caprea",
+        "namingNote": "银灰色绒芽，现代与酷感花束常用",
+        "horticulturalGroup": "group.cut_foliage"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "银灰绒芽，线条挺括",
+        "scent": "几乎无香",
+        "stem": "以叶材线条与层次为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.muted_retro"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "尤加利",
+        "difference": "最常用配叶，与此品种形态或色调不同"
+      },
+      {
+        "name": "龟背竹",
+        "difference": "大叶配材，与此品种形态或色调不同"
+      },
+      {
+        "name": "银芽柳",
+        "difference": "银灰色绒芽，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花配叶",
+      "namingNote": "银灰色绒芽，现代与酷感花束常用"
+    }
+  },
+  "language": {
+    "meaning": "现代、酷感与「银灰的线条」",
+    "paragraphs": [
+      "银芽柳适合现代、酷感花束——与深色系花材、尤加利同插，整束立刻「高级灰」。",
+      "也可干插；勤换水。"
+    ],
+    "occasions": [
+      "现代风",
+      "酷感",
+      "干花",
+      "开业"
+    ],
+    "colorMeanings": [
+      {
+        "color": "银灰",
+        "meaning": "现代、高级"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "酷感",
+        "flowers": [
+          "夜皇后",
+          "野马"
+        ],
+        "note": "银灰+深"
+      }
+    ],
+    "caution": "可干插；勤换水。"
+  },
+  "names": {
+    "scientificName": "Salix caprea",
+    "commonNames": [
+      "Silver Willow",
+      "银芽柳"
+    ]
+  }
+}

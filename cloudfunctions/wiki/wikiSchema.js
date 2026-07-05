@@ -10,6 +10,18 @@ const {
   INTENT_LABELS,
 } = require('./wikiLexicon')
 const { getKindProfile } = require('./wikiKindProfiles')
+const {
+  getVarietyArticle,
+  mergeVarietyArticleIntoDraft,
+  careEnvironmentText,
+} = require('./wikiVarietyArticles')
+const {
+  pickAtlasSection,
+  pickBloomSection,
+  pickCareVaseSection,
+  pickLanguageSection,
+} = require('./wikiCarePick')
+const { isRoseKind, applyRoseCareToDraft } = require('./wikiRoseCare')
 
 const SEARCH_VERSION = 1
 
@@ -70,19 +82,14 @@ function normalizePlantForm(value) {
   return 'cut'
 }
 
-function pickCareVase(doc, profile) {
+function pickCareVase(doc, profile, varietyArticle) {
   const raw = doc.careVase && typeof doc.careVase === 'object' ? doc.careVase : {}
-  const base = profile?.careVase && typeof profile.careVase === 'object' ? profile.careVase : {}
-  return {
-    summary: base.summary || raw.summary || '',
-    vaseLife: base.vaseLife || raw.vaseLife || '',
-    vaseLifeNote: raw.vaseLifeNote || base.vaseLifeNote || '',
-    waterChange: base.waterChange || raw.waterChange || '',
-    trim: base.trim || raw.trim || '',
-    waterDepth: base.waterDepth || raw.waterDepth || '',
-    environment: base.environment || raw.environment || '',
-    tips: asStringArray(base.tips?.length ? base.tips : raw.tips),
-  }
+  const baseProfile = profile?.careVase && typeof profile.careVase === 'object' ? profile.careVase : {}
+  const baseArticle =
+    varietyArticle?.careVase && typeof varietyArticle.careVase === 'object'
+      ? varietyArticle.careVase
+      : {}
+  return pickCareVaseSection(raw, pickCareVaseSection(baseArticle, baseProfile))
 }
 
 function pickCareSoil(doc, profile) {
@@ -98,30 +105,27 @@ function pickCareSoil(doc, profile) {
   }
 }
 
-function pickBloom(doc, profile) {
+function pickBloom(doc, profile, varietyArticle) {
   const raw = doc.bloom && typeof doc.bloom === 'object' ? doc.bloom : {}
   const atlas = doc.atlas && typeof doc.atlas === 'object' ? doc.atlas : {}
-  const base = profile?.bloom && typeof profile.bloom === 'object' ? profile.bloom : {}
+  const baseProfile = profile?.bloom && typeof profile.bloom === 'object' ? profile.bloom : {}
   const profileAtlas = profile?.atlas && typeof profile.atlas === 'object' ? profile.atlas : {}
+  const baseArticle =
+    varietyArticle?.bloom && typeof varietyArticle.bloom === 'object' ? varietyArticle.bloom : {}
+  const merged = pickBloomSection(raw, pickBloomSection(baseArticle, baseProfile))
   return {
-    vase: base.vase || raw.vase || '',
-    vaseNote: raw.vaseNote || base.vaseNote || '',
-    soil: base.soil || raw.soil || '',
-    soilNote: raw.soilNote || base.soilNote || '',
+    ...merged,
     /** 未迁移时 atlas.bloomSeason 可能是混写，仅作 soil 回退 */
     _legacyBloomSeason: profileAtlas.bloomSeason || atlas.bloomSeason || '',
   }
 }
 
-function pickAtlas(doc, profile) {
+function pickAtlas(doc, profile, varietyArticle) {
   const raw = doc.atlas && typeof doc.atlas === 'object' ? doc.atlas : {}
-  const base = profile?.atlas && typeof profile.atlas === 'object' ? profile.atlas : {}
-  return {
-    summary: base.summary || raw.summary || '',
-    features: asStringArray(base.features?.length ? base.features : raw.features),
-    bloomSeason: base.bloomSeason || raw.bloomSeason || '',
-    origin: base.origin || raw.origin || '',
-  }
+  const baseProfile = profile?.atlas && typeof profile.atlas === 'object' ? profile.atlas : {}
+  const baseArticle =
+    varietyArticle?.atlas && typeof varietyArticle.atlas === 'object' ? varietyArticle.atlas : {}
+  return pickAtlasSection(raw, pickAtlasSection(baseArticle, baseProfile))
 }
 
 function pickCareGuide(doc, profile) {
@@ -137,27 +141,25 @@ function pickCareGuide(doc, profile) {
   }
 }
 
-function pickLanguage(doc, profile, varietyName) {
+function pickLanguage(doc, profile, varietyName, varietyArticle) {
   const raw = doc.language && typeof doc.language === 'object' ? doc.language : {}
-  const base = profile?.language && typeof profile.language === 'object' ? profile.language : {}
-  let meaning = base.meaning || raw.meaning || ''
+  const baseProfile = profile?.language && typeof profile.language === 'object' ? profile.language : {}
+  const baseArticle =
+    varietyArticle?.language && typeof varietyArticle.language === 'object'
+      ? varietyArticle.language
+      : {}
+  const merged = pickLanguageSection(raw, pickLanguageSection(baseArticle, baseProfile))
+  let meaning = merged.meaning
   const name = String(varietyName || '').trim()
-  for (const item of base.colorMeanings || []) {
-    const color = String(item?.color || '').trim()
-    if (!color || !name.includes(color)) continue
-    meaning = `${color}色：${item.meaning || ''}`.trim()
-    break
+  if (!meaning) {
+    for (const item of merged.colorMeanings || []) {
+      const color = String(item?.color || '').trim()
+      if (!color || !name.includes(color)) continue
+      meaning = `${color}色：${item.meaning || ''}`.trim()
+      break
+    }
   }
-  return {
-    summary: raw.summary || base.summary || '',
-    meaning,
-    occasions: asStringArray(base.occasions?.length ? base.occasions : raw.occasions),
-    colorMeanings: Array.isArray(base.colorMeanings)
-      ? base.colorMeanings
-      : Array.isArray(raw.colorMeanings)
-        ? raw.colorMeanings
-        : [],
-  }
+  return { ...merged, meaning }
 }
 
 function pickTaxonomy(doc, profile) {
@@ -174,17 +176,23 @@ function pickTaxonomy(doc, profile) {
   }
 }
 
-function pickNames(doc, profile, varietyName) {
+function pickNames(doc, profile, varietyName, varietyArticle) {
   const raw = doc.names && typeof doc.names === 'object' ? doc.names : {}
   const base = profile?.names && typeof profile.names === 'object' ? profile.names : {}
-  let commonNames = asStringArray(base.commonNames)
+  const articleNames =
+    varietyArticle?.names && typeof varietyArticle.names === 'object' ? varietyArticle.names : {}
+  let commonNames = asStringArray(
+    articleNames.commonNames?.length ? articleNames.commonNames : base.commonNames,
+  )
   if (!commonNames.length) commonNames = asStringArray(raw.commonNames)
   const variety = String(varietyName || '').trim()
   if (variety && !commonNames.includes(variety)) {
     commonNames = [variety, ...commonNames]
   }
   return {
-    scientificName: base.scientificName || raw.scientificName || '',
+    scientificName: String(
+      articleNames.scientificName || raw.scientificName || base.scientificName || '',
+    ).trim(),
     commonNames,
   }
 }
@@ -235,6 +243,12 @@ function buildSearchText(wiki) {
     wiki.careVase.trim,
     wiki.careVase.waterDepth,
     wiki.careVase.environment,
+    careEnvironmentText(wiki.careVase.environment),
+    wiki.careVase.additives,
+    wiki.careVase.wakeUp?.summary,
+    ...(wiki.careVase.wakeUp?.steps || []),
+    wiki.careVase.emergency?.title,
+    ...(wiki.careVase.emergency?.steps || []),
     ...(wiki.careVase.tips || []),
     wiki.careSoil.summary,
     wiki.careSoil.light,
@@ -243,6 +257,9 @@ function buildSearchText(wiki) {
     wiki.careSoil.temperature,
     ...(wiki.careSoil.tips || []),
     wiki.atlas.summary,
+    ...(wiki.atlas.paragraphs || []),
+    ...(wiki.atlas.productionRegions || []),
+    ...(wiki.atlas.distinguishFrom || []).map((item) => `${item.name}${item.difference}`),
     ...(wiki.atlas.features || []),
     wiki.atlas.origin,
     wiki.careGuide.summary,
@@ -252,7 +269,14 @@ function buildSearchText(wiki) {
     wiki.careGuide.temperature,
     ...(wiki.careGuide.tips || []),
     wiki.language.summary,
+    ...(wiki.language.paragraphs || []),
     wiki.language.meaning,
+    wiki.language.caution,
+    ...(wiki.language.pairing || []).flatMap((item) => [
+      item.style,
+      ...(item.flowers || []),
+      item.note,
+    ]),
     ...(wiki.language.occasions || []),
     ...(wiki.language.colorMeanings || []).map((item) => `${item.color}${item.meaning}`),
     ...CUSTOMER_KEYWORD_SEEDS,
@@ -266,17 +290,21 @@ function buildSearchText(wiki) {
 
 function pickWiki(doc) {
   const kindProfile = getKindProfile(doc.kindName || '')
-  const atlas = pickAtlas(doc, kindProfile)
+  const varietyArticle = doc.varietyName
+    ? getVarietyArticle(doc.kindName, doc.varietyName)
+    : null
+  const atlas = pickAtlas(doc, kindProfile, varietyArticle)
   const careGuide = pickCareGuide(doc, kindProfile)
-  const language = pickLanguage(doc, kindProfile, doc.varietyName)
-  const careVase = pickCareVase(doc, kindProfile)
+  const language = pickLanguage(doc, kindProfile, doc.varietyName, varietyArticle)
+  const careVase = pickCareVase(doc, kindProfile, varietyArticle)
   const careSoil = pickCareSoil(doc, kindProfile)
-  const bloomRaw = pickBloom(doc, kindProfile)
+  const bloomRaw = pickBloom(doc, kindProfile, varietyArticle)
   const bloom = {
     vase: bloomRaw.vase,
     vaseNote: bloomRaw.vaseNote,
     soil: bloomRaw.soil || bloomRaw._legacyBloomSeason,
     soilNote: bloomRaw.soilNote,
+    vaseBySeason: bloomRaw.vaseBySeason || [],
   }
 
   const keywords = asStringArray(doc.keywords)
@@ -285,7 +313,7 @@ function pickWiki(doc) {
   const occasions = collectOccasions(doc, language)
   const seasonMonths = asNumberArray(doc.seasonMonths)
   const restockHints = asStringArray(doc.restockHints)
-  const names = pickNames(doc, kindProfile, doc.varietyName)
+  const names = pickNames(doc, kindProfile, doc.varietyName, varietyArticle)
   aliases = mergeAliasesFromNames(aliases, names)
 
   const wiki = {
@@ -321,6 +349,10 @@ function pickWiki(doc) {
     wiki.searchText = buildSearchText(wiki)
   }
 
+  if (isRoseKind(wiki.kindName) && wiki.varietyName) {
+    applyRoseCareToDraft(wiki, wiki.varietyName)
+  }
+
   wiki.answerSlots = buildAnswerSlots(wiki)
   wiki.answerIntents = wiki.answerSlots.items.map((item) => item.intent)
 
@@ -344,14 +376,21 @@ function pickWikiListItem(doc) {
     coverImage: wiki.coverImage,
     sort: wiki.sort,
     plantForm: wiki.plantForm,
-    atlasPreview: wiki.atlas.summary || '',
+    atlasPreview:
+      (wiki.atlas.paragraphs || [])[0] || wiki.atlas.summary || wiki.bloom.vase || '',
     carePreview:
+      wiki.careVase.wakeUp?.summary ||
       wiki.careVase.summary ||
       wiki.careVase.waterChange ||
       wiki.careGuide.summary ||
       '',
-    languagePreview: wiki.language.summary || wiki.language.meaning || '',
+    languagePreview:
+      (wiki.language.paragraphs || [])[0] ||
+      wiki.language.summary ||
+      wiki.language.meaning ||
+      '',
     vaseLifePreview: vaseLifePreview ? `能开约 ${vaseLifePreview.replace(/^约\s*/, '')}` : '',
+    aliases: wiki.aliases,
   }
 }
 
@@ -582,7 +621,7 @@ function buildAnswerSlots(wiki) {
   if (wiki.careVase?.environment) {
     items.push({
       intent: 'environment',
-      text: wiki.careVase.environment,
+      text: careEnvironmentText(wiki.careVase.environment),
       sourcePath: 'careVase.environment',
       tab: 'care',
     })

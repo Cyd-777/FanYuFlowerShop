@@ -3,8 +3,8 @@ import { invalidateCacheModule, loadWithCache } from '@/utils/cache'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
 import type { Category, CategoryForm } from '@/types/category'
 
-const PUBLIC_CATEGORIES_CACHE_KEY = 'categories:public'
-const MERCHANT_CATEGORIES_CACHE_KEY = 'categories:merchant'
+const PUBLIC_CATEGORIES_CACHE_KEY = 'categories:public:v3'
+const MERCHANT_CATEGORIES_CACHE_KEY = 'categories:merchant:v3'
 
 interface CategoryCloudResult {
   success: boolean
@@ -85,8 +85,10 @@ export function toCategoryPayload(form: CategoryForm) {
   return {
     name: form.name.trim(),
     icon: form.icon.trim() || '🌷',
-    enabled: form.enabled,
+    categoryType: form.categoryType || '',
     customRole: form.customRole || '',
+    navTier: form.navTier === 'primary' ? 'primary' : 'secondary',
+    parentId: form.parentId || '',
   }
 }
 
@@ -130,6 +132,24 @@ export async function reorderMerchantCategories(orderedIds: string[]): Promise<C
   }
   invalidateCacheModule('categories')
   return Array.isArray(result.list) ? result.list : []
+}
+
+export async function setCategoryNavTier(
+  id: string,
+  navTier: 'primary' | 'secondary',
+  parentId = '',
+): Promise<Category> {
+  const result = await callCategory({
+    action: 'setNavTier',
+    id,
+    navTier,
+    parentId,
+  })
+  if (!result.success || !result.category) {
+    throw new Error(result.errMsg || '调整分类层级失败')
+  }
+  invalidateCacheModule('categories')
+  return result.category
 }
 
 export function formatCategoryLabel(category: Pick<Category, 'icon' | 'name'>) {

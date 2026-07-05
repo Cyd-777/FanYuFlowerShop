@@ -1,0 +1,110 @@
+{
+  "bloom": {
+    "vase": "约 5—8 天",
+    "vaseNote": "重瓣矮向日葵",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.sunflower.vase_base",
+  "careVaseOverride": {
+    "summary": "泰迪熊重瓣向日葵；高瓶支撑，勤换水。",
+    "tips": [
+      "高瓶支撑花盘"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.sunflower",
+      "identity": {
+        "scientificName": "Helianthus 'Teddy Bear'",
+        "namingNote": "重瓣矮生向日葵，毛绒质感，可爱系",
+        "horticulturalGroup": "group.sunflower_cut",
+        "breeder": "商业切花向日葵培育",
+        "introducedYear": "2000 年代起切花向日葵"
+      },
+      "origin": {
+        "breedingOrigin": "商业化种植",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "金黄重瓣，花盘相对小，轮廓毛绒",
+        "scent": "几乎无香",
+        "stem": "茎干粗壮，花盘重，需高瓶支撑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "10 至 20"
+      }
+    },
+    "featureRefs": [
+      "trait.yellow_gold",
+      "trait.huge_flower"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "文森特",
+        "difference": "标准切花向日葵，与此品种形态或色调不同"
+      },
+      {
+        "name": "黑芯向日葵",
+        "difference": "深色花心向日葵，与此品种形态或色调不同"
+      },
+      {
+        "name": "泰迪熊",
+        "difference": "重瓣矮生向日葵，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花向日葵",
+      "namingNote": "重瓣矮生向日葵，毛绒质感，可爱系"
+    }
+  },
+  "language": {
+    "meaning": "可爱、阳光与「毛绒绒的小太阳」",
+    "paragraphs": [
+      "泰迪熊向日葵适合送朋友、儿童、家居——比标准向日葵更「萌」，花盘小、重瓣毛绒。",
+      "高瓶支撑；勤换水。与尤加利、小菊同插，整束更可爱。"
+    ],
+    "occasions": [
+      "送朋友",
+      "生日",
+      "家居",
+      "开业"
+    ],
+    "colorMeanings": [
+      {
+        "color": "金黄",
+        "meaning": "可爱、阳光"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "可爱",
+        "flowers": [
+          "小雏菊",
+          "尤加利叶"
+        ],
+        "note": "黄白绿"
+      }
+    ],
+    "caution": "花盘重；高瓶支撑。勤换水。"
+  },
+  "names": {
+    "scientificName": "Helianthus 'Teddy Bear'",
+    "commonNames": [
+      "Teddy Bear",
+      "泰迪熊"
+    ]
+  }
+}

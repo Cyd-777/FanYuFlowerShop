@@ -1,0 +1,124 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Miss Piggy'",
+    "commonNames": [
+      "Miss Piggy",
+      "猪小姐玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "渐变色，避直射",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "猪小姐为粉橙渐变玫瑰，渐变色对光照敏感，阴凉通风可稳定色泽。",
+    "tips": [
+      "渐变色避直射",
+      "勤换水保持花型"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Miss Piggy'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "namingNote": "粉橙渐变，名称来自活泼可爱的联想",
+        "introducedYear": "2010 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "外层粉橙、向内渐变，花型优美，开放后层次柔和",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.gradient_warm",
+      "trait.soft_pink"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "朱丽叶",
+        "difference": "奥斯汀杯状杏橙，而非现代切花渐变"
+      },
+      {
+        "name": "蜜桃雪山",
+        "difference": "雪山高杯杏色，而非粉橙渐变"
+      },
+      {
+        "name": "猪小姐",
+        "difference": "粉橙渐变、花型优美，温柔系混搭高频"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2010 年代",
+      "namingNote": "粉橙渐变，名称来自活泼可爱的联想"
+    }
+  },
+  "language": {
+    "meaning": "温柔、可爱与「软萌的高级感」",
+    "paragraphs": [
+      "猪小姐的粉橙渐变，比戴安娜更活泼、比朱丽叶更现代——适合送女友、闺蜜、生日，也适合「想可爱一点但不幼稚」的花束。",
+      "与白色、浅粉配花能强化温柔感；名称略俏皮，正式商务场合请斟酌。"
+    ],
+    "occasions": [
+      "生日",
+      "送女友",
+      "送闺蜜",
+      "表白"
+    ],
+    "colorMeanings": [
+      {
+        "color": "粉橙",
+        "meaning": "渐变、温柔、可爱"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "闺蜜生日",
+        "flowers": [
+          "粉雪山",
+          "洋桔梗"
+        ],
+        "note": "粉系层次"
+      },
+      {
+        "style": "表白",
+        "flowers": [
+          "白雪山",
+          "满天星"
+        ],
+        "note": "粉白温柔"
+      }
+    ],
+    "caution": "名称略俏皮；极正式场合（如严肃商务悼念）请换更庄重品种。"
+  }
+}

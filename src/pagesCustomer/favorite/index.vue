@@ -1,7 +1,7 @@
 <template>
-  <view class="page-favorite">
+  <view class="page-favorite" id="favorite-scroll-body">
     <AppNavBar />
-    <view v-if="loading" class="loading-tip">加载中…</view>
+    <view v-if="loading" class="loading-tip">{{ loadingTipText }}</view>
 
     <view v-else-if="list.length" class="goods-grid">
       <view
@@ -34,6 +34,10 @@
     </view>
 
     <nut-empty v-else description="还没有收藏的商品" />
+    <ScrollListTailSpacer
+      content-selector="#favorite-scroll-body"
+      :watch-key="`${loading}-${list.length}`"
+    />
   </view>
 </template>
 
@@ -52,6 +56,8 @@ import GoodsNewListingBadge from '@/components/GoodsNewListingBadge.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 import type { Goods } from '@/types/goods'
+
+const loadingTipText = '加载中…'
 
 type FavoriteCard = Goods & { imageUrl: string; previewUrl: string }
 

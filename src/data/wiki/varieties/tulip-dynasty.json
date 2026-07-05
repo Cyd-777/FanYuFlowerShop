@@ -1,0 +1,129 @@
+{
+  "names": {
+    "scientificName": "Tulipa 'Dynasty'",
+    "commonNames": [
+      "Dynasty",
+      "王朝郁金香"
+    ]
+  },
+  "bloom": {
+    "vase": "约 5—7 天",
+    "vaseNote": "喜冷凉，浅水养护；花茎会继续生长",
+    "vaseBySeason": [
+      {
+        "season": "春季",
+        "days": "约 5—7 天",
+        "note": "3—5 月应季"
+      }
+    ]
+  },
+  "careBaseRef": "care.tulip.vase_base",
+  "careVaseOverride": {
+    "summary": "王朝郁金香喜冷凉，浅水插瓶；花茎会继续伸长，可每日微调高度。",
+    "waterDepth": "浅水养护，水深约花瓶 1/4",
+    "tips": [
+      "花茎每日可能长高，可修剪调整",
+      "避免与成熟水果同放（乙烯）"
+    ],
+    "environment": {
+      "light": "明亮散射光，避开暖气与直射",
+      "avoid": [
+        "与苹果、香蕉等成熟水果同放"
+      ]
+    },
+    "commonIssues": [
+      {
+        "title": "花茎继续长高、整枝倒伏",
+        "cause": "郁金香插水后茎仍会生长，瓶口过窄",
+        "prevention": "较高花瓶；每日可微调高度；远离成熟水果"
+      }
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.tulip",
+      "identity": {
+        "scientificName": "Tulipa 'Dynasty'",
+        "horticulturalGroup": "group.tulip_single",
+        "breeder": "荷兰球根花卉育种",
+        "introducedYear": "球根切花长期商用品种",
+        "namingNote": "经典红色单瓣郁金香，高脚杯形，春节与春日极高频"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_trumpet"
+        ],
+        "bloomDiameterCm": "7 至 9",
+        "color": "正红，杯形线条挺拔，单朵极具识别度",
+        "stem": "花茎会继续生长，需预留瓶高空间",
+        "scent": "几乎无香或极淡"
+      }
+    },
+    "featureRefs": [
+      "trait.classic_red",
+      "trait.cup_trumpet",
+      "trait.cool_season"
+    ],
+    "cultivar": {
+      "horticulturalGroup": "单瓣郁金香",
+      "namingNote": "经典红色单瓣郁金香，高脚杯形"
+    },
+    "distinguishFrom": [
+      {
+        "name": "阿波罗",
+        "difference": "橙色，而非正红"
+      },
+      {
+        "name": "夜皇后",
+        "difference": "深紫近黑，神秘系"
+      },
+      {
+        "name": "王朝",
+        "difference": "正红高脚杯形，是「标准红郁金香」最常见辨识"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "爱的告白、经典与「春天的一杯红酒」",
+    "paragraphs": [
+      "王朝的红郁金香，线条比玫瑰更硬、更几何——适合表白、纪念日，以及一切「想要经典红色但不想送玫瑰」的时刻。",
+      "春日应季感强；与白色、黄色郁金香同插，能做出荷兰田园般的色彩节奏。"
+    ],
+    "occasions": [
+      "表白",
+      "春节",
+      "纪念日",
+      "春日赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "正红",
+        "meaning": "告白、经典、春日"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "荷兰春日",
+        "flowers": [
+          "纯金",
+          "白梦"
+        ],
+        "note": "红黄白郁金香组合"
+      },
+      {
+        "style": "极简告白",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "单品种红郁金香即可"
+      }
+    ],
+    "caution": "郁金香花茎会继续生长，瓶口勿过窄；远离暖气否则开放过快。"
+  }
+}

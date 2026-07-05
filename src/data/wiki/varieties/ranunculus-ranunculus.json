@@ -1,0 +1,109 @@
+{
+  "bloom": {
+    "vase": "约 5—7 天",
+    "vaseNote": "约 5—7 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.ranunculus.vase_base",
+  "careVaseOverride": {
+    "summary": "花毛茛层叠瓣形；轻拿轻放，清洁水质。",
+    "tips": [
+      "避免挤压"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.ranunculus",
+      "identity": {
+        "scientificName": "Ranunculus asiaticus",
+        "namingNote": "洋牡丹/花毛茛，层叠如纸，春日高端",
+        "horticulturalGroup": "group.ranunculus_cut",
+        "breeder": "荷兰 / 意大利花毛茛培育",
+        "introducedYear": "2000 年代起春日切花热"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色，重瓣层叠，开放后如纸花",
+        "scent": "淡香",
+        "stem": "茎干纤细，花头层叠",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "6 至 10"
+      }
+    },
+    "featureRefs": [
+      "trait.huge_flower",
+      "trait.soft_pink"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "牡丹",
+        "difference": "木本牡丹花更大、茎更粗，而非切花洋牡丹"
+      },
+      {
+        "name": "玫瑰",
+        "difference": "杯状月季，而非层叠纸感瓣形"
+      },
+      {
+        "name": "花毛茛",
+        "difference": "层叠如纸的瓣形，是春日高端切花代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花洋牡丹",
+      "namingNote": "洋牡丹/花毛茛，层叠如纸，春日高端"
+    }
+  },
+  "language": {
+    "meaning": "春日、精致与「层叠的纸感美」",
+    "paragraphs": [
+      "花毛茛是春日高端切花——层叠瓣形像纸做的一般，适合婚礼、纪念日。",
+      "茎纤细，轻拿；清洁水质，避挤压。"
+    ],
+    "occasions": [
+      "婚礼",
+      "春日",
+      "纪念日"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "精致、春日"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼",
+        "flowers": [
+          "郁金香",
+          "翠珠"
+        ],
+        "note": "春日"
+      }
+    ],
+    "caution": "瓣娇嫩；轻拿轻放。"
+  },
+  "names": {
+    "scientificName": "Ranunculus asiaticus",
+    "commonNames": [
+      "Ranunculus",
+      "花毛茛"
+    ]
+  }
+}

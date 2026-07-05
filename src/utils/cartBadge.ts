@@ -1,4 +1,5 @@
 import Taro from '@tarojs/taro'
+import { getCurrentPageRoute, isTabBarRoute } from '@/config/pageNav'
 
 /** 主包 tabBar 中购物车 Tab 的下标 */
 const CART_TAB_INDEX = 3
@@ -6,15 +7,17 @@ const CART_TAB_INDEX = 3
 const RETRY_DELAYS_MS = [0, 50, 200]
 
 function applyCartTabBadge(count: number) {
+  if (!isTabBarRoute(getCurrentPageRoute())) return
+
   try {
     if (count <= 0) {
-      void Taro.removeTabBarBadge({ index: CART_TAB_INDEX })
+      void Taro.removeTabBarBadge({ index: CART_TAB_INDEX }).catch(() => {})
       return
     }
     void Taro.setTabBarBadge({
       index: CART_TAB_INDEX,
       text: count > 99 ? '99+' : String(count),
-    })
+    }).catch(() => {})
   } catch (err) {
     console.warn('[cartBadge] update failed:', err)
   }

@@ -4,11 +4,11 @@
     <view class="hero">
       <view class="hero-icon">🐛</view>
       <view class="hero-title">Bug 反馈</view>
-      <view class="hero-desc">通过小程序自带的「反馈与投诉」提交问题，我们会尽快处理</view>
+      <view class="hero-desc">{{ uiText_339057 }}</view>
     </view>
 
     <view class="section">
-      <view class="section-title">如何提交</view>
+      <view class="section-title">{{ uiText_1a10c8 }}</view>
       <view
         v-for="(step, index) in steps"
         :key="step.title"
@@ -23,25 +23,34 @@
     </view>
 
     <view class="section">
-      <view class="section-title">选择反馈类型</view>
+      <view class="section-title">{{ uiText_4263b4 }}</view>
       <view class="type-card">
-        <view class="type-name">功能异常</view>
-        <view class="type-desc">小程序闪退、页面打不开、按钮无反应、数据错误等 Bug，请选此项</view>
+        <view class="type-name">{{ uiText_5d0278 }}</view>
+        <view class="type-desc">{{ uiText_6dbe9b }}</view>
       </view>
       <view class="type-card">
-        <view class="type-name">产品建议</view>
-        <view class="type-desc">功能想法、体验改进、文案或界面建议等，请选此项</view>
+        <view class="type-name">{{ uiText_47b165 }}</view>
+        <view class="type-desc">{{ uiText_7bbe1d }}</view>
       </view>
     </view>
 
     <view class="section tips-section">
-      <view class="section-title">填写建议</view>
+      <view class="section-title">{{ uiText_a4e70f }}</view>
       <view class="tips-text">{{ tipsText }}</view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
+
+const uiText_1a10c8 = '如何提交'
+const uiText_339057 = '通过小程序自带的「反馈与投诉」提交问题，我们会尽快处理'
+const uiText_4263b4 = '选择反馈类型'
+const uiText_47b165 = '产品建议'
+const uiText_5d0278 = '功能异常'
+const uiText_6dbe9b = '小程序闪退、页面打不开、按钮无反应、数据错误等 Bug，请选此项'
+const uiText_7bbe1d = '功能想法、体验改进、文案或界面建议等，请选此项'
+const uiText_a4e70f = '填写建议'
 const tipsText =
   '尽量写清楚：在哪个页面、做了什么操作、期望结果与实际结果。如有截图一并上传，便于我们快速定位问题。'
 

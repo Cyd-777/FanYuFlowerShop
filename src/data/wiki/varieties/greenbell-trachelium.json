@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "约 7—10 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.greenbell.vase_base",
+  "careVaseOverride": {
+    "summary": "翠珠配花；清洁水质，通风。",
+    "tips": [
+      "勤换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.greenbell",
+      "identity": {
+        "scientificName": "Greenbell",
+        "namingNote": "绿色小球配花，独特可爱",
+        "horticulturalGroup": "group.fill_flower",
+        "breeder": "欧洲切花配花培育",
+        "introducedYear": "2010 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "绿色小球沿细枝，整体轻盈",
+        "scent": "几乎无香",
+        "stem": "细枝上挂小球形花苞",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "3 至 5"
+      }
+    },
+    "featureRefs": [
+      "trait.green_orb"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "满天星",
+        "difference": "白色雾状细花，而非绿色小球"
+      },
+      {
+        "name": "尤加利叶",
+        "difference": "叶材线条，而非小球花苞"
+      },
+      {
+        "name": "翠珠",
+        "difference": "绿色小球沿枝，是近年热门配花"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花配花",
+      "namingNote": "绿色小球配花，独特可爱"
+    }
+  },
+  "language": {
+    "meaning": "独特、配花与「绿色的小星球」",
+    "paragraphs": [
+      "翠珠是近年很红的配花——绿色小球独特，与粉、白主花同插，立刻有「会呼吸的绿」。",
+      "清洁水质；通风。"
+    ],
+    "occasions": [
+      "配花",
+      "婚礼",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "绿",
+        "meaning": "独特、清新"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "配花",
+        "flowers": [
+          "玫瑰",
+          "洋桔梗"
+        ],
+        "note": "绿+粉白"
+      }
+    ],
+    "caution": "勤换水；通风。"
+  },
+  "names": {
+    "scientificName": "Greenbell",
+    "commonNames": [
+      "Green Bell",
+      "翠珠"
+    ]
+  }
+}

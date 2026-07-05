@@ -37,29 +37,15 @@ export const useUserStore = defineStore('user', () => {
     return result
   }
 
-  /** @deprecated 使用 doLoginWechat */
-  async function doLogin() {
-    return doLoginWechat()
-  }
-
   function isMerchant(): boolean {
     return role.value === UserRole.Merchant
   }
 
-  function isCustomer(): boolean {
-    return role.value === UserRole.Customer
-  }
-
   return {
-    userId,
     profile,
-    role,
-    isLoggedIn,
-    doLogin,
     doLoginWechat,
     doLoginPhone,
     syncSession,
     isMerchant,
-    isCustomer,
   }
 })

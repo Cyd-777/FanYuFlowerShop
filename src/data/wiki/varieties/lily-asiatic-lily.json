@@ -1,0 +1,115 @@
+{
+  "names": {
+    "scientificName": "Lilium asiatic hybrid",
+    "commonNames": [
+      "Asiatic Lily",
+      "亚百合"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—12 天",
+    "vaseNote": "几乎无香，适合花香敏感者",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.lily.vase_base",
+  "careVaseOverride": {
+    "summary": "亚百合几乎无香，适合花香敏感者与封闭空间；勤换水、斜剪根即可。",
+    "tips": [
+      "无香品种可保留花蕊（仍建议摘除以防花粉）",
+      "多色可选，适合色彩丰富的混合花束"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.lily",
+      "identity": {
+        "scientificName": "Lilium asiatic hybrid",
+        "horticulturalGroup": "group.asiatic_lily",
+        "namingNote": "几乎无香，色彩丰富，花香敏感者友好",
+        "breeder": "荷兰百合育种体系",
+        "introducedYear": "1990 年代起"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.ecuador",
+          "region.colombia"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [],
+        "bloomDiameterCm": "16 至 22",
+        "color": "橙、黄、粉、白等多色，瓣形向上开放，色彩饱和",
+        "stem": "茎干粗壮，建议高瓶或深瓶支撑",
+        "foliage": "叶片狭长，沿茎分布",
+        "scent": "几乎无香"
+      }
+    },
+    "featureRefs": [
+      "trait.yellow_gold"
+    ],
+    "origin": "主产区中国云南、厄瓜多尔、哥伦比亚等地",
+    "cultivar": {
+      "horticulturalGroup": "亚洲百合",
+      "namingNote": "几乎无香，色彩丰富，花香敏感者友好"
+    },
+    "distinguishFrom": [
+      {
+        "name": "东方百合",
+        "difference": "东方系多浓香，亚百合几乎无香"
+      },
+      {
+        "name": "OT 百合",
+        "difference": "OT 花更大、更香"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "友好、日常与「有色彩但不熏人」",
+    "paragraphs": [
+      "亚百合是「想送百合但对方怕香」时的稳妥选择——色彩可以很热闹，但几乎不会熏满整个房间。",
+      "适合办公室、卧室、探望老人小孩，以及一切需要色彩但不想浓香的环境。"
+    ],
+    "occasions": [
+      "探望",
+      "办公室",
+      "日常家居",
+      "花香敏感者"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "友好、日常、无香"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "色彩混合",
+        "flowers": [
+          "康乃馨",
+          "洋桔梗"
+        ],
+        "note": "多色同插，活泼"
+      },
+      {
+        "style": "简约办公",
+        "flowers": [
+          "绿康"
+        ],
+        "note": "单品种多色也可"
+      }
+    ],
+    "caution": "虽无香，花粉仍可能沾染，开放后可摘花蕊更整洁。"
+  }
+}

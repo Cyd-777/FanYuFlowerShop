@@ -1,0 +1,90 @@
+{
+  "bloom": {
+    "vase": "盆栽观赏因品种而异",
+    "vaseNote": "盆栽观赏"
+  },
+  "careBaseRef": "care.potted.vase_base",
+  "careVaseOverride": {
+    "summary": "茉莉花盆栽见干见湿，充足光照，花期可施薄肥。",
+    "tips": [
+      "充足光照易开花"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.potted",
+      "identity": {
+        "scientificName": "Jasminum sambac",
+        "namingNote": "观花闻香盆栽，夏季常见",
+        "horticulturalGroup": "group.potted_ornamental"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "白色小花，叶片深绿",
+        "scent": "浓香，夏季明显",
+        "stem": "以盆栽株形观赏为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.strong_scent",
+      "trait.pure_white"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "蝴蝶兰",
+        "difference": "高端盆栽礼品，与此品种形态或色调不同"
+      },
+      {
+        "name": "富贵竹",
+        "difference": "水培/土培皆可，与此品种形态或色调不同"
+      },
+      {
+        "name": "茉莉花",
+        "difference": "观花闻香盆栽，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "室内盆栽",
+      "namingNote": "观花闻香盆栽，夏季常见"
+    }
+  },
+  "language": {
+    "meaning": "清香、日常与「可闻可看的盆栽」",
+    "paragraphs": [
+      "茉莉花盆栽适合喜欢花香的人——夏季开放，阳台、窗台都很合适；与纯切花不同，是「可以养很久的香」。",
+      "见干见湿，充足光照；开花期可施薄肥。"
+    ],
+    "occasions": [
+      "家居",
+      "阳台",
+      "赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "白",
+        "meaning": "清香、日常"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "阳台",
+        "flowers": [],
+        "note": "单盆即可"
+      }
+    ],
+    "caution": "浓香；需要充足光照才易开花。"
+  },
+  "names": {
+    "scientificName": "Jasminum sambac",
+    "commonNames": [
+      "Jasmine",
+      "茉莉花"
+    ]
+  }
+}

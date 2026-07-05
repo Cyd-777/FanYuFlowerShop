@@ -82,6 +82,9 @@ function pickOrder(doc) {
     customerOpenid: doc.customerOpenid || '',
     status,
     riderStatus,
+    deliveryMethod: doc.deliveryMethod || 'home_delivery',
+    merchantDelivery: doc.merchantDelivery || '',
+    verifyToken: doc.verifyToken || '',
     items: Array.isArray(doc.items) ? doc.items : [],
     totalAmount: Number(doc.totalAmount) || 0,
     remark: doc.remark || '',
@@ -92,6 +95,8 @@ function pickOrder(doc) {
     acceptedAt: doc.acceptedAt,
     preparingAt: doc.preparingAt,
     prepDoneAt: doc.prepDoneAt,
+    readyAt: doc.readyAt,
+    deliveringAt: doc.deliveringAt,
     riderCalledAt: doc.riderCalledAt,
   }
 }
@@ -382,7 +387,19 @@ async function buildOrderItems(rawItems, goodsMap) {
 }
 
 async function createOrder(event, customerOpenid) {
-  const address = normalizeAddress(event.address)
+  const deliveryMethod = String(event.deliveryMethod || 'home_delivery').trim()
+  if (deliveryMethod !== 'pickup' && deliveryMethod !== 'home_delivery') {
+    throw new Error('无效的配送方式')
+  }
+
+  const address = deliveryMethod === 'pickup' ? {} : normalizeAddress(event.address)
+
+  // 自提订单生成核销令牌
+  let verifyToken = ''
+  if (deliveryMethod === 'pickup') {
+    verifyToken = `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+  }
+
   const remark = String(event.remark || '').trim()
 
   const rawItems = event.items
@@ -418,6 +435,8 @@ async function createOrder(event, customerOpenid) {
         customerOpenid,
         status: 'pending',
         riderStatus: 'none',
+        deliveryMethod,
+        verifyToken: verifyToken || '',
         items: orderItems,
         totalAmount: Math.round(totalAmount * 100) / 100,
         remark,
@@ -572,26 +591,46 @@ async function updateOrderStatus(event, operatorOpenid) {
   } else if (nextStatus === 'preparing' && current === 'accepted') {
     patch.status = 'preparing'
     patch.preparingAt = db.serverDate()
-    patch.riderStatus = 'waiting'
-    patch.riderCalledAt = db.serverDate()
-    await callRider(orderDoc)
+    // 不再自动呼叫骑手，由商户在「制作完成」后手动选择配送方式
   } else if (nextStatus === 'prep_done' && current === 'preparing') {
     patch.status = 'prep_done'
     patch.prepDoneAt = db.serverDate()
-    if (currentRider === 'none') {
+    // 自提订单：准备完成等待取货
+    if (orderDoc.deliveryMethod === 'pickup') {
+      patch.status = 'ready'
+      patch.readyAt = db.serverDate()
+    } else if (currentRider === 'none') {
       patch.riderStatus = 'waiting'
       patch.riderCalledAt = db.serverDate()
       await callRider(orderDoc)
     }
   } else if (nextStatus === 'completed' && current === 'preparing') {
     // 兼容旧客户端：processing → completed 视为制作完成
-    patch.status = 'prep_done'
-    patch.prepDoneAt = db.serverDate()
-    if (currentRider === 'none') {
-      patch.riderStatus = 'waiting'
-      patch.riderCalledAt = db.serverDate()
-      await callRider(orderDoc)
+    if (orderDoc.deliveryMethod === 'pickup') {
+      patch.status = 'ready'
+      patch.readyAt = db.serverDate()
+    } else {
+      patch.status = 'prep_done'
+      patch.prepDoneAt = db.serverDate()
+      if (currentRider === 'none') {
+        patch.riderStatus = 'waiting'
+        patch.riderCalledAt = db.serverDate()
+        await callRider(orderDoc)
+      }
     }
+  } else if (nextStatus === 'delivering' && (current === 'prep_done' || current === 'preparing')) {
+    // 自配送：商家自己送（可从 preparing 或 prep_done 进入）
+    patch.status = 'delivering'
+    patch.merchantDelivery = 'self'
+    patch.deliveringAt = db.serverDate()
+  } else if (nextStatus === 'ready' && current === 'preparing' && orderDoc.deliveryMethod === 'pickup') {
+    // 自提：备货中直接到已备好
+    patch.status = 'ready'
+    patch.readyAt = db.serverDate()
+  } else if (nextStatus === 'completed' && current === 'delivering') {
+    // 自配送：确认送达
+    patch.status = 'completed'
+    patch.completedAt = db.serverDate()
   } else {
     throw new Error('无效的状态变更')
   }
@@ -763,6 +802,56 @@ exports.main = async (event) => {
       return {
         success: false,
         errMsg: err.message || err.errMsg || '获取订单统计失败',
+      }
+    }
+  }
+
+  if (action === 'verifyPickup') {
+    try {
+      const merchant = await isMerchant(openid)
+      if (!merchant) {
+        return { success: false, errMsg: '无权限核销自提订单' }
+      }
+
+      const id = String(event.id || '').trim()
+      const token = String(event.token || '').trim()
+      if (!id || !token) {
+        return { success: false, errMsg: '缺少订单信息' }
+      }
+
+      await ensureCollection('orders')
+      const { data } = await db.collection('orders').doc(id).get()
+      if (!data) {
+        return { success: false, errMsg: '订单不存在' }
+      }
+      if (data.verifyToken !== token) {
+        return { success: false, errMsg: '核销码无效' }
+      }
+      if (data.deliveryMethod !== 'pickup') {
+        return { success: false, errMsg: '非自提订单，无法核销' }
+      }
+      if (data.status === 'completed') {
+        return { success: false, errMsg: '订单已完成，请勿重复核销' }
+      }
+      if (data.status !== 'ready') {
+        return { success: false, errMsg: '订单尚未备好，暂无法核销' }
+      }
+
+      await db.collection('orders').doc(id).update({
+        data: {
+          status: 'completed',
+          completedAt: db.serverDate(),
+          updatedAt: db.serverDate(),
+        },
+      })
+
+      await safeBumpCacheModule('goods')
+      const { data: updated } = await db.collection('orders').doc(id).get()
+      return { success: true, order: pickOrder(updated) }
+    } catch (err) {
+      return {
+        success: false,
+        errMsg: err.message || err.errMsg || '核销失败',
       }
     }
   }

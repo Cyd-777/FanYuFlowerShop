@@ -9,6 +9,7 @@
   "bloom": {
     "vase": "",
     "vaseNote": "",
+    "vaseBySeason": [],
     "soil": "",
     "soilNote": ""
   },
@@ -16,10 +17,31 @@
     "summary": "",
     "vaseLife": "",
     "vaseLifeNote": "",
+    "wakeUp": {
+      "summary": "",
+      "steps": [],
+      "trim": "",
+      "trimPosition": "",
+      "waterDepth": "",
+      "headClearance": "",
+      "duration": "",
+      "environment": ""
+    },
     "waterChange": "",
     "trim": "",
+    "trimPosition": "",
     "waterDepth": "",
-    "environment": "",
+    "environment": {
+      "light": "",
+      "airflow": "",
+      "placement": "",
+      "avoid": []
+    },
+    "additives": "",
+    "emergency": {
+      "title": "",
+      "steps": []
+    },
     "tips": []
   },
   "careSoil": {
@@ -32,9 +54,18 @@
   },
   "atlas": {
     "summary": "",
+    "paragraphs": [],
     "features": [],
     "bloomSeason": "",
-    "origin": ""
+    "origin": "",
+    "cultivar": {
+      "horticulturalGroup": "",
+      "breeder": "",
+      "introducedYear": "",
+      "namingNote": ""
+    },
+    "productionRegions": [],
+    "distinguishFrom": []
   },
   "taxonomy": {
     "kingdom": "植物界",
@@ -58,9 +89,12 @@
   },
   "language": {
     "summary": "",
+    "paragraphs": [],
     "meaning": "",
     "occasions": [],
-    "colorMeanings": []
+    "colorMeanings": [],
+    "pairing": [],
+    "caution": ""
   },
   "keywords": [],
   "aliases": [],

@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "约 7—10 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.forget-me-not.vase_base",
+  "careVaseOverride": {
+    "summary": "勿忘我；清洁水质，可倒挂制干花。",
+    "tips": [
+      "可制干花"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.forget-me-not",
+      "identity": {
+        "scientificName": "Myosotis sylvatica",
+        "namingNote": "蓝色细碎小花，干花与配花常用",
+        "horticulturalGroup": "group.forget_me_not_cut",
+        "breeder": "欧洲切花配花培育",
+        "introducedYear": "2010 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "蓝色细碎，整体星点状",
+        "scent": "几乎无香",
+        "stem": "细枝多花，适合干花",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "细碎小花"
+      }
+    },
+    "featureRefs": [
+      "trait.tiny_cluster"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "满天星",
+        "difference": "白色雾状，而非蓝色星点"
+      },
+      {
+        "name": "翠珠",
+        "difference": "绿色小球，而非蓝色细花"
+      },
+      {
+        "name": "勿忘我",
+        "difference": "蓝色细碎，常作「记得你」配花或干花"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花勿忘我",
+      "namingNote": "蓝色细碎小花，干花与配花常用"
+    }
+  },
+  "language": {
+    "meaning": "记忆、陪伴与「很小的一束蓝」",
+    "paragraphs": [
+      "勿忘我常作配花或干花——表达「记得你」；与玫瑰、满天星同插，或倒挂制干花保留。",
+      "清洁水质；可制干花。"
+    ],
+    "occasions": [
+      "配花",
+      "干花",
+      "纪念"
+    ],
+    "colorMeanings": [
+      {
+        "color": "蓝",
+        "meaning": "记忆、陪伴"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "配花",
+        "flowers": [
+          "玫瑰",
+          "满天星"
+        ],
+        "note": "蓝+白"
+      }
+    ],
+    "caution": "可制干花；勤换水。"
+  },
+  "names": {
+    "scientificName": "Myosotis sylvatica",
+    "commonNames": [
+      "Myosotis",
+      "勿忘我"
+    ]
+  }
+}

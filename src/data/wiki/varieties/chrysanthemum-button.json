@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 10—14 天",
+    "vaseNote": "配花小菊",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.chrysanthemum.vase_base",
+  "careVaseOverride": {
+    "summary": "纽扣菊多色小头；勤换水，枯头及时剪。",
+    "tips": [
+      "枯谢小头及时剪除"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.chrysanthemum",
+      "identity": {
+        "scientificName": "Chrysanthemum 'Button'",
+        "namingNote": "纽扣状小菊，色彩多，配花高频",
+        "horticulturalGroup": "group.chrysanthemum_cut",
+        "breeder": "中国切花菊培育",
+        "introducedYear": "1990 年代起切花菊体系"
+      },
+      "origin": {
+        "breedingOrigin": "中国",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色，花头小、圆，如纽扣",
+        "scent": "几乎无香",
+        "stem": "茎干挺直，耐插",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "5 至 12"
+      }
+    },
+    "featureRefs": [
+      "trait.multi_head"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "乒乓菊",
+        "difference": "球形小菊，与此品种形态或色调不同"
+      },
+      {
+        "name": "小雏菊",
+        "difference": "扁瓣小菊，与此品种形态或色调不同"
+      },
+      {
+        "name": "纽扣菊",
+        "difference": "纽扣状小菊，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花菊",
+      "namingNote": "纽扣状小菊，色彩多，配花高频"
+    }
+  },
+  "language": {
+    "meaning": "点缀、色彩与「把空隙填满」",
+    "paragraphs": [
+      "纽扣菊的价值在「填色」——主花之间的空隙，用它填满立刻热闹。",
+      "耐插；枯谢小头及时剪除。"
+    ],
+    "occasions": [
+      "配花",
+      "家居",
+      "开业填充"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "点缀、热闹"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "配花",
+        "flowers": [
+          "玫瑰",
+          "康乃馨"
+        ],
+        "note": "填色"
+      }
+    ],
+    "caution": "枯谢小头及时剪除。"
+  },
+  "names": {
+    "scientificName": "Chrysanthemum 'Button'",
+    "commonNames": [
+      "Button",
+      "纽扣菊"
+    ]
+  }
+}

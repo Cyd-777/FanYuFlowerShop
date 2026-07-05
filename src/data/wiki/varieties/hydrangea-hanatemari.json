@@ -1,0 +1,119 @@
+{
+  "bloom": {
+    "vase": "约 5—10 天",
+    "vaseNote": "重瓣大花绣球，需充足吸水",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.hydrangea.vase_base",
+  "careVaseOverride": {
+    "summary": "花手鞠花球大、吸水多；深水瓶养，可喷雾保湿，茎部可十字剪。",
+    "tips": [
+      "吸水不足时可十字剪或烫茎",
+      "每日喷雾保湿"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.hydrangea",
+      "identity": {
+        "scientificName": "Hydrangea 'Hanatemari'",
+        "namingNote": "重瓣大花绣球，花球极大，日式高级花束常见",
+        "horticulturalGroup": "group.hydrangea_mophead",
+        "breeder": "欧美园艺绣球培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "蓝或粉紫，重瓣层叠，花球直径大、轮廓圆润饱满",
+        "scent": "几乎无香",
+        "stem": "茎干粗壮，吸水需求大",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "15 至 25"
+      }
+    },
+    "featureRefs": [
+      "trait.spray_ball",
+      "trait.huge_flower"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "无尽夏",
+        "difference": "可调色单瓣感，而非重瓣大花球"
+      },
+      {
+        "name": "头花",
+        "difference": "花球中等，性价比路线"
+      },
+      {
+        "name": "花手鞠",
+        "difference": "重瓣、花球极大，是高端绣球代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "大花绣球",
+      "namingNote": "重瓣大花绣球，花球极大，日式高级花束常见"
+    }
+  },
+  "language": {
+    "meaning": "圆满、隆重与「一束就很满」",
+    "paragraphs": [
+      "花手鞠的绣球不是点缀，而是主花——一个花球就能撑住整束的分量，适合婚礼、开业、高端庆典。",
+      "吸水大是绣球共性，收到后建议十字剪或深水瓶养；喷雾保湿可延长观赏。"
+    ],
+    "occasions": [
+      "婚礼",
+      "开业",
+      "高端庆典",
+      "家居主花"
+    ],
+    "colorMeanings": [
+      {
+        "color": "蓝/粉紫",
+        "meaning": "圆满、隆重、高级感"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼主花",
+        "flowers": [
+          "白玫瑰",
+          "尤加利叶"
+        ],
+        "note": "蓝白或粉白"
+      },
+      {
+        "style": "开业贺礼",
+        "flowers": [
+          "绿康",
+          "百合"
+        ],
+        "note": "大气满瓶"
+      }
+    ],
+    "caution": "吸水不足易萎蔫；可十字剪或烫茎急救。喷雾保湿。"
+  },
+  "names": {
+    "scientificName": "Hydrangea 'Hanatemari'",
+    "commonNames": [
+      "Hanatemari",
+      "花手鞠"
+    ]
+  }
+}

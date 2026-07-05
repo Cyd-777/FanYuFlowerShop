@@ -1,10 +1,10 @@
 <template>
   <view class="page-stock-out" :class="{ 'has-footer': lines.length }">
     <AppNavBar />
-    <view v-if="!lines.length" class="empty-tip">暂无出库项，请从商品列表批量选择后进入</view>
+    <view v-if="!lines.length" class="empty-tip">{{ uiText_9f31dd }}</view>
 
     <view v-else>
-      <view class="mode-tip">已选商品，请用计数器设置出库数量（不可超过当前可售数）</view>
+      <view class="mode-tip">{{ uiText_dac8d4 }}</view>
       <view class="line-list">
         <view
           v-for="line in lines"
@@ -14,7 +14,7 @@
         >
           <view class="line-main">
             <view class="line-name">{{ line.name }}</view>
-            <view v-if="line.currentStock <= 0" class="line-status warn">当前无可售数</view>
+            <view v-if="line.currentStock <= 0" class="line-status warn">{{ uiText_8598ae }}</view>
             <view v-else class="line-status ok">
               当前可售 {{ line.currentStock }}{{ line.unit || '件' }}
             </view>
@@ -68,6 +68,10 @@
 import { computed } from 'vue'
 import AppNavBar from '@/components/AppNavBar.vue'
 import { usePageData } from '@/composables/usePageData'
+
+const uiText_8598ae = '当前无可售数'
+const uiText_9f31dd = '暂无出库项，请从商品列表批量选择后进入'
+const uiText_dac8d4 = '已选商品，请用计数器设置出库数量（不可超过当前可售数）'
 
 const {
   lines,

@@ -1,58 +1,72 @@
 <template>
-  <view class="page-merchant-order">
+  <view class="page-merchant-order" id="merchant-order-list-scroll-body">
     <AppNavBar />
-    <OrderListStatusTabs v-model="activeTab" />
+    <view class="order-list-tabs-sticky page-sticky-tabs" :style="navSearchStickyStyle">
+      <OrderListStatusTabs v-model="activeTab" />
+    </view>
 
-    <view v-if="loading" class="loading-tip">加载中…</view>
+    <view v-if="loading" class="loading-tip">{{ loadingTipText }}</view>
 
     <template v-else>
-      <view
+      <OrderListCard
         v-for="order in orders"
         :key="order._id"
-        class="order-card"
-        @click="goDetail(order._id)"
+        :order="order"
+        @tap="goDetail(order._id)"
       >
-        <view class="order-header">
-          <text class="order-no">{{ order.orderNo }}</text>
-          <text class="order-status">{{ statusLabel(order) }}</text>
-        </view>
-        <view class="order-body">
-          <GoodsImage :src="previewImage(order)" root-class="thumb" />
-          <view class="info">
-            <view class="name">{{ previewName(order) }}</view>
-            <view class="address">{{ order.address.fullText }}</view>
-            <view class="qty">共 {{ totalCount(order) }} 件 · ¥{{ formatPrice(order.totalAmount) }}</view>
-          </view>
-        </view>
-        <view v-if="order.status === 'pending'" class="order-footer">
+        <template v-if="order.status === 'pending'" #footer>
           <nut-button size="small" type="primary" @click.stop="acceptOrder(order._id)">
             接单
           </nut-button>
-        </view>
-      </view>
+        </template>
+      </OrderListCard>
 
       <nut-empty v-if="!orders.length" description="暂无订单" />
     </template>
+    <ScrollListTailSpacer
+      content-selector="#merchant-order-list-scroll-body"
+      :watch-key="`${loading}-${orders.length}-${activeTab}`"
+    />
   </view>
 </template>
 
 <script setup lang="ts">
 import { showToast } from '@/utils/feedback'
-import { ref, watch } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import { listMerchantOrders, updateOrderStatus } from '@/services/order'
 import type { OrderListTab } from '@/services/order'
 import { navigateTo } from '@/utils/router'
-import GoodsImage from '@/components/GoodsImage.vue'
+import OrderListCard from '@/components/OrderListCard.vue'
 import OrderListStatusTabs from '@/components/OrderListStatusTabs.vue'
+import { usePageSticky } from '@/composables/usePageSticky'
 import type { Order } from '@/types/order'
-import { getOrderProgressLabel } from '@/types/order'
+
+const loadingTipText = '加载中…'
+
+const { navSearchStickyStyle } = usePageSticky()
 
 type TabKey = OrderListTab
 
 const activeTab = ref<TabKey>('all')
 const orders = ref<Order[]>([])
 const loading = ref(false)
+let pollTimer: ReturnType<typeof setInterval> | null = null
+
+/** 30 秒轮询新订单 */
+function startPolling() {
+  stopPolling()
+  pollTimer = setInterval(() => {
+    void loadOrders()
+  }, 30000)
+}
+
+function stopPolling() {
+  if (pollTimer) {
+    clearInterval(pollTimer)
+    pollTimer = null
+  }
+}
 
 useLoad((options) => {
   const status = typeof options?.status === 'string' ? options.status : 'all'
@@ -65,10 +79,15 @@ useLoad((options) => {
 
 useDidShow(() => {
   void loadOrders()
+  startPolling()
 })
 
 watch(activeTab, () => {
   void loadOrders()
+})
+
+onUnmounted(() => {
+  stopPolling()
 })
 
 async function loadOrders() {
@@ -84,29 +103,6 @@ async function loadOrders() {
   } finally {
     loading.value = false
   }
-}
-
-function statusLabel(order: Order) {
-  return getOrderProgressLabel(order)
-}
-
-function previewImage(order: Order) {
-  return order.items[0]?.image || ''
-}
-
-function previewName(order: Order) {
-  const first = order.items[0]
-  if (!first) return '商品'
-  if (order.items.length <= 1) return first.name
-  return `${first.name} 等${order.items.length}件`
-}
-
-function totalCount(order: Order) {
-  return order.items.reduce((sum, item) => sum + item.count, 0)
-}
-
-function formatPrice(price: number) {
-  return Number(price).toFixed(2).replace(/\.00$/, '')
 }
 
 function goDetail(id: string) {
@@ -138,71 +134,5 @@ async function acceptOrder(id: string) {
   text-align: center;
   font-size: 26rpx;
   color: #999;
-}
-.order-card {
-  background: #fff;
-  margin: 16rpx;
-  border-radius: 12rpx;
-  padding: 24rpx;
-}
-.order-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16rpx;
-  gap: 16rpx;
-}
-.order-no {
-  flex: 1;
-  font-size: 22rpx;
-  color: #999;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.order-status {
-  flex-shrink: 0;
-  font-size: 24rpx;
-  color: #e53935;
-}
-.order-body {
-  display: flex;
-}
-.thumb {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 8rpx;
-  flex-shrink: 0;
-}
-.info {
-  margin-left: 16rpx;
-  flex: 1;
-  min-width: 0;
-}
-.name {
-  font-size: 26rpx;
-  color: #333;
-}
-.address {
-  margin-top: 6rpx;
-  font-size: 22rpx;
-  color: #999;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-.qty {
-  margin-top: 8rpx;
-  font-size: 24rpx;
-  color: #666;
-}
-.order-footer {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16rpx;
-  padding-top: 16rpx;
-  border-top: 2rpx solid #f5f5f5;
 }
 </style>

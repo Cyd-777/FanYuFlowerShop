@@ -1,11 +1,14 @@
 <template>
-  <view class="page-cart page-nav-overlay-safe" :style="navCssVars">
+  <view class="page-cart page-nav-overlay-safe" :style="navCssVars" id="cart-page-scroll-body">
     <AppNavBar />
-    <view v-if="syncing" class="sync-tip">正在同步商品信息…</view>
+    <view v-if="syncing" class="sync-tip">{{ syncTipText }}</view>
 
     <view class="empty-state" v-if="!syncing && !items.length">
-      <view class="empty-text">{{ emptyText }}</view>
-      <view class="primary-btn" @tap="goHome">{{ goHomeText }}</view>
+      <nut-empty :description="emptyText" />
+      <view class="empty-link" hover-class="empty-link--active" @tap="goHome">
+        <text>{{ goHomeText }}</text>
+        <AppIcon type="单箭头右" :size="14" />
+      </view>
     </view>
 
     <view class="cart-list" v-else-if="items.length">
@@ -25,8 +28,8 @@
           <view v-if="item.customSummary" class="custom-summary">{{ item.customSummary }}</view>
           <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="price" />
           <template v-if="item.kind === 'goods'">
-            <view class="stock-tip sold-out" v-if="item.stock <= 0">已售罄</view>
-            <view class="stock-tip" v-else-if="item.count >= item.stock">已达库存上限</view>
+            <view class="stock-tip sold-out" v-if="item.stock <= 0">{{ soldOutText }}</view>
+            <view class="stock-tip" v-else-if="item.count >= item.stock">{{ stockLimitText }}</view>
             <view class="qty" @tap.stop>
               <view class="qty-btn" @tap="decrease(item.lineKey)">−</view>
               <text class="num">{{ item.count }}</text>
@@ -37,11 +40,18 @@
               >+</view>
             </view>
           </template>
-          <view v-else class="stock-tip">花艺师将按意向搭配</view>
+          <view v-else class="stock-tip">{{ customMatchText }}</view>
         </view>
-        <view class="remove-btn" @tap="remove(item.lineKey)">删除</view>
+        <view class="remove-btn" @tap="remove(item.lineKey)">{{ removeText }}</view>
       </view>
     </view>
+
+    <ScrollListTailSpacer
+      content-selector="#cart-page-scroll-body"
+      tab-bar
+      :bottom-inset-px="cartFooterInsetPx"
+      :watch-key="`${items.length}-${syncing}`"
+    />
 
     <view class="footer" v-if="items.length">
       <view class="check-all" @tap="toggleAll">
@@ -61,11 +71,20 @@ import { useDidShow } from '@tarojs/taro'
 import { useCartPanelActions } from '@/composables/useCartPanelActions'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
+import AppIcon from '@/components/AppIcon.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
+import { scrollTailActionBarInsetPx } from '@/utils/scrollListTailSpacer'
 
 const { cssVars: navCssVars } = useNavBarLayout()
-const goHomeText = '去逛逛'
+const cartFooterInsetPx = scrollTailActionBarInsetPx()
+const syncTipText = '正在同步商品信息…'
+const emptyText = '购物车还是空的'
+const goHomeText = '去首页逛逛'
+const soldOutText = '已售罄'
+const stockLimitText = '已达库存上限'
+const customMatchText = '花艺师将按意向搭配'
+const removeText = '删除'
 const allCheckText = '全选'
 const totalLabel = '合计:'
 const checkoutText = '结算'
@@ -113,12 +132,19 @@ useDidShow(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 200rpx;
+  padding: 120rpx 48rpx 0;
 }
-.empty-text {
-  font-size: @font-size-md;
-  color: @color-text-tertiary;
-  margin-bottom: 32rpx;
+.empty-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: @color-primary;
+  padding: 8rpx 0;
+}
+.empty-link--active {
+  opacity: 0.65;
 }
 .primary-btn {
   min-width: 240rpx;

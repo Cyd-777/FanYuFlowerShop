@@ -1,0 +1,124 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Quicksand'",
+    "commonNames": [
+      "Quicksand",
+      "流沙玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "裸粉低饱和，避强光",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "流沙为裸粉低饱和玫瑰，避直射可减缓褪色，勤换水可稳定观赏期。",
+    "tips": [
+      "低饱和色系避强光",
+      "勤换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Quicksand'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "namingNote": "Quicksand 流沙，形容裸粉如细沙般柔和",
+        "introducedYear": "2010 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "裸粉或灰调粉，低饱和，开放后仍保持温柔",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.nude_pink",
+      "trait.muted_retro"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "粉雪山",
+        "difference": "更偏清晰柔粉，而非裸粉灰调"
+      },
+      {
+        "name": "曼塔",
+        "difference": "灰紫，而非裸粉"
+      },
+      {
+        "name": "流沙",
+        "difference": "裸粉低饱和、温柔，婚礼与莫兰迪混搭高频"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2010 年代",
+      "namingNote": "Quicksand 流沙，形容裸粉如细沙般柔和"
+    }
+  },
+  "language": {
+    "meaning": "温柔、裸感与「很婚礼的粉」",
+    "paragraphs": [
+      "流沙的裸粉，是婚礼与摄影里极常见的「高级粉」——比粉雪山更灰、更柔，适合韩式婚礼、求婚、送新娘。",
+      "与曼塔、卡布奇诺等同系搭配，整体非常协调；单独一束也很有气质。"
+    ],
+    "occasions": [
+      "婚礼",
+      "求婚",
+      "送新娘",
+      "拍照"
+    ],
+    "colorMeanings": [
+      {
+        "color": "裸粉",
+        "meaning": "低饱和、温柔、婚礼风"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "韩式婚礼",
+        "flowers": [
+          "曼塔",
+          "白雪山"
+        ],
+        "note": "裸粉灰紫白"
+      },
+      {
+        "style": "求婚",
+        "flowers": [
+          "尤加利叶",
+          "喷泉草"
+        ],
+        "note": "裸粉绿柔"
+      }
+    ],
+    "caution": "裸粉在强光下易偏白；运输挤压后渐变色可能不均。"
+  }
+}

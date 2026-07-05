@@ -1,0 +1,125 @@
+{
+  "names": {
+    "scientificName": "Lilium longiflorum",
+    "commonNames": [
+      "Longiflorum",
+      "铁炮百合",
+      "长瓣百合"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—12 天",
+    "vaseNote": "喇叭形长瓣百合，清香自然",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.lily.vase_base",
+  "careVaseOverride": {
+    "summary": "铁炮百合为喇叭形长瓣百合，清香自然；勤换水、斜剪根，适合自然风与野趣花束。",
+    "tips": [
+      "喇叭形花型开放后花径大，需预留瓶口空间",
+      "自然风花束可保留较长茎干"
+    ],
+    "commonIssues": [
+      {
+        "title": "喇叭形花型占空间、易碰损",
+        "cause": "长瓣线条长，瓶口过窄或频繁移动易折",
+        "prevention": "选高瓶、留足瓶口；减少搬动"
+      }
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.lily",
+      "identity": {
+        "scientificName": "Lilium longiflorum",
+        "horticulturalGroup": "group.longiflorum_lily",
+        "namingNote": "喇叭形、线条感强，自然风与野趣花束常见",
+        "breeder": "荷兰百合育种体系",
+        "introducedYear": "1990 年代起"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.ecuador",
+          "region.colombia"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [],
+        "bloomDiameterCm": "16 至 22",
+        "color": "白或淡粉，喇叭形花瓣线条修长，开放后极具线条美",
+        "stem": "茎干粗壮，建议高瓶或深瓶支撑",
+        "foliage": "叶片狭长，沿茎分布",
+        "scent": "清香，比 OT 温和，带自然感"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white",
+      "trait.gentle_scent"
+    ],
+    "origin": "主产区中国云南、厄瓜多尔、哥伦比亚等地",
+    "cultivar": {
+      "horticulturalGroup": "长瓣百合（铁炮）",
+      "namingNote": "喇叭形、线条感强，自然风与野趣花束常见"
+    },
+    "distinguishFrom": [
+      {
+        "name": "西伯利亚",
+        "difference": "东方百合杯形，而非喇叭形长瓣"
+      },
+      {
+        "name": "亚百合",
+        "difference": "无香、瓣形更紧凑"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "纯洁、自然与「不太做作的优雅」",
+    "paragraphs": [
+      "铁炮百合的喇叭形线条让它天然适合自然风、野趣、田园系花束——不像东方百合那么「正式」，也不像 OT 那么「隆重」。",
+      "白/淡粉色调适合婚礼、日常家居、探望；与尤加利、小雏菊、蕾丝花同插很有季节感。"
+    ],
+    "occasions": [
+      "婚礼",
+      "日常家居",
+      "自然风花束",
+      "探望"
+    ],
+    "colorMeanings": [
+      {
+        "color": "白/淡粉",
+        "meaning": "纯洁、自然、线条美"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "自然野趣",
+        "flowers": [
+          "小雏菊",
+          "尤加利叶"
+        ],
+        "note": "白绿，轻盈自然"
+      },
+      {
+        "style": "简约婚礼",
+        "flowers": [
+          "西伯利亚",
+          "翠珠"
+        ],
+        "note": "全白系，干净"
+      }
+    ],
+    "caution": "喇叭形花型开放后占空间，瓶口勿过窄。"
+  }
+}

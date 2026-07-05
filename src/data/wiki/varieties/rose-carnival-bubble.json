@@ -1,0 +1,124 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Carnival Bubble'",
+    "commonNames": [
+      "Carnival Bubble",
+      "狂欢泡泡玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "多头复色，勤换水",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "狂欢泡泡为多头发散复色切花，分枝多需预留瓶口空间，勤换水可延长观赏期。",
+    "tips": [
+      "多头发散，勿过度捆扎",
+      "枯谢小头及时剪除"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Carnival Bubble'",
+        "horticulturalGroup": "group.spray_rose",
+        "namingNote": "红黄复色多头，视觉热闹如嘉年华",
+        "introducedYear": "2010 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "4 至 6",
+        "color": "小头呈红黄或橙红复色，整体色彩丰富",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.multi_head",
+      "trait.bicolor_stripe"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "果汁泡泡",
+        "difference": "橙粉复古单系，而非红黄复色"
+      },
+      {
+        "name": "闪耀",
+        "difference": "单头条纹，而非多头"
+      },
+      {
+        "name": "狂欢泡泡",
+        "difference": "红黄复色多头、热闹，派对与庆典常见"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "多头切花玫瑰",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2010 年代",
+      "namingNote": "红黄复色多头，视觉热闹如嘉年华"
+    }
+  },
+  "language": {
+    "meaning": "热闹、庆典与「派对氛围」",
+    "paragraphs": [
+      "狂欢泡泡的名字很贴切——一束里很多复色小头，适合生日派对、开业花篮点缀、儿童庆祝等需要「热闹感」的场景。",
+      "若对方偏好极简或单色高级风，可能略满；但用于氛围布置往往很出效果。"
+    ],
+    "occasions": [
+      "生日派对",
+      "开业",
+      "庆典",
+      "儿童庆祝"
+    ],
+    "colorMeanings": [
+      {
+        "color": "红黄复色",
+        "meaning": "热闹、多头、派对感"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "派对桌花",
+        "flowers": [
+          "橙芭比",
+          "满天星"
+        ],
+        "note": "暖色叠加"
+      },
+      {
+        "style": "开业点缀",
+        "flowers": [
+          "金枝玉叶",
+          "绿康"
+        ],
+        "note": "喜庆而不单调"
+      }
+    ],
+    "caution": "多头色彩丰富，与极简风格可能不搭；按场景选用。"
+  }
+}

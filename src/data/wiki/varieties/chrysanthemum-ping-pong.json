@@ -1,0 +1,106 @@
+{
+  "bloom": {
+    "vase": "约 10—14 天",
+    "vaseNote": "球形小菊，耐插 10—14 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.chrysanthemum.vase_base",
+  "careVaseOverride": {
+    "summary": "乒乓菊球形小菊；勤换水，轻拿轻放，保持通风。",
+    "tips": [
+      "勤换水",
+      "避免挤压"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.chrysanthemum",
+      "identity": {
+        "scientificName": "Chrysanthemum 'Ping Pong'",
+        "namingNote": "球形小菊，圆润可爱，配花与家居高频",
+        "horticulturalGroup": "group.chrysanthemum_cut",
+        "breeder": "中国切花菊培育",
+        "introducedYear": "1990 年代起切花菊体系"
+      },
+      "origin": {
+        "breedingOrigin": "中国",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色，球形轮廓，花瓣紧密排列如小球",
+        "scent": "几乎无香",
+        "stem": "茎干挺直，耐插",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "5 至 12"
+      }
+    },
+    "featureRefs": [
+      "trait.spray_ball"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "非洲菊",
+        "difference": "扁盘花型，而非球形"
+      },
+      {
+        "name": "小雏菊",
+        "difference": "扁瓣，而非球状"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花菊",
+      "namingNote": "球形小菊，圆润可爱，配花与家居高频"
+    }
+  },
+  "language": {
+    "meaning": "可爱、治愈与「圆滚滚的小快乐」",
+    "paragraphs": [
+      "乒乓菊像把很多小圆球串在枝上——适合送朋友、做家居点缀、或需要「可爱而不是隆重」的菊类场景。",
+      "耐插，勤换水即可；与尤加利、满天星同插，整束会更轻、更甜。"
+    ],
+    "occasions": [
+      "送朋友",
+      "家居",
+      "配花",
+      "生日"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "可爱、治愈"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "可爱",
+        "flowers": [
+          "满天星",
+          "尤加利叶"
+        ],
+        "note": "多色轻"
+      }
+    ],
+    "caution": "保持水质清洁；避免挤压球状花头。"
+  },
+  "names": {
+    "scientificName": "Chrysanthemum 'Ping Pong'",
+    "commonNames": [
+      "Ping Pong",
+      "乒乓菊"
+    ]
+  }
+}

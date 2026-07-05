@@ -1,5 +1,5 @@
 /**
- * 将品类 profile 批量写回云库 flower_wiki（修正错误正文、补全缺失词条）
+ * 将品类清单合并进现有智库并写回 profile（修正正文、归并旧品种名）
  *
  * 用法：
  *   npm run sync:cloud && npm run deploy:cloud -- --only wiki

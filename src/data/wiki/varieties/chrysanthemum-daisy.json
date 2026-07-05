@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 10—14 天",
+    "vaseNote": "野趣小菊，耐插",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.chrysanthemum.vase_base",
+  "careVaseOverride": {
+    "summary": "小雏菊扁瓣轻盈；勤换水，保持通风。",
+    "tips": [
+      "勤换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.chrysanthemum",
+      "identity": {
+        "scientificName": "Chrysanthemum 'Daisy'",
+        "namingNote": "扁瓣小菊，野趣自然风代表",
+        "horticulturalGroup": "group.chrysanthemum_cut",
+        "breeder": "中国切花菊培育",
+        "introducedYear": "1990 年代起切花菊体系"
+      },
+      "origin": {
+        "breedingOrigin": "中国",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "白或粉，扁瓣，中心明显，整体轻盈",
+        "scent": "几乎无香",
+        "stem": "茎干挺直，耐插",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "5 至 12"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "乒乓菊",
+        "difference": "球形小菊，与此品种形态或色调不同"
+      },
+      {
+        "name": "洋甘菊",
+        "difference": "迷你扁瓣菊，与此品种形态或色调不同"
+      },
+      {
+        "name": "小雏菊",
+        "difference": "扁瓣小菊，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花菊",
+      "namingNote": "扁瓣小菊，野趣自然风代表"
+    }
+  },
+  "language": {
+    "meaning": "清新、野趣与「很轻的一束白」",
+    "paragraphs": [
+      "小雏菊是野趣花束的「气氛组」——与蕾丝花、尤加利、郁金香同插，立刻有田园感。",
+      "耐插、易养，适合日常家居；婚礼自然风也常用。"
+    ],
+    "occasions": [
+      "自然风",
+      "婚礼",
+      "日常家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "白/粉",
+        "meaning": "清新、野趣"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "野趣",
+        "flowers": [
+          "蕾丝花",
+          "尤加利叶"
+        ],
+        "note": "白绿"
+      }
+    ],
+    "caution": "勤换水；避免花瓣沾水。"
+  },
+  "names": {
+    "scientificName": "Chrysanthemum 'Daisy'",
+    "commonNames": [
+      "Daisy",
+      "小雏菊"
+    ]
+  }
+}

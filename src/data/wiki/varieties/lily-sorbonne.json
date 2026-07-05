@@ -1,0 +1,116 @@
+{
+  "names": {
+    "scientificName": "Lilium 'Sorbonne'",
+    "commonNames": [
+      "Sorbonne",
+      "索邦百合"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "渐变粉东方百合，清香温和",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.lily.vase_base",
+  "careVaseOverride": {
+    "summary": "索邦为渐变粉东方百合，清香温和；勤换水、通风，可稳定观赏期。",
+    "tips": [
+      "渐变色调开放过程中会继续变化，阴凉通风可减缓"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.lily",
+      "identity": {
+        "scientificName": "Lilium 'Sorbonne'",
+        "horticulturalGroup": "group.oriental_lily",
+        "namingNote": "温柔渐变粉东方百合，日常家居与探望高频",
+        "breeder": "荷兰百合育种体系",
+        "introducedYear": "1990 年代起"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.ecuador",
+          "region.colombia"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [],
+        "bloomDiameterCm": "16 至 22",
+        "color": "由浅粉向深粉渐变，花瓣边缘略深，整体温柔不艳俗",
+        "stem": "茎干粗壮，建议高瓶或深瓶支撑",
+        "foliage": "叶片狭长，沿茎分布",
+        "scent": "清香，比 OT 百合温和许多"
+      }
+    },
+    "featureRefs": [
+      "trait.soft_pink",
+      "trait.gentle_scent"
+    ],
+    "origin": "主产区中国云南、厄瓜多尔、哥伦比亚等地",
+    "cultivar": {
+      "horticulturalGroup": "东方百合",
+      "namingNote": "温柔渐变粉东方百合，日常家居与探望高频"
+    },
+    "distinguishFrom": [
+      {
+        "name": "罗宾娜",
+        "difference": "深粉渐变，色调更浓"
+      },
+      {
+        "name": "西伯利亚",
+        "difference": "纯白，婚礼/悼念系"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "温柔、日常与「不张扬的关心」",
+    "paragraphs": [
+      "索邦的渐变粉很适合探望、日常家居、送给喜欢温柔色调的人——它比正红玫瑰更日常，比纯白百合更有人情味。",
+      "清香温和，对多数家庭比浓香 OT 更友好；与白色、浅紫配花都很协调。"
+    ],
+    "occasions": [
+      "探望",
+      "日常家居",
+      "生日",
+      "感谢"
+    ],
+    "colorMeanings": [
+      {
+        "color": "渐变粉",
+        "meaning": "温柔、日常、体贴"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "日常温柔",
+        "flowers": [
+          "洋桔梗",
+          "翠珠"
+        ],
+        "note": "浅粉紫白，轻盈"
+      },
+      {
+        "style": "探望花束",
+        "flowers": [
+          "康乃馨",
+          "尤加利叶"
+        ],
+        "note": "粉绿白，不沉重"
+      }
+    ],
+    "caution": "开放后色调会继续变化，避免暴晒可减缓。"
+  }
+}

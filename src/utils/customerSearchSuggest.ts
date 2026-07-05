@@ -1,7 +1,7 @@
 import type { SearchSuggestion } from '@/types/search'
 import type { FlowerWikiListItem } from '@/types/wiki'
 import type { Goods } from '@/types/goods'
-import { getWikiDisplayName } from '@/types/wiki'
+import { getWikiDisplayName, getWikiFullLabel } from '@/types/wiki'
 import { suggestGoodsAsSearchItems } from '@/utils/goodsNameSuggest'
 import { suggestWikiEntries } from '@/utils/wikiSuggest'
 import {
@@ -57,6 +57,7 @@ export function channelsForGoodsRow(
 export function channelsForWikiRow(goods: Goods[], entry: FlowerWikiListItem): SuggestChannel[] {
   const channels: SuggestChannel[] = ['wiki']
   const names = [
+    getWikiFullLabel(entry),
     getWikiDisplayName(entry),
     entry.varietyName,
     entry.kindName,

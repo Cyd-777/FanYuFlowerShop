@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 10—14 天",
+    "vaseNote": "放射状菊，耐插",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.chrysanthemum.vase_base",
+  "careVaseOverride": {
+    "summary": "烟花菊放射瓣形；勤换水，轻拿轻放。",
+    "tips": [
+      "轻拿轻放"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.chrysanthemum",
+      "identity": {
+        "scientificName": "Chrysanthemum 'Firework'",
+        "namingNote": "放射状瓣形，如烟花，秋日应季",
+        "horticulturalGroup": "group.chrysanthemum_cut",
+        "breeder": "中国切花菊培育",
+        "introducedYear": "1990 年代起切花菊体系"
+      },
+      "origin": {
+        "breedingOrigin": "中国",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色，瓣向外放射，线条感强",
+        "scent": "几乎无香",
+        "stem": "茎干挺直，耐插",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "5 至 12"
+      }
+    },
+    "featureRefs": [
+      "trait.spray_huge"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "乒乓菊",
+        "difference": "球形小菊，与此品种形态或色调不同"
+      },
+      {
+        "name": "小雏菊",
+        "difference": "扁瓣小菊，与此品种形态或色调不同"
+      },
+      {
+        "name": "烟花菊",
+        "difference": "放射状瓣形，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花菊",
+      "namingNote": "放射状瓣形，如烟花，秋日应季"
+    }
+  },
+  "language": {
+    "meaning": "绽放、秋日与「线条感很强的一束」",
+    "paragraphs": [
+      "烟花菊的瓣形像定格的烟花——适合秋日、家居、以及想要「菊但不沉闷」的场景。",
+      "耐插；与乒乓菊、尤加利对比，形态层次丰富。"
+    ],
+    "occasions": [
+      "秋日",
+      "家居",
+      "探望"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "绽放、秋日"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "秋日",
+        "flowers": [
+          "尤加利叶",
+          "乒乓菊"
+        ],
+        "note": "形态对比"
+      }
+    ],
+    "caution": "勤换水；放射瓣易折，轻拿轻放。"
+  },
+  "names": {
+    "scientificName": "Chrysanthemum 'Firework'",
+    "commonNames": [
+      "Firework",
+      "烟花菊"
+    ]
+  }
+}

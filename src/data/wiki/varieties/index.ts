@@ -1,0 +1,219 @@
+import type { WikiVarietyOverlay } from '@/types/wikiBlocks'
+import { wikiEntryIdentityKey } from '@/types/wiki'
+import vrose_carola from './rose-carola.json'
+import vrose_pink_floyd from './rose-pink-floyd.json'
+import vrose_aisha from './rose-aisha.json'
+import vrose_diana from './rose-diana.json'
+import vrose_pink_avalanche from './rose-pink-avalanche.json'
+import vrose_peach_avalanche from './rose-peach-avalanche.json'
+import vrose_white_avalanche from './rose-white-avalanche.json'
+import vrose_sweet_avalanche from './rose-sweet-avalanche.json'
+import vrose_champagne from './rose-champagne.json'
+import vrose_golden_leaf from './rose-golden-leaf.json'
+import vrose_jin_hui from './rose-jin-hui.json'
+import vrose_shan_yao from './rose-shan-yao.json'
+import vrose_orange_barbie from './rose-orange-barbie.json'
+import vrose_juice_bubble from './rose-juice-bubble.json'
+import vrose_carnival_bubble from './rose-carnival-bubble.json'
+import vrose_misty_bubble from './rose-misty-bubble.json'
+import vrose_chocolate_bubble from './rose-chocolate-bubble.json'
+import vrose_miss_piggy from './rose-miss-piggy.json'
+import vrose_juliet from './rose-juliet.json'
+import vrose_cappuccino from './rose-cappuccino.json'
+import vrose_toffee from './rose-toffee.json'
+import vrose_menta from './rose-menta.json'
+import vrose_quicksand from './rose-quicksand.json'
+import vrose_firebird from './rose-firebird.json'
+import vlily_yellow_emperor from './lily-yellow-emperor.json'
+import vlily_manissa from './lily-manissa.json'
+import vlily_siberia from './lily-siberia.json'
+import vlily_sorbonne from './lily-sorbonne.json'
+import vlily_conca_dor from './lily-conca-dor.json'
+import vlily_longiflorum from './lily-longiflorum.json'
+import vlily_asiatic_lily from './lily-asiatic-lily.json'
+import vlily_double_lily from './lily-double-lily.json'
+import vlily_robina from './lily-robina.json'
+import vlily_red_county from './lily-red-county.json'
+import vcarnation_master from './carnation-master.json'
+import vcarnation_pink_diamond from './carnation-pink-diamond.json'
+import vcarnation_mustang from './carnation-mustang.json'
+import vcarnation_snow_white from './carnation-snow-white.json'
+import vcarnation_spray_carnation from './carnation-spray-carnation.json'
+import vcarnation_green from './carnation-green.json'
+import vhydrangea_endless_summer from './hydrangea-endless-summer.json'
+import vhydrangea_hanatemari from './hydrangea-hanatemari.json'
+import vhydrangea_magical from './hydrangea-magical.json'
+import vhydrangea_annabelle from './hydrangea-annabelle.json'
+import vhydrangea_popcorn from './hydrangea-popcorn.json'
+import vhydrangea_head_flower from './hydrangea-head-flower.json'
+import vpeony_sarah_bernhardt from './peony-sarah-bernhardt.json'
+import vpeony_coral_sunset from './peony-coral-sunset.json'
+import vpeony_bowl_of_cream from './peony-bowl-of-cream.json'
+import vpeony_red_charm from './peony-red-charm.json'
+import vpeony_yang_fei from './peony-yang-fei.json'
+import vpeony_bartzella from './peony-bartzella.json'
+import veustoma_rosita from './eustoma-rosita.json'
+import veustoma_wave from './eustoma-wave.json'
+import veustoma_bouquet from './eustoma-bouquet.json'
+import vtulip_dynasty from './tulip-dynasty.json'
+import vtulip_apeldoorn from './tulip-apeldoorn.json'
+import vtulip_strong_gold from './tulip-strong-gold.json'
+import vtulip_white_dream from './tulip-white-dream.json'
+import vtulip_queen_of_night from './tulip-queen-of-night.json'
+import vtulip_parrot from './tulip-parrot.json'
+import vtulip_double_tulip from './tulip-double-tulip.json'
+import vchrysanthemum_ping_pong from './chrysanthemum-ping-pong.json'
+import vchrysanthemum_daisy from './chrysanthemum-daisy.json'
+import vchrysanthemum_chamomile from './chrysanthemum-chamomile.json'
+import vchrysanthemum_button from './chrysanthemum-button.json'
+import vchrysanthemum_firework from './chrysanthemum-firework.json'
+import vchrysanthemum_gerbera from './chrysanthemum-gerbera.json'
+import vcalla_white from './calla-white.json'
+import vcalla_black_magic from './calla-black-magic.json'
+import vcalla_pink_diamond from './calla-pink-diamond.json'
+import vcalla_golden from './calla-golden.json'
+import vsunflower_teddy_bear from './sunflower-teddy-bear.json'
+import vsunflower_vincent from './sunflower-vincent.json'
+import vsunflower_black_core from './sunflower-black-core.json'
+import vsunflower_cream from './sunflower-cream.json'
+import vranunculus_ranunculus from './ranunculus-ranunculus.json'
+import vanemone_anemone from './anemone-anemone.json'
+import vgreenbell_trachelium from './greenbell-trachelium.json'
+import vlaceflower_orlaya from './laceflower-orlaya.json'
+import vviolet_matthiola from './violet-matthiola.json'
+import vforget_me_not_myosotis from './forget-me-not-myosotis.json'
+import vgypsophila_gypsophila from './gypsophila-gypsophila.json'
+import vgypsophila_million_star from './gypsophila-million-star.json'
+import vgypsophila_pink from './gypsophila-pink.json'
+import vgypsophila_blue from './gypsophila-blue.json'
+import vhyacinth_blue_star from './hyacinth-blue-star.json'
+import vhyacinth_pink_pearl from './hyacinth-pink-pearl.json'
+import vhyacinth_white_pearl from './hyacinth-white-pearl.json'
+import vhyacinth_gypsy_queen from './hyacinth-gypsy-queen.json'
+import vfoliage_eucalyptus from './foliage-eucalyptus.json'
+import vfoliage_monstera from './foliage-monstera.json'
+import vfoliage_spiraea from './foliage-spiraea.json'
+import vfoliage_silver_willow from './foliage-silver-willow.json'
+import vfoliage_areca_palm from './foliage-areca-palm.json'
+import vfoliage_aglaia from './foliage-aglaia.json'
+import vfoliage_gardenia_leaf from './foliage-gardenia-leaf.json'
+import vpotted_phalaenopsis from './potted-phalaenopsis.json'
+import vpotted_lucky_bamboo from './potted-lucky-bamboo.json'
+import vpotted_pachira from './potted-pachira.json'
+import vpotted_monstera from './potted-monstera.json'
+import vpotted_succulent from './potted-succulent.json'
+import vpotted_jasmine from './potted-jasmine.json'
+
+const OVERLAYS: Record<string, WikiVarietyOverlay> = {
+  '玫瑰::卡罗拉': vrose_carola as WikiVarietyOverlay,
+  '玫瑰::弗洛伊德': vrose_pink_floyd as WikiVarietyOverlay,
+  '玫瑰::艾莎': vrose_aisha as WikiVarietyOverlay,
+  '玫瑰::戴安娜': vrose_diana as WikiVarietyOverlay,
+  '玫瑰::粉雪山': vrose_pink_avalanche as WikiVarietyOverlay,
+  '玫瑰::蜜桃雪山': vrose_peach_avalanche as WikiVarietyOverlay,
+  '玫瑰::白雪山': vrose_white_avalanche as WikiVarietyOverlay,
+  '玫瑰::粉红雪山': vrose_sweet_avalanche as WikiVarietyOverlay,
+  '玫瑰::香槟玫瑰': vrose_champagne as WikiVarietyOverlay,
+  '玫瑰::金枝玉叶': vrose_golden_leaf as WikiVarietyOverlay,
+  '玫瑰::金辉': vrose_jin_hui as WikiVarietyOverlay,
+  '玫瑰::闪耀': vrose_shan_yao as WikiVarietyOverlay,
+  '玫瑰::橙芭比': vrose_orange_barbie as WikiVarietyOverlay,
+  '玫瑰::果汁泡泡': vrose_juice_bubble as WikiVarietyOverlay,
+  '玫瑰::狂欢泡泡': vrose_carnival_bubble as WikiVarietyOverlay,
+  '玫瑰::迷雾泡泡': vrose_misty_bubble as WikiVarietyOverlay,
+  '玫瑰::巧克力泡泡': vrose_chocolate_bubble as WikiVarietyOverlay,
+  '玫瑰::猪小姐': vrose_miss_piggy as WikiVarietyOverlay,
+  '玫瑰::朱丽叶': vrose_juliet as WikiVarietyOverlay,
+  '玫瑰::卡布奇诺': vrose_cappuccino as WikiVarietyOverlay,
+  '玫瑰::太妃糖': vrose_toffee as WikiVarietyOverlay,
+  '玫瑰::曼塔': vrose_menta as WikiVarietyOverlay,
+  '玫瑰::流沙': vrose_quicksand as WikiVarietyOverlay,
+  '玫瑰::火灵鸟': vrose_firebird as WikiVarietyOverlay,
+  '百合::黄天霸': vlily_yellow_emperor as WikiVarietyOverlay,
+  '百合::曼尼莎': vlily_manissa as WikiVarietyOverlay,
+  '百合::西伯利亚': vlily_siberia as WikiVarietyOverlay,
+  '百合::索邦': vlily_sorbonne as WikiVarietyOverlay,
+  '百合::木门': vlily_conca_dor as WikiVarietyOverlay,
+  '百合::铁炮百合': vlily_longiflorum as WikiVarietyOverlay,
+  '百合::亚百合': vlily_asiatic_lily as WikiVarietyOverlay,
+  '百合::重瓣百合': vlily_double_lily as WikiVarietyOverlay,
+  '百合::罗宾娜': vlily_robina as WikiVarietyOverlay,
+  '百合::西诺红': vlily_red_county as WikiVarietyOverlay,
+  '康乃馨::马斯特': vcarnation_master as WikiVarietyOverlay,
+  '康乃馨::粉钻': vcarnation_pink_diamond as WikiVarietyOverlay,
+  '康乃馨::野马': vcarnation_mustang as WikiVarietyOverlay,
+  '康乃馨::白雪公主': vcarnation_snow_white as WikiVarietyOverlay,
+  '康乃馨::多头康乃馨': vcarnation_spray_carnation as WikiVarietyOverlay,
+  '康乃馨::绿色康乃馨': vcarnation_green as WikiVarietyOverlay,
+  '绣球::无尽夏': vhydrangea_endless_summer as WikiVarietyOverlay,
+  '绣球::花手鞠': vhydrangea_hanatemari as WikiVarietyOverlay,
+  '绣球::魔幻系列': vhydrangea_magical as WikiVarietyOverlay,
+  '绣球::贝拉安娜': vhydrangea_annabelle as WikiVarietyOverlay,
+  '绣球::爆米花': vhydrangea_popcorn as WikiVarietyOverlay,
+  '绣球::头花': vhydrangea_head_flower as WikiVarietyOverlay,
+  '芍药::莎拉': vpeony_sarah_bernhardt as WikiVarietyOverlay,
+  '芍药::落日珊瑚': vpeony_coral_sunset as WikiVarietyOverlay,
+  '芍药::奶油碗': vpeony_bowl_of_cream as WikiVarietyOverlay,
+  '芍药::红富士': vpeony_red_charm as WikiVarietyOverlay,
+  '芍药::杨妃出浴': vpeony_yang_fei as WikiVarietyOverlay,
+  '芍药::芭茨拉': vpeony_bartzella as WikiVarietyOverlay,
+  '洋桔梗::露西塔系列': veustoma_rosita as WikiVarietyOverlay,
+  '洋桔梗::波浪系列': veustoma_wave as WikiVarietyOverlay,
+  '洋桔梗::花束系列': veustoma_bouquet as WikiVarietyOverlay,
+  '郁金香::王朝': vtulip_dynasty as WikiVarietyOverlay,
+  '郁金香::阿波罗': vtulip_apeldoorn as WikiVarietyOverlay,
+  '郁金香::纯金': vtulip_strong_gold as WikiVarietyOverlay,
+  '郁金香::白梦': vtulip_white_dream as WikiVarietyOverlay,
+  '郁金香::夜皇后': vtulip_queen_of_night as WikiVarietyOverlay,
+  '郁金香::鹦鹉系列': vtulip_parrot as WikiVarietyOverlay,
+  '郁金香::重瓣系列': vtulip_double_tulip as WikiVarietyOverlay,
+  '菊花::乒乓菊': vchrysanthemum_ping_pong as WikiVarietyOverlay,
+  '菊花::小雏菊': vchrysanthemum_daisy as WikiVarietyOverlay,
+  '菊花::洋甘菊': vchrysanthemum_chamomile as WikiVarietyOverlay,
+  '菊花::纽扣菊': vchrysanthemum_button as WikiVarietyOverlay,
+  '菊花::烟花菊': vchrysanthemum_firework as WikiVarietyOverlay,
+  '菊花::非洲菊': vchrysanthemum_gerbera as WikiVarietyOverlay,
+  '马蹄莲::白马': vcalla_white as WikiVarietyOverlay,
+  '马蹄莲::黑魔法': vcalla_black_magic as WikiVarietyOverlay,
+  '马蹄莲::粉钻': vcalla_pink_diamond as WikiVarietyOverlay,
+  '马蹄莲::黄金': vcalla_golden as WikiVarietyOverlay,
+  '向日葵::泰迪熊': vsunflower_teddy_bear as WikiVarietyOverlay,
+  '向日葵::文森特': vsunflower_vincent as WikiVarietyOverlay,
+  '向日葵::黑芯向日葵': vsunflower_black_core as WikiVarietyOverlay,
+  '向日葵::奶油向日葵': vsunflower_cream as WikiVarietyOverlay,
+  '洋牡丹::花毛茛': vranunculus_ranunculus as WikiVarietyOverlay,
+  '银莲花::银莲花': vanemone_anemone as WikiVarietyOverlay,
+  '翠珠::翠珠': vgreenbell_trachelium as WikiVarietyOverlay,
+  '蕾丝花::蕾丝花': vlaceflower_orlaya as WikiVarietyOverlay,
+  '紫罗兰::紫罗兰': vviolet_matthiola as WikiVarietyOverlay,
+  '勿忘我::勿忘我': vforget_me_not_myosotis as WikiVarietyOverlay,
+  '满天星::仙女': vgypsophila_gypsophila as WikiVarietyOverlay,
+  '满天星::百万星': vgypsophila_million_star as WikiVarietyOverlay,
+  '满天星::粉满天星': vgypsophila_pink as WikiVarietyOverlay,
+  '满天星::蓝满天星': vgypsophila_blue as WikiVarietyOverlay,
+  '风信子::蓝星': vhyacinth_blue_star as WikiVarietyOverlay,
+  '风信子::粉珍珠': vhyacinth_pink_pearl as WikiVarietyOverlay,
+  '风信子::白珍珠': vhyacinth_white_pearl as WikiVarietyOverlay,
+  '风信子::吉普赛女王': vhyacinth_gypsy_queen as WikiVarietyOverlay,
+  '配叶::尤加利': vfoliage_eucalyptus as WikiVarietyOverlay,
+  '配叶::龟背竹': vfoliage_monstera as WikiVarietyOverlay,
+  '配叶::雪柳': vfoliage_spiraea as WikiVarietyOverlay,
+  '配叶::银芽柳': vfoliage_silver_willow as WikiVarietyOverlay,
+  '配叶::散尾葵': vfoliage_areca_palm as WikiVarietyOverlay,
+  '配叶::米兰叶': vfoliage_aglaia as WikiVarietyOverlay,
+  '配叶::栀子叶': vfoliage_gardenia_leaf as WikiVarietyOverlay,
+  '盆栽::蝴蝶兰': vpotted_phalaenopsis as WikiVarietyOverlay,
+  '盆栽::富贵竹': vpotted_lucky_bamboo as WikiVarietyOverlay,
+  '盆栽::发财树': vpotted_pachira as WikiVarietyOverlay,
+  '盆栽::龟背竹盆栽': vpotted_monstera as WikiVarietyOverlay,
+  '盆栽::多肉': vpotted_succulent as WikiVarietyOverlay,
+  '盆栽::茉莉花': vpotted_jasmine as WikiVarietyOverlay,
+}
+
+export function getWikiVarietyOverlay(
+  kindName: string,
+  varietyName: string,
+): WikiVarietyOverlay | null {
+  const key = wikiEntryIdentityKey({ kindName, varietyName })
+  return OVERLAYS[key] || null
+}

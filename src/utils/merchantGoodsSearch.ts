@@ -1,5 +1,6 @@
 import type { Goods, GoodsSalesType } from '@/types/goods'
 import { GOODS_SALES_TYPE_OPTIONS, getSalesTypeOption, inferSalesType } from '@/types/goods'
+import { getGoodsFlowerDisplayLabel } from '@/types/wiki'
 import { isNewListing } from '@/utils/goodsNewListing'
 import { getRecommendCategoryLabel } from '@/utils/goodsSalesTags'
 import type {
@@ -255,8 +256,9 @@ function collectFlowerEntities(catalog: Goods[]) {
     if (item.flowerKindId && item.flowerKindName) {
       kinds.set(item.flowerKindId, item.flowerKindName.trim())
     }
-    if (item.flowerVarietyId && item.flowerVarietyName) {
-      varieties.set(item.flowerVarietyId, item.flowerVarietyName.trim())
+    if (item.flowerVarietyId) {
+      const label = getGoodsFlowerDisplayLabel(item).trim()
+      if (label) varieties.set(item.flowerVarietyId, label)
     }
   }
 

@@ -1,113 +1,94 @@
 <template>
   <view class="wiki-detail-content">
-    <view class="wiki-detail-tabs" :class="{ 'wiki-detail-tabs--compact': compact }">
+    <view class="wiki-detail-stack">
       <view
-        v-for="tab in tabs"
-        :key="tab.key"
-        class="wiki-detail-tab"
-        :class="{ active: modelValue === tab.key }"
-        @tap="emit('update:modelValue', tab.key)"
+        id="wiki-section-atlas"
+        class="wiki-detail-section-header"
       >
-        <text v-if="compact" class="wiki-detail-tab-icon">{{ tab.icon }}</text>
-        <text class="wiki-detail-tab-label">{{ compact ? tab.shortLabel : tab.label }}</text>
+        {{ introTitle }}
       </view>
-    </view>
+      <WikiAtlasSection :wiki="wiki" :highlight-anchor="highlightAnchor" />
 
-    <view class="wiki-detail-body">
-      <WikiAtlasSection
-        v-if="modelValue === 'atlas'"
-        :wiki="wiki"
-        :highlight-anchor="highlightAnchor"
-      />
+      <view
+        id="wiki-section-care"
+        class="wiki-detail-section-header"
+      >
+        {{ careTitle }}
+      </view>
       <WikiCareSection
-        v-else-if="modelValue === 'care'"
+        v-if="hasCare"
         :wiki="wiki"
         :highlight-anchor="highlightAnchor"
       />
-      <WikiLanguageSection v-else :wiki="wiki" :highlight-anchor="highlightAnchor" />
+      <text v-else class="wiki-detail-section-empty">{{ emptyText }}</text>
+
+      <view
+        id="wiki-section-language"
+        class="wiki-detail-section-header"
+      >
+        {{ languageTitle }}
+      </view>
+      <view class="wiki-detail-section wiki-detail-section--last">
+        <WikiLanguageSection :wiki="wiki" :highlight-anchor="highlightAnchor" />
+      </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import WikiAtlasSection from '@/components/wiki/WikiAtlasSection.vue'
 import WikiCareSection from '@/components/wiki/WikiCareSection.vue'
 import WikiLanguageSection from '@/components/wiki/WikiLanguageSection.vue'
-import type { FlowerWiki, WikiTab } from '@/types/wiki'
-import { WIKI_TAB_CONFIG } from '@/types/wiki'
+import type { FlowerWiki } from '@/types/wiki'
+import { hasWikiCareSoilContent, hasWikiCareVaseContent } from '@/types/wiki'
 
-defineProps<{
+const introTitle = '介绍'
+const careTitle = '养护方式'
+const languageTitle = '花语'
+
+const props = defineProps<{
   wiki: FlowerWiki
-  modelValue: WikiTab
   highlightAnchor?: string
-  compact?: boolean
+  emptyText?: string
 }>()
 
-const emit = defineEmits<{
-  'update:modelValue': [tab: WikiTab]
-}>()
+const emptyText = computed(() => props.emptyText || '暂无相关内容')
 
-const tabs = WIKI_TAB_CONFIG
+const hasCare = computed(
+  () => hasWikiCareVaseContent(props.wiki) || hasWikiCareSoilContent(props.wiki),
+)
 </script>
 
 <style lang="less">
-.wiki-detail-tabs {
-  display: flex;
-  background: #fff;
-  border-radius: 16rpx;
-  overflow: hidden;
+.wiki-detail-stack {
+  padding: 8rpx 32rpx 0;
+}
 
-  &--compact {
-    padding: 6rpx;
-    background: #f8f8f8;
-    border-radius: 12rpx;
+.wiki-detail-section--last {
+  min-height: 48vh;
+  padding-bottom: 32rpx;
+}
+
+.wiki-detail-section-header {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  padding: 24rpx 0 12rpx;
+  line-height: 1.4;
+
+  &:not(:first-child) {
+    margin-top: 16rpx;
+    padding-top: 32rpx;
+    border-top: 1rpx solid #f0f0f0;
   }
 }
 
-.wiki-detail-tab {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20rpx 8rpx;
-  font-size: 24rpx;
-  color: #666;
-
-  &.active {
-    color: #e53935;
-    font-weight: 600;
-    background: #fff5f5;
-  }
-
-  .wiki-detail-tabs--compact & {
-    padding: 12rpx 6rpx;
-    border-radius: 10rpx;
-    color: #999;
-
-    &.active {
-      background: #fff;
-      color: #e53935;
-      box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
-    }
-  }
-}
-
-.wiki-detail-tab-icon {
-  font-size: 24rpx;
-  line-height: 1.2;
-}
-
-.wiki-detail-tab-label {
-  line-height: 1.3;
-
-  .wiki-detail-tabs--compact & {
-    margin-top: 4rpx;
-    font-size: 20rpx;
-  }
-}
-
-.wiki-detail-body {
-  margin-top: 16rpx;
+.wiki-detail-section-empty {
+  display: block;
+  font-size: 26rpx;
+  color: #999;
+  line-height: 1.6;
+  padding: 8rpx 0 16rpx;
 }
 </style>

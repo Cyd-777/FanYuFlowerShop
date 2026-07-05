@@ -1,6 +1,6 @@
 <template>
   <view class="page-merchant-goods-edit">
-    <AppNavBar />
+    <AppNavBar :title="pageNavTitle" />
     <view class="images-section">
       <view class="section-label">{{ labelImages }}</view>
       <view class="images-tip">{{ imagesTip }}</view>
@@ -33,46 +33,11 @@
           <text class="hint">{{ uploadHint }}</text>
         </view>
       </view>
-      <view v-if="imageSlots.length < maxImages" class="image-from-lib" @click="pickFromAsset">
-        从素材库选择
-      </view>
+      <view v-if="imageSlots.length < maxImages" class="image-from-lib" @click="pickFromAsset">{{ uiText_9c8b39 }}</view>
     </view>
 
     <view class="form-card">
-      <nut-form>
-        <nut-form-item v-if="showFlowerPicker" :label="labelFlower">
-          <view class="picker-cell" @click="openFlowerPicker">
-            <view v-if="hasFlowerSelection" class="flower-selected">
-              <text class="kind-tag">{{ form.flowerKindName }}</text>
-              <text class="variety-name">{{ form.flowerVarietyName }}</text>
-            </view>
-            <text v-else class="picker-value placeholder">{{ flowerPlaceholder }}</text>
-            <text class="picker-arrow">{{ arrowText }}</text>
-          </view>
-        </nut-form-item>
-
-        <nut-form-item :label="labelName">
-          <nut-input v-model="form.name" :placeholder="namePlaceholder" />
-        </nut-form-item>
-
-        <nut-form-item :label="labelPrice">
-          <view class="price-slider-wrap">
-            <text class="price-slider-value">¥{{ priceDisplayLabel }}</text>
-            <slider
-              class="price-slider"
-              :min="priceSliderMin"
-              :max="priceSliderMax"
-              :step="priceSliderStep"
-              :value="priceSliderValue"
-              activeColor="#e53935"
-              backgroundColor="#ececec"
-              block-size="20"
-              @changing="onPriceSliderChanging"
-              @change="onPriceSliderChange"
-            />
-          </view>
-        </nut-form-item>
-
+      <nut-form :key="form.unit">
         <nut-form-item :label="labelUnit">
           <view class="unit-list">
             <view
@@ -87,6 +52,64 @@
           </view>
         </nut-form-item>
 
+        <nut-form-item v-show="showFlowerPicker" :label="labelFlower">
+          <view class="picker-cell" @click="openFlowerPicker">
+            <view v-if="hasFlowerSelection" class="flower-selected">
+              <text class="flower-selected-label">{{ flowerSelectionLabel }}</text>
+            </view>
+            <text v-else class="picker-value placeholder">{{ flowerPlaceholder }}</text>
+            <text class="picker-arrow">{{ arrowText }}</text>
+          </view>
+        </nut-form-item>
+
+        <nut-form-item v-if="showCategorySelector" :label="labelCategory">
+          <view class="category-inline">
+            <view class="category-inline-head">
+              <view class="card-link" @click="goCategoryManage">{{ manageCategoryText }}</view>
+            </view>
+            <view v-if="selectableCategories.length" class="category-list">
+              <view
+                v-for="item in selectableCategories"
+                :key="item._id"
+                class="category-option"
+                :class="{ active: form.categoryId === item._id }"
+                @click="form.categoryId = item._id"
+              >
+                <text class="option-icon">{{ item.icon }}</text>
+                <text class="option-name">{{ item.name }}</text>
+              </view>
+            </view>
+            <view v-else class="empty-category">
+              <view class="empty-text">{{ emptyCategoryText }}</view>
+              <nut-button size="small" type="primary" @click="goCategoryManage">
+                {{ goCategoryText }}
+              </nut-button>
+            </view>
+          </view>
+        </nut-form-item>
+
+        <nut-form-item :label="labelName">
+          <input
+            class="form-text-input"
+            type="text"
+            :value="form.name"
+            :placeholder="namePlaceholder"
+            :cursor-spacing="120"
+            @input="onNameInput"
+          />
+        </nut-form-item>
+
+        <nut-form-item :label="labelPrice">
+          <view class="form-field-end">
+            <FormStepCounter
+              v-model="priceNum"
+              :quick-steps="priceQuickSteps"
+              :decimal="2"
+              :max="99999"
+            />
+          </view>
+        </nut-form-item>
+
         <nut-form-item :label="labelStock">
           <view class="form-field-end">
             <FormStepCounter v-model="stockNum" :quick-steps="stockQuickSteps" />
@@ -94,23 +117,36 @@
         </nut-form-item>
 
         <nut-form-item v-if="form.unit === '组'" :label="labelUnitsPerGroup">
-          <nut-input
-            v-model="form.unitsPerGroup"
-            :placeholder="unitsPerGroupPlaceholder"
+          <input
+            class="form-text-input"
             type="number"
+            :value="form.unitsPerGroup"
+            :placeholder="unitsPerGroupPlaceholder"
+            :cursor-spacing="120"
+            @input="onUnitsPerGroupInput"
           />
         </nut-form-item>
 
         <nut-form-item :label="labelDescription">
-          <nut-input
-            v-model="form.description"
+          <textarea
+            class="form-textarea"
+            :value="form.description"
             :placeholder="descriptionPlaceholder"
-            type="textarea"
+            :cursor-spacing="120"
+            :maxlength="500"
+            @input="onDescriptionInput"
           />
         </nut-form-item>
 
         <nut-form-item :label="labelSort">
-          <nut-input v-model="form.sort" :placeholder="sortPlaceholder" type="number" />
+          <input
+            class="form-text-input"
+            type="number"
+            :value="form.sort"
+            :placeholder="sortPlaceholder"
+            :cursor-spacing="120"
+            @input="onSortInput"
+          />
         </nut-form-item>
       </nut-form>
 
@@ -126,33 +162,6 @@
           </view>
           <nut-switch v-model="form.recommend" />
         </view>
-      </view>
-    </view>
-
-    <view class="category-card">
-      <view class="card-header">
-        <view class="card-title">{{ labelCategory }}</view>
-        <view class="card-link" @click="goCategoryManage">{{ manageCategoryText }}</view>
-      </view>
-
-      <view v-if="enabledCategories.length" class="category-list">
-        <view
-          v-for="item in enabledCategories"
-          :key="item._id"
-          class="category-option"
-          :class="{ active: form.categoryId === item._id }"
-          @click="form.categoryId = item._id"
-        >
-          <text class="option-icon">{{ item.icon }}</text>
-          <text class="option-name">{{ item.name }}</text>
-        </view>
-      </view>
-
-      <view v-else class="empty-category">
-        <view class="empty-text">{{ emptyCategoryText }}</view>
-        <nut-button size="small" type="primary" @click="goCategoryManage">
-          {{ goCategoryText }}
-        </nut-button>
       </view>
     </view>
 
@@ -177,7 +186,7 @@
 
 <script setup lang="ts">
 import { showToast } from '@/utils/feedback'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import { navigateBack, navigateTo } from '@/utils/router'
 import FormStepCounter from '@/components/FormStepCounter.vue'
@@ -204,6 +213,11 @@ import {
   unitFromSalesType,
 } from '@/types/goods'
 import { MAX_GOODS_IMAGES } from '@/types/goods'
+import { filterChooseMediaFiles } from '@/utils/uploadImageLimit'
+import { wikiCategoryIdFromKindName, resolveGoodsFormCategoryId } from '@/utils/goodsCategory'
+import { getGoodsFlowerDisplayLabel } from '@/types/wiki'
+
+const uiText_9c8b39 = '从素材库选择'
 
 interface ImageSlot {
   fileId: string
@@ -225,9 +239,8 @@ const arrowText = '›'
 const labelName = '品名'
 const namePlaceholder = '如：春日混搭花束'
 const labelPrice = '价格（元）'
+const priceQuickSteps = [10, 50]
 const labelStock = '库存'
-const priceSliderMin = 0
-const priceSliderStep = 1
 const stockQuickSteps = [5, 10]
 const labelUnitsPerGroup = '每组数量'
 const unitsPerGroupPlaceholder = '如 10（表示每组 10 支）'
@@ -279,11 +292,27 @@ const form = ref<GoodsForm>({
 })
 
 const isEdit = computed(() => !!goodsId.value)
+const pageNavTitle = computed(() => (isEdit.value ? '编辑商品' : '新建商品'))
 const showFlowerPicker = computed(() => needsFlowerPickForUnit(form.value.unit))
 const hasFlowerSelection = computed(
   () => !!(form.value.flowerVarietyId || (form.value.flowerKindName && form.value.flowerVarietyName)),
 )
-const enabledCategories = computed(() => categoryOptions.value.filter((item) => item.enabled))
+const flowerSelectionLabel = computed(() => getGoodsFlowerDisplayLabel(form.value))
+/** 支/组 → 隐藏分类；束→花束场景；件→物料品类 */
+const showCategorySelector = computed(() => {
+  return form.value.unit !== '支' && form.value.unit !== '组'
+})
+const selectableCategories = computed(() => {
+  const unit = form.value.unit
+  // 支/组 → 无需分类
+  if (unit === '支' || unit === '组') return []
+  // 束 → 花束场景（含无商品的预设标签，便于创建首件商品）
+  if (unit === '束') {
+    return categoryOptions.value.filter((c) => c.categoryType === 'bouquet' && c._source !== 'wiki')
+  }
+  // 件 → 物料品类
+  return categoryOptions.value.filter((c) => c.categoryType === 'material')
+})
 const saveButtonText = computed(() => (isEdit.value ? saveEditButtonText : createButtonText))
 
 const priceNum = computed({
@@ -297,25 +326,20 @@ const priceNum = computed({
   },
 })
 
-const priceSliderMax = computed(() =>
-  Math.max(999, Math.ceil(priceNum.value / 100) * 100),
-)
-
-const priceSliderValue = computed(() =>
-  Math.min(Math.max(priceNum.value, priceSliderMin), priceSliderMax.value),
-)
-
-const priceDisplayLabel = computed(() => {
-  const n = priceSliderValue.value
-  return Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.00$/, '')
-})
-
-function onPriceSliderChanging(e: { detail: { value: number } }) {
-  priceNum.value = e.detail.value
+function onNameInput(e: { detail: { value: string } }) {
+  form.value.name = e.detail.value
 }
 
-function onPriceSliderChange(e: { detail: { value: number } }) {
-  priceNum.value = e.detail.value
+function onDescriptionInput(e: { detail: { value: string } }) {
+  form.value.description = e.detail.value
+}
+
+function onSortInput(e: { detail: { value: string } }) {
+  form.value.sort = e.detail.value
+}
+
+function onUnitsPerGroupInput(e: { detail: { value: string } }) {
+  form.value.unitsPerGroup = e.detail.value
 }
 
 const stockNum = computed({
@@ -340,7 +364,7 @@ useLoad((options) => {
   if (options?.prefillName) {
     form.value.name = decodeURIComponent(options.prefillName)
   }
-  wx.setNavigationBarTitle({ title: goodsId.value ? '编辑商品' : '新建商品' })
+  wx.setNavigationBarTitle({ title: pageNavTitle.value })
   void bootstrapPage()
 })
 
@@ -376,6 +400,7 @@ async function handlePageShow() {
 
   if (!pageBootstrapped.value) return
   await refreshMerchantCategories()
+  syncCategoryForCurrentUnit()
 }
 
 function consumeFlowerPickFromStorage(): FlowerPickResult | null {
@@ -431,7 +456,7 @@ function applyGoodsToForm(goods: Goods) {
   form.value.price = String(goods.price)
   form.value.stock = String(goods.stock)
   form.value.description = goods.description
-  form.value.categoryId = goods.categoryId || enabledCategories.value[0]?._id || ''
+  form.value.categoryId = goods.categoryId || selectableCategories.value[0]?._id || ''
   form.value.flowerKindId = goods.flowerKindId || ''
   form.value.flowerKindName = goods.flowerKindName || ''
   form.value.flowerVarietyId = goods.flowerVarietyId || ''
@@ -447,13 +472,44 @@ function applyGoodsToForm(goods: Goods) {
       : ''
 }
 
-function matchCategoryByKindName(kindName: string) {
-  const matchedCategory = categoryOptions.value.find(
-    (item) => item.enabled && (item.name === kindName || item.name.includes(kindName)),
-  )
-  if (matchedCategory) {
-    form.value.categoryId = matchedCategory._id
+function wikiCategoryId(kindName: string) {
+  return wikiCategoryIdFromKindName(kindName)
+}
+
+/** 支/组单位：由花卉种类自动推导 wiki 衍生分类 */
+function applyAutoCategoryForStemOrGroup() {
+  const unit = form.value.unit
+  if (unit !== '支' && unit !== '组') return
+  const id = wikiCategoryId(form.value.flowerKindName)
+  if (id) form.value.categoryId = id
+}
+
+/** 束/件：确保 categoryId 落在当前单位可选分类内（分类异步加载后也会重算） */
+function syncCategoryForCurrentUnit() {
+  const unit = form.value.unit
+  if (unit === '支' || unit === '组') {
+    applyAutoCategoryForStemOrGroup()
+    return
   }
+  const options = selectableCategories.value
+  if (!options.length) {
+    form.value.categoryId = ''
+    return
+  }
+  if (!options.some((c) => c._id === form.value.categoryId)) {
+    form.value.categoryId = options[0]._id
+  }
+}
+
+function matchCategoryByKindName(kindName: string) {
+  const unit = form.value.unit
+  if (unit === '支' || unit === '组') {
+    const id = wikiCategoryId(kindName)
+    if (id) form.value.categoryId = id
+    return
+  }
+  const matched = selectableCategories.value.find((item) => item.name === kindName)
+  if (matched) form.value.categoryId = matched._id
 }
 
 function openFlowerPicker() {
@@ -469,20 +525,7 @@ function openFlowerPicker() {
 async function loadCategories() {
   try {
     await refreshMerchantCategories()
-    if (form.value.flowerKindName) {
-      const matchedCategory = enabledCategories.value.find(
-        (item) =>
-          item.name === form.value.flowerKindName ||
-          item.name.includes(form.value.flowerKindName),
-      )
-      if (matchedCategory) {
-        form.value.categoryId = matchedCategory._id
-        return
-      }
-    }
-    if (!form.value.categoryId && enabledCategories.value.length) {
-      form.value.categoryId = enabledCategories.value[0]._id
-    }
+    syncCategoryForCurrentUnit()
   } catch (err) {
     showToast({
       title: err instanceof Error ? err.message : '加载分类失败',
@@ -563,7 +606,7 @@ async function addImages() {
       sourceType: ['album', 'camera'],
     })
 
-    const files = res.tempFiles.filter((item) => item?.tempFilePath)
+    const files = filterChooseMediaFiles(res.tempFiles)
     if (!files.length) return
 
     wx.showLoading({ title: '上传中' })
@@ -607,11 +650,15 @@ function applyAssetPick(pick: { originalFileId: string; previewFileId: string; s
 }
 
 function pickFromAsset() {
-  navigateTo({ url: '/pagesMerchant/asset/index?picker=1&type=goods' })
+  const excludeIds = imageSlots.value.map((s) => s.fileId).join(',')
+  navigateTo({
+    url: `/pagesMerchant/asset/index?picker=1&type=goods${excludeIds ? '&exclude=' + excludeIds : ''}`,
+  })
 }
 
 function removeImage(index: number) {
-  if (imageSlots.value.length <= 1) {
+  // 编辑已有商品：至少保留一张；新建时可删光后重传
+  if (isEdit.value && imageSlots.value.length <= 1) {
     showToast({ title: '至少保留一张主图', icon: 'none' })
     return
   }
@@ -648,7 +695,9 @@ function validateForm() {
     showToast({ title: '请填写品名', icon: 'none' })
     return false
   }
-  if (!form.value.categoryId) {
+  syncCategoryForCurrentUnit()
+  form.value.categoryId = resolveGoodsFormCategoryId(form.value)
+  if (form.value.unit !== '支' && form.value.unit !== '组' && !form.value.categoryId) {
     showToast({ title: '请选择商品分类', icon: 'none' })
     return false
   }
@@ -680,6 +729,9 @@ async function save() {
 
   saving.value = true
   try {
+    syncCategoryForCurrentUnit()
+    form.value.categoryId = resolveGoodsFormCategoryId(form.value)
+
     const saved = isEdit.value
       ? await updateGoods(goodsId.value, form.value)
       : await createGoods(form.value)
@@ -738,6 +790,18 @@ async function handleDelete() {
     deleting.value = false
   }
 }
+
+/** 切换单位或分类列表就绪后，重置分类到当前单位可用项 */
+watch(
+  () => form.value.unit,
+  () => {
+    syncCategoryForCurrentUnit()
+  },
+)
+
+watch(selectableCategories, () => {
+  syncCategoryForCurrentUnit()
+})
 </script>
 
 <style lang="less">
@@ -747,10 +811,41 @@ async function handleDelete() {
   background: #f8f8f8;
 }
 .images-section,
-.form-card,
-.category-card {
+.form-card {
   background: #fff;
   margin-bottom: 16rpx;
+}
+.form-card {
+  padding-bottom: 8rpx;
+}
+.form-text-input {
+  width: 100%;
+  min-height: 72rpx;
+  padding: 16rpx 20rpx;
+  font-size: 28rpx;
+  color: #333;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  box-sizing: border-box;
+}
+.form-textarea {
+  width: 100%;
+  min-height: 160rpx;
+  padding: 16rpx 20rpx;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.5;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  box-sizing: border-box;
+}
+.category-inline {
+  width: 100%;
+}
+.category-inline-head {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12rpx;
 }
 .sales-type-card,
 .unit-list {
@@ -869,27 +964,13 @@ async function handleDelete() {
 }
 .flower-selected {
   flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
   min-width: 0;
 }
-.kind-tag {
-  flex-shrink: 0;
-  padding: 6rpx 16rpx;
-  border-radius: 20rpx;
-  background: #fce4ec;
-  border: 2rpx solid #f8bbd0;
-  font-size: 22rpx;
-  color: #e53935;
-  font-weight: 600;
-  line-height: 1.4;
-}
-.variety-name {
-  flex: 1;
+.flower-selected-label {
   font-size: 28rpx;
   color: #333;
   font-weight: 500;
+  line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -898,6 +979,9 @@ async function handleDelete() {
   flex: 1;
   font-size: 28rpx;
   color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   &.placeholder {
     color: #bbb;
   }
@@ -913,22 +997,6 @@ async function handleDelete() {
   display: flex;
   justify-content: flex-end;
   width: 100%;
-}
-.price-slider-wrap {
-  width: 100%;
-  padding: 4rpx 0 8rpx;
-}
-.price-slider-value {
-  display: block;
-  margin-bottom: 12rpx;
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #e53935;
-  text-align: right;
-}
-.price-slider {
-  width: 100%;
-  margin: 0;
 }
 .switch-section {
   padding: 8rpx 32rpx 24rpx;
@@ -965,20 +1033,6 @@ async function handleDelete() {
   font-weight: 600;
   color: #333;
   margin-bottom: 16rpx;
-}
-.category-card {
-  padding: 24rpx 32rpx 32rpx;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20rpx;
-}
-.card-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #333;
 }
 .card-link {
   font-size: 24rpx;

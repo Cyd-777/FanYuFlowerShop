@@ -1,55 +1,69 @@
 <template>
-  <view
-    v-if="pullRefreshLoadingState.visible"
-    class="app-pull-refresh"
-    :style="pullRefreshStyle"
-  >
-    <view class="app-pull-refresh__track">
-      <view class="app-pull-refresh__bar" />
+  <view class="app-feedback-host">
+    <view
+      v-if="pullRefreshLoadingState.visible"
+      class="app-pull-refresh"
+      :style="pullRefreshStyle"
+    >
+      <view class="app-pull-refresh__track">
+        <view class="app-pull-refresh__bar" />
+      </view>
     </view>
-  </view>
-  <view
-    v-if="feedbackBarState.visible"
-    class="app-notify-bar"
-    :class="[
-      `app-notify-bar--${feedbackBarState.position}`,
-      `app-notify-bar--${feedbackBarState.tone}`,
-    ]"
-    :style="barPositionStyle"
-    @tap="onNotifyBarClose"
-  >
-    <text class="app-notify-bar__text">{{ feedbackBarState.message }}</text>
-  </view>
-  <nut-dialog
-    v-model:visible="feedbackAlertState.visible"
-    :title="feedbackAlertState.title"
-    :content="feedbackAlertState.message"
-    :no-cancel-btn="true"
-    :no-ok-btn="isConfirmMode"
-    :ok-text="feedbackAlertState.confirmText"
-    :custom-class="alertDialogClass"
-    @ok="onNotifyAlertConfirm"
-  >
-    <template v-if="isConfirmMode" #footer>
-      <view class="app-feedback-dialog__footer">
-        <nut-button
-          size="small"
-          class="app-feedback-dialog__confirm"
-          @click="onNotifyAlertConfirm"
+
+    <view
+      v-if="feedbackBarState.visible"
+      class="app-notify-bar-wrap"
+      :class="`app-notify-bar-wrap--${feedbackBarState.position}`"
+      :style="wrapPositionStyle"
+    >
+      <view
+        class="app-notify-bar"
+        :class="`app-notify-bar--${feedbackBarState.tone}`"
+        :style="barChipStyle"
+        @tap="onNotifyBarClose"
+      >
+        <image class="app-notify-bar__icon" :src="barStyle.iconSrc" mode="aspectFit" />
+        <text class="app-notify-bar__text">{{ feedbackBarState.message }}</text>
+      </view>
+    </view>
+
+    <!-- 自定义模态：避免 nut-dialog 在 Tab 页首屏初始化导致白屏 -->
+    <view
+      v-if="feedbackAlertState.visible"
+      class="app-feedback-alert-mask"
+      @tap="onMaskTap"
+    >
+      <view
+        class="app-feedback-alert"
+        :class="alertDialogClass"
+        @tap.stop="noop"
+      >
+        <text class="app-feedback-alert__title">{{ feedbackAlertState.title }}</text>
+        <text class="app-feedback-alert__message">{{ feedbackAlertState.message }}</text>
+        <view v-if="isConfirmMode" class="app-feedback-dialog__footer">
+          <view
+            class="app-feedback-dialog__confirm app-feedback-alert__btn"
+            @tap="onNotifyAlertConfirm"
+          >
+            {{ feedbackAlertState.confirmText }}
+          </view>
+          <view
+            class="app-feedback-dialog__cancel app-feedback-alert__btn app-feedback-alert__btn--primary"
+            @tap="onNotifyAlertCancel"
+          >
+            {{ feedbackAlertState.cancelText }}
+          </view>
+        </view>
+        <view
+          v-else
+          class="app-feedback-alert__btn app-feedback-alert__btn--primary app-feedback-alert__btn--single"
+          @tap="onNotifyAlertConfirm"
         >
           {{ feedbackAlertState.confirmText }}
-        </nut-button>
-        <nut-button
-          type="primary"
-          size="small"
-          class="app-feedback-dialog__cancel"
-          @click="onNotifyAlertCancel"
-        >
-          {{ feedbackAlertState.cancelText }}
-        </nut-button>
+        </view>
       </view>
-    </template>
-  </nut-dialog>
+    </view>
+  </view>
 </template>
 
 <script setup lang="ts">
@@ -77,22 +91,29 @@ function refreshTopOffset() {
 
 useDidShow(refreshTopOffset)
 
+function noop() {}
+
+function onMaskTap() {
+  if (feedbackAlertState.mode === 'confirm') {
+    onNotifyAlertCancel()
+  }
+}
+
 const isConfirmMode = computed(() => feedbackAlertState.mode === 'confirm')
 
 const barStyle = computed(() => FEEDBACK_TONE_STYLES[feedbackBarState.tone])
 
-const barPositionStyle = computed(() => {
+const wrapPositionStyle = computed(() => {
+  if (feedbackBarState.position === 'bottom') return {}
+  return { top: `${notifyTopPx.value}px` }
+})
+
+const barChipStyle = computed(() => {
   const colors = barStyle.value
-  if (feedbackBarState.position === 'bottom') {
-    return {
-      background: colors.background,
-      color: colors.color,
-    }
-  }
   return {
-    top: `${notifyTopPx.value}px`,
     background: colors.background,
     color: colors.color,
+    borderColor: colors.borderColor,
   }
 })
 
@@ -101,29 +122,64 @@ const pullRefreshStyle = computed(() => ({
 }))
 
 const alertDialogClass = computed(
-  () => `app-feedback-dialog app-feedback-dialog--${feedbackAlertState.tone}`,
+  () => `app-feedback-dialog--${feedbackAlertState.tone}`,
 )
 </script>
 
 <style lang="less">
 @import '@/styles/tokens.less';
 
-.app-notify-bar {
+.app-feedback-host {
+  pointer-events: none;
+}
+
+.app-notify-bar-wrap {
   position: fixed;
   left: 0;
   right: 0;
   z-index: 1500;
+  display: flex;
+  justify-content: center;
+  padding: 0 32rpx;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.app-notify-bar-wrap--bottom {
+  bottom: calc(24rpx + env(safe-area-inset-bottom));
+}
+
+.app-notify-bar-wrap:not(.app-notify-bar-wrap--bottom) {
+  padding-top: 12rpx;
+}
+
+.app-notify-bar {
+  pointer-events: auto;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12rpx;
+  max-width: 560rpx;
   width: 100%;
   min-height: 72rpx;
-  line-height: 1.45;
-  padding: 20rpx 32rpx;
-  font-size: @font-size-md;
+  padding: 16rpx 24rpx;
+  border-radius: 16rpx;
+  border: 1rpx solid transparent;
   box-sizing: border-box;
-  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8rpx 28rpx rgba(0, 0, 0, 0.12);
+}
+
+.app-notify-bar__icon {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
 }
 
 .app-notify-bar__text {
-  display: block;
+  flex: 1;
+  min-width: 0;
+  font-size: @font-size-md;
+  line-height: 1.45;
   word-break: break-word;
 }
 
@@ -163,25 +219,67 @@ const alertDialogClass = computed(
   }
 }
 
-.app-notify-bar--bottom {
+.app-feedback-alert-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
   bottom: 0;
-  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  left: 0;
+  z-index: 1600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
 }
 
-.app-feedback-dialog {
-  .nut-dialog__header {
-    font-weight: 600;
-  }
+.app-feedback-alert {
+  width: 100%;
+  max-width: 560rpx;
+  padding: 40rpx 32rpx 32rpx;
+  border-radius: 16rpx;
+  background: #fff;
+  box-sizing: border-box;
+}
 
-  .nut-dialog__content {
-    color: @color-text-secondary;
-    line-height: 1.55;
-  }
+.app-feedback-alert__title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: @color-text-primary;
+  line-height: 1.4;
+  text-align: center;
+}
 
-  .nut-button--primary {
-    background: @color-primary;
-    border-color: @color-primary;
-  }
+.app-feedback-alert__message {
+  display: block;
+  margin-top: 20rpx;
+  font-size: 28rpx;
+  color: @color-text-secondary;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.app-feedback-alert__btn {
+  flex: 1;
+  min-width: 0;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.app-feedback-alert__btn--single {
+  margin-top: 32rpx;
+}
+
+.app-feedback-alert__btn--primary {
+  color: #fff;
+  background: @color-primary;
 }
 
 .app-feedback-dialog__footer {
@@ -190,35 +288,33 @@ const alertDialogClass = computed(
   align-items: center;
   width: 100%;
   box-sizing: border-box;
-  padding: 0 24rpx 24rpx;
+  margin-top: 32rpx;
   gap: 16rpx;
-}
-
-.app-feedback-dialog__confirm,
-.app-feedback-dialog__cancel {
-  flex: 1;
-  min-width: 0;
 }
 
 .app-feedback-dialog__confirm {
   color: @color-text-secondary;
   background: #f5f5f5;
-  border-color: #f5f5f5;
 }
 
-.app-feedback-dialog--success .nut-dialog__header {
+.app-feedback-dialog__cancel {
+  color: #fff;
+  background: @color-primary;
+}
+
+.app-feedback-dialog--success .app-feedback-alert__title {
   color: @color-success;
 }
 
-.app-feedback-dialog--warning .nut-dialog__header {
+.app-feedback-dialog--warning .app-feedback-alert__title {
   color: @color-warning;
 }
 
-.app-feedback-dialog--danger .nut-dialog__header {
+.app-feedback-dialog--danger .app-feedback-alert__title {
   color: @color-danger;
 }
 
-.app-feedback-dialog--primary .nut-dialog__header {
+.app-feedback-dialog--primary .app-feedback-alert__title {
   color: @color-primary;
 }
 </style>

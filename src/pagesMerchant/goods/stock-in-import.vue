@@ -2,10 +2,8 @@
   <view class="page-stock-in-import">
     <AppNavBar />
     <view class="intro">
-      <view class="title">粘贴进货单</view>
-      <view class="desc">
-        每行一种商品，支持：名称,数量 / 名称,花色,数量 / 名称 x 数量
-      </view>
+      <view class="title">{{ uiText_fb2f13 }}</view>
+      <view class="desc">{{ uiText_8cb736 }}</view>
     </view>
 
     <textarea
@@ -35,6 +33,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePageData } from '@/composables/usePageData'
+
+const uiText_8cb736 = '每行一种商品，支持：名称,数量 / 名称,花色,数量 / 名称 x 数量'
+const uiText_fb2f13 = '粘贴进货单'
 
 const { orderText, parsing, parsePreview, goStockInList } = usePageData()
 

@@ -1,0 +1,93 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "春季线性花材"
+  },
+  "careBaseRef": "care.foliage.vase_base",
+  "careVaseOverride": {
+    "summary": "雪柳线性花材；勤换水，保持通风。",
+    "tips": [
+      "预留瓶口空间"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.foliage",
+      "identity": {
+        "scientificName": "Spiraea thunbergii",
+        "namingNote": "春季线性花材，白色细枝，野趣高级",
+        "horticulturalGroup": "group.cut_foliage"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "白色细花沿枝开放，线条线性",
+        "scent": "淡香",
+        "stem": "以叶材线条与层次为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "尤加利",
+        "difference": "最常用配叶，与此品种形态或色调不同"
+      },
+      {
+        "name": "龟背竹",
+        "difference": "大叶配材，与此品种形态或色调不同"
+      },
+      {
+        "name": "雪柳",
+        "difference": "春季线性花材，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花配叶",
+      "namingNote": "春季线性花材，白色细枝，野趣高级"
+    }
+  },
+  "language": {
+    "meaning": "春日、线性美与「很轻的满枝白」",
+    "paragraphs": [
+      "雪柳是春日限定的高级线条——适合自然风、日式、开业，与郁金香、小菊同插极美。",
+      "勤换水；线性枝条注意瓶口空间。"
+    ],
+    "occasions": [
+      "春日",
+      "自然风",
+      "开业",
+      "婚礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "白",
+        "meaning": "春日、线性"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "春日",
+        "flowers": [
+          "郁金香",
+          "小雏菊"
+        ],
+        "note": "线性"
+      }
+    ],
+    "caution": "春季应季；勤换水。"
+  },
+  "names": {
+    "scientificName": "Spiraea thunbergii",
+    "commonNames": [
+      "Spiraea",
+      "雪柳"
+    ]
+  }
+}

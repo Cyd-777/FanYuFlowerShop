@@ -1,0 +1,184 @@
+@care-visual-w: 160rpx;
+@care-visual-h: 160rpx;
+@care-vase-w: 64rpx;
+@care-vase-h: 96rpx;
+@care-vase-bottom: 12rpx;
+@care-vase-left: 48rpx;
+@care-stem-w: 8rpx;
+@care-stem-h: 112rpx;
+@care-stem-left: 76rpx;
+@care-stem-bottom: 28rpx;
+@care-stem-center-x: (@care-stem-left + (@care-stem-w / 2));
+@care-cut-pivot-bottom: 56rpx;
+
+.wiki-care-guide {
+  display: flex;
+  gap: 20rpx;
+  align-items: center;
+}
+
+.wiki-care-guide__visual {
+  position: relative;
+  flex-shrink: 0;
+  width: @care-visual-w;
+  height: @care-visual-h;
+}
+
+.wiki-care-guide__vase {
+  position: absolute;
+  left: @care-vase-left;
+  bottom: @care-vase-bottom;
+  width: @care-vase-w;
+  height: @care-vase-h;
+  border: 3rpx solid #cfd8dc;
+  border-top: none;
+  border-radius: 0 0 20rpx 20rpx;
+  background: rgba(236, 239, 241, 0.45);
+  overflow: hidden;
+
+  &--water {
+    border-color: #90caf9;
+    background: rgba(227, 242, 253, 0.35);
+  }
+}
+
+.wiki-care-guide__water {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, #64b5f6 0%, #1e88e5 100%);
+}
+
+.wiki-care-guide__water-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.wiki-care-guide__stem {
+  position: absolute;
+  left: @care-stem-left;
+  bottom: @care-stem-bottom;
+  width: @care-stem-w;
+  height: @care-stem-h;
+  border-radius: 999rpx;
+  background: linear-gradient(180deg, #66bb6a 0%, #43a047 100%);
+  z-index: 1;
+}
+
+.wiki-care-guide__angle-pivot {
+  position: absolute;
+  left: @care-stem-center-x;
+  bottom: @care-cut-pivot-bottom;
+  width: 0;
+  height: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.wiki-care-guide__axis-ray {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: center center;
+
+  &--v {
+    width: 0;
+    height: 72rpx;
+    margin-left: -1rpx;
+    margin-top: -36rpx;
+    border-left: 2rpx dashed rgba(120, 144, 156, 0.55);
+  }
+
+  &--cut {
+    width: 0;
+    height: 44rpx;
+    margin-left: -1rpx;
+    margin-top: -22rpx;
+    border-left: 2rpx dashed rgba(229, 57, 53, 0.9);
+  }
+}
+
+.wiki-care-guide__leaf {
+  position: absolute;
+  width: 22rpx;
+  height: 10rpx;
+  border-radius: 999rpx;
+  background: #81c784;
+
+  &--top {
+    left: 86rpx;
+    bottom: 118rpx;
+    transform: rotate(-24deg);
+  }
+
+  &--mid {
+    left: 58rpx;
+    bottom: 98rpx;
+    transform: rotate(24deg);
+  }
+
+  &--remove {
+    left: 62rpx;
+    bottom: 78rpx;
+    background: #cfd8dc;
+    opacity: 0.75;
+    transform: rotate(18deg);
+  }
+}
+
+.wiki-care-guide__leaf-strike {
+  position: absolute;
+  left: 2rpx;
+  top: 4rpx;
+  width: 18rpx;
+  height: 2rpx;
+  background: #e53935;
+  transform: rotate(-18deg);
+}
+
+.wiki-care-guide__badge {
+  position: absolute;
+  font-size: 20rpx;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 2rpx 8rpx;
+  border-radius: 8rpx;
+
+  &--angle {
+    right: 4rpx;
+    top: 16rpx;
+    color: #e53935;
+    background: rgba(255, 245, 245, 0.95);
+  }
+
+  &--cut {
+    right: 4rpx;
+    bottom: 56rpx;
+    color: #e53935;
+    background: rgba(255, 245, 245, 0.95);
+  }
+}
+
+.wiki-care-guide__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.wiki-care-guide__title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.wiki-care-guide__text {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.6;
+}

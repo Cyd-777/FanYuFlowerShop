@@ -7,17 +7,17 @@
         class="asset-tab"
         :class="{ active: activeTab === 'asset' }"
         @tap="activeTab = 'asset'"
-      >商品素材</view>
+      >{{ uiText_ee03aa }}</view>
       <view
         class="asset-tab"
         :class="{ active: activeTab === 'wiki' }"
         @tap="activeTab = 'wiki'"
-      >智库配图</view>
+      >{{ uiText_86d983 }}</view>
     </view>
 
     <!-- ====== 商品/Banner 素材 Tab ====== -->
     <template v-if="activeTab === 'asset'">
-      <view v-if="loading" class="page-asset-loading">加载中...</view>
+      <view v-if="loading" class="page-asset-loading">{{ loadingTipText }}</view>
       <view v-else-if="!list.length" class="page-asset-empty">
         {{ isPicker ? '暂无素材' : '暂无素材' }}
       </view>
@@ -30,6 +30,7 @@
             'is-picker': isPicker,
             'is-selected': selectedIds.has(item._id),
             'is-batch': batchMode && !isPicker,
+            'is-used': isPicker && excludeFileIds.has(item.originalFileId),
           }"
           @tap="onCardTap(item)"
           @longpress="isPicker ? undefined : enterBatchMode(item)"
@@ -37,25 +38,26 @@
           <image class="asset-img" :src="item.standardUrl || item.previewUrl || ''" mode="aspectFill" />
           <view class="asset-card-labels">
             <text v-if="item.type === 'banner'" class="asset-type-badge asset-type-badge--banner">Banner</text>
-            <text v-else class="asset-type-badge asset-type-badge--goods">商品</text>
+            <text v-else class="asset-type-badge asset-type-badge--goods">{{ goodsLabelText }}</text>
             <text class="asset-tier-label asset-tier-label--fmt">{{ extractFormat(item.standardUrl) }}</text>
-            <text class="asset-tier-label">标准</text>
-            <text v-if="item.type !== 'banner'" class="asset-tier-label asset-tier-label--preview">缩略</text>
+            <text class="asset-tier-label">{{ standardLabelText }}</text>
+            <text v-if="item.type !== 'banner'" class="asset-tier-label asset-tier-label--preview">{{ thumbLabelText }}</text>
           </view>
           <view v-if="batchMode && !isPicker" class="asset-checkmark">{{ selectedIds.has(item._id) ? '✓' : '' }}</view>
+          <view v-if="isPicker && excludeFileIds.has(item.originalFileId)" class="asset-used-badge">{{ uiText_b59b00 }}</view>
           <view class="asset-name">{{ item.name }}</view>
         </view>
       </view>
 
       <view v-if="!isPicker && batchMode" class="asset-batch-bar">
         <view class="asset-batch-info">已选 {{ selectedIds.size }} 项</view>
-        <view class="asset-tag asset-tag--delete" @click="batchDelete">删除所选</view>
-        <view class="asset-tag asset-tag--cancel" @click="exitBatchMode">取消</view>
+        <view class="asset-tag asset-tag--delete" @click="batchDelete">{{ uiText_962113 }}</view>
+        <view class="asset-tag asset-tag--cancel" @click="exitBatchMode">{{ cancelText }}</view>
       </view>
 
       <view v-if="!isPicker" class="asset-bottom-bar">
-        <view class="asset-tag asset-tag--goods" @click="uploadNew('goods')">上传商品图</view>
-        <view class="asset-tag asset-tag--banner" @click="uploadNew('banner')">上传 Banner</view>
+        <view class="asset-tag asset-tag--goods" @click="uploadNew('goods')">{{ uiText_885a7f }}</view>
+        <view class="asset-tag asset-tag--banner" @click="uploadNew('banner')">{{ uiText_d66dec }}</view>
       </view>
     </template>
 
@@ -75,7 +77,7 @@
             :src="wikiPreviewUrls[entry._id] || entry.icon || ''"
             mode="aspectFill"
           />
-          <view class="wiki-card-name">{{ entry.kindName }} · {{ entry.varietyName }}</view>
+          <view class="wiki-card-name">{{ getWikiFullLabel(entry) }}</view>
           <view v-if="!wikiPreviewUrls[entry._id]" class="wiki-no-img">点击上传配图</view>
           <view v-else class="wiki-has-img">已配图</view>
         </view>
@@ -127,6 +129,20 @@ import { writeAssetPick } from '@/types/assetPick'
 import { wikiRepository } from '@/data/repository'
 import { getCloud, getCloudCallConfig, parseCloudResult } from '@/services/cloud'
 import type { FlowerWikiListItem } from '@/types/wiki'
+import { filterWikiCatalog, getWikiFullLabel } from '@/types/wiki'
+import { filterChooseMediaFiles } from '@/utils/uploadImageLimit'
+
+const cancelText = '取消'
+const goodsLabelText = '商品'
+const loadingTipText = '加载中...'
+const standardLabelText = '标准'
+const thumbLabelText = '缩略'
+const uiText_86d983 = '智库配图'
+const uiText_885a7f = '上传商品图'
+const uiText_962113 = '删除所选'
+const uiText_b59b00 = '已使用'
+const uiText_d66dec = '上传 Banner'
+const uiText_ee03aa = '商品素材'
 
 function extractFormat(url: string): string {
   if (!url) return '?'
@@ -136,6 +152,7 @@ function extractFormat(url: string): string {
 
 const isPicker = ref(false)
 const pickerType = ref('')
+const excludeFileIds = ref(new Set<string>())
 const activeTab = ref('asset')
 
 const router = useRouter()
@@ -143,6 +160,9 @@ const params = router.params as Record<string, string> | undefined
 if (params?.picker === '1') {
   isPicker.value = true
   pickerType.value = params?.type || ''
+  if (params?.exclude) {
+    excludeFileIds.value = new Set(params.exclude.split(',').filter(Boolean))
+  }
 }
 
 // ====== 商品素材 ======
@@ -175,7 +195,14 @@ async function loadAssetList() {
 }
 
 function onCardTap(item: AssetItem) {
-  if (isPicker.value) { pickAsset(item); return }
+  if (isPicker.value) {
+    if (excludeFileIds.value.has(item.originalFileId)) {
+      showToast({ title: '该素材已使用', icon: 'none' })
+      return
+    }
+    pickAsset(item)
+    return
+  }
   if (batchMode.value) {
     toggleSelect(item._id)
     return
@@ -237,7 +264,7 @@ function pickAsset(item: AssetItem) {
 async function uploadNew(type = 'goods') {
   try {
     const res = await wx.chooseMedia({ count: 9, mediaType: ['image'], sourceType: ['album', 'camera'] })
-    const files = res.tempFiles.filter((item) => item?.tempFilePath)
+    const files = filterChooseMediaFiles(res.tempFiles)
     if (!files.length) return
     wx.showLoading({ title: `上传中 0/${files.length}` })
     let done = 0
@@ -319,11 +346,11 @@ async function loadWikiList() {
   wikiLoading.value = true
   try {
     const { data } = await wikiRepository.ensurePublicList({})
-    wikiList.value = data
+    wikiList.value = filterWikiCatalog(data)
     // 尝试加载已有 cover 的预览
     const { readCachedImageUrl } = await import('@/utils/goodsImage')
     const urls: Record<string, string> = {}
-    for (const entry of data) {
+    for (const entry of wikiList.value) {
       if (entry.coverImage) {
         const cached = readCachedImageUrl(entry.coverImage)
         if (cached) urls[entry._id] = cached
@@ -340,7 +367,7 @@ async function loadWikiList() {
 async function assignWikiImage(entry: FlowerWikiListItem) {
   try {
     const res = await wx.chooseMedia({ count: 1, mediaType: ['image'], sourceType: ['album', 'camera'] })
-    const file = res.tempFiles[0]
+    const file = filterChooseMediaFiles(res.tempFiles)[0]
     if (!file?.tempFilePath) return
 
     wx.showLoading({ title: '上传中' })
@@ -423,6 +450,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
   background: #fff;
   border-radius: 12rpx;
   overflow: hidden;
+  box-sizing: border-box;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
   position: relative;
 }
@@ -430,6 +458,11 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 .asset-card:active { opacity: 0.85; }
 .asset-card.is-picker { border: 2rpx solid transparent; }
 .asset-card.is-picker:active { border-color: #e53935; opacity: 1; }
+.asset-card.is-used {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.asset-card.is-used .asset-img { filter: grayscale(0.8); }
 
 .asset-img {
   width: 100%;
@@ -458,6 +491,13 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 .asset-name {
   padding: 12rpx 14rpx; font-size: 24rpx; color: #555;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.asset-used-badge {
+  position: absolute; bottom: 44rpx; left: 0; right: 0;
+  text-align: center; font-size: 20rpx; color: #999;
+  background: rgba(255,255,255,0.85);
+  padding: 4rpx 0;
 }
 
 .asset-bottom-bar {

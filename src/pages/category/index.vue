@@ -1,8 +1,12 @@
 <template>
   <view class="page-category page-nav-overlay-safe" :style="navCssVars">
-    <AppFeedbackHost />
     <AppNavBar />
-    <view id="category-scroll-anchor" class="search-bar page-sticky-search" :style="navSearchStickyStyle">
+    <view
+      id="category-scroll-anchor"
+      class="search-bar page-sticky-search"
+      :class="{ 'search-modal-host-open': searchModalHostOpen }"
+      :style="navSearchStickyStyle"
+    >
       <AppSearchInput
         v-model="keyword"
         :placeholder="searchPlaceholder"
@@ -20,180 +24,239 @@
     </view>
 
     <view class="panels" :style="panelsStyle">
-      <view class="left-wrap" :style="leftWrapStyle">
+      <!-- 一阶：左侧 tab 栏 -->
+      <ScrollAnchorNavShell layer="l1-tab-rail" root-class="left-wrap" :style="leftWrapStyle">
+        <scroll-view class="left" :scroll-y="true" :enhanced="true" :show-scrollbar="false" :style="leftInnerScrollStyle">
+          <view
+            v-for="(tab, idx) in sideTabs"
+            :key="tab.key"
+            class="left-item"
+            :class="{ active: idx === primaryActiveIndex }"
+            @tap="switchSideTab(idx)"
+          >{{ tab.name }}</view>
+        </scroll-view>
+      </ScrollAnchorNavShell>
+
+      <!-- 一阶：右侧 scroll 区域 -->
+      <ScrollAnchorNavShell
+        layer="l1-scroll"
+        root-class="right-wrap"
+        :style="rightWrapStyle"
+        @touchstart="onRightWrapTouchStart"
+        @touchend="onRightWrapTouchEnd"
+        @touchcancel="onRightWrapTouchEnd"
+      >
+        <!-- 二阶：胶囊 tab 栏（v-if 只挂载一次，v-show 切换显隐，避免进花束时卸载引发 scroll 抖动） -->
+        <ScrollAnchorNavShell
+          v-if="anySectionHasSecondaryPills"
+          v-show="showSecondaryPill"
+          layer="l2-pill"
+          root-class="pill-bar"
+          :class="{ expanded: pillBarExpanded }"
+          :style="pillBarBoxStyle"
+          @tap.stop
+        >
+          <view class="pill-body" @tap.stop>
+            <scroll-view
+              v-if="!pillBarExpanded"
+              id="category-pill-scroll"
+              class="pill-scroll"
+              :scroll-x="true"
+              :enable-flex="true"
+              :show-scrollbar="false"
+              :scroll-with-animation="true"
+              :scroll-left="pillScrollLeft"
+              :style="pillScroll.scrollViewportStyle"
+            >
+              <view id="category-pill-track" class="pill-track" :style="pillScroll.trackStyle">
+                <view
+                  v-for="(p, idx) in secondaryTabs"
+                  :key="p.key"
+                  class="pill-item"
+                  :class="{ active: p.key === activeSecondaryKey }"
+                  hover-class="pill-item--pressed"
+                  @tap.stop="onPillTap(idx)"
+                >{{ p.icon }} {{ p.label }}</view>
+              </view>
+            </scroll-view>
+            <view v-else id="category-pill-track-expanded" class="pill-track-expanded">
+              <view
+                v-for="(p, idx) in secondaryTabs"
+                :key="p.key"
+                class="pill-item"
+                :class="{ active: p.key === activeSecondaryKey }"
+                hover-class="pill-item--pressed"
+                @tap.stop="onPillTap(idx)"
+              >{{ p.icon }} {{ p.label }}</view>
+            </view>
+          </view>
+          <view
+            v-if="showPillDropdown"
+            class="pill-dropdown"
+            hover-class="pill-dropdown--pressed"
+            @tap.stop="togglePillBar"
+          >
+            <AppIcon
+              class="pill-dropdown-icon"
+              :type="pillCollapsed ? '三角下' : '三角上'"
+              :size="16"
+            />
+          </view>
+        </ScrollAnchorNavShell>
+
         <scroll-view
-          class="left"
+          id="category-content-scroll"
+          class="right"
           :scroll-y="true"
           :enhanced="true"
+          :bounces="false"
           :show-scrollbar="false"
           :scroll-with-animation="true"
-          :scroll-into-view="leftScrollIntoView"
-          :style="leftInnerScrollStyle"
+          :scroll-into-view="contentScrollIntoView"
+          :style="contentScrollStyle"
+          @scroll="onRightScroll"
+          @touchstart="onContentTouchStart"
+          @touchmove="onContentTouchMove"
+          @touchend="onContentTouchEnd"
+          @touchcancel="onContentTouchCancel"
         >
-          <view
-            id="left-tab-customize"
-            class="left-item customize-entry"
-            :class="{ active: activeIdx === -1, 'is-hidden': !customizeVisible }"
-            @tap="showCustomizePanel"
-          >
-            ✨ 自选花束
-          </view>
-          <view
-            v-for="(tab, idx) in tabs"
-            :id="'left-tab-' + idx"
-            :key="tab.key"
-            :class="['left-item', { active: idx === activeIdx }]"
-            @tap="switchCategory(idx)"
-          >
-            {{ tab.name }}
+          <view class="content-pull-wrap" :style="pullRefresh?.contentPullWrapStyle" @transitionend="pullRefresh?.onPullWrapTransitionEnd">
+            <ScrollAnchorNavShell layer="l1-content" root-class="right-inner">
+              <view id="category-list-body">
+                <GoodsCardSkeleton v-if="loading" variant="row" :count="5" />
+                <template v-else>
+                  <view
+                    v-for="section in mallSections"
+                    :key="section.primaryAnchorId"
+                    class="primary-section"
+                  >
+                    <ScrollAnchorNavShell
+                      v-if="secondaryPillBarActiveAt(section.tabIndex)"
+                      layer="l2-pill-spacer"
+                      root-class="pill-bar-scroll-spacer"
+                      :style="pillBarScrollSpacerStyle"
+                      aria-hidden="true"
+                    />
+                    <view
+                      :id="section.primaryAnchorId"
+                      class="primary-section-header"
+                    >{{ section.icon }} {{ section.name }}</view>
+
+                    <ScrollAnchorSection>
+                      <!-- 花束：自选花束为分区固定内容，逻辑上等同特殊商品，不组件化 -->
+                      <view
+                        v-if="section.tabKey === 'bouquet'"
+                        id="cat-customize-entry"
+                        class="customize-panel"
+                      >
+                        <view class="customize-title">{{ customizeTitle }}</view>
+                        <view class="customize-desc">{{ customizeDesc }}</view>
+                        <nut-button type="primary" @tap="goCustomize">{{ customizeActionText }}</nut-button>
+                      </view>
+
+                      <template v-if="section.groups.length">
+                        <view
+                          v-for="group in section.groups"
+                          :key="group.anchorId"
+                          :id="group.anchorId"
+                          class="goods-group"
+                        >
+                          <view v-if="!group.hideAnchor" class="group-anchor">{{ group.icon }} {{ group.title }}</view>
+                          <view
+                            v-for="item in group.items"
+                            :key="item._id"
+                            class="goods-item"
+                            :class="{ 'is-sold-out': item.stock <= 0 }"
+                            @tap="goDetail(item._id, item.previewUrl, item.coverImage || item.images?.[0])"
+                          >
+                            <view class="thumb-wrap">
+                              <GoodsImage
+                                :preview-src="item.previewUrl"
+                                :cloud-file-id="item.coverImage || item.images?.[0]"
+                                root-class="thumb"
+                              />
+                              <GoodsSoldOutBadge :stock="item.stock" :on-sale="item.onSale" />
+                            </view>
+                            <view class="info">
+                              <view class="name">{{ item.name }}</view>
+                              <GoodsSalesTagRow :goods="item" compact />
+                              <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="price" />
+                            </view>
+                          </view>
+                        </view>
+                      </template>
+                    </ScrollAnchorSection>
+                  </view>
+                  <view v-if="!mallSections.length" class="empty-tip">{{ emptyText }}</view>
+                </template>
+              </view>
+              <ScrollListTailSpacer
+                content-selector="#category-list-body"
+                scroll-container-selector="#category-content-scroll"
+                tab-bar
+                :watch-key="categoryTailWatchKey"
+              />
+            </ScrollAnchorNavShell>
           </view>
         </scroll-view>
-      </view>
-
-      <scroll-view
-        id="category-content-scroll"
-        class="right"
-        :scroll-y="true"
-        :enhanced="true"
-        :bounces="false"
-        :show-scrollbar="false"
-        :style="rightScrollStyle"
-        @scroll="onRightScroll"
-        @scrolltolower="onRightScrollToLower"
-        @touchstart="contentTouchHandlers.onTouchStart"
-        @touchmove="contentTouchHandlers.onTouchMove"
-        @touchend="contentTouchHandlers.onTouchEnd"
-        @touchcancel="contentTouchHandlers.onTouchCancel"
-      >
-        <view
-          class="content-pull-wrap"
-          :style="pullRefresh?.contentPullWrapStyle"
-          @transitionend="pullRefresh?.onPullWrapTransitionEnd"
-        >
-        <view class="right-inner">
-          <view v-if="activeIdx === -1" class="customize-panel">
-            <view class="customize-title">定制花束</view>
-            <view class="customize-desc">
-              花材为所有按支售卖的商品；包装与贺卡从对应分类中选择，填写留言后提交订单。
-            </view>
-            <nut-button type="primary" @tap="goCustomize">开始定制</nut-button>
-          </view>
-          <template v-else>
-            <view class="right-title">{{ tabs[activeIdx]?.name }}</view>
-            <GoodsCardSkeleton v-if="loading" variant="row" :count="5" />
-            <template v-else>
-              <view
-                v-for="item in goodsList"
-                :key="item._id"
-                class="goods-item"
-                :class="{ 'is-sold-out': item.stock <= 0 }"
-                @tap="goDetail(item._id, item.previewUrl, item.coverImage || item.images?.[0])"
-              >
-                <view class="thumb-wrap">
-                  <GoodsImage
-                    :preview-src="item.previewUrl"
-                    :cloud-file-id="item.coverImage || item.images?.[0]"
-                    root-class="thumb"
-                  />
-                  <GoodsSoldOutBadge :stock="item.stock" :on-sale="item.onSale" />
-                </view>
-                <view class="info">
-                  <view class="name">{{ item.name }}</view>
-                  <GoodsSalesTagRow :goods="item" compact />
-                  <GoodsPriceLabel :price="item.price" :unit="item.unit" root-class="price" />
-                </view>
-              </view>
-              <view v-if="!goodsList.length" class="empty-tip">{{ emptyText }}</view>
-            </template>
-          </template>
-        </view>
-        </view>
-      </scroll-view>
+      </ScrollAnchorNavShell>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, nextTick, watch } from 'vue'
 import Taro from '@tarojs/taro'
 import { usePageData } from '@/composables/usePageData'
 import { mergeTouchHandlers } from '@/composables/usePullRefresh'
 import { useScrollAreaBelow } from '@/composables/useScrollAreaBelow'
+import { useMallCategoryScrollLink } from '@/composables/useMallCategoryScrollLink'
+import { useScrollXActiveAlign } from '@/composables/useScrollXActiveAlign'
+import { estimateTagChipWidthRpx, estimateTagRowsTrackWidthPx, useScrollXTrack } from '@/composables/useScrollXTrack'
+import { rpxToPx } from '@/composables/usePageSticky'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
-import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsSalesTagRow from '@/components/GoodsSalesTagRow.vue'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
 import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 import AppSearchInput from '@/components/AppSearchInput.vue'
+import AppIcon from '@/components/AppIcon.vue'
+import ScrollAnchorNavShell from '@/components/ScrollAnchorNavShell.vue'
+import ScrollAnchorSection from '@/components/ScrollAnchorSection.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { usePageSticky } from '@/composables/usePageSticky'
 import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
-
-const CUSTOMIZE_ENTRY_IDX = -1
-const SCROLL_DIRECTION_EPSILON_PX = 4
+import type { ScrollAnchorTab } from '@/types/scrollAnchorNav'
+import type { MallPrimarySection } from '@/utils/mallCategoryNav'
+import { searchModalHostOpen } from '@/utils/searchModalHost'
 
 const { cssVars: navCssVars } = useNavBarLayout()
 const { navSearchStickyStyle } = usePageSticky()
-
 useCartTabBadgeSync()
 
+const customizeTitle = '✨ 自选花束'
+const customizeDesc =
+  '花材为所有按支售卖的商品；包装与贺卡从对应分类中选择，填写留言后提交订单。'
+const customizeActionText = '开始定制'
+
 const LEFT_WIDTH_RPX = 180
+const PILL_BAR_HEIGHT_RPX = 80
+const PILL_DROPDOWN_WIDTH_RPX = 72
+const PILL_BODY_PAD_RPX = 24
+const maxPillsInCollapsedRow = 4
+const SCROLL_SELECTOR = '#category-content-scroll'
 
-const { topPx, heightPx, remeasure } = useScrollAreaBelow('#category-scroll-anchor')
-
-const leftWidthPx = computed(() => {
-  const { windowWidth } = Taro.getWindowInfo()
-  return Math.floor((LEFT_WIDTH_RPX * windowWidth) / 750)
-})
-
-const rightWidthPx = computed(() => {
-  const { windowWidth } = Taro.getWindowInfo()
-  return Math.max(0, windowWidth - leftWidthPx.value)
-})
-
-const panelsStyle = computed(() => ({
-  top: `${topPx.value}px`,
-  height: `${heightPx.value}px`,
-}))
-
-const leftWrapStyle = computed(() => ({
-  width: `${leftWidthPx.value}px`,
-  height: `${heightPx.value}px`,
-  maxHeight: `${heightPx.value}px`,
-}))
-
-const leftInnerScrollStyle = computed(() => ({
-  width: '100%',
-  height: `${heightPx.value}px`,
-  maxHeight: `${heightPx.value}px`,
-}))
-
-const rightScrollStyle = computed(() => ({
-  width: `${rightWidthPx.value}px`,
-  height: `${heightPx.value}px`,
-}))
-
-/** 自选花束卡片的显隐 */
-const customizeVisible = ref(true)
-let lastRightScrollTop = 0
-
-/** 连续滚动：避免重复触发切换 */
-let switchingCategory = false
-
+const { topPx, heightPx } = useScrollAreaBelow('#category-scroll-anchor')
 const {
   keyword,
   searchPlaceholder,
   emptyText,
-  activeIdx,
-  goodsList,
   loading,
-  tabs,
+  sideTabs,
+  mallSections,
   unifiedSuggest,
   suggestTitle,
-  formatPrice,
-  switchCategory,
-  showCustomizePanel,
+  setActiveTabIndex,
   goCustomize,
   onSearchKeyword,
   onPickSearchChannel,
@@ -204,189 +267,349 @@ const {
   pullRefresh,
 } = usePageData()
 
-const contentTouchHandlers = mergeTouchHandlers(
-  pullRefresh?.contentPullHandlers,
-  browseTouchHandlers,
+const contentTouchHandlers = mergeTouchHandlers(pullRefresh?.contentPullHandlers, browseTouchHandlers)
+
+function onContentTouchStart(event: unknown) {
+  contentTouchHandlers.onTouchStart?.(event)
+}
+
+function onContentTouchMove(event: unknown) {
+  contentTouchHandlers.onTouchMove?.(event)
+}
+
+function onContentTouchEnd(event: unknown) {
+  contentTouchHandlers.onTouchEnd?.(event)
+}
+
+function onContentTouchCancel(event: unknown) {
+  contentTouchHandlers.onTouchCancel?.(event)
+}
+
+const SWIPE_THRESHOLD_PX = 40
+let touchStartX = 0
+let touchStartY = 0
+
+/** 当前一阶是否应显示胶囊栏（二阶分类 ≥2 种） */
+function sectionShowsPillBar(section: MallPrimarySection): boolean {
+  return section.showSecondaryPillBar
+}
+
+/** 与 sideTabs 下标对齐的一阶 mall 分区 */
+function mallSectionAt(tabIndex: number) {
+  return mallSections.value.find((s) => s.tabIndex === tabIndex) ?? mallSections.value[tabIndex]
+}
+
+const pillRowHeightPx = computed(() => rpxToPx(PILL_BAR_HEIGHT_RPX))
+
+/** 全量二阶锚点（带 scope）；测量一次、各分区独立 scope 联动 */
+const allSecondaryTabs = computed<ScrollAnchorTab[]>(() =>
+  mallSections.value.flatMap((section) => {
+    if (!section.showSecondaryPillBar) return []
+    return section.groups
+      .filter((g) => !g.hideAnchor && g.title)
+      .map((g) => ({
+        key: g.anchorId,
+        label: g.title,
+        icon: g.icon,
+        anchorId: g.anchorId,
+        scopeIndex: section.tabIndex,
+      }))
+  }),
 )
 
-const leftScrollIntoView = computed(() => {
-  if (activeIdx.value === CUSTOMIZE_ENTRY_IDX) return 'left-tab-customize'
-  return `left-tab-${activeIdx.value}`
+/** 当前一阶 tab 是否应显示二阶胶囊栏（二阶分类 ≥2 种；一阶/二阶联动共用） */
+function secondaryPillBarActiveAt(tabIndex: number): boolean {
+  const section = mallSectionAt(tabIndex)
+  if (!sectionShowsPillBar(section)) return false
+  return allSecondaryTabs.value.filter((t) => t.scopeIndex === tabIndex).length >= 2
+}
+
+/** 浮层胶囊 + 顶留白占用 scroll 视口顶部的高度（按一阶 tab 下标） */
+function pillInsetAtTabIndex(tabIndex: number): number {
+  return secondaryPillBarActiveAt(tabIndex) ? pillRowHeightPx.value : 0
+}
+
+const {
+  primaryActiveIndex,
+  secondaryActiveIndex,
+  contentScrollIntoView,
+  onContentScroll,
+  clickPrimaryTab,
+  clickSecondaryTab,
+  remeasure: remeasureScrollLink,
+} = useMallCategoryScrollLink({
+  scrollSelector: SCROLL_SELECTOR,
+  sections: mallSections,
+  getPillInsetPx: pillInsetAtTabIndex,
+  contentWatchKey: () =>
+    `${loading.value}-${sideTabs.value.map((t) => t.key).join('|')}-${mallSections.value.map((s) => `${s.tabKey}:${s.groups.length}`).join('|')}`,
 })
 
-function onRightScroll(event: { detail?: { scrollTop?: number } }) {
-  const scrollTop = event.detail?.scrollTop || 0
-  const delta = scrollTop - lastRightScrollTop
-  lastRightScrollTop = scrollTop
+/** 胶囊栏展示：当前一阶 scope 下的二阶 tab */
+const secondaryTabs = computed(() =>
+  allSecondaryTabs.value.filter((t) => t.scopeIndex === primaryActiveIndex.value),
+)
 
-  // 自选花束卡片显隐：上滑隐藏，下滑显示
-  if (Math.abs(delta) > SCROLL_DIRECTION_EPSILON_PX) {
-    customizeVisible.value = delta <= 0
-  }
+const activeSecondaryKey = computed(
+  () => secondaryTabs.value[secondaryActiveIndex.value]?.key ?? '',
+)
 
-  // 同步给下拉刷新
-  pullRefresh?.trackContentScroll?.(event)
-}
-
-function onRightScrollToLower() {
-  if (switchingCategory || activeIdx.value < 0) return
-  const nextIdx = activeIdx.value + 1
-  if (nextIdx < tabs.value.length) {
-    switchingCategory = true
-    switchCategory(nextIdx)
-    setTimeout(() => { switchingCategory = false }, 600)
-  }
-}
+const showSecondaryPill = computed(() => secondaryPillBarActiveAt(primaryActiveIndex.value))
 
 watch(
-  () => tabs.value.length,
-  () => { remeasure() },
+  () => loading.value,
+  (isLoading) => {
+    if (!isLoading) {
+      void nextTick(() => remeasureScrollLink())
+    }
+  },
 )
+
+watch([showSecondaryPill, pillRowHeightPx], () => {
+  remeasureScrollLink()
+})
+
+const pillBarScrollSpacerStyle = computed(() => ({
+  height: `${pillRowHeightPx.value}px`,
+  minHeight: `${pillRowHeightPx.value}px`,
+  width: '100%',
+  flexShrink: '0',
+}))
+
+const anySectionHasSecondaryPills = computed(() =>
+  mallSections.value.some((s) => sectionShowsPillBar(s)),
+)
+
+const leftWidthPx = computed(() => Math.floor((LEFT_WIDTH_RPX * Taro.getWindowInfo().windowWidth) / 750))
+const pillCollapsed = ref(true)
+const showPillDropdown = computed(() => secondaryTabs.value.length > maxPillsInCollapsedRow)
+const pillBarExpanded = computed(() => showPillDropdown.value && !pillCollapsed.value)
+
+const pillScroll = useScrollXTrack({
+  heightRpx: PILL_BAR_HEIGHT_RPX,
+  measure: {
+    rowSelectors: ['#category-pill-track'],
+    horizontalPaddingRpx: PILL_BODY_PAD_RPX,
+  },
+  estimateTrackWidthPx: () => {
+    const rightWidthPx = Taro.getWindowInfo().windowWidth - leftWidthPx.value
+    const rows = [secondaryTabs.value.map((p) => ({ label: p.label, icon: p.icon }))]
+    return Math.max(estimateTagRowsTrackWidthPx(rows, 8, PILL_BODY_PAD_RPX), rightWidthPx + 1)
+  },
+  watchSources: [
+    () => secondaryTabs.value.map((p) => p.key).join('|'),
+    () => primaryActiveIndex.value,
+  ],
+})
+
+/** 胶囊横向 scroll：激活项滚入可视区并对齐到第二个槽位（美团同构） */
+const pillActiveAlign = useScrollXActiveAlign({
+  scrollSelector: '#category-pill-scroll',
+  itemSelector: '#category-pill-track .pill-item',
+  activeIndex: secondaryActiveIndex,
+  anchorSlotIndex: 1,
+  itemGapRpx: 8,
+  trackPaddingRpx: 12,
+  enabled: computed(() => showSecondaryPill.value && !pillBarExpanded.value),
+  watchSources: [
+    () => secondaryTabs.value.map((p) => p.key).join('|'),
+    () => pillScroll.trackWidthPx.value,
+  ],
+})
+const { scrollLeft: pillScrollLeft, alignToActive: alignPillScroll, resetScroll: resetPillScroll } =
+  pillActiveAlign
+
+watch(
+  () => primaryActiveIndex.value,
+  (idx) => {
+    setActiveTabIndex(idx)
+    resetPillScroll()
+  },
+)
+
+function estimatePillExpandedHeightPx(): number {
+  const pills = secondaryTabs.value
+  if (!pills.length) return rpxToPx(PILL_BAR_HEIGHT_RPX)
+
+  const bodyWidthPx =
+    Taro.getWindowInfo().windowWidth
+    - leftWidthPx.value
+    - rpxToPx(PILL_DROPDOWN_WIDTH_RPX)
+    - rpxToPx(PILL_BODY_PAD_RPX)
+  const gapPx = rpxToPx(8)
+  const rowHPx = rpxToPx(PILL_BAR_HEIGHT_RPX)
+  let rowWidth = 0
+  let rows = 1
+
+  for (const pill of pills) {
+    const chipPx = rpxToPx(estimateTagChipWidthRpx(pill.label, Boolean(pill.icon)))
+    if (rowWidth > 0 && rowWidth + gapPx + chipPx > bodyWidthPx) {
+      rows += 1
+      rowWidth = chipPx
+    } else {
+      rowWidth = rowWidth > 0 ? rowWidth + gapPx + chipPx : chipPx
+    }
+  }
+
+  return rows * rowHPx + rpxToPx(20)
+}
+
+const pillBarHeightPx = computed(() => {
+  if (!showSecondaryPill.value) return 0
+  if (pillBarExpanded.value) return estimatePillExpandedHeightPx()
+  return pillRowHeightPx.value
+})
+
+const pillBarBoxStyle = computed(() => ({
+  height: `${pillBarHeightPx.value}px`,
+  minHeight: `${pillBarHeightPx.value}px`,
+}))
+
+const categoryTailWatchKey = computed(
+  () =>
+    `${loading.value}-${mallSections.value.length}-${mallSections.value.map((s) => s.tabKey).join('|')}`,
+)
+
+const panelsStyle = computed(() => ({ top: `${topPx.value}px`, height: `${heightPx.value}px` }))
+const leftWrapStyle = computed(() => ({ width: `${leftWidthPx.value}px`, height: `${heightPx.value}px`, maxHeight: `${heightPx.value}px` }))
+const leftInnerScrollStyle = computed(() => ({ width: '100%', height: `${heightPx.value}px`, maxHeight: `${heightPx.value}px` }))
+const rightWrapStyle = computed(() => {
+  const ww = Taro.getWindowInfo().windowWidth
+  return { width: `${ww - leftWidthPx.value}px`, height: `${heightPx.value}px` }
+})
+const contentScrollStyle = computed(() => {
+  const ww = Taro.getWindowInfo().windowWidth
+  return { width: `${ww - leftWidthPx.value}px`, height: `${heightPx.value}px` }
+})
+
+function togglePillBar() {
+  pillCollapsed.value = !pillCollapsed.value
+  if (!pillCollapsed.value) {
+    void nextTick(() => remeasureScrollLink())
+  } else {
+    alignPillScroll()
+  }
+}
+
+function onRightWrapTouchStart(event: { touches?: Array<{ clientX?: number; clientY?: number }> }) {
+  const touch = event.touches?.[0]
+  touchStartX = touch?.clientX || 0
+  touchStartY = touch?.clientY || 0
+}
+
+function onRightWrapTouchEnd(event: { changedTouches?: Array<{ clientX?: number; clientY?: number }> }) {
+  const touch = event.changedTouches?.[0]
+  const dx = (touch?.clientX || 0) - touchStartX
+  const dy = (touch?.clientY || 0) - touchStartY
+  if (
+    primaryActiveIndex.value >= 0
+    && Math.abs(dx) > Math.abs(dy)
+    && Math.abs(dx) >= SWIPE_THRESHOLD_PX
+  ) {
+    swipeToAdjacentTab(dx < 0 ? 1 : -1)
+  }
+}
+
+function swipeToAdjacentTab(delta: number) {
+  const current = primaryActiveIndex.value
+  if (current < 0) {
+    if (delta > 0 && sideTabs.value.length) switchSideTab(0)
+    return
+  }
+  const next = current + delta
+  if (next < 0 || next >= sideTabs.value.length) return
+  switchSideTab(next)
+}
+
+function switchSideTab(idx: number) {
+  pillCollapsed.value = true
+  clickPrimaryTab(idx)
+}
+
+function onPillTap(idx: number) {
+  const pill = secondaryTabs.value[idx]
+  if (pill) {
+    clickSecondaryTab(pill.anchorId)
+    alignPillScroll()
+  }
+}
+
+function onRightScroll(event: { detail?: { scrollTop?: number } }) {
+  onContentScroll(event)
+  pullRefresh?.trackContentScroll?.(event)
+}
 </script>
 
 <style lang="less">
 @import '@/styles/tokens.less';
+.page-category { min-height: 100%; background: @color-bg-page; }
+.search-bar { position: fixed; left: 0; right: 0; z-index: 95; padding: 16rpx 24rpx; background: @color-bg-card; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04); }
+.search-bar.search-modal-host-open { z-index: 200; }
+.panels { position: fixed; left: 0; right: 0; display: flex; flex-direction: row; overflow: hidden; z-index: 1; }
+.left-wrap { flex: none; overflow: hidden; background: #fff; }
+.left { background: #fff; }
+.left-item { padding: 28rpx 24rpx; font-size: 26rpx; color: #666; text-align: center; border-left: 4rpx solid transparent; }
+.left-item.active { color: @color-primary; border-left-color: @color-primary; background: @color-primary-light; font-weight: 600; }
+.right-wrap { flex: none; position: relative; overflow: hidden; }
 
-.page-category {
-  min-height: 100%;
-  background: @color-bg-page;
-}
-
-.search-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  z-index: 95;
-  padding: 16rpx 24rpx;
-  background: @color-bg-card;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-}
-
-.panels {
-  position: fixed;
+.pill-bar {
+  position: absolute;
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
   flex-direction: row;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.left-wrap {
-  flex: none;
-  overflow: hidden;
+  align-items: stretch;
   background: #fff;
-}
-
-.left {
-  background: #fff;
-}
-
-.left-item {
-  padding: 28rpx 24rpx;
-  font-size: 26rpx;
-  color: #666;
-  text-align: center;
-  border-left: 4rpx solid transparent;
-  &.active {
-    color: @color-primary;
-    border-left-color: @color-primary;
-    background: @color-primary-light;
-    font-weight: 600;
-  }
-}
-
-.customize-entry {
-  font-size: 24rpx;
-  transition: opacity 0.25s ease, max-height 0.25s ease, padding 0.25s ease;
-  overflow: hidden;
-  max-height: 100rpx;
-  &.is-hidden {
-    opacity: 0;
-    max-height: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    pointer-events: none;
-  }
-}
-
-.right {
-  flex: none;
-  background: @color-bg-page;
-}
-
-.right-inner {
-  padding: 24rpx;
   box-sizing: border-box;
+  z-index: 2;
 }
-
-.customize-panel {
-  padding: 48rpx 24rpx;
-  background: #fff;
-  border-radius: 16rpx;
+.pill-bar.expanded { overflow: visible; box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.06); }
+.pill-body { flex: 1; min-width: 0; height: 100%; overflow: hidden; }
+.pill-bar.expanded .pill-body { overflow: visible; height: auto; }
+.pill-scroll { width: 100%; height: 100%; }
+.pill-track { display: flex; flex-direction: row; align-items: center; gap: 8rpx; padding: 10rpx 12rpx; box-sizing: border-box; height: 100%; }
+.pill-track-expanded { display: flex; flex-wrap: wrap; align-content: flex-start; align-items: center; gap: 8rpx; padding: 10rpx 12rpx; box-sizing: border-box; width: 100%; min-height: 100%; }
+.pill-item { flex: none; padding: 6rpx 18rpx; background: #f5f5f5; border: 2rpx solid #eee; border-radius: 28rpx; font-size: 24rpx; color: #666; white-space: nowrap; line-height: 1.4; }
+.pill-item.active { background: @color-primary-light; border-color: @color-primary-border; color: @color-primary; font-weight: 600; }
+.pill-item--pressed { opacity: 0.85; }
+.pill-dropdown { flex: none; width: 72rpx; display: flex; align-items: center; justify-content: center; align-self: stretch; background: #fff; border-left: 2rpx solid #f0f0f0; }
+.pill-dropdown--pressed { background: #fafafa; }
+.pill-dropdown-icon { flex-shrink: 0; opacity: 0.72; }
+.right { height: 100%; background: @color-bg-page; }
+.right-inner { padding: 24rpx; box-sizing: border-box; }
+.customize-panel { margin-bottom: 16rpx; padding: 32rpx 24rpx; background: #fff; border-radius: 16rpx; min-height: 280rpx; box-sizing: border-box; }
+.customize-title { font-size: 32rpx; font-weight: 600; color: #333; }
+.customize-desc { margin: 16rpx 0 32rpx; font-size: 26rpx; color: #666; line-height: 1.6; }
+.pill-bar-scroll-spacer {
+  box-sizing: border-box;
+  pointer-events: none;
 }
-
-.customize-title {
+.primary-section { margin: 0; }
+.primary-section-header {
   font-size: 32rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: @color-primary;
+  padding: 20rpx 0 12rpx;
+  line-height: 1.4;
+  margin-bottom: 8rpx;
 }
-
-.customize-desc {
-  margin: 16rpx 0 32rpx;
-  font-size: 26rpx;
-  color: #666;
-  line-height: 1.6;
+.primary-section + .primary-section .primary-section-header {
+  padding-top: 20rpx;
 }
-
-.right-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 16rpx;
-}
-
-.goods-item {
-  display: flex;
-  box-sizing: border-box;
-  max-width: 100%;
-  background: #fff;
-  border-radius: 12rpx;
-  padding: 16rpx;
-  margin-bottom: 16rpx;
-  &.is-sold-out .thumb {
-    opacity: 0.72;
-  }
-  .thumb-wrap {
-    position: relative;
-    flex-shrink: 0;
-  }
-  .thumb {
-    width: 160rpx;
-    height: 160rpx;
-    border-radius: 8rpx;
-    background: #f0f0f0;
-    flex-shrink: 0;
-  }
-  .info {
-    margin-left: 16rpx;
-    flex: 1;
-    min-width: 0;
-  }
-  .name {
-    font-size: 26rpx;
-    color: #333;
-  }
-  .price {
-    margin-top: 8rpx;
-    color: @color-primary;
-  }
-}
-
-.empty-tip {
-  padding: 48rpx 0;
-  text-align: center;
-  font-size: @font-size-md;
+.section-empty-hint {
+  padding: 8rpx 0 24rpx;
+  font-size: 24rpx;
   color: @color-text-tertiary;
 }
+.goods-group { margin-bottom: 8rpx; }
+.group-anchor { font-size: 26rpx; font-weight: 600; color: @color-primary; padding: 8rpx 0; margin-bottom: 8rpx; }
+.goods-item { display: flex; box-sizing: border-box; max-width: 100%; background: #fff; border-radius: 12rpx; padding: 16rpx; margin-bottom: 16rpx; }
+.goods-item.is-sold-out .thumb { opacity: 0.72; }
+.thumb-wrap { position: relative; flex-shrink: 0; }
+.thumb { width: 160rpx; height: 160rpx; border-radius: 8rpx; background: #f0f0f0; flex-shrink: 0; }
+.info { margin-left: 16rpx; flex: 1; min-width: 0; }
+.name { font-size: 26rpx; color: #333; }
+.price { margin-top: 8rpx; color: @color-primary; }
+.empty-tip { padding: 48rpx 0; text-align: center; font-size: @font-size-md; color: @color-text-tertiary; }
 </style>

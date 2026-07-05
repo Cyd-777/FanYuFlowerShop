@@ -1,38 +1,36 @@
 <template>
   <view class="page-edit-addr">
     <AppNavBar />
-    <view class="wechat-tip">
-      地址来自微信地址簿。如需修改，请在微信地址中编辑后重新导入。
-    </view>
+    <view class="wechat-tip">{{ uiText_7caa5a }}</view>
 
     <view class="quick-actions">
       <view class="quick-btn primary" @click="reimportWechatAddress">
         <text class="quick-icon">📮</text>
-        <text>从微信重新导入</text>
+        <text>{{ uiText_49db7a }}</text>
       </view>
     </view>
 
     <view class="form-card">
       <view class="readonly-row">
-        <text class="readonly-label">收件人</text>
+        <text class="readonly-label">{{ uiText_fb5bf1 }}</text>
         <text class="readonly-value">{{ form.name || '—' }}</text>
       </view>
       <view class="readonly-row">
-        <text class="readonly-label">手机号</text>
+        <text class="readonly-label">{{ uiText_8098e2 }}</text>
         <text class="readonly-value">{{ form.phone || '—' }}</text>
       </view>
       <view class="readonly-row">
-        <text class="readonly-label">所在地区</text>
+        <text class="readonly-label">{{ uiText_65d3ab }}</text>
         <text class="readonly-value">{{ regionText || '—' }}</text>
       </view>
       <view class="readonly-row">
-        <text class="readonly-label">详细地址</text>
+        <text class="readonly-label">{{ uiText_61a0ec }}</text>
         <text class="readonly-value">{{ form.detail || '—' }}</text>
       </view>
 
       <nut-cell>
         <label class="default-switch">
-          <text>设为默认地址</text>
+          <text>{{ uiText_e47491 }}</text>
           <nut-switch v-model="form.isDefault" @change="onDefaultChange" />
         </label>
       </nut-cell>
@@ -68,6 +66,14 @@ import {
 } from '@/services/address'
 import { chooseWechatAddress, formatRegionText, handleLocationError } from '@/utils/location'
 import type { UserAddressForm } from '@/types/address'
+
+const uiText_49db7a = '从微信重新导入'
+const uiText_61a0ec = '详细地址'
+const uiText_65d3ab = '所在地区'
+const uiText_7caa5a = '地址来自微信地址簿。如需修改，请在微信地址中编辑后重新导入。'
+const uiText_8098e2 = '手机号'
+const uiText_e47491 = '设为默认地址'
+const uiText_fb5bf1 = '收件人'
 
 const addressId = ref('')
 const deleting = ref(false)

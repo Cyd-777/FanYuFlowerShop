@@ -15,8 +15,19 @@
       />
     </view>
 
-    <view v-if="loading" class="loading-wrap">
-      <nut-skeleton rows="6" animated />
+    <view v-if="loading" class="picker-skeleton">
+      <view class="ps-kind-col">
+        <view v-for="i in 5" :key="i" class="ps-kind-item sk-shimmer" />
+      </view>
+      <view class="ps-variety-col">
+        <view class="ps-intro sk-shimmer" />
+        <view class="ps-grid">
+          <view v-for="i in 4" :key="i" class="ps-variety-card">
+            <view class="ps-variety-thumb sk-shimmer" />
+            <view class="ps-variety-name sk-shimmer" />
+          </view>
+        </view>
+      </view>
     </view>
 
     <view v-else-if="catalog.length" class="picker-body" :style="pickerBodyStyle">
@@ -40,12 +51,14 @@
       </scroll-view>
 
       <scroll-view
+        id="flower-picker-variety-scroll"
         class="variety-panel"
         :scroll-y="true"
         :enhanced="true"
         :show-scrollbar="false"
         :style="varietyScrollStyle"
       >
+        <view id="flower-picker-variety-body">
         <view v-if="activeKind" class="kind-intro">
           <view class="intro-title">{{ activeKind.name }}</view>
           <view class="intro-desc">{{ activeKind.description }}</view>
@@ -65,6 +78,12 @@
         <view v-if="!activeVarieties.length" class="empty-varieties">
           {{ emptyVarietyText }}
         </view>
+        </view>
+        <ScrollListTailSpacer
+          content-selector="#flower-picker-variety-body"
+          scroll-container-selector="#flower-picker-variety-scroll"
+          :watch-key="`${activeKindId}-${activeVarieties.length}`"
+        />
       </scroll-view>
     </view>
 
@@ -213,6 +232,69 @@ watch(
 .loading-wrap {
   padding: 24rpx;
 }
+
+/* ─── 加载骨架 ─── */
+@keyframes sk-shimmer-kf {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.sk-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 0%, #e6e6e6 20%, #f5f5f5 40%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: sk-shimmer-kf 1.4s ease-in-out infinite;
+  border-radius: 8rpx;
+}
+
+.picker-skeleton {
+  display: flex;
+  padding: 16rpx;
+  gap: 12rpx;
+  height: calc(100vh - 220rpx);
+  box-sizing: border-box;
+}
+.ps-kind-col {
+  width: 160rpx;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.ps-kind-item {
+  height: 80rpx;
+  border-radius: 12rpx;
+}
+.ps-variety-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.ps-intro {
+  height: 56rpx;
+  border-radius: 8rpx;
+}
+.ps-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
+}
+.ps-variety-card {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.ps-variety-thumb {
+  width: 100%;
+  height: 160rpx;
+  border-radius: 8rpx;
+}
+.ps-variety-name {
+  height: 24rpx;
+  margin-top: 8rpx;
+  width: 60%;
+}
+
 .picker-body {
   position: fixed;
   left: 0;

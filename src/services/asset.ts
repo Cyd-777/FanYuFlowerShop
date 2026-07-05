@@ -1,5 +1,6 @@
 import { getCloud, getCloudCallConfig, parseCloudResult } from './cloud'
 import { showToast } from '@/utils/feedback'
+import { assertLocalImageWithinLimit } from '@/utils/uploadImageLimit'
 
 export interface AssetItem {
   _id: string
@@ -39,6 +40,8 @@ export async function uploadAndProcessImage(
   previewFileId: string
   standardFileId: string
 }> {
+  await assertLocalImageWithinLimit(localPath)
+
   const ext = (localPath.match(/\.(\w+)(?:\?|$)/)?.[1] || 'jpg').replace(/[^a-zA-Z0-9]/, '')
   const cloudPath = `assets/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`
 

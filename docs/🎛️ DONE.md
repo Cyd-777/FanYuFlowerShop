@@ -5,6 +5,64 @@
 
 ---
 
+## 界面与体验优化 · 上传图片体积限制
+
+`2026-07-01` · **已实现待你测**
+
+- `uploadImageLimit.ts`：单张上限 10MB；选图过滤 + `wx.getFileInfo` 上传前校验
+- 接入：商品编辑、素材库、Banner、头像保存、智库配图（经 `uploadAndProcessImage` / `uploadGoodsImage` / `saveUserProfile`）
+
+---
+
+## 分类管理优化 · 商品编辑 loadCategories 去模糊匹配
+
+`2026-07-01` · **已实现待你测**
+
+- 商品编辑页 `loadCategories` 删除 `item.name.includes(flowerKindName)` 兜底
+- 支/组：`applyAutoCategoryForStemOrGroup` → `wiki:种类名`；束/件：无分类时默认选第一个可选分类，或用户手选
+
+---
+
+## 分类管理优化 · 百科品种列表动态读取
+
+`2026-07-01` · **已实现待你测**
+
+- 移除 `WIKI_KIND_SIDEBAR` 硬编码；`buildWikiKindSidebar(catalog)` 从 `flower_wiki` 按 `sort` 动态构建
+- 百科 Tab 浏览流、折叠分组、花卉选择器目录统一走云端智库数据
+
+---
+
+## 分类管理优化 · CategoryForm.enabled 清理
+
+`2026-07-01` · **已实现待你测**
+
+- `CategoryForm` 去掉 `enabled`；商户编辑页启用态仅由 `goodsCount` 计算展示
+- 云函数 `normalizeCategoryInput` 不再写入 `enabled`；`pickCategory` 不读库内 enabled
+- `resolveCategoryEnabled` / 花束筛选统一为 `goodsCount > 0`
+
+---
+
+## 分类管理优化 · 分类列表请求优化
+
+`2026-07-01` · **已实现待你测**
+
+- `migrateAndSeedCategories` 改为版本门控 `ensureCategoryMigrated`（`app_meta.category.migrationVersion`）
+- 日常 `list` / `publicList` 只读库；仅迁移版本落后或有写库变更时才 bump 缓存
+- 需**重新部署 `category` 云函数**
+
+---
+
+## 分类管理优化 · 首页与商城 Tab 分类结构统一
+
+`2026-07-01` · **已实现待你测**
+
+- 商城去掉「全部」tab；鲜花/花束/物料（+ 自定义一阶）右侧统一长列表 + 分类文字锚点
+- 顶部胶囊与锚点双向联动；>4 胶囊下拉展开
+- 分类管理双层：一阶 tab / 二阶胶囊；编辑页升级/降级（`setNavTier`）
+- 需部署 `category` 云函数后测升降级
+
+---
+
 ## 页面滚动吸顶（二期）
 
 `2026-06-28` · **验收通过**
@@ -139,6 +197,7 @@
 - **图片预取** — `aggressivePrefetch` 和 `CacheSyncScheduler` 预取 goods detail 后同步 `wx.getImageInfo` 预热图片到微信缓存
 - **WebP 转换** — 云函数内 `sharp` 缩放 + webp（部署安装依赖后生效；原生 JPG 方案亦可接受）
 - **双图叠加（行业标准）** — preview（160px）→ standard（750px），详情秒出不白
+- **后台切前台图片过期重载** — App onShow → `notifyAppResume` 计数器递增；`GoodsImage` watch `getAppResumeCount`，缓存过期时自动重新换链；`readCachedImageUrl` 返回空字符串触发异步重解析
 
 ---
 
@@ -157,3 +216,19 @@
 
 - 移除身份码，改为邀请链接（`staff` 已部署，生成正常）
 - **邀请码加人（未发布可用）** — 店长生成 6 位邀请码发给对方；对方「我的」→「输入邀请码」自行验证并接受；`pages/invite/join`；登录后回跳支持 `code:` 前缀；体验版已验收
+
+---
+
+## 门店自提 · 商家自配送 · 核销
+
+`2026-06-30` · **验收通过**
+
+- 订单模型新增 `deliveryMethod`、`verifyToken`、`ready`/`delivering` 状态 + `verifyPickup` action
+- 下单页配送方式选择（配送上门 vs 门店自提；自提隐藏地址）
+- 顾客端/商户端订单列表和详情增加配送方式标签（自提/配送）
+- 自提订单 QR 码展示（canvas px 修复 + typeNumber 8，确保可扫）
+- 商户核销页扫码调 `verifyPickup` 完成核销
+- 商户详情页已备好 → 扫码核销按钮，核销后订单完成
+- 商户端配送选择（备货完成后自配送/呼叫骑手）
+- 进度条：取消核销或确认收货前不显示已完成
+- 云函数：`accepted→preparing` 不再自动呼叫骑手，由商户手动选择

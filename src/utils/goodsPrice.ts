@@ -1,10 +1,10 @@
 import { getGoodsUnitLabel } from '@/types/goods'
 
-export function formatPriceAmount(price: number): string {
+function formatPriceAmount(price: number): string {
   return Number(price).toFixed(2).replace(/\.00$/, '')
 }
 
-export interface SplitGoodsPrice {
+interface SplitGoodsPrice {
   integer: string
   /** 不含小数点，如 "5" / "50" */
   fraction: string | null

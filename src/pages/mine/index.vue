@@ -1,5 +1,5 @@
 <template>
-  <view class="page-mine">
+  <view class="page-mine" id="mine-page-scroll-body">
     <AppFeedbackHost />
     <view class="user-card" :style="userCardStyle" @tap="onUserCardTap">
       <template v-if="isLoggedIn">
@@ -12,15 +12,15 @@
         <view v-else class="avatar">{{ avatarEmoji }}</view>
         <view class="user-info">
           <view class="nickname">{{ displayNickName }}</view>
-          <view class="edit-hint">编辑资料 {{ entryArrow }}</view>
+          <view class="edit-hint">{{ editHintText }} {{ entryArrow }}</view>
           <view class="merchant-badge" v-if="isMerchant">{{ merchantBadgeText }}</view>
         </view>
       </template>
       <template v-else>
         <view class="avatar guest">{{ avatarEmoji }}</view>
         <view class="user-info">
-          <view class="nickname">未登录</view>
-          <view class="guest-desc">点击登录</view>
+          <view class="nickname">{{ guestNicknameText }}</view>
+          <view class="guest-desc">{{ guestLoginHintText }}</view>
         </view>
       </template>
       <text v-if="isLoggedIn" class="card-arrow">{{ entryArrow }}</text>
@@ -82,6 +82,11 @@
         <text class="menu-arrow">{{ entryArrow }}</text>
       </view>
     </view>
+    <ScrollListTailSpacer
+      content-selector="#mine-page-scroll-body"
+      tab-bar
+      :watch-key="isLoggedIn"
+    />
   </view>
 </template>
 
@@ -106,6 +111,9 @@ const userCardStyle = computed(() => ({
 const userStore = useUserStore()
 
 const avatarEmoji = '🌷'
+const editHintText = '编辑资料'
+const guestNicknameText = '未登录'
+const guestLoginHintText = '点击登录'
 const merchantIcon = '🏪'
 const merchantTitle = '商家工作台'
 const merchantDesc = '管理商品、订单与店铺'

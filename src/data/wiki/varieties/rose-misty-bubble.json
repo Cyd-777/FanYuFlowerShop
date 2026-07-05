@@ -1,0 +1,124 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Misty Bubble'",
+    "commonNames": [
+      "Misty Bubble",
+      "迷雾泡泡玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "低饱和灰紫，避强光",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "迷雾泡泡为低饱和灰紫多头玫瑰，避直射可减缓褪色，勤换水。",
+    "tips": [
+      "低饱和色系避强光",
+      "多头发散勿过度捆扎"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Misty Bubble'",
+        "horticulturalGroup": "group.spray_rose",
+        "namingNote": "灰紫低饱和多头，莫兰迪风切花",
+        "introducedYear": "2010 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "4 至 6",
+        "color": "灰紫或雾紫小头，低饱和而高级",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.multi_head",
+      "trait.morandi",
+      "trait.muted_retro"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "曼塔",
+        "difference": "单头灰紫，而非多头"
+      },
+      {
+        "name": "巧克力泡泡",
+        "difference": "偏棕红巧克力，而非灰紫"
+      },
+      {
+        "name": "迷雾泡泡",
+        "difference": "灰紫低饱和多头，莫兰迪风代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "多头切花玫瑰",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2010 年代",
+      "namingNote": "灰紫低饱和多头，莫兰迪风切花"
+    }
+  },
+  "language": {
+    "meaning": "朦胧、高级与「很上镜的灰紫」",
+    "paragraphs": [
+      "迷雾泡泡的灰紫，是近几年社交媒体很喜欢的莫兰迪色——适合送审美在线的朋友、拍照、秋冬家居插瓶。",
+      "与裸粉、咖啡色系花材混搭，整体非常「杂志感」。"
+    ],
+    "occasions": [
+      "送友人",
+      "拍照",
+      "家居插瓶",
+      "秋冬花礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "灰紫",
+        "meaning": "莫兰迪、低饱和、高级"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "莫兰迪混搭",
+        "flowers": [
+          "流沙",
+          "尤加利叶"
+        ],
+        "note": "裸粉灰紫同系"
+      },
+      {
+        "style": "多头瓶插",
+        "flowers": [
+          "鼠尾草"
+        ],
+        "note": "少配叶突出色感"
+      }
+    ],
+    "caution": "灰紫在强光下易偏浅；多头需预留瓶口。"
+  }
+}

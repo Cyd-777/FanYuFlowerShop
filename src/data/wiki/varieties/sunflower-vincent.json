@@ -1,0 +1,111 @@
+{
+  "bloom": {
+    "vase": "约 5—8 天",
+    "vaseNote": "标准向日葵",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.sunflower.vase_base",
+  "careVaseOverride": {
+    "summary": "文森特标准向日葵；高瓶支撑，勤换水。",
+    "tips": [
+      "高瓶支撑",
+      "勤换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.sunflower",
+      "identity": {
+        "scientificName": "Helianthus 'Vincent'",
+        "namingNote": "标准切花向日葵，花盘大、经典",
+        "horticulturalGroup": "group.sunflower_cut",
+        "breeder": "商业切花向日葵培育",
+        "introducedYear": "2000 年代起切花向日葵"
+      },
+      "origin": {
+        "breedingOrigin": "商业化种植",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "金黄花盘，深色花心，茎干粗壮",
+        "scent": "几乎无香",
+        "stem": "茎干粗壮，花盘重，需高瓶支撑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "10 至 20"
+      }
+    },
+    "featureRefs": [
+      "trait.yellow_gold",
+      "trait.huge_flower"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "泰迪熊",
+        "difference": "重瓣矮生向日葵，与此品种形态或色调不同"
+      },
+      {
+        "name": "黑芯向日葵",
+        "difference": "深色花心向日葵，与此品种形态或色调不同"
+      },
+      {
+        "name": "文森特",
+        "difference": "标准切花向日葵，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花向日葵",
+      "namingNote": "标准切花向日葵，花盘大、经典"
+    }
+  },
+  "language": {
+    "meaning": "阳光、经典与「最像向日葵的一朵」",
+    "paragraphs": [
+      "文森特是花店「标准向日葵」——适合开业、生日、探望，表达「阳光、积极」。",
+      "花盘重，必须高瓶；勤换水保证吸水。"
+    ],
+    "occasions": [
+      "开业",
+      "生日",
+      "探望",
+      "庆典"
+    ],
+    "colorMeanings": [
+      {
+        "color": "金黄",
+        "meaning": "阳光、积极"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "开业",
+        "flowers": [
+          "绿康",
+          "百合"
+        ],
+        "note": "明亮"
+      }
+    ],
+    "caution": "花盘重；高瓶支撑。"
+  },
+  "names": {
+    "scientificName": "Helianthus 'Vincent'",
+    "commonNames": [
+      "Vincent",
+      "文森特"
+    ]
+  }
+}

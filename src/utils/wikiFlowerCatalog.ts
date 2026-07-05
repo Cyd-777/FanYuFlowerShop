@@ -4,7 +4,8 @@ import {
   filterWikiCatalog,
   filterWikiVarietiesByKind,
   findWikiKindOnlyEntry,
-  WIKI_KIND_SIDEBAR,
+  getWikiDisplayName,
+  WIKI_KIND_DEFAULT_ICON,
 } from '@/types/wiki'
 
 function defaultUnitFromPlantForm(plantForm?: FlowerWikiListItem['plantForm']): GoodsUnit {
@@ -15,10 +16,12 @@ function wikiVarietyToFlowerVariety(item: FlowerWikiListItem): FlowerVariety {
   const description = [item.carePreview, item.languagePreview, item.atlasPreview]
     .filter(Boolean)
     .join(' · ')
+  const kindId = String(item.kindId || item._id || '').trim()
+  const varietyId = String(item.varietyId || item._id || '').trim()
   return {
-    _id: item.varietyId,
-    kindId: item.kindId,
-    name: String(item.varietyName || '').trim(),
+    _id: varietyId,
+    kindId,
+    name: getWikiDisplayName(item),
     aliases: [],
     defaultUnit: defaultUnitFromPlantForm(item.plantForm),
     description,
@@ -27,21 +30,36 @@ function wikiVarietyToFlowerVariety(item: FlowerWikiListItem): FlowerVariety {
   }
 }
 
-function collectOrderedKindNames(catalog: FlowerWikiListItem[]): string[] {
-  const names = new Set(
-    catalog.map((item) => String(item.kindName || '').trim()).filter(Boolean),
-  )
-  const ordered: string[] = []
+function kindLevelVarietyFromWiki(
+  kindEntry: FlowerWikiListItem,
+  kindId: string,
+): FlowerVariety {
+  const description = [kindEntry.atlasPreview, kindEntry.carePreview].filter(Boolean).join(' · ')
+  return {
+    _id: String(kindEntry.varietyId || kindEntry._id || '').trim(),
+    kindId,
+    name: kindEntry.kindName,
+    aliases: [],
+    defaultUnit: defaultUnitFromPlantForm(kindEntry.plantForm),
+    description,
+    sort: Number(kindEntry.sort) || 0,
+    enabled: true,
+  }
+}
 
-  for (const kind of WIKI_KIND_SIDEBAR) {
-    if (names.has(kind.name)) {
-      ordered.push(kind.name)
-      names.delete(kind.name)
-    }
+function collectOrderedKindNames(catalog: FlowerWikiListItem[]): string[] {
+  const kindSort = new Map<string, number>()
+
+  for (const item of catalog) {
+    const name = String(item.kindName || '').trim()
+    if (!name) continue
+    const sort = Number(item.sort) || 0
+    kindSort.set(name, Math.max(kindSort.get(name) ?? 0, sort))
   }
 
-  const rest = [...names].sort((a, b) => a.localeCompare(b, 'zh-CN'))
-  return [...ordered, ...rest]
+  return [...kindSort.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh-CN'))
+    .map(([name]) => name)
 }
 
 /** 将智库列表转为商品编辑花卉选择器目录（以 flower_wiki 为唯一数据源） */
@@ -51,11 +69,10 @@ export function buildFlowerCatalogFromWiki(list: FlowerWikiListItem[]): FlowerKi
   return collectOrderedKindNames(catalog)
     .map((kindName) => {
       const kindEntry = findWikiKindOnlyEntry(catalog, kindName)
-      const varietyItems = filterWikiVarietiesByKind(catalog, kindName).filter(
-        (item) => String(item.varietyId || '').trim(),
-      )
-      const sidebar = WIKI_KIND_SIDEBAR.find((item) => item.name === kindName)
-      const kindId = String(kindEntry?.kindId || varietyItems[0]?.kindId || '').trim()
+      const varietyItems = filterWikiVarietiesByKind(catalog, kindName)
+      const kindId = String(
+        kindEntry?.kindId || kindEntry?._id || varietyItems[0]?.kindId || varietyItems[0]?._id || '',
+      ).trim()
       if (!kindId) return null
 
       const plantForm = kindEntry?.plantForm || varietyItems[0]?.plantForm
@@ -63,15 +80,20 @@ export function buildFlowerCatalogFromWiki(list: FlowerWikiListItem[]): FlowerKi
         ? [kindEntry.atlasPreview, kindEntry.carePreview].filter(Boolean).join(' · ')
         : ''
 
+      let varieties = varietyItems.map(wikiVarietyToFlowerVariety)
+      if (!varieties.length && kindEntry) {
+        varieties = [kindLevelVarietyFromWiki(kindEntry, kindId)]
+      }
+
       return {
         _id: kindId,
         name: kindName,
-        icon: kindEntry?.icon || sidebar?.icon || '🌷',
+        icon: kindEntry?.icon || varietyItems[0]?.icon || WIKI_KIND_DEFAULT_ICON,
         sort: Number(kindEntry?.sort ?? varietyItems[0]?.sort) || 0,
         defaultUnit: defaultUnitFromPlantForm(plantForm),
         description,
         enabled: true,
-        varieties: varietyItems.map(wikiVarietyToFlowerVariety),
+        varieties,
       }
     })
     .filter((item): item is FlowerKindWithVarieties => item != null)

@@ -67,8 +67,9 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
   const result = await callOrder({
     action: 'create',
     items: input.items,
-    address: input.address,
+    address: input.address || {},
     remark: input.remark || '',
+    deliveryMethod: input.deliveryMethod,
   })
 
   if (result.success !== true || !result.order) {
@@ -82,6 +83,7 @@ export function buildCreateOrderInput(
   items: CartLineItem[],
   address: CreateOrderInput['address'],
   remark = '',
+  deliveryMethod: 'home_delivery' | 'pickup' = 'home_delivery',
 ): CreateOrderInput {
   return {
     items: items.map((item) => ({
@@ -98,6 +100,7 @@ export function buildCreateOrderInput(
     })),
     address,
     remark: remark.trim(),
+    deliveryMethod,
   }
 }
 
@@ -173,22 +176,22 @@ export async function updateRiderStatus(orderId: string, riderStatus: RiderStatu
 }
 
 export async function performMerchantShopAction(orderId: string, order: Order): Promise<Order> {
-  const action = getMerchantShopAction(order.status)
+  const action = getMerchantShopAction(order.status, order.deliveryMethod)
   if (!action) {
     throw new Error('当前状态无可执行操作')
   }
 
-  const statusMap = {
+  const statusMap: Record<string, string> = {
     accept: 'accepted',
     confirmPreparing: 'preparing',
     finishPrep: 'prep_done',
-  } as const
+  }
 
   return updateOrderStatus(orderId, statusMap[action])
 }
 
 export function getMerchantShopActionLabel(order: Order): string | null {
-  const action = getMerchantShopAction(order.status)
+  const action = getMerchantShopAction(order.status, order.deliveryMethod)
   return action ? MERCHANT_SHOP_ACTION_LABELS[action] : null
 }
 
@@ -222,4 +225,22 @@ export async function listMerchantOrders(status: OrderListTab = 'all'): Promise<
   }
 
   return normalizeOrderList(result.list)
+}
+
+/** 扫码核销自提订单 */
+export async function verifyPickupOrder(
+  orderId: string,
+  token: string,
+): Promise<Order> {
+  const result = await callOrder({
+    action: 'verifyPickup',
+    id: orderId,
+    token,
+  })
+
+  if (result.success !== true || !result.order) {
+    throw new Error(result.errMsg || '核销失败')
+  }
+
+  return normalizeOrderFromCloud(result.order)
 }

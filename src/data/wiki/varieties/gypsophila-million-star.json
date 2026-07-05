@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 10—14 天",
+    "vaseNote": "密集满天星",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.gypsophila.vase_base",
+  "careVaseOverride": {
+    "summary": "百万星密集满天星；通风，清洁水质。",
+    "tips": [
+      "可制干花"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.gypsophila",
+      "identity": {
+        "scientificName": "Gypsophila 'Million Star'",
+        "namingNote": "密集小星点满天星，花量更大",
+        "horticulturalGroup": "group.gypsophila_cut",
+        "breeder": "厄瓜多尔切花满天星培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "厄瓜多尔",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "白色，花点更密更细",
+        "scent": "几乎无香",
+        "stem": "细枝多花，适合填充层次",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "细碎小花"
+      }
+    },
+    "featureRefs": [
+      "trait.spray_huge"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "仙女",
+        "difference": "标准白色满天星，与此品种形态或色调不同"
+      },
+      {
+        "name": "粉满天星",
+        "difference": "染色调粉色满天星，与此品种形态或色调不同"
+      },
+      {
+        "name": "百万星",
+        "difference": "密集小星点满天星，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花满天星",
+      "namingNote": "密集小星点满天星，花量更大"
+    }
+  },
+  "language": {
+    "meaning": "密集、雾感与「更满的星空」",
+    "paragraphs": [
+      "百万星比标准仙女更密——适合想要「雾更大」的婚礼与包装；同样适合干花。",
+      "通风、清洁水；避免挤压。"
+    ],
+    "occasions": [
+      "婚礼",
+      "配花",
+      "干花"
+    ],
+    "colorMeanings": [
+      {
+        "color": "白",
+        "meaning": "密集、梦幻"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼",
+        "flowers": [
+          "玫瑰",
+          "尤加利叶"
+        ],
+        "note": "雾感"
+      }
+    ],
+    "caution": "通风；可制干花。"
+  },
+  "names": {
+    "scientificName": "Gypsophila 'Million Star'",
+    "commonNames": [
+      "Million Star",
+      "百万星"
+    ]
+  }
+}

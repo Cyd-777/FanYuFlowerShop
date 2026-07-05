@@ -2,6 +2,13 @@
  * 顾客端商品搜索：分词 AND、多字段 haystack。
  */
 
+const {
+  buildWikiAliasToCanonical,
+  goodsBelongsToWikiKind,
+} = require('./common/wikiKindMatch')
+
+const wikiAliasMap = buildWikiAliasToCanonical()
+
 function normalizeQueryText(text) {
   return String(text || '')
     .trim()
@@ -59,7 +66,14 @@ function matchPublicGoodsItem(item, query) {
   if (item.onSale === false) return false
   if (query.recommendOnly && !item.recommend) return false
   if (query.inStockOnly && item.stock <= 0) return false
-  if (query.categoryId && item.categoryId !== query.categoryId) return false
+  if (query.categoryId) {
+    if (query.categoryId.startsWith('wiki:')) {
+      const kindName = query.categoryId.replace('wiki:', '').trim()
+      if (!goodsBelongsToWikiKind(item, kindName, wikiAliasMap)) return false
+    } else if (item.categoryId !== query.categoryId) {
+      return false
+    }
+  }
 
   if (query.exactName) {
     const q = query.text.trim()

@@ -1,0 +1,116 @@
+{
+  "names": {
+    "scientificName": "Lilium double hybrid",
+    "commonNames": [
+      "Double Lily",
+      "重瓣百合"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—12 天",
+    "vaseNote": "重瓣层次丰富，需通风防闷",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.lily.vase_base",
+  "careVaseOverride": {
+    "summary": "重瓣百合层次丰富、观感华丽；勤换水、保持通风，避免花瓣闷湿。",
+    "tips": [
+      "重瓣结构易积水，通风很重要",
+      "开放后花头较重，需高瓶支撑"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.lily",
+      "identity": {
+        "scientificName": "Lilium double hybrid",
+        "horticulturalGroup": "group.double_lily",
+        "namingNote": "重瓣层次、华丽感强，高端花束与庆典常见",
+        "breeder": "荷兰百合育种体系",
+        "introducedYear": "1990 年代起"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.ecuador",
+          "region.colombia"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [],
+        "bloomDiameterCm": "16 至 22",
+        "color": "白、粉、黄等，重瓣层叠，开放后如牡丹般饱满",
+        "stem": "茎干粗壮，建议高瓶或深瓶支撑",
+        "foliage": "叶片狭长，沿茎分布",
+        "scent": "中等香气，因品种而异"
+      }
+    },
+    "featureRefs": [
+      "trait.huge_flower",
+      "trait.soft_pink"
+    ],
+    "origin": "主产区中国云南、厄瓜多尔、哥伦比亚等地",
+    "cultivar": {
+      "horticulturalGroup": "重瓣百合",
+      "namingNote": "重瓣层次、华丽感强，高端花束与庆典常见"
+    },
+    "distinguishFrom": [
+      {
+        "name": "普通东方百合",
+        "difference": "单瓣杯形，而非重瓣层叠"
+      },
+      {
+        "name": "芍药",
+        "difference": "百合茎长、瓣形不同"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "华丽、高级与「比普通百合更隆重」",
+    "paragraphs": [
+      "重瓣百合的层叠花瓣让它看起来像「升级版的百合」——适合高端庆典、重要纪念日，以及一切需要比普通百合更华丽的时刻。",
+      "与简约配花（尤加利、绿康）同插，重瓣主花会更突出；注意通风，重瓣结构易闷湿。"
+    ],
+    "occasions": [
+      "高端庆典",
+      "纪念日",
+      "重要赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "华丽、高级、隆重"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "高端主花",
+        "flowers": [
+          "尤加利叶",
+          "绿康"
+        ],
+        "note": "简约衬托重瓣"
+      },
+      {
+        "style": "庆典花束",
+        "flowers": [
+          "玫瑰",
+          "洋桔梗"
+        ],
+        "note": "层次丰富"
+      }
+    ],
+    "caution": "重瓣易闷湿，须通风；花头重，需高瓶支撑。"
+  }
+}

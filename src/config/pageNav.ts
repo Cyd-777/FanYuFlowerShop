@@ -58,14 +58,14 @@ export const PAGE_NAV: Record<string, PageNavConfig> = {
   'pagesCustomer/favorite/index': { title: '我的收藏' },
   'pagesCustomer/feedback/index': { title: 'Bug 反馈' },
   'pagesCustomer/other/index': { title: '关于我们' },
-  'pagesCustomer/wiki/detail': { title: '花卉百科详情' },
+  'pagesCustomer/wiki/detail': { title: '' },
   'pagesCustomer/theme/index': { title: '专题活动' },
 
   'pagesMerchant/dashboard/index': { mode: 'overlay', background: 'transparent', title: '', showBack: false },
   'pagesMerchant/order/list': { title: '订单管理' },
   'pagesMerchant/order/detail': { title: '订单详情' },
   'pagesMerchant/goods/list': { title: '商品管理' },
-  'pagesMerchant/goods/edit': { title: '编辑商品' },
+  'pagesMerchant/goods/edit': { title: '' },
   'pagesMerchant/goods/stock-in': { title: '批量入库' },
   'pagesMerchant/goods/stock-in-import': { title: '进货单入库' },
   'pagesMerchant/goods/stock-out': { title: '批量出库' },
@@ -81,6 +81,9 @@ export const PAGE_NAV: Record<string, PageNavConfig> = {
   'pagesMerchant/shop/sales-strategy/edit': { title: '主题编辑' },
   'pagesMerchant/shop/goods-picker': { title: '选择折扣商品' },
   'pagesMerchant/asset/index': { title: '素材管理' },
+  'pagesMerchant/wiki/index': { title: '智库维护' },
+  'pagesMerchant/wiki/edit': { title: '词条编辑' },
+  'pagesMerchant/wiki/care-reference': { title: '养护图示说明' },
 }
 
 const DEFAULT_NAV: PageNavConfig = {

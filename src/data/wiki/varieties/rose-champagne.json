@@ -1,0 +1,125 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Champagne'",
+    "commonNames": [
+      "Champagne",
+      "香槟玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "香槟色对水质较敏感",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "香槟色系对水质较敏感，建议每日换水；避直射可减缓褪色。",
+    "tips": [
+      "香槟色系对水质敏感，建议每日换水",
+      "避强光保持色泽"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Champagne'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "namingNote": "名称取自香槟酒色，寓意庆祝与优雅",
+        "introducedYear": "2000 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "浅香槟或奶油色，带微微金调，低饱和而优雅",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.champagne_tone",
+      "trait.gentle_scent"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "蜜桃雪山",
+        "difference": "偏杏暖，而非香槟金调"
+      },
+      {
+        "name": "流沙",
+        "difference": "裸粉灰调，而非香槟金"
+      },
+      {
+        "name": "香槟玫瑰",
+        "difference": "香槟金调、优雅低饱和，庆祝与感谢高频"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2000 年代",
+      "namingNote": "名称取自香槟酒色，寓意庆祝与优雅"
+    }
+  },
+  "language": {
+    "meaning": "庆祝、感谢与优雅",
+    "paragraphs": [
+      "香槟玫瑰的色调像庆祝场合里的一杯香槟——不喧闹，但有仪式感。适合升职、开业、感谢客户或老师，也适合「值得纪念但不需大红大绿」的时刻。",
+      "与白色、绿色或同色系配花都很高级；送给偏好素雅的人，比正红更得体。"
+    ],
+    "occasions": [
+      "感谢",
+      "开业",
+      "升职",
+      "纪念日",
+      "送师长"
+    ],
+    "colorMeanings": [
+      {
+        "color": "香槟色",
+        "meaning": "庆祝、优雅、感谢"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "庆祝花束",
+        "flowers": [
+          "白雪山",
+          "尤加利叶"
+        ],
+        "note": "香槟+白绿，克制而隆重"
+      },
+      {
+        "style": "商务感谢",
+        "flowers": [
+          "绿康",
+          "洋桔梗"
+        ],
+        "note": "适合职场与师长"
+      }
+    ],
+    "caution": "香槟色在强光下易偏白；若对方期待「很喜庆的红」，可能觉得不够热闹。"
+  }
+}

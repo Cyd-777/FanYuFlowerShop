@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "深紫马蹄莲",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.calla.vase_base",
+  "careVaseOverride": {
+    "summary": "黑魔法深紫马蹄莲；浅水，轻拿轻放。",
+    "tips": [
+      "轻拿轻放"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.calla",
+      "identity": {
+        "scientificName": "Zantedeschia 'Black Magic'",
+        "namingNote": "深紫近黑马蹄莲，个性高级",
+        "horticulturalGroup": "group.calla_cut",
+        "breeder": "荷兰切花马蹄莲培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "深紫近黑佛焰苞，线条挺括",
+        "scent": "几乎无香",
+        "stem": "佛焰苞易损，需浅水、避免挤压",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "8 至 12"
+      }
+    },
+    "featureRefs": [
+      "trait.muted_retro"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "白马",
+        "difference": "白色马蹄莲，与此品种形态或色调不同"
+      },
+      {
+        "name": "粉钻",
+        "difference": "粉色马蹄莲，与此品种形态或色调不同"
+      },
+      {
+        "name": "黑魔法",
+        "difference": "深紫近黑马蹄莲，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花马蹄莲",
+      "namingNote": "深紫近黑马蹄莲，个性高级"
+    }
+  },
+  "language": {
+    "meaning": "神秘、个性与「马蹄莲里的暗夜」",
+    "paragraphs": [
+      "黑魔法适合酷感花束、纪念日——与白色马蹄莲对比，同一束里极有张力。",
+      "养护同马蹄莲：浅水、轻拿轻放。"
+    ],
+    "occasions": [
+      "纪念日",
+      "个性赠礼",
+      "拍照"
+    ],
+    "colorMeanings": [
+      {
+        "color": "深紫近黑",
+        "meaning": "神秘、高级"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "对比",
+        "flowers": [
+          "白马",
+          "银芽柳"
+        ],
+        "note": "黑白"
+      }
+    ],
+    "caution": "佛焰苞易损；浅水。"
+  },
+  "names": {
+    "scientificName": "Zantedeschia 'Black Magic'",
+    "commonNames": [
+      "Black Magic",
+      "黑魔法"
+    ]
+  }
+}

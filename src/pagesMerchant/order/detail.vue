@@ -1,56 +1,62 @@
 <template>
-  <view class="page-merchant-order-detail" :class="{ 'has-footer': showActions }">
+  <view class="page-merchant-order-detail" :class="{ 'has-footer': showActions }" id="merchant-order-detail-scroll-body">
     <AppNavBar />
-    <view v-if="loading" class="loading-tip">加载中…</view>
+    <view v-if="loading" class="loading-tip">{{ loadingTipText }}</view>
 
     <template v-else-if="order">
       <view class="status-section">
-        <OrderStatusSteps :status="order.status" :rider-status="order.riderStatus" />
+        <OrderStatusSteps :status="order.status" :rider-status="order.riderStatus" :delivery-method="order.deliveryMethod" :merchant-delivery="order.merchantDelivery" />
       </view>
 
       <view class="section">
-        <view class="section-title">订单信息</view>
+        <view class="section-title">{{ uiText_a6d10d }}</view>
         <view class="info-row">
-          <text class="label">订单编号</text>
+          <text class="label">{{ uiText_3e8657 }}</text>
           <text>{{ order.orderNo }}</text>
         </view>
         <view class="info-row">
-          <text class="label">下单时间</text>
+          <text class="label">{{ uiText_2240cc }}</text>
           <text>{{ createTimeText }}</text>
         </view>
         <view class="info-row">
-          <text class="label">当前进度</text>
+          <text class="label">{{ uiText_75ea7b }}</text>
           <text class="status">{{ progressLabel }}</text>
         </view>
         <view class="info-row">
-          <text class="label">订单金额</text>
+          <text class="label">{{ uiText_edfe4c }}</text>
+          <text :class="'badge ' + (order?.deliveryMethod === 'pickup' ? 'badge--pickup' : 'badge--home')">
+            {{ order?.deliveryMethod === 'pickup' ? '门店自提' : '配送上门' }}
+          </text>
+        </view>
+        <view class="info-row">
+          <text class="label">{{ uiText_b1862e }}</text>
           <text class="price">¥{{ formatPrice(order.totalAmount) }}</text>
         </view>
       </view>
 
-      <view class="section">
-        <view class="section-title">顾客信息</view>
+      <view v-if="order.deliveryMethod === 'home_delivery'" class="section">
+        <view class="section-title">{{ uiText_3f4ab8 }}</view>
         <view class="info-row">
-          <text class="label">收货人</text>
+          <text class="label">{{ uiText_6aea70 }}</text>
           <text>{{ order.address.name }}</text>
         </view>
         <view class="info-row">
-          <text class="label">联系电话</text>
+          <text class="label">{{ uiText_09a1f6 }}</text>
           <text>{{ order.address.phone }}</text>
         </view>
         <view class="info-row address-row">
-          <text class="label">收货地址</text>
+          <text class="label">{{ uiText_748ea9 }}</text>
           <text class="address-text">{{ order.address.fullText }}</text>
         </view>
       </view>
 
       <view v-if="order.remark" class="section">
-        <view class="section-title">备注</view>
+        <view class="section-title">{{ remarkLabelText }}</view>
         <view class="remark-text">{{ order.remark }}</view>
       </view>
 
       <view class="section">
-        <view class="section-title">商品信息</view>
+        <view class="section-title">{{ uiText_b433e6 }}</view>
         <view v-for="item in order.items" :key="item.lineKey" class="goods-item">
           <GoodsImage :src="item.image" root-class="thumb" />
           <view class="info">
@@ -64,26 +70,40 @@
 
     <view v-else class="loading-tip">{{ errorText }}</view>
 
+    <ScrollListTailSpacer
+      content-selector="#merchant-order-detail-scroll-body"
+      :bottom-inset-px="showActions ? actionBarInsetPx : 0"
+      :watch-key="`${loading}-${order?._id || ''}-${showActions}`"
+    />
+
     <view v-if="showActions" class="action-bar">
-      <nut-button
-        v-if="shopActionLabel"
-        class="action-btn"
-        type="primary"
-        :loading="updating"
-        @click="handleShopAction"
-      >
-        {{ shopActionLabel }}
-      </nut-button>
-      <nut-button
-        v-if="riderActionLabel"
-        class="action-btn secondary"
-        plain
-        type="primary"
-        :loading="updating"
-        @click="handleRiderAction"
-      >
-        {{ riderActionLabel }}
-      </nut-button>
+    <!-- 备货中：非自提显示配送选择 / 自提直接备好 -->
+    <template v-if="order?.status === 'preparing'">
+      <template v-if="order?.deliveryMethod === 'pickup'">
+        <nut-button class="action-btn" type="primary" :loading="updating" @click="setReady">
+          已备好
+        </nut-button>
+      </template>
+      <template v-else>
+        <view class="delivery-prompt">请选择配送方式</view>
+        <view class="delivery-btn-row">
+          <nut-button class="action-btn" type="primary" :loading="updating" @click="startSelfDelivery">
+            自配送
+          </nut-button>
+          <nut-button class="action-btn secondary" plain type="primary" :loading="updating" @click="callRider">
+            呼叫骑手
+          </nut-button>
+        </view>
+      </template>
+    </template>
+      <template v-else>
+        <nut-button v-if="shopActionLabel" class="action-btn" type="primary" :loading="updating || verifying" @click="handleShopAction">
+          {{ shopActionLabel }}
+        </nut-button>
+        <nut-button v-if="riderActionLabel" class="action-btn secondary" plain type="primary" :loading="updating" @click="handleRiderAction">
+          {{ riderActionLabel }}
+        </nut-button>
+      </template>
     </view>
   </view>
 </template>
@@ -98,16 +118,36 @@ import {
   getOrder,
   performMerchantShopAction,
   updateRiderStatus,
+  updateOrderStatus,
 } from '@/services/order'
+import { scanAndVerifyPickup } from '@/utils/pickupVerifyScan'
 import GoodsImage from '@/components/GoodsImage.vue'
 import OrderStatusSteps from '@/components/OrderStatusSteps.vue'
 import type { Order } from '@/types/order'
 import { getNextRiderStatus, getOrderProgressLabel } from '@/types/order'
+import { scrollTailActionBarInsetPx } from '@/utils/scrollListTailSpacer'
+
+const loadingTipText = '加载中…'
+const remarkLabelText = '备注'
+const uiText_09a1f6 = '联系电话'
+const uiText_2240cc = '下单时间'
+const uiText_3e8657 = '订单编号'
+const uiText_3f4ab8 = '顾客信息'
+const uiText_6aea70 = '收货人'
+const uiText_748ea9 = '收货地址'
+const uiText_75ea7b = '当前进度'
+const uiText_a6d10d = '订单信息'
+const uiText_b1862e = '订单金额'
+const uiText_b433e6 = '商品信息'
+const uiText_edfe4c = '配送方式'
+
+const actionBarInsetPx = scrollTailActionBarInsetPx()
 
 const orderId = ref('')
 const order = ref<Order | null>(null)
 const loading = ref(false)
 const updating = ref(false)
+const verifying = ref(false)
 const errorText = ref('订单不存在')
 
 const progressLabel = computed(() =>
@@ -124,9 +164,11 @@ const riderActionLabel = computed(() =>
 
 const createTimeText = computed(() => formatOrderTime(order.value?.createdAt))
 
-const showActions = computed(
-  () => Boolean(shopActionLabel.value || riderActionLabel.value),
-)
+const showActions = computed(() => {
+  // ready + pickup 需要显示扫码核销按钮
+  if (order.value?.status === 'ready' && order.value?.deliveryMethod === 'pickup') return true
+  return Boolean(shopActionLabel.value || riderActionLabel.value)
+})
 
 useLoad((options) => {
   orderId.value = typeof options?.id === 'string' ? options.id : ''
@@ -168,52 +210,93 @@ async function loadOrder() {
 
 async function handleShopAction() {
   if (!orderId.value || !order.value || updating.value) return
-
   const label = shopActionLabel.value
   if (!label) return
-
-  if (order.value.status === 'preparing') {
-    wx.showModal({
-      title: '制作完成',
-      content: '确认花束已制作完成？完成后将等待骑手取货。',
-      success: (res) => {
-        if (res.confirm) {
-          void doShopAction()
-        }
-      },
-    })
-    return
-  }
 
   if (order.value.status === 'accepted') {
     wx.showModal({
       title: '确认订单信息',
-      content: '店员确认订单信息无误后，将开始制作并同步呼叫骑手。',
+      content: '店员确认订单信息无误后，将开始制作。',
       success: (res) => {
-        if (res.confirm) {
-          void doShopAction()
-        }
+        if (res.confirm) void doShopAction('preparing')
       },
     })
     return
   }
 
+  // ready + pickup → 扫码核销
+  if (order.value.status === 'ready' && order.value.deliveryMethod === 'pickup') {
+    void scanToVerify()
+    return
+  }
+
+  // delivering 不再有操作按钮
   void doShopAction()
 }
 
-async function doShopAction() {
+async function doShopAction(targetStatus?: string) {
   if (!orderId.value || !order.value || updating.value) return
   updating.value = true
   try {
-    order.value = await performMerchantShopAction(orderId.value, order.value)
+    order.value = targetStatus
+      ? await updateOrderStatus(orderId.value, targetStatus)
+      : await performMerchantShopAction(orderId.value, order.value)
     showToast({ title: '操作成功', icon: 'success' })
   } catch (err) {
-    showToast({
-      title: err instanceof Error ? err.message : '操作失败',
-      icon: 'none',
-    })
+    showToast({ title: err instanceof Error ? err.message : '操作失败', icon: 'none' })
   } finally {
     updating.value = false
+  }
+}
+
+/** 自配送 */
+async function startSelfDelivery() {
+  if (!orderId.value || !order.value || updating.value) return
+  updating.value = true
+  try {
+    order.value = await updateOrderStatus(orderId.value, 'delivering')
+    showToast({ title: '配送中', icon: 'success' })
+  } catch (err) {
+    showToast({ title: err instanceof Error ? err.message : '操作失败', icon: 'none' })
+  } finally { updating.value = false }
+}
+
+/** 呼叫骑手 */
+async function callRider() {
+  if (!orderId.value || !order.value || updating.value) return
+  updating.value = true
+  try {
+    // cloud 函数 updateOrderStatus('prep_done') 会自动设置 riderStatus=waiting
+    order.value = await updateOrderStatus(orderId.value, 'prep_done')
+    showToast({ title: '已呼叫骑手', icon: 'success' })
+  } catch (err) {
+    showToast({ title: err instanceof Error ? err.message : '操作失败', icon: 'none' })
+  } finally { updating.value = false }
+}
+
+/** 自提订单已备好 */
+async function setReady() {
+  if (!orderId.value || !order.value || updating.value) return
+  updating.value = true
+  try {
+    order.value = await updateOrderStatus(orderId.value, 'ready')
+    showToast({ title: '已备好', icon: 'success' })
+  } catch (err) {
+    showToast({ title: err instanceof Error ? err.message : '操作失败', icon: 'none' })
+  } finally { updating.value = false }
+}
+
+/** 扫码核销自提订单 */
+async function scanToVerify() {
+  if (!orderId.value || !order.value || verifying.value) return
+  verifying.value = true
+  try {
+    const result = await scanAndVerifyPickup({ expectedOrderId: orderId.value })
+    if (result.success && result.order) {
+      order.value = result.order
+    }
+  } finally {
+    verifying.value = false
   }
 }
 
@@ -288,6 +371,9 @@ async function handleRiderAction() {
   color: #e53935;
   font-weight: 600;
 }
+.badge { font-size: 22rpx; font-weight: 600; padding: 4rpx 12rpx; border-radius: 8rpx; }
+.badge--pickup { background: #fff3e0; color: #e65100; }
+.badge--home { background: #e3f2fd; color: #1565c0; }
 .address-row {
   align-items: flex-start;
 }
@@ -353,5 +439,19 @@ async function handleRiderAction() {
 .action-btn.secondary {
   border-color: #ff7043;
   color: #ff7043;
+}
+.delivery-prompt {
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  padding: 8rpx 0;
+}
+.delivery-btn-row {
+  display: flex;
+  gap: 16rpx;
+  .action-btn {
+    flex: 1;
+  }
 }
 </style>

@@ -1,0 +1,118 @@
+{
+  "names": {
+    "scientificName": "Lilium 'Robina'",
+    "commonNames": [
+      "Robina",
+      "罗宾娜百合"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "深粉渐变东方百合，浓香",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.lily.vase_base",
+  "careVaseOverride": {
+    "summary": "罗宾娜为深粉渐变东方百合，浓香；摘除花蕊、勤换水、保持通风。",
+    "tips": [
+      "摘除花蕊可减少花粉与过敏风险",
+      "渐变色调开放过程中会继续加深"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.lily",
+      "identity": {
+        "scientificName": "Lilium 'Robina'",
+        "horticulturalGroup": "group.oriental_lily",
+        "namingNote": "深粉渐变东方百合，色调比索邦更浓",
+        "breeder": "荷兰百合育种体系",
+        "introducedYear": "1990 年代起"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.ecuador",
+          "region.colombia"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [],
+        "bloomDiameterCm": "16 至 22",
+        "color": "由浅粉向深粉渐变，整体偏暖粉，开放后色调更浓",
+        "stem": "茎干粗壮，建议高瓶或深瓶支撑",
+        "foliage": "叶片狭长，沿茎分布",
+        "scent": "浓香，清幽而持久"
+      }
+    },
+    "featureRefs": [
+      "trait.strong_scent",
+      "trait.soft_pink",
+      "trait.huge_flower"
+    ],
+    "origin": "主产区中国云南、厄瓜多尔、哥伦比亚等地",
+    "cultivar": {
+      "horticulturalGroup": "东方百合",
+      "namingNote": "深粉渐变东方百合，色调比索邦更浓"
+    },
+    "distinguishFrom": [
+      {
+        "name": "索邦",
+        "difference": "渐变粉更浅、更温柔"
+      },
+      {
+        "name": "西诺红",
+        "difference": "正红系，而非粉渐变"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "浪漫、深情与「很有存在感的粉色主花」",
+    "paragraphs": [
+      "罗宾娜的深粉渐变比索邦更「浓」、更浪漫——适合表白、纪念日、以及一切需要粉色主花但不想太少女的时刻。",
+      "浓香持久，适合客厅、庆典；花粉敏感者记得摘花蕊。"
+    ],
+    "occasions": [
+      "表白",
+      "纪念日",
+      "庆典",
+      "浪漫赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "深粉渐变",
+        "meaning": "浪漫、深情、存在感"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "浪漫主花",
+        "flowers": [
+          "玫瑰",
+          "翠珠"
+        ],
+        "note": "粉白层次"
+      },
+      {
+        "style": "庆典粉调",
+        "flowers": [
+          "康乃馨",
+          "尤加利叶"
+        ],
+        "note": "暖粉不俗"
+      }
+    ],
+    "caution": "浓香且花粉多；过敏者慎选，建议摘花蕊。"
+  }
+}

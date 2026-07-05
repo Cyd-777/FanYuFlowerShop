@@ -1,0 +1,92 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "中式配叶"
+  },
+  "careBaseRef": "care.foliage.vase_base",
+  "careVaseOverride": {
+    "summary": "米兰叶配叶；清洁水质，勤换水。",
+    "tips": [
+      "勤换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.foliage",
+      "identity": {
+        "scientificName": "Aglaia odorata",
+        "namingNote": "深绿小圆叶，中式与开业常用配叶",
+        "horticulturalGroup": "group.cut_foliage"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "深绿小圆叶，整体紧凑",
+        "scent": "叶有淡香",
+        "stem": "以叶材线条与层次为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.cut_foliage"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "尤加利",
+        "difference": "最常用配叶，与此品种形态或色调不同"
+      },
+      {
+        "name": "龟背竹",
+        "difference": "大叶配材，与此品种形态或色调不同"
+      },
+      {
+        "name": "米兰叶",
+        "difference": "深绿小圆叶，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花配叶",
+      "namingNote": "深绿小圆叶，中式与开业常用配叶"
+    }
+  },
+  "language": {
+    "meaning": "中式、喜庆与「很传统的配叶」",
+    "paragraphs": [
+      "米兰叶常见于中式开业、贺礼花束——与红色主花、百合极搭，表达「喜庆、圆满」。",
+      "清洁水质；勤换水。"
+    ],
+    "occasions": [
+      "开业",
+      "贺寿",
+      "中式"
+    ],
+    "colorMeanings": [
+      {
+        "color": "深绿",
+        "meaning": "喜庆、传统"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "中式",
+        "flowers": [
+          "红富士",
+          "百合"
+        ],
+        "note": "红绿"
+      }
+    ],
+    "caution": "勤换水；通风。"
+  },
+  "names": {
+    "scientificName": "Aglaia odorata",
+    "commonNames": [
+      "Aglaia",
+      "米兰叶"
+    ]
+  }
+}

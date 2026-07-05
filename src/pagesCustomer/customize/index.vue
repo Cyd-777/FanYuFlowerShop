@@ -1,17 +1,15 @@
 <template>
-  <view class="page-customize">
+  <view class="page-customize" id="customize-index-scroll-body">
     <AppNavBar />
     <view class="tip-card">
-      <view class="tip-title">定制花束</view>
-      <view class="tip-desc">
-        花材从所有按「支」售卖的商品中选择；包装与贺卡从对应分类商品中选择，填写留言后提交订单。
-      </view>
+      <view class="tip-title">{{ uiText_30a6ba }}</view>
+      <view class="tip-desc">{{ uiText_8993ec }}</view>
     </view>
 
     <view class="section">
       <view class="section-head">
-        <view class="section-title">花材（必选）</view>
-        <view class="link" @click="goPick('flower')">去选择 ›</view>
+        <view class="section-title">{{ uiText_aedcba }}</view>
+        <view class="link" @click="goPick('flower')">{{ uiText_53691b }}</view>
       </view>
       <view v-if="draft.flowers.length" class="picked-list">
         <view v-for="item in draft.flowers" :key="item.goodsId" class="picked-item">
@@ -22,13 +20,13 @@
           </view>
         </view>
       </view>
-      <view v-else class="empty">尚未选择花材</view>
+      <view v-else class="empty">{{ uiText_e82ac8 }}</view>
     </view>
 
     <view class="section">
       <view class="section-head">
-        <view class="section-title">包装（必选）</view>
-        <view class="link" @click="goPick('packaging')">去选择 ›</view>
+        <view class="section-title">{{ uiText_8faf88 }}</view>
+        <view class="link" @click="goPick('packaging')">{{ uiText_53691b }}</view>
       </view>
       <view v-if="draft.packaging" class="picked-item">
         <GoodsImage :src="draft.packaging.image" root-class="thumb" />
@@ -37,13 +35,13 @@
           <view class="price">¥{{ formatPrice(draft.packaging.price) }}</view>
         </view>
       </view>
-      <view v-else class="empty">尚未选择包装</view>
+      <view v-else class="empty">{{ uiText_4f40ca }}</view>
     </view>
 
     <view class="section">
       <view class="section-head">
-        <view class="section-title">贺卡（选填）</view>
-        <view class="link" @click="goPick('card')">去选择 ›</view>
+        <view class="section-title">{{ uiText_2974a0 }}</view>
+        <view class="link" @click="goPick('card')">{{ uiText_53691b }}</view>
       </view>
       <view v-if="draft.card" class="picked-item">
         <GoodsImage :src="draft.card.image" root-class="thumb" />
@@ -52,9 +50,9 @@
           <view class="price">¥{{ formatPrice(draft.card.price) }}</view>
         </view>
       </view>
-      <view v-else class="empty">可不选贺卡</view>
+      <view v-else class="empty">{{ uiText_9929b7 }}</view>
       <view class="message-box">
-        <view class="message-label">贺卡留言</view>
+        <view class="message-label">{{ uiText_b67961 }}</view>
         <nut-input
           v-model="draft.cardMessage"
           placeholder="给挂念的他留下你心里最想说的话吧..."
@@ -63,6 +61,12 @@
         />
       </view>
     </view>
+
+    <ScrollListTailSpacer
+      content-selector="#customize-index-scroll-body"
+      :bottom-inset-px="actionBarInsetPx"
+      :watch-key="`${draft.flowers.length}-${!!draft.packaging}-${!!draft.card}`"
+    />
 
     <view class="action-bar">
       <view class="total">合计 ¥{{ formatPrice(totalPrice) }}</view>
@@ -75,6 +79,9 @@
 import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
+import { scrollTailActionBarInsetPx } from '@/utils/scrollListTailSpacer'
+
+const actionBarInsetPx = scrollTailActionBarInsetPx()
 import { navigateTo } from '@/utils/router'
 import {
   CUSTOM_BOUQUET_DRAFT_KEY,
@@ -84,6 +91,17 @@ import {
 } from '@/types/customBouquet'
 import GoodsImage from '@/components/GoodsImage.vue'
 import type { CustomBouquetDraft } from '@/types/customBouquet'
+
+const uiText_2974a0 = '贺卡（选填）'
+const uiText_30a6ba = '定制花束'
+const uiText_4f40ca = '尚未选择包装'
+const uiText_53691b = '去选择 ›'
+const uiText_8993ec = '花材从所有按「支」售卖的商品中选择；包装与贺卡从对应分类商品中选择，填写留言后提交订单。'
+const uiText_8faf88 = '包装（必选）'
+const uiText_9929b7 = '可不选贺卡'
+const uiText_aedcba = '花材（必选）'
+const uiText_b67961 = '贺卡留言'
+const uiText_e82ac8 = '尚未选择花材'
 
 const draft = ref<CustomBouquetDraft>(createEmptyCustomBouquetDraft())
 

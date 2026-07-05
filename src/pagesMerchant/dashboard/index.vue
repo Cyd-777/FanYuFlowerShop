@@ -21,57 +21,32 @@
     <view class="stats-grid">
       <view class="stat-card" @click="goOrders('all')">
         <view class="stat-value">{{ stats.todayOrders }}</view>
-        <view class="stat-label">今日订单</view>
+        <view class="stat-label">{{ uiText_f2a70a }}</view>
       </view>
       <view class="stat-card highlight" @click="goOrders('pending')">
         <view class="stat-value">{{ stats.pendingOrders }}</view>
-        <view class="stat-label">待处理</view>
+        <view class="stat-label">{{ uiText_047109 }}</view>
       </view>
       <view class="stat-card" @click="goOrders('completed')">
         <view class="stat-value">{{ stats.todayRevenue }}</view>
-        <view class="stat-label">今日收入(¥)</view>
+        <view class="stat-label">{{ uiText_bed733 }}</view>
       </view>
     </view>
 
-    <!-- 快捷功能入口 -->
+    <!-- 快捷功能入口：订单 / 维护 -->
     <view class="quick-actions">
-      <view class="section-title">⚡ 快捷入口</view>
-      <view class="action-grid">
-        <view class="action-item" @click="go('order')">
-          <view class="action-icon">📋</view>
-          <view class="action-label">订单管理</view>
-        </view>
-        <view class="action-item" @click="go('goods')">
-          <view class="action-icon">🌷</view>
-          <view class="action-label">商品管理</view>
-        </view>
-        <view class="action-item" @click="go('category')">
-          <view class="action-icon">🏷️</view>
-          <view class="action-label">分类管理</view>
-        </view>
-        <view class="action-item" @click="go('verify')">
-          <view class="action-icon">📱</view>
-          <view class="action-label">扫码核销</view>
-        </view>
-        <view class="action-item" @click="go('staff')">
-          <view class="action-icon">👥</view>
-          <view class="action-label">人员管理</view>
-        </view>
-        <view class="action-item" @click="go('salesStrategy')">
-          <view class="action-icon">📈</view>
-          <view class="action-label">销售策略</view>
-        </view>
-        <view class="action-item" @click="go('setting')">
-          <view class="action-icon">⚙️</view>
-          <view class="action-label">店铺设置</view>
-        </view>
-        <view class="action-item" @click="go('warehouse')">
-          <view class="action-icon">📦</view>
-          <view class="action-label">仓储历史</view>
-        </view>
-        <view class="action-item" @click="go('asset')">
-          <view class="action-icon">🖼️</view>
-          <view class="action-label">素材管理</view>
+      <view v-for="group in actionGroups" :key="group.id" class="action-section">
+        <view class="section-title">{{ group.title }}</view>
+        <view class="action-grid">
+          <view
+            v-for="item in group.items"
+            :key="item.key"
+            class="action-item"
+            @click="handleAction(item.key)"
+          >
+            <view class="action-icon">{{ item.icon }}</view>
+            <view class="action-label">{{ item.label }}</view>
+          </view>
         </view>
       </view>
     </view>
@@ -88,6 +63,7 @@ import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
+import { scanAndVerifyPickup } from '@/utils/pickupVerifyScan'
 import { getMerchantOrderStats } from '@/services/order'
 import { getMerchantSelf } from '@/services/staff'
 import { resolveAvatarDisplayPath } from '@/services/userProfile'
@@ -95,6 +71,10 @@ import { useShopDisplay } from '@/composables/useShopDisplay'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import type { OrderStatus } from '@/types/order'
+
+const uiText_047109 = '待处理'
+const uiText_bed733 = '今日收入(¥)'
+const uiText_f2a70a = '今日订单'
 
 const shopStore = useShopDisplay({ initDb: true })
 const { statusBarHeightPx } = useNavBarLayout()
@@ -119,6 +99,31 @@ const greetingText = computed(() => {
   if (hour < 18) return '下午好'
   return '晚上好'
 })
+
+const actionGroups = [
+  {
+    id: 'orders',
+    title: '📋 订单',
+    items: [
+      { key: 'order', icon: '📋', label: '订单管理' },
+      { key: 'verify', icon: '📱', label: '扫码核销' },
+    ],
+  },
+  {
+    id: 'maintenance',
+    title: '🛠️ 维护',
+    items: [
+      { key: 'goods', icon: '🌷', label: '商品管理' },
+      { key: 'category', icon: '🏷️', label: '分类管理' },
+      { key: 'wiki', icon: '📚', label: '智库维护' },
+      { key: 'asset', icon: '🖼️', label: '素材管理' },
+      { key: 'warehouse', icon: '📦', label: '仓储历史' },
+      { key: 'salesStrategy', icon: '📈', label: '销售策略' },
+      { key: 'staff', icon: '👥', label: '人员管理' },
+      { key: 'setting', icon: '⚙️', label: '店铺设置' },
+    ],
+  },
+] as const
 
 useDidShow(() => {
   void loadStats()
@@ -160,15 +165,23 @@ function goOrders(tab: OrderStatus | 'all') {
   })
 }
 
+async function handleAction(page: string) {
+  if (page === 'verify') {
+    await scanAndVerifyPickup()
+    return
+  }
+  go(page)
+}
+
 function go(page: string) {
   const routes: Record<string, string> = {
     order: '/pagesMerchant/order/list',
     goods: '/pagesMerchant/goods/list',
     category: '/pagesMerchant/category/list',
-    verify: '/pagesMerchant/verify/index',
     staff: '/pagesMerchant/staff/index',
     salesStrategy: '/pagesMerchant/shop/sales-strategy/index',
     warehouse: '/pagesMerchant/goods/warehouse-history',
+    wiki: '/pagesMerchant/wiki/index',
     asset: '/pagesMerchant/asset/index',
     setting: '/pagesMerchant/shop/setting',
   }
@@ -226,6 +239,7 @@ function previewCustomer() {
   &.highlight .stat-value { color: #e53935; }
 }
 .section-title { padding: 32rpx 32rpx 16rpx; font-size: 28rpx; font-weight: 600; color: #333; }
+.action-section + .action-section .section-title { padding-top: 8rpx; }
 .action-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 16rpx; padding: 0 16rpx;
 }

@@ -1,0 +1,123 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Shan Yao'",
+    "commonNames": [
+      "Shan Yao",
+      "闪耀玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "条纹复色，避直射",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "红带黄纹复色玫瑰，条纹色对光照敏感，阴凉通风可减缓褪色。",
+    "tips": [
+      "条纹复色避直射",
+      "勤换水保持条纹清晰"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Shan Yao'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "namingNote": "红底黄纹条纹复色，个性切花代表",
+        "introducedYear": "2000 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "红色底色上分布黄色或橙黄色条纹，每朵纹路略有不同",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.bicolor_stripe",
+      "trait.classic_red"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "金辉",
+        "difference": "整边晕染，而非条纹"
+      },
+      {
+        "name": "狂欢泡泡",
+        "difference": "多头发散，而非单头条纹"
+      },
+      {
+        "name": "闪耀",
+        "difference": "红底黄纹、每朵不同，是条纹复色代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2000 年代",
+      "namingNote": "红底黄纹条纹复色，个性切花代表"
+    }
+  },
+  "language": {
+    "meaning": "个性、独特与「不撞款」的心意",
+    "paragraphs": [
+      "闪耀的条纹让每一朵都略有不同——适合送给审美独立、讨厌「普通玫瑰」的人，表达「你在我眼里很特别」。",
+      "生日、毕业、送创意行业朋友都很合适；混搭时建议少而精，让条纹成为焦点。"
+    ],
+    "occasions": [
+      "生日",
+      "毕业",
+      "送友人",
+      "创意礼物"
+    ],
+    "colorMeanings": [
+      {
+        "color": "红带黄纹",
+        "meaning": "条纹复色、个性、不撞款"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "个性单束",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "少量配叶突出条纹"
+      },
+      {
+        "style": "毕业礼",
+        "flowers": [
+          "橙芭比",
+          "满天星"
+        ],
+        "note": "活泼混搭"
+      }
+    ],
+    "caution": "条纹色随开放与光照变化；若对方只接受纯色玫瑰，可能不习惯。"
+  }
+}

@@ -1,3 +1,4 @@
+import { getGoodsFlowerDisplayLabel } from '@/types/wiki'
 import { getCloud, getCloudCallConfig, parseCloudResult } from './cloud'
 import { loadWithCache } from '@/utils/cache'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
@@ -84,5 +85,8 @@ export async function getFlowerVarietySuggestion(id: string): Promise<FlowerGood
 }
 
 export function buildFlowerLabel(kindName: string, varietyName: string) {
-  return `${varietyName} · ${kindName}`
+  return getGoodsFlowerDisplayLabel({
+    flowerKindName: kindName,
+    flowerVarietyName: varietyName,
+  })
 }

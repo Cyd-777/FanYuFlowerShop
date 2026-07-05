@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "黄色马蹄莲",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.calla.vase_base",
+  "careVaseOverride": {
+    "summary": "黄金黄色马蹄莲；浅水，轻拿轻放。",
+    "tips": [
+      "避免挤压"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.calla",
+      "identity": {
+        "scientificName": "Zantedeschia 'Golden'",
+        "namingNote": "黄色马蹄莲，明亮少见",
+        "horticulturalGroup": "group.calla_cut",
+        "breeder": "荷兰切花马蹄莲培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "明亮黄色佛焰苞，线条挺括",
+        "scent": "几乎无香",
+        "stem": "佛焰苞易损，需浅水、避免挤压",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "8 至 12"
+      }
+    },
+    "featureRefs": [
+      "trait.yellow_gold"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "白马",
+        "difference": "白色马蹄莲，与此品种形态或色调不同"
+      },
+      {
+        "name": "黑魔法",
+        "difference": "深紫近黑马蹄莲，与此品种形态或色调不同"
+      },
+      {
+        "name": "黄金",
+        "difference": "黄色马蹄莲，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花马蹄莲",
+      "namingNote": "黄色马蹄莲，明亮少见"
+    }
+  },
+  "language": {
+    "meaning": "明亮、现代与「马蹄莲里的阳光」",
+    "paragraphs": [
+      "黄色马蹄莲相对少见——适合开业、生日，以及想要「线条感 + 明亮色」。",
+      "与白色、绿色同插，视觉干净。"
+    ],
+    "occasions": [
+      "开业",
+      "生日",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "黄",
+        "meaning": "明亮、祝福"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "明亮",
+        "flowers": [
+          "绿康",
+          "白马"
+        ],
+        "note": "黄白绿"
+      }
+    ],
+    "caution": "佛焰苞易损；浅水。"
+  },
+  "names": {
+    "scientificName": "Zantedeschia 'Golden'",
+    "commonNames": [
+      "Golden",
+      "黄金"
+    ]
+  }
+}

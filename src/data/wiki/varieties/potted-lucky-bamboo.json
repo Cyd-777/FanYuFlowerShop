@@ -1,0 +1,90 @@
+{
+  "bloom": {
+    "vase": "盆栽观赏因品种而异",
+    "vaseNote": "盆栽观赏"
+  },
+  "careBaseRef": "care.potted.vase_base",
+  "careVaseOverride": {
+    "summary": "富贵竹见干见湿或清洁水培，明亮散射光，忌积水。",
+    "tips": [
+      "水培定期换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.potted",
+      "identity": {
+        "scientificName": "Dracaena sanderiana",
+        "namingNote": "水培/土培皆可，开业与家居极常见",
+        "horticulturalGroup": "group.potted_ornamental"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "绿色茎叶，常水培",
+        "scent": "几乎无香",
+        "stem": "以盆栽株形观赏为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.potted_gift"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "蝴蝶兰",
+        "difference": "高端盆栽礼品，与此品种形态或色调不同"
+      },
+      {
+        "name": "发财树",
+        "difference": "大型盆栽，与此品种形态或色调不同"
+      },
+      {
+        "name": "富贵竹",
+        "difference": "水培/土培皆可，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "室内盆栽",
+      "namingNote": "水培/土培皆可，开业与家居极常见"
+    }
+  },
+  "language": {
+    "meaning": "吉祥、节节高与「很好养的绿」",
+    "paragraphs": [
+      "富贵竹是开业、乔迁、办公桌经典——寓意好、养护简单，水培或土培皆可。",
+      "水培须定期换水；土培见干见湿。"
+    ],
+    "occasions": [
+      "开业",
+      "乔迁",
+      "办公",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "绿",
+        "meaning": "吉祥、节节高"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "开业",
+        "flowers": [],
+        "note": "单盆即可"
+      }
+    ],
+    "caution": "水培定期换水；避免暴晒。"
+  },
+  "names": {
+    "scientificName": "Dracaena sanderiana",
+    "commonNames": [
+      "Lucky Bamboo",
+      "富贵竹"
+    ]
+  }
+}

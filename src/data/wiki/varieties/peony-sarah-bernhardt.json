@@ -1,0 +1,123 @@
+{
+  "names": {
+    "scientificName": "Paeonia lactiflora 'Sarah Bernhardt'",
+    "commonNames": [
+      "Sarah Bernhardt",
+      "莎拉芍药"
+    ]
+  },
+  "bloom": {
+    "vase": "约 3—5 天",
+    "vaseNote": "芍药切花花期较短，选微开、浅水、阴凉可延长",
+    "vaseBySeason": [
+      {
+        "season": "春末",
+        "days": "约 3—5 天",
+        "note": "5—6 月应季"
+      }
+    ]
+  },
+  "careBaseRef": "care.peony.vase_base",
+  "careVaseOverride": {
+    "summary": "莎拉芍药宜选微开花朵，浅水养护，阴凉通风；花期短但花型极美。",
+    "waterDepth": "浅水养护，水深约花瓶 1/4",
+    "tips": [
+      "切花宜选微开而非全开",
+      "避免高温与阳光直射"
+    ],
+    "commonIssues": [
+      {
+        "title": "开放过快、一日散瓣",
+        "cause": "收到时已接近全开，或高温环境",
+        "prevention": "选微开花朵；浅水、阴凉；避开暖气"
+      }
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.peony",
+      "identity": {
+        "scientificName": "Paeonia lactiflora 'Sarah Bernhardt'",
+        "horticulturalGroup": "group.herbaceous_peony",
+        "breeder": "法国 Lemoine 育种体系",
+        "introducedYear": "1906 年",
+        "namingNote": "以法国传奇演员 Sarah Bernhardt 命名，粉色重瓣芍药代表"
+      },
+      "origin": {
+        "breedingOrigin": "法国",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "petalCount": "重瓣，花瓣极多",
+        "bloomDiameterCm": "12 至 18",
+        "color": "柔粉色，层层包裹，开放后雍容饱满",
+        "stem": "茎含乳胶，剪切后需立即插水",
+        "scent": "浓香，甜美而古典"
+      }
+    },
+    "featureRefs": [
+      "trait.soft_pink",
+      "trait.strong_scent",
+      "trait.huge_flower"
+    ],
+    "cultivar": {
+      "horticulturalGroup": "草本芍药",
+      "introducedYear": "1906 年",
+      "namingNote": "以法国传奇演员 Sarah Bernhardt 命名"
+    },
+    "distinguishFrom": [
+      {
+        "name": "落日珊瑚",
+        "difference": "珊瑚色且开放过程变色，而非柔粉重瓣"
+      },
+      {
+        "name": "奶油碗",
+        "difference": "白色重瓣，更偏纯洁温柔"
+      },
+      {
+        "name": "莎拉",
+        "difference": "柔粉重瓣、浓香、雍容，是婚礼芍药最常见之一"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "雍容、浪漫与「春天最盛大的花」",
+    "paragraphs": [
+      "莎拉芍药的重瓣柔粉，像把春天的礼服穿在身上——婚礼、纪念日、高端花礼极常见。它的美来得猛烈也走得快，正因其花期短，更衬得珍贵。",
+      "适合送给懂花、懂季节的人；若对方期待「耐插两周」，需提前说明芍药是短而极美的应季花材。"
+    ],
+    "occasions": [
+      "婚礼",
+      "纪念日",
+      "表白",
+      "春日赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "柔粉",
+        "meaning": "雍容、浪漫、应季珍贵"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼手捧",
+        "flowers": [
+          "朱丽叶",
+          "白雪山"
+        ],
+        "note": "粉白绿春日经典"
+      },
+      {
+        "style": "法式花束",
+        "flowers": [
+          "洋桔梗",
+          "鼠尾草"
+        ],
+        "note": "层次柔和"
+      }
+    ],
+    "caution": "花期短（约 3—5 天）是品种特性，非养护失误；应季 5—6 月最佳。"
+  }
+}

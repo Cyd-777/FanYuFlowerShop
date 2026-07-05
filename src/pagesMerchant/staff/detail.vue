@@ -1,7 +1,7 @@
 <template>
   <view class="page-staff-detail">
     <AppNavBar />
-    <view v-if="loading" class="loading-tip">加载中…</view>
+    <view v-if="loading" class="loading-tip">{{ loadingTipText }}</view>
 
     <template v-else-if="member">
       <view class="profile-card">
@@ -86,6 +86,8 @@ import {
   type StaffMember,
 } from '@/services/staff'
 import { resolveAvatarDisplayPath } from '@/services/userProfile'
+
+const loadingTipText = '加载中…'
 
 const targetUserId = ref('')
 const member = ref<StaffMember | null>(null)

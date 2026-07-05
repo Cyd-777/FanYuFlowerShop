@@ -1,13 +1,13 @@
 <template>
   <view class="wiki-answer-card" @tap="onTap">
     <view class="wiki-answer-head">
-      <text class="wiki-answer-badge">百科速答</text>
+      <text class="wiki-answer-badge">{{ badgeText }}</text>
       <text class="wiki-answer-title">{{ answer.title }}</text>
     </view>
     <view class="wiki-answer-body">{{ answer.answer }}</view>
     <view v-if="answer.note" class="wiki-answer-note">{{ answer.note }}</view>
     <view class="wiki-answer-foot">
-      <text class="wiki-answer-link">查看词条详情</text>
+      <text class="wiki-answer-link">{{ detailLinkText }}</text>
       <text class="wiki-answer-arrow">›</text>
     </view>
   </view>
@@ -16,6 +16,9 @@
 <script setup lang="ts">
 import type { WikiAnswerSnippet } from '@/types/search'
 import { navigateTo } from '@/utils/router'
+
+const badgeText = '百科速答'
+const detailLinkText = '查看词条详情'
 
 const props = defineProps<{
   answer: WikiAnswerSnippet

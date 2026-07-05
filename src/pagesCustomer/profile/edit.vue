@@ -11,12 +11,12 @@
         />
         <view v-else class="avatar-placeholder">{{ avatarEmoji }}</view>
       </button>
-      <view class="avatar-tip">点击头像更换</view>
+      <view class="avatar-tip">{{ uiText_5d49fe }}</view>
     </view>
 
     <view class="form-card">
       <view class="form-row">
-        <text class="form-label">昵称</text>
+        <text class="form-label">{{ uiText_23eb0e }}</text>
         <input
           class="nickname-input"
           type="nickname"
@@ -54,6 +54,9 @@ import {
   resolveAvatarDisplayPath,
 } from '@/services/userProfile'
 import { STORAGE_KEYS } from '@/utils/constants'
+
+const uiText_23eb0e = '昵称'
+const uiText_5d49fe = '点击头像更换'
 
 const avatarEmoji = '🌷'
 const defaultNickname = '花友'

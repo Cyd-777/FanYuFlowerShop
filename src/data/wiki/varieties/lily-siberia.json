@@ -1,0 +1,131 @@
+{
+  "names": {
+    "scientificName": "Lilium 'Siberia'",
+    "commonNames": [
+      "Siberia",
+      "西伯利亚百合"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "纯白东方百合，摘花蕊可减花粉污染",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.lily.vase_base",
+  "careVaseOverride": {
+    "summary": "西伯利亚为纯白东方百合，婚礼与悼念常见；摘除花蕊、勤换水保持洁净。",
+    "tips": [
+      "婚礼用花建议提前摘花蕊，避免白色礼服沾染花粉",
+      "纯白对水质敏感，须勤换水"
+    ],
+    "commonIssues": [
+      {
+        "title": "白色礼服 / 桌布沾染花粉",
+        "cause": "东方百合花粉量大，婚礼场景常见",
+        "prevention": "婚礼用花提前摘花蕊；摆放远离宾客动线"
+      }
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.lily",
+      "identity": {
+        "scientificName": "Lilium 'Siberia'",
+        "horticulturalGroup": "group.oriental_lily",
+        "breeder": "荷兰百合育种体系",
+        "introducedYear": "1990 年代起",
+        "namingNote": "纯白东方百合代表，婚礼白百合最常见指代之一"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.ecuador",
+          "region.colombia"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.pure_white"
+        ],
+        "bloomDiameterCm": "16 至 20",
+        "color": "纯白，花瓣洁净，开放后花型优雅",
+        "stem": "茎干挺直，适合高挑花瓶",
+        "foliage": "叶片深绿",
+        "scent": "浓香，清幽而持久"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white",
+      "trait.strong_scent",
+      "trait.huge_flower"
+    ],
+    "cultivar": {
+      "horticulturalGroup": "东方百合",
+      "namingNote": "纯白东方百合代表，婚礼白百合最常见指代之一"
+    },
+    "distinguishFrom": [
+      {
+        "name": "铁炮百合",
+        "difference": "喇叭形、清香，而非东方百合重瓣感"
+      },
+      {
+        "name": "亚百合",
+        "difference": "多无香或轻香，花型更简洁"
+      },
+      {
+        "name": "西伯利亚",
+        "difference": "纯白、浓香、东方百合，婚礼与庄重场合高频"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "纯洁、神圣与百年好合",
+    "paragraphs": [
+      "西伯利亚的白，是婚礼誓言里最常见的那一种白——庄严、完整、没有杂质。它也常用于毕业典礼、洗礼等「新开始」的场合。",
+      "悼念与探病亦常见白百合，表达哀思与尊重；若场景需要克制与庄重，西伯利亚比彩色百合更合适。"
+    ],
+    "occasions": [
+      "婚礼",
+      "毕业典礼",
+      "悼念",
+      "探病",
+      "洗礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "纯白",
+        "meaning": "纯洁、神圣、百年好合"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼",
+        "flowers": [
+          "白雪山",
+          "尤加利叶"
+        ],
+        "note": "白绿经典婚礼"
+      },
+      {
+        "style": "庄重悼念",
+        "flowers": [
+          "绿康",
+          "白桔梗"
+        ],
+        "note": "白绿克制"
+      }
+    ],
+    "caution": "花粉易沾染白色衣物；婚礼场景务必考虑摘花蕊。"
+  }
+}

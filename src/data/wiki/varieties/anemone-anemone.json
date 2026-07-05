@@ -1,0 +1,109 @@
+{
+  "bloom": {
+    "vase": "约 5—7 天",
+    "vaseNote": "约 5—7 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.anemone.vase_base",
+  "careVaseOverride": {
+    "summary": "银莲花；轻拿轻放，清洁水质，冷凉环境。",
+    "tips": [
+      "喜冷凉"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.anemone",
+      "identity": {
+        "scientificName": "Anemone coronaria",
+        "namingNote": "单瓣/重瓣银莲花，春日线条美",
+        "horticulturalGroup": "group.anemone_cut",
+        "breeder": "以色列 / 荷兰银莲花培育",
+        "introducedYear": "2000 年代起春日切花"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色，黑芯或色芯，瓣形简洁",
+        "scent": "几乎无香",
+        "stem": "茎干纤细，花头轻盈",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "5 至 8"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white",
+      "trait.classic_red"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "郁金香",
+        "difference": "杯状线条，而非黑芯简洁瓣形"
+      },
+      {
+        "name": "洋桔梗",
+        "difference": "喇叭杯形，而非银莲花式黑芯"
+      },
+      {
+        "name": "银莲花",
+        "difference": "黑芯简洁瓣形，是法式春日花束高频"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花银莲花",
+      "namingNote": "单瓣/重瓣银莲花，春日线条美"
+    }
+  },
+  "language": {
+    "meaning": "春日、简洁与「很干净的一朵」",
+    "paragraphs": [
+      "银莲花线条简洁——适合法式、日式春日花束，与郁金香、小菊同插。",
+      "轻拿；清洁水质，喜冷凉。"
+    ],
+    "occasions": [
+      "春日",
+      "婚礼",
+      "法式"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "简洁、春日"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "法式",
+        "flowers": [
+          "郁金香",
+          "蕾丝花"
+        ],
+        "note": "春日"
+      }
+    ],
+    "caution": "喜冷凉；瓣易损。"
+  },
+  "names": {
+    "scientificName": "Anemone coronaria",
+    "commonNames": [
+      "Anemone",
+      "银莲花"
+    ]
+  }
+}

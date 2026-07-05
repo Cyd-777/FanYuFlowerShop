@@ -1,0 +1,119 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "绿色康乃馨，耐插 7—14 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.carnation.vase_base",
+  "careVaseOverride": {
+    "summary": "绿色康乃馨独特色调；勤换水、撕去茎节叶片，保持通风。",
+    "tips": [
+      "勤换水，保持水质清洁",
+      "撕去关节处叶片"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.carnation",
+      "identity": {
+        "scientificName": "Dianthus 'Green'",
+        "namingNote": "绿色康乃馨，清新独特，婚庆与创意花束常见",
+        "horticulturalGroup": "group.carnation_cut",
+        "breeder": "哥伦比亚商业切花培育",
+        "introducedYear": "1970 年代起现代切花体系"
+      },
+      "origin": {
+        "breedingOrigin": "哥伦比亚",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "清新绿色，瓣缘锯齿，色调介于叶与花之间，辨识度高",
+        "scent": "淡香",
+        "stem": "茎节明显，需撕去下部叶片",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "petalCount": "花瓣边缘呈锯齿状，层叠繁密",
+        "bloomDiameterCm": "6 至 8"
+      }
+    },
+    "featureRefs": [
+      "trait.thick_petal"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "绿康",
+        "difference": "有时混称，以实际到货瓣形为准"
+      },
+      {
+        "name": "粉钻",
+        "difference": "柔粉，而非绿色"
+      },
+      {
+        "name": "绿色康乃馨",
+        "difference": "绿色调、独特、耐插，是创意花束常见选择"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花康乃馨",
+      "namingNote": "绿色康乃馨，清新独特，婚庆与创意花束常见"
+    }
+  },
+  "language": {
+    "meaning": "清新、独特与「打破常规的颜色」",
+    "paragraphs": [
+      "绿色康乃馨不是「未开放」，而是刻意的绿色调——适合现代风、森系、开业与创意花束，和尤加利、白花、香槟色花材都很搭。",
+      "收花人若第一次见可能会问「为什么是绿的」，正好可以成为话题；表达「特别、新鲜、不走寻常路」。"
+    ],
+    "occasions": [
+      "开业",
+      "创意花束",
+      "森系",
+      "家居装饰"
+    ],
+    "colorMeanings": [
+      {
+        "color": "绿",
+        "meaning": "清新、独特、新生"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "森系开业",
+        "flowers": [
+          "尤加利叶",
+          "白雪山"
+        ],
+        "note": "绿白高级"
+      },
+      {
+        "style": "现代创意",
+        "flowers": [
+          "香槟玫瑰",
+          "翠珠"
+        ],
+        "note": "低饱和混搭"
+      }
+    ],
+    "caution": "绿色系对水质敏感，勤换水；避免挤压。"
+  },
+  "names": {
+    "scientificName": "Dianthus 'Green'",
+    "commonNames": [
+      "Green",
+      "绿色康乃馨"
+    ]
+  }
+}

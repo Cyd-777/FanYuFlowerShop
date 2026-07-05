@@ -1,11 +1,13 @@
 <template>
-  <view v-if="show" class="goods-new-listing-badge">新上架</view>
+  <view v-if="show" class="goods-new-listing-badge">{{ labelText }}</view>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Goods } from '@/types/goods'
 import { isNewListing } from '@/utils/goodsNewListing'
+
+const labelText = '新上架'
 
 const props = defineProps<{
   goods: Pick<Goods, 'onSale' | 'createdAt'>

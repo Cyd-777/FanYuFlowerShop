@@ -1,0 +1,121 @@
+{
+  "bloom": {
+    "vase": "约 5—7 天",
+    "vaseNote": "卷瓣鹦鹉郁金香，约 5—7 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.tulip.vase_base",
+  "careVaseOverride": {
+    "summary": "鹦鹉郁金香卷瓣；浅水冷凉，轻拿轻放，避免挤压卷瓣。",
+    "tips": [
+      "轻拿轻放",
+      "远离暖气"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.tulip",
+      "identity": {
+        "scientificName": "Tulipa 'Parrot Tulip'",
+        "namingNote": "卷瓣鹦鹉郁金香，边缘不规则，艺术感强",
+        "horticulturalGroup": "group.tulip_single",
+        "breeder": "荷兰球根花卉育种",
+        "introducedYear": "球根切花长期商用品种"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色，瓣缘卷曲如鹦鹉羽，轮廓独特",
+        "scent": "几乎无香",
+        "stem": "花茎会继续生长，需预留瓶高",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "7 至 9",
+        "flowerForm": [
+          "trait.recurved_petal"
+        ]
+      }
+    },
+    "featureRefs": [
+      "trait.recurved_petal",
+      "trait.cup_trumpet"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "单瓣系列",
+        "difference": "杯形规整，而非卷瓣"
+      },
+      {
+        "name": "重瓣系列",
+        "difference": "层叠重瓣，而非羽状卷边"
+      },
+      {
+        "name": "鹦鹉系列",
+        "difference": "卷瓣羽状、艺术感，是郁金香特色系列"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "单瓣郁金香",
+      "namingNote": "卷瓣鹦鹉郁金香，边缘不规则，艺术感强"
+    }
+  },
+  "language": {
+    "meaning": "艺术、个性与「不像「标准」的郁金香」",
+    "paragraphs": [
+      "鹦鹉系列适合拍照、艺术花束、以及收花人已经见过普通郁金香、想要「特别一点」的场景——瓣缘的卷曲是最大辨识度。",
+      "卷瓣结构略娇气，避免挤压与高温；与单瓣郁金香混搭，同一束里会有节奏变化。"
+    ],
+    "occasions": [
+      "拍照",
+      "艺术花束",
+      "纪念日",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "艺术、个性、独特"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "艺术混搭",
+        "flowers": [
+          "王朝",
+          "白梦"
+        ],
+        "note": "卷瓣+杯形"
+      },
+      {
+        "style": "单品种",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "突出卷瓣"
+      }
+    ],
+    "caution": "卷瓣易损；喜冷凉，避暖气。"
+  },
+  "names": {
+    "scientificName": "Tulipa 'Parrot Tulip'",
+    "commonNames": [
+      "Parrot Tulip",
+      "鹦鹉系列"
+    ]
+  }
+}

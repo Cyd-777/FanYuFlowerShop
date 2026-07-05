@@ -1,0 +1,118 @@
+{
+  "bloom": {
+    "vase": "约 5—7 天",
+    "vaseNote": "重瓣郁金香，约 5—7 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.tulip.vase_base",
+  "careVaseOverride": {
+    "summary": "重瓣郁金香层叠饱满；浅水冷凉，通风，轻拿轻放。",
+    "tips": [
+      "通风防闷湿",
+      "花茎生长可修剪"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.tulip",
+      "identity": {
+        "scientificName": "Tulipa 'Double Tulip'",
+        "namingNote": "重瓣郁金香，层叠如牡丹，春日高端",
+        "horticulturalGroup": "group.tulip_single",
+        "breeder": "荷兰球根花卉育种",
+        "introducedYear": "球根切花长期商用品种"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色，重瓣层叠，开放后饱满",
+        "scent": "几乎无香",
+        "stem": "花茎会继续生长，需预留瓶高",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "7 至 9"
+      }
+    },
+    "featureRefs": [
+      "trait.huge_flower",
+      "trait.cup_trumpet"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "单瓣系列",
+        "difference": "单杯形，而非重瓣"
+      },
+      {
+        "name": "鹦鹉系列",
+        "difference": "卷边羽状，而非层叠重瓣"
+      },
+      {
+        "name": "重瓣系列",
+        "difference": "层叠饱满，是高端郁金香代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "单瓣郁金香",
+      "namingNote": "重瓣郁金香，层叠如牡丹，春日高端"
+    }
+  },
+  "language": {
+    "meaning": "隆重、春日与「郁金香里的牡丹感」",
+    "paragraphs": [
+      "重瓣郁金香开放后像「郁金香里的牡丹」——适合纪念日、高端赠礼，以及想要郁金香但希望更饱满的场景。",
+      "花头较重，瓶口留足空间；与单瓣郁金香同插，同一束里会有大小节奏。"
+    ],
+    "occasions": [
+      "纪念日",
+      "高端赠礼",
+      "春日",
+      "婚礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "隆重、饱满、春日"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "高端",
+        "flowers": [
+          "白梦",
+          "王朝"
+        ],
+        "note": "重瓣+单瓣"
+      },
+      {
+        "style": "婚礼",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "单品种即可"
+      }
+    ],
+    "caution": "重瓣易闷湿；通风、浅水、冷凉。"
+  },
+  "names": {
+    "scientificName": "Tulipa 'Double Tulip'",
+    "commonNames": [
+      "Double Tulip",
+      "重瓣系列"
+    ]
+  }
+}

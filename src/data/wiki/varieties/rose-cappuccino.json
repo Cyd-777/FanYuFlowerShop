@@ -1,0 +1,98 @@
+{
+  "names": {
+    "scientificName": "Rosa 'Cappuccino'",
+    "commonNames": ["Cappuccino", "卡布奇诺玫瑰"]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "复古色系对水质与光照较敏感，勤换水可延长观赏期",
+    "vaseBySeason": [
+      { "season": "夏季", "days": "约 7—8 天" },
+      { "season": "冬季", "days": "约 9—10 天" }
+    ]
+  },
+  "careBaseRef": "care.rose.vase_base",
+  "careVaseOverride": {
+    "summary": "卡布奇诺为咖啡色丝绒质感玫瑰，忌触碰挤压；勤换水、避直射可保持色泽。",
+    "waterChange": "每日换水；复古色系对水质较敏感，花瓶须洗净",
+    "tips": [
+      "丝绒质感花瓣忌触碰与挤压",
+      "避强光可减缓咖啡色向浅棕褪色"
+    ],
+    "environment": {
+      "light": "明亮散射光，避开阳光直射",
+      "avoid": ["与苹果、香蕉等释放乙烯气体的成熟水果放在一起"]
+    }
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Cappuccino'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "breeder": "厄瓜多尔商业切花玫瑰培育",
+        "introducedYear": "2010 年代",
+        "namingNote": "名称来自意式咖啡卡布奇诺，形容其咖啡棕与奶泡般层次感的复古色调"
+      },
+      "origin": {
+        "breedingOrigin": "厄瓜多尔",
+        "productionRegions": ["region.ecuador", "region.colombia", "region.yunnan"]
+      },
+      "morphology": {
+        "flowerForm": ["trait.cup_heart"],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "7 至 9",
+        "color": "外层咖啡棕、向内渐浅，带有丝绒雾面质感，低饱和而高级",
+        "stem": "茎干挺直，刺中等",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.coffee_brown",
+      "trait.velvet_texture"
+    ],
+    "origin": "育种厄瓜多尔；主产区厄瓜多尔、哥伦比亚、中国云南",
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔商业切花玫瑰培育",
+      "introducedYear": "2010 年代",
+      "namingNote": "咖啡卡布奇诺色系"
+    },
+    "distinguishFrom": [
+      { "name": "太妃糖", "difference": "偏棕粉暖调，少一层咖啡雾面丝绒感" },
+      { "name": "流沙", "difference": "裸粉低饱和，整体更浅更「沙感」" },
+      {
+        "name": "卡布奇诺",
+        "difference": "咖啡棕丝绒雾面、复古高级，是近年秋冬花礼的高频辨识色"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "低调的高级感；复古、独立与不被定义的审美",
+    "paragraphs": [
+      "卡布奇诺的咖啡棕，是近几年花店最「出片」的复古色之一。它不讨好所有人，但对懂的人来说，这种低饱和、带丝绒雾面的色调，比正红更有态度——适合送给审美独立、喜欢秋冬氛围或极简质感的人。",
+      "开业花礼、生日、送自己，或作为混搭花束的主色都很合适。与尤加利、芦苇、洋甘菊等同色系或干花感配材，能强化「咖啡午后」的整体气质。"
+    ],
+    "occasions": ["生日", "开业", "送自己", "秋冬花礼", "混搭主花"],
+    "colorMeanings": [
+      {
+        "color": "咖啡棕",
+        "meaning": "复古、高级、独立；适合拒绝俗套、偏爱质感的人"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "秋冬复古",
+        "flowers": ["朱丽叶", "洋甘菊", "尤加利叶"],
+        "note": "暖棕与杏橙同系，适合季节限定花束"
+      },
+      {
+        "style": "极简质感",
+        "flowers": ["芦苇", "棉花", "鼠尾草"],
+        "note": "干花感配材，突出咖啡色调"
+      }
+    ],
+    "caution": "复古色在强光下易褪色；若对方只接受「鲜艳喜庆」色系，咖啡棕可能显得不够热闹。"
+  }
+}

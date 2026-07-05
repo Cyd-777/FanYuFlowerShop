@@ -1,0 +1,94 @@
+{
+  "names": {
+    "scientificName": "Rosa 'Diana'",
+    "commonNames": ["Diana", "戴安娜玫瑰", "粉玫瑰"]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "瓣厚耐插，勤换水可稳定保持花型",
+    "vaseBySeason": [
+      { "season": "夏季", "days": "约 7—8 天" },
+      { "season": "冬季", "days": "约 9—10 天" }
+    ]
+  },
+  "careBaseRef": "care.rose.vase_base",
+  "careVaseOverride": {
+    "summary": "戴安娜瓣厚花型稳定，是经典粉玫瑰代表；勤换水、斜剪根即可较长保持观赏期。",
+    "tips": [
+      "瓣厚相对耐插，但仍需每日换水",
+      "粉色调避强光可减缓褪色"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Diana'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "breeder": "荷兰 De Ruiter",
+        "introducedYear": "1990 年代",
+        "namingNote": "名称取自罗马神话中的月亮女神，寓意温柔、纯净与守护"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": ["region.ecuador", "region.colombia", "region.yunnan"]
+      },
+      "morphology": {
+        "flowerForm": ["trait.cup_heart"],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "柔和而均匀的粉色，花瓣厚实、边缘整齐，开放后花型仍较保持",
+        "stem": "茎干挺直，刺中等，便于打刺与日常瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡淡玫瑰香，不浓不烈"
+      }
+    },
+    "featureRefs": [
+      "trait.soft_pink",
+      "trait.thick_petal",
+      "trait.gentle_scent"
+    ],
+    "origin": "育种荷兰；主产区厄瓜多尔、哥伦比亚、中国云南",
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "De Ruiter",
+      "introducedYear": "1990 年代",
+      "namingNote": "月亮女神 Diana"
+    },
+    "distinguishFrom": [
+      { "name": "粉雪山", "difference": "更偏淡粉低饱和，花头往往更大更「雪山」系列感" },
+      { "name": "粉红雪山", "difference": "粉白过渡更柔，整体更浅" },
+      {
+        "name": "戴安娜",
+        "difference": "均匀柔粉、瓣厚、花型稳定，是花店语境里「粉玫瑰」最常见的指代之一"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "温柔、感谢与初恋般的心动",
+    "paragraphs": [
+      "戴安娜的粉，不是少女系的浅粉，而是温柔、得体、几乎不会出错的「正粉玫瑰」。它适合那些不想太张扬、又希望对方明确感受到心意的场合——表白、感谢、慰问、日常惊喜都合适。",
+      "送给恋人表达「你让我的生活变温柔」；送给朋友或同事，则是礼貌而不越界的感谢。与白色、浅紫或绿色配花都很安全；若对方年纪较长，戴安娜比过于鲜亮的粉更稳重。"
+    ],
+    "occasions": ["表白", "感谢", "慰问", "生日", "日常惊喜", "送友人"],
+    "colorMeanings": [
+      {
+        "color": "柔粉",
+        "meaning": "温柔、初恋、感谢；比红玫瑰含蓄，比白玫瑰亲近"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "温柔日常",
+        "flowers": ["白雪山", "尤加利叶"],
+        "note": "白粉绿经典组合，适合日常花束"
+      },
+      {
+        "style": "少女感",
+        "flowers": ["粉雪山", "洋桔梗", "满天星"],
+        "note": "层次粉调，适合生日与表白"
+      }
+    ],
+    "caution": "部分顾客口中的「粉玫瑰」可能指导购时泛指粉色系；若需特定品种，下单时最好确认是戴安娜而非粉雪山系列。"
+  }
+}

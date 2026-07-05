@@ -1,5 +1,5 @@
 <template>
-  <view class="page-goods-detail">
+  <view class="page-goods-detail" id="goods-detail-scroll-body">
     <AppNavBar />
 
     <view
@@ -21,8 +21,15 @@
     </view>
     <GoodsImage v-else-if="!loading" root-class="swiper-img" show-hint />
 
-    <view v-if="loading && !goods.name" class="loading-wrap">
-      <nut-skeleton rows="8" animated />
+    <!-- 加载骨架：图片区域 + 信息行 -->
+    <view v-if="loading && !goods.name" class="detail-skeleton">
+      <view class="ds-image sk-shimmer" />
+      <view class="ds-info">
+        <view class="ds-line ds-title sk-shimmer" />
+        <view class="ds-line ds-price sk-shimmer" />
+        <view class="ds-line ds-desc sk-shimmer" />
+        <view class="ds-line ds-desc sk-shimmer ds-desc--short" />
+      </view>
     </view>
 
     <template v-else>
@@ -64,6 +71,12 @@
       @open-full="goWikiFull"
     />
 
+    <ScrollListTailSpacer
+      content-selector="#goods-detail-scroll-body"
+      :bottom-inset-px="actionBarInsetPx"
+      :watch-key="`${loading}-${goods._id}-${wikiEntry?._id || ''}`"
+    />
+
     <view class="action-bar">
       <nut-button class="cart-btn" plain :disabled="!purchasable || adding" @click="addToCart">加入购物车</nut-button>
       <nut-button class="buy-btn" type="primary" :disabled="!purchasable || adding" @click="buyNow">立即购买</nut-button>
@@ -91,6 +104,10 @@ import {
   isGoodsPurchasable,
   isGoodsSoldOut,
 } from '@/utils/goodsAvailability'
+import { scrollTailActionBarInsetPx } from '@/utils/scrollListTailSpacer'
+import { getGoodsFlowerDisplayLabel } from '@/types/wiki'
+
+const actionBarInsetPx = scrollTailActionBarInsetPx()
 
 const {
   goods,
@@ -151,10 +168,8 @@ watch(maxQuantity, (max) => {
 })
 
 const flowerTags = computed(() => {
-  const tags: string[] = []
-  if (goods.value.flowerKindName) tags.push(goods.value.flowerKindName)
-  if (goods.value.flowerVarietyName) tags.push(goods.value.flowerVarietyName)
-  return tags
+  const label = getGoodsFlowerDisplayLabel(goods.value)
+  return label ? [label] : []
 })
 
 useDidShow(() => {
@@ -254,7 +269,48 @@ function buyNow() {
 
 <style lang="less">
 .page-goods-detail { padding-bottom: 120rpx; background: #f8f8f8; }
-.loading-wrap { padding: 24rpx; }
+
+@keyframes sk-shimmer-kf {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.sk-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 0%, #e6e6e6 20%, #f5f5f5 40%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: sk-shimmer-kf 1.4s ease-in-out infinite;
+}
+
+.detail-skeleton {
+  background: #fff;
+}
+.ds-image {
+  width: 100%;
+  height: 600rpx;
+  border-radius: 0;
+}
+.ds-info {
+  padding: 24rpx;
+}
+.ds-line {
+  height: 28rpx;
+  margin-bottom: 16rpx;
+  border-radius: 8rpx;
+}
+.ds-title {
+  width: 56%;
+  height: 32rpx;
+}
+.ds-price {
+  width: 36%;
+  height: 36rpx;
+}
+.ds-desc {
+  width: 88%;
+}
+.ds-desc--short {
+  width: 48%;
+}
+
 .swiper-wrap {
   position: relative;
 }

@@ -1,0 +1,127 @@
+{
+  "names": {
+    "scientificName": "Hydrangea macrophylla 'Endless Summer'",
+    "commonNames": [
+      "Endless Summer",
+      "无尽夏绣球"
+    ]
+  },
+  "bloom": {
+    "vase": "约 5—10 天",
+    "vaseNote": "绣球切花喜湿，需充足吸水与喷雾保湿",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 5—7 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 7—10 天"
+      }
+    ]
+  },
+  "careBaseRef": "care.hydrangea.vase_base",
+  "careVaseOverride": {
+    "summary": "无尽夏绣球吸水需求大，茎部可十字剪或烫茎；每日换水，可喷雾保湿。",
+    "trim": "十字剪或斜剪茎部 2—3 cm，增加吸水面积",
+    "tips": [
+      "吸水不足时可用烫茎法急救",
+      "避免空调直吹导致失水"
+    ],
+    "commonIssues": [
+      {
+        "title": "运输后整球迅速萎蔫",
+        "cause": "绣球吸水需求大，运输失水后恢复慢",
+        "prevention": "收到后十字剪或烫茎；深水瓶养；可喷雾保湿"
+      }
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.hydrangea",
+      "identity": {
+        "scientificName": "Hydrangea macrophylla 'Endless Summer'",
+        "horticulturalGroup": "group.hydrangea_mophead",
+        "breeder": "欧美园艺绣球培育",
+        "introducedYear": "1990 年代起广泛商用",
+        "namingNote": "Endless Summer 系列，蓝粉色调随土壤酸碱变化，婚礼与家居极热门"
+      },
+      "origin": {
+        "breedingOrigin": "美国",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.spray_ball"
+        ],
+        "bloomDiameterCm": "15 至 25（整球）",
+        "color": "蓝、粉或紫色调，因品种与处理而异，整体梦幻团状",
+        "stem": "茎质较硬，吸水能力相对弱，需特殊处理",
+        "scent": "几乎无香"
+      }
+    },
+    "featureRefs": [
+      "trait.spray_ball",
+      "trait.low_sat_pink"
+    ],
+    "cultivar": {
+      "horticulturalGroup": "大花绣球",
+      "namingNote": "Endless Summer 系列，婚礼与家居极热门"
+    },
+    "distinguishFrom": [
+      {
+        "name": "花手鞠",
+        "difference": "重瓣、花球更密更贵，而非标准大花绣球"
+      },
+      {
+        "name": "贝拉安娜",
+        "difference": "圆锥花序，野趣自然风"
+      },
+      {
+        "name": "无尽夏",
+        "difference": "大花绣球、蓝粉梦幻、婚礼与韩式花束最高频之一"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "团聚、希望与「一团梦幻的蓝或粉」",
+    "paragraphs": [
+      "无尽夏像把夏天最温柔的颜色揉成一团——适合婚礼、家居插瓶、夏日主题花束。它不争抢线条，却用体积与色块撑起整体氛围。",
+      "送给喜欢韩式、法式或「很大一束」的人会很惊喜；单独几枝插瓶也好看，但需接受绣球比玫瑰更「吃水」。"
+    ],
+    "occasions": [
+      "婚礼",
+      "家居插瓶",
+      "夏日花束",
+      "生日"
+    ],
+    "colorMeanings": [
+      {
+        "color": "蓝/粉",
+        "meaning": "团聚、希望、梦幻"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "韩式婚礼",
+        "flowers": [
+          "白雪山",
+          "鼠尾草"
+        ],
+        "note": "蓝白绿或粉白绿"
+      },
+      {
+        "style": "夏日家居",
+        "flowers": [
+          "洋甘菊",
+          "尤加利叶"
+        ],
+        "note": "团状+细碎配花"
+      }
+    ],
+    "caution": "绣球失水快；运输后尽快剪根插深水，勿挤压花球。"
+  }
+}

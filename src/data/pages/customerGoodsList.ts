@@ -13,6 +13,7 @@ export function setupCustomerGoodsListPageData(): PageSetupResult & Record<strin
   const keyword = ref('')
   const categoryId = ref('')
   const categoryName = ref('')
+  const kindName = ref('')
   const exactName = ref(false)
   const { goodsList, loading, loadGoods, searchCatalog, patchVisibleGoods } =
     usePublicGoods()
@@ -20,13 +21,25 @@ export function setupCustomerGoodsListPageData(): PageSetupResult & Record<strin
 
   function onLoad(query: Record<string, string | undefined>) {
     keyword.value = query.keyword || ''
+    kindName.value = query.kindName || ''
     categoryId.value = query.categoryId || ''
+
+    // wiki 衍生分类：转换为 wiki: 前缀，云端按品种名过滤
+    if (kindName.value && !categoryId.value) {
+      categoryId.value = `wiki:${kindName.value}`
+    }
+
     exactName.value = query.exact === '1'
   }
 
   async function initCategoryName() {
     if (!categoryId.value) {
       categoryName.value = ''
+      return
+    }
+    // wiki 衍生分类从 kindName 获取名称
+    if (categoryId.value.startsWith('wiki:')) {
+      categoryName.value = kindName.value || categoryId.value.replace('wiki:', '')
       return
     }
     await loadCategories()

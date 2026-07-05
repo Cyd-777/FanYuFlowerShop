@@ -71,7 +71,7 @@ export function setupFlowerPickerPageData(): PageSetupResult & Record<string, un
     }
   }
 
-  async function loadCatalog() {
+  async function loadCatalog(force = false) {
     const isSearch = !!keyword.value.trim()
     loading.value = isSearch ? true : !hasCacheEntry(CACHE_KEYS.wikiList)
     try {
@@ -80,6 +80,7 @@ export function setupFlowerPickerPageData(): PageSetupResult & Record<string, un
         catalog.value = buildFlowerCatalogFromWiki(wikiList)
       } else {
         const { data } = await flowerRepository.ensureCatalog({
+          force,
           onUpdate: (updated) => {
             catalog.value = updated
             syncSelectionAfterCatalogLoad(updated)
@@ -99,8 +100,8 @@ export function setupFlowerPickerPageData(): PageSetupResult & Record<string, un
     }
   }
 
-  async function ensure(_ctx: PageEnsureContext) {
-    await loadCatalog()
+  async function ensure(ctx: PageEnsureContext) {
+    await loadCatalog(ctx.force)
   }
 
   function selectKind(kindId: string) {
@@ -153,7 +154,7 @@ export function setupFlowerPickerPageData(): PageSetupResult & Record<string, un
   return {
     ensure,
     onLoad,
-    refreshOnShow: false,
+    refreshOnShow: true,
     pullDownRefresh: false,
     cloudSourceLabel,
     searchPlaceholder,

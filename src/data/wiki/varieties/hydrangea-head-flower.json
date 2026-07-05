@@ -1,0 +1,118 @@
+{
+  "bloom": {
+    "vase": "约 5—10 天",
+    "vaseNote": "性价比绣球，需充足吸水",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.hydrangea.vase_base",
+  "careVaseOverride": {
+    "summary": "头花绣球中等花球；深水瓶养，勤换水，茎部可十字剪。",
+    "tips": [
+      "吸水不足时十字剪或烫茎",
+      "每日换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.hydrangea",
+      "identity": {
+        "scientificName": "Hydrangea 'Head Flower'",
+        "namingNote": "中等花球绣球，性价比高，日常与开业常见",
+        "horticulturalGroup": "group.hydrangea_mophead",
+        "breeder": "欧美园艺绣球培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "蓝或粉，团状花球中等大小，轮廓标准",
+        "scent": "几乎无香",
+        "stem": "茎干粗壮，吸水需求大",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "15 至 25"
+      }
+    },
+    "featureRefs": [
+      "trait.spray_ball"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "花手鞠",
+        "difference": "花球更大、重瓣"
+      },
+      {
+        "name": "无尽夏",
+        "difference": "品牌系列，色调与球感略异"
+      },
+      {
+        "name": "头花",
+        "difference": "中等花球、性价比高，是日常绣球常见选择"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "大花绣球",
+      "namingNote": "中等花球绣球，性价比高，日常与开业常见"
+    }
+  },
+  "language": {
+    "meaning": "实惠、圆满与「日常也买得起的主花」",
+    "paragraphs": [
+      "头花是绣球里的「实用款」——花球够看、价格通常比花手鞠友好，适合日常家居、开业、探望想要「有一球绣球」的场景。",
+      "养护要点仍是吸水：深水瓶、十字剪、勤换水，比大多数花材更依赖水分。"
+    ],
+    "occasions": [
+      "日常家居",
+      "开业",
+      "探望",
+      "预算友好"
+    ],
+    "colorMeanings": [
+      {
+        "color": "蓝/粉",
+        "meaning": "圆满、实惠、日常"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "日常",
+        "flowers": [
+          "绿康",
+          "百合"
+        ],
+        "note": "蓝绿白"
+      },
+      {
+        "style": "开业",
+        "flowers": [
+          "向日葵",
+          "尤加利叶"
+        ],
+        "note": "明亮满瓶"
+      }
+    ],
+    "caution": "绣球吸水大；缺水易萎蔫，须勤换水。"
+  },
+  "names": {
+    "scientificName": "Hydrangea 'Head Flower'",
+    "commonNames": [
+      "Head Flower",
+      "头花"
+    ]
+  }
+}

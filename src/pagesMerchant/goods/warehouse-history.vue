@@ -1,5 +1,5 @@
 <template>
-  <view class="page-warehouse-history" :style="navCssVars">
+  <view class="page-warehouse-history" :style="navCssVars" id="warehouse-history-scroll-body">
     <AppNavBar />
 
     <view class="filter-tabs">
@@ -14,9 +14,9 @@
       </view>
     </view>
 
-    <view v-if="loading" class="loading-tip">加载中…</view>
+    <view v-if="loading" class="loading-tip">{{ loadingTipText }}</view>
     <view v-else-if="errorMsg" class="empty-tip">{{ errorMsg }}</view>
-    <view v-else-if="!batches.length" class="empty-tip">暂无仓储流水记录</view>
+    <view v-else-if="!batches.length" class="empty-tip">{{ uiText_887472 }}</view>
 
     <view v-else class="timeline">
       <view class="timeline-track" />
@@ -61,8 +61,8 @@
                 <text class="opt-name">{{ batch.operatorName }}</text>
               </view>
             </view>
-            <text v-if="isInbound(batch.type)" class="batch-tag batch-tag--in">入库 ▸</text>
-            <text v-else class="batch-tag batch-tag--out">出库 ▸</text>
+            <text v-if="isInbound(batch.type)" class="batch-tag batch-tag--in">{{ uiText_fac9f3 }}</text>
+            <text v-else class="batch-tag batch-tag--out">{{ uiText_c2ad82 }}</text>
           </view>
 
           <view class="batch-items">
@@ -77,6 +77,10 @@
         </view>
       </view>
     </view>
+    <ScrollListTailSpacer
+      content-selector="#warehouse-history-scroll-body"
+      :watch-key="`${loading}-${batches.length}-${filterType}`"
+    />
   </view>
 </template>
 
@@ -88,6 +92,11 @@ import { showToast } from '@/utils/feedback'
 import {
   type WarehouseLedgerFilter,
 } from '@/types/stockOut'
+
+const loadingTipText = '加载中…'
+const uiText_887472 = '暂无仓储流水记录'
+const uiText_c2ad82 = '出库 ▸'
+const uiText_fac9f3 = '入库 ▸'
 
 const { batches, loading, filterType, setFilter, errorMsg } = usePageData()
 const { cssVars: navCssVars } = useNavBarLayout()

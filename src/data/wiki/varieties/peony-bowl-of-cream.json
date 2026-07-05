@@ -1,0 +1,118 @@
+{
+  "bloom": {
+    "vase": "约 3—5 天",
+    "vaseNote": "重瓣白芍药，约 3—5 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.peony.vase_base",
+  "careVaseOverride": {
+    "summary": "奶油碗重瓣乳白；高瓶支撑，浅水养护，阴凉通风。",
+    "tips": [
+      "花头重，需高瓶支撑",
+      "选微开入瓶"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.peony",
+      "identity": {
+        "scientificName": "Paeonia 'Bowl of Cream'",
+        "namingNote": "重瓣乳白芍药，圆润如碗，婚礼白系常见",
+        "horticulturalGroup": "group.herbaceous_peony",
+        "breeder": "荷兰 / 法国芍药育种",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "乳白重瓣，层叠圆润，开放后如奶油碗般饱满",
+        "scent": "浓香",
+        "stem": "茎干粗壮，花头重，需高瓶支撑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "12 至 18"
+      }
+    },
+    "featureRefs": [
+      "trait.huge_flower",
+      "trait.pure_white"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "莎拉",
+        "difference": "柔粉，而非乳白"
+      },
+      {
+        "name": "杨妃出浴",
+        "difference": "粉白渐变，而非纯乳白"
+      },
+      {
+        "name": "奶油碗",
+        "difference": "乳白重瓣、圆润，是白芍药代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "草本芍药",
+      "namingNote": "重瓣乳白芍药，圆润如碗，婚礼白系常见"
+    }
+  },
+  "language": {
+    "meaning": "温柔、圆满与「很柔软的重瓣美」",
+    "paragraphs": [
+      "奶油碗的名字很贴切——重瓣、乳白、圆润，适合婚礼、纪念日、以及一切需要「柔软但隆重」的白。",
+      "芍药花头重，需高瓶支撑；与莎拉、尤加利同插，是经典婚礼芍药组合。"
+    ],
+    "occasions": [
+      "婚礼",
+      "纪念日",
+      "家居",
+      "高端赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "乳白",
+        "meaning": "温柔、圆满、纯净"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼白",
+        "flowers": [
+          "莎拉",
+          "尤加利叶"
+        ],
+        "note": "粉白绿"
+      },
+      {
+        "style": "家居",
+        "flowers": [
+          "翠珠"
+        ],
+        "note": "乳白轻盈"
+      }
+    ],
+    "caution": "花头重易下垂；浅水、高瓶。瓶插期短。"
+  },
+  "names": {
+    "scientificName": "Paeonia 'Bowl of Cream'",
+    "commonNames": [
+      "Bowl of Cream",
+      "奶油碗"
+    ]
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "bloom": {
+    "vase": "约 3—5 天",
+    "vaseNote": "变色芍药，观赏期约 3—5 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.peony.vase_base",
+  "careVaseOverride": {
+    "summary": "落日珊瑚开放过程色调变化；浅水养护，阴凉通风，选微开入瓶。",
+    "tips": [
+      "开放后期色调变化属正常",
+      "浅水养护，避免高温"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.peony",
+      "identity": {
+        "scientificName": "Paeonia 'Coral Sunset'",
+        "namingNote": "珊瑚色开放后转奶油色，芍药变色系列代表",
+        "horticulturalGroup": "group.herbaceous_peony",
+        "breeder": "荷兰 / 法国芍药育种",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "初开珊瑚橙，随后渐转奶油黄，层次随时间变化",
+        "scent": "浓香，甜美",
+        "stem": "茎干粗壮，花头重，需高瓶支撑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "12 至 18"
+      }
+    },
+    "featureRefs": [
+      "trait.color_shift",
+      "trait.gradient_warm",
+      "trait.huge_flower"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "莎拉",
+        "difference": "柔粉重瓣，色调稳定"
+      },
+      {
+        "name": "红富士",
+        "difference": "正红，而非珊瑚变色"
+      },
+      {
+        "name": "落日珊瑚",
+        "difference": "珊瑚→奶油变色，是芍药高级感代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "草本芍药",
+      "namingNote": "珊瑚色开放后转奶油色，芍药变色系列代表"
+    }
+  },
+  "language": {
+    "meaning": "短暂而盛美、时间与「值得等待的开放」",
+    "paragraphs": [
+      "落日珊瑚最美的是过程——收到时偏橙，开放后渐转奶油，像把日落留在花瓶里。适合懂花、愿意观察变化的人。",
+      "芍药瓶插期短是常态，选微开入瓶、浅水阴凉，可稳定几天高光时刻；与莎拉、奶油碗同插，色调层次极丰富。"
+    ],
+    "occasions": [
+      "婚礼",
+      "纪念日",
+      "家居观赏",
+      "高端赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "珊瑚→奶油",
+        "meaning": "时间、变化、盛美"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼芍药",
+        "flowers": [
+          "莎拉",
+          "奶油碗"
+        ],
+        "note": "粉珊瑚白层次"
+      },
+      {
+        "style": "单品种观赏",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "突出变色"
+      }
+    ],
+    "caution": "瓶插期短；开放变色属正常。浅水、避直射。"
+  },
+  "names": {
+    "scientificName": "Paeonia 'Coral Sunset'",
+    "commonNames": [
+      "Coral Sunset",
+      "落日珊瑚"
+    ]
+  }
+}

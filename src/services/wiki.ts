@@ -1,17 +1,20 @@
 import { getCloud, getCloudCallConfig, parseCloudResult } from './cloud'
-import { loadWithCache } from '@/utils/cache'
+import { getWikiDocFromDb } from './wikiDb'
+import { assembleFlowerWiki, reassembleFlowerWiki } from '@/utils/wikiCompose'
+import { loadWithCache, invalidateCacheModule } from '@/utils/cache'
+import { wikiPublicDetailKey } from '@/data/cacheKeys'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
 import type { WikiQuery, WikiSearchResult } from '@/types/search'
 import type { FlowerWiki, FlowerWikiListItem } from '@/types/wiki'
-import { normalizeFlowerWiki } from '@/types/wiki'
 
 const PUBLIC_WIKI_LIST_KEY = 'wiki:public:list'
+const MERCHANT_WIKI_LIST_KEY = 'wiki:merchant:list'
 
 interface WikiCloudResult {
   success: boolean
   errMsg?: string
   list?: FlowerWikiListItem[]
-  wiki?: FlowerWiki | null
+  wiki?: FlowerWiki | FlowerWikiListItem | null
   answer?: WikiSearchResult['answer']
 }
 
@@ -41,6 +44,8 @@ async function callWiki<T = WikiCloudResult>(data: Record<string, unknown>): Pro
 
   return result as T
 }
+
+// ========== 公开接口（顾客端） ==========
 
 export async function listPublicWiki(keyword = ''): Promise<FlowerWikiListItem[]> {
   const result = await callWiki({ action: 'publicList', keyword })
@@ -76,7 +81,7 @@ export async function listPublicWikiCached(options?: {
 }
 
 function publicWikiDetailCacheKey(id: string) {
-  return `wiki:public:detail:${id}`
+  return wikiPublicDetailKey(id)
 }
 
 function publicWikiMatchCacheKey(kindId = '', varietyId = '') {
@@ -84,24 +89,38 @@ function publicWikiMatchCacheKey(kindId = '', varietyId = '') {
 }
 
 export async function getPublicWiki(id: string): Promise<FlowerWiki> {
-  const result = await callWiki({ action: 'publicGet', id })
-  if (!result.success || !result.wiki) {
-    throw new Error(result.errMsg || '获取百科详情失败')
+  try {
+    const doc = await getWikiDocFromDb(id)
+    if (!doc) throw new Error('智库内容不存在')
+    return assembleFlowerWiki(doc)
+  } catch (dbErr) {
+    const result = await callWiki({ action: 'publicGet', id })
+    if (!result.success || !result.wiki) {
+      const msg =
+        dbErr instanceof Error ? dbErr.message : '读取智库失败'
+      throw new Error(result.errMsg || msg)
+    }
+    return assembleFlowerWiki(result.wiki as Record<string, unknown>)
   }
-  return normalizeFlowerWiki(result.wiki)
 }
 
 export async function getPublicWikiCached(
   id: string,
   options?: { force?: boolean; onUpdate?: (wiki: FlowerWiki) => void },
 ): Promise<LoadWithCacheResult<FlowerWiki>> {
-  return loadWithCache({
+  const result = await loadWithCache({
     module: 'wiki',
     cacheKey: publicWikiDetailCacheKey(id),
     fetcher: () => getPublicWiki(id),
     force: options?.force,
-    onUpdate: options?.onUpdate,
+    onUpdate: options?.onUpdate
+      ? (wiki) => options.onUpdate?.(reassembleFlowerWiki(wiki))
+      : undefined,
   })
+  return {
+    data: reassembleFlowerWiki(result.data),
+    fromCache: result.fromCache,
+  }
 }
 
 export async function matchPublicWiki(kindId = '', varietyId = ''): Promise<FlowerWiki | null> {
@@ -109,7 +128,7 @@ export async function matchPublicWiki(kindId = '', varietyId = ''): Promise<Flow
   if (!result.success) {
     throw new Error(result.errMsg || '匹配智库失败')
   }
-  return result.wiki ? normalizeFlowerWiki(result.wiki) : null
+  return result.wiki ? assembleFlowerWiki(result.wiki as Record<string, unknown>) : null
 }
 
 export async function matchPublicWikiCached(
@@ -117,11 +136,96 @@ export async function matchPublicWikiCached(
   varietyId = '',
   options?: { force?: boolean; onUpdate?: (wiki: FlowerWiki | null) => void },
 ): Promise<LoadWithCacheResult<FlowerWiki | null>> {
-  return loadWithCache({
+  const result = await loadWithCache({
     module: 'wiki',
     cacheKey: publicWikiMatchCacheKey(kindId, varietyId),
     fetcher: () => matchPublicWiki(kindId, varietyId),
     force: options?.force,
+    onUpdate: options?.onUpdate
+      ? (wiki) => options.onUpdate?.(wiki ? reassembleFlowerWiki(wiki) : null)
+      : undefined,
+  })
+  return {
+    data: result.data ? reassembleFlowerWiki(result.data) : null,
+    fromCache: result.fromCache,
+  }
+}
+
+// ========== 商户端词条管理接口 ==========
+
+function invalidateWikiRelatedCaches() {
+  invalidateCacheModule('wiki')
+  invalidateCacheModule('categories')
+}
+
+/** 商户端获取全部词条（含未启用的） */
+export async function listMerchantWikis(): Promise<FlowerWikiListItem[]> {
+  const result = await callWiki({ action: 'list' })
+  if (result.success !== true) {
+    throw new Error(result.errMsg || '获取词条失败')
+  }
+  return Array.isArray(result.list) ? result.list : []
+}
+
+export async function listMerchantWikisCached(options?: {
+  force?: boolean
+  onUpdate?: (list: FlowerWikiListItem[]) => void
+}): Promise<LoadWithCacheResult<FlowerWikiListItem[]>> {
+  return loadWithCache({
+    module: 'wiki',
+    cacheKey: MERCHANT_WIKI_LIST_KEY,
+    fetcher: () => listMerchantWikis(),
+    force: options?.force,
     onUpdate: options?.onUpdate,
   })
+}
+
+/** 获取单个词条详情（商户端） */
+export async function getMerchantWiki(id: string): Promise<FlowerWikiListItem> {
+  const result = await callWiki({ action: 'get', id })
+  if (!result.success || !result.wiki) {
+    throw new Error(result.errMsg || '获取词条失败')
+  }
+  return result.wiki as FlowerWikiListItem
+}
+
+/** 新建词条 */
+export async function createWiki(data: {
+  kindName: string
+  varietyName?: string
+  icon?: string
+}): Promise<FlowerWikiListItem> {
+  const result = await callWiki({ action: 'add', wiki: data })
+  if (!result.success || !result.wiki) {
+    throw new Error(result.errMsg || '创建词条失败')
+  }
+  invalidateWikiRelatedCaches()
+  return result.wiki as FlowerWikiListItem
+}
+
+/** 更新词条 */
+export async function updateWiki(
+  id: string,
+  data: {
+    kindName?: string
+    varietyName?: string
+    icon?: string
+    enabled?: boolean
+  },
+): Promise<FlowerWikiListItem> {
+  const result = await callWiki({ action: 'update', id, wiki: data })
+  if (!result.success || !result.wiki) {
+    throw new Error(result.errMsg || '更新词条失败')
+  }
+  invalidateWikiRelatedCaches()
+  return result.wiki as FlowerWikiListItem
+}
+
+/** 删除词条 */
+export async function removeWiki(id: string): Promise<void> {
+  const result = await callWiki({ action: 'remove', id })
+  if (!result.success) {
+    throw new Error(result.errMsg || '删除词条失败')
+  }
+  invalidateWikiRelatedCaches()
 }

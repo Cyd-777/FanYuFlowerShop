@@ -1,0 +1,124 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Sweet Avalanche'",
+    "commonNames": [
+      "Sweet Avalanche",
+      "粉红雪山玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "粉白过渡柔，勤换水",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "粉红雪山为粉白过渡的雪山系列，花头大，醒花充分后观赏期稳定。",
+    "tips": [
+      "粉白边色避直射",
+      "雪山系列勤换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Sweet Avalanche'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "namingNote": "Sweet Avalanche，粉白柔过渡的雪山系列",
+        "introducedYear": "1990 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "外层柔粉、向内渐近白色，整体轻盈而高级",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.low_sat_pink",
+      "trait.large_head"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "粉雪山",
+        "difference": "更偏均匀低饱和粉，少粉白过渡"
+      },
+      {
+        "name": "戴安娜",
+        "difference": "均匀正粉，花头相对较小"
+      },
+      {
+        "name": "粉红雪山",
+        "difference": "粉白柔过渡、花头大，适合轻盈婚礼风"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "1990 年代",
+      "namingNote": "Sweet Avalanche，粉白柔过渡的雪山系列"
+    }
+  },
+  "language": {
+    "meaning": "轻盈、少女心与柔美的祝福",
+    "paragraphs": [
+      "粉红雪山的粉白过渡，比戴安娜更「仙」、比粉雪山更浅，适合生日、毕业、送年轻女性。",
+      "婚礼桌花与拍照花束常见；与白色、浅紫配花能强化轻盈感。"
+    ],
+    "occasions": [
+      "生日",
+      "毕业",
+      "婚礼",
+      "送友人"
+    ],
+    "colorMeanings": [
+      {
+        "color": "粉白",
+        "meaning": "轻盈、柔美、少女系"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "轻盈生日",
+        "flowers": [
+          "洋桔梗",
+          "满天星"
+        ],
+        "note": "浅粉白层次"
+      },
+      {
+        "style": "婚礼桌花",
+        "flowers": [
+          "白雪山",
+          "鼠尾草"
+        ],
+        "note": "粉白绿清新"
+      }
+    ],
+    "caution": "过渡色在运输挤压后易出现色差，醒花后再插瓶。"
+  }
+}

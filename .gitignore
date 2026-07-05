@@ -4,6 +4,8 @@ deploy_versions/
 .rn_temp/
 node_modules/
 cloudfunctions/**/node_modules/
+.cloud-fn-diff-cache/
+scripts/.cloud-functions-manifest.json
 .DS_Store
 .swc
 

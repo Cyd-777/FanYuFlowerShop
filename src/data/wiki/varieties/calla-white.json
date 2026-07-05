@@ -1,0 +1,109 @@
+{
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "白色马蹄莲",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.calla.vase_base",
+  "careVaseOverride": {
+    "summary": "白马白色马蹄莲；浅水养护，轻拿轻放。",
+    "tips": [
+      "避免触碰挤压佛焰苞"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.calla",
+      "identity": {
+        "scientificName": "Zantedeschia 'White'",
+        "namingNote": "白色马蹄莲，线条干净，婚礼高频",
+        "horticulturalGroup": "group.calla_cut",
+        "breeder": "荷兰切花马蹄莲培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "纯白佛焰苞，线条修长",
+        "scent": "几乎无香",
+        "stem": "佛焰苞易损，需浅水、避免挤压",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "8 至 12"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white",
+      "trait.cup_trumpet"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "黑魔法",
+        "difference": "深紫近黑马蹄莲，与此品种形态或色调不同"
+      },
+      {
+        "name": "粉钻",
+        "difference": "粉色马蹄莲，与此品种形态或色调不同"
+      },
+      {
+        "name": "白马",
+        "difference": "白色马蹄莲，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花马蹄莲",
+      "namingNote": "白色马蹄莲，线条干净，婚礼高频"
+    }
+  },
+  "language": {
+    "meaning": "纯洁、线条与「很现代的白」",
+    "paragraphs": [
+      "白马马蹄莲的线条适合现代婚礼、极简家居——不是繁复的白，而是「一条干净的线」。",
+      "佛焰苞易损，浅水、避免挤压；与绿康、尤加利极搭。"
+    ],
+    "occasions": [
+      "婚礼",
+      "家居",
+      "开业"
+    ],
+    "colorMeanings": [
+      {
+        "color": "纯白",
+        "meaning": "纯洁、现代"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "极简",
+        "flowers": [
+          "尤加利叶",
+          "绿康"
+        ],
+        "note": "白绿"
+      }
+    ],
+    "caution": "佛焰苞易损；浅水，勿挤压。"
+  },
+  "names": {
+    "scientificName": "Zantedeschia 'White'",
+    "commonNames": [
+      "White",
+      "白马"
+    ]
+  }
+}

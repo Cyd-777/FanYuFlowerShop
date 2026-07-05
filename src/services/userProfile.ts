@@ -2,6 +2,7 @@ import { getCloud, getCloudCallConfig, parseCloudResult } from './cloud'
 import { resolveImageDisplayPath } from '@/utils/goodsImage'
 import { getCachedUserProfile, writeCachedUserProfile } from '@/services/auth'
 import { STORAGE_KEYS } from '@/utils/constants'
+import { assertLocalImageWithinLimit } from '@/utils/uploadImageLimit'
 import type { UserAccount } from '@/types/account'
 
 interface ProfileCloudResult {
@@ -61,6 +62,7 @@ export async function saveUserProfile(input: {
   let avatarFileId = input.avatarUrl || ''
 
   if (avatarFileId && !avatarFileId.startsWith('cloud://') && !/^https?:\/\//.test(avatarFileId)) {
+    await assertLocalImageWithinLimit(avatarFileId)
     const ext = avatarFileId.includes('.') ? avatarFileId.slice(avatarFileId.lastIndexOf('.')) : '.jpg'
     const cloudPath = `avatars/${Date.now()}${ext}`
     const upload = await getCloud().uploadFile({

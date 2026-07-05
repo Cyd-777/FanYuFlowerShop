@@ -12,17 +12,17 @@
     <!-- 精简摘要：养护提示 + 花语（两行以内） -->
     <view class="wiki-entry-summary">
       <view v-if="careSummary" class="summary-row">
-        <text class="summary-label">🌱 养护</text>
+        <text class="summary-label">{{ careLabelText }}</text>
         <text class="summary-text">{{ careSummary }}</text>
       </view>
       <view v-if="languageSummary" class="summary-row">
-        <text class="summary-label">💬 花语</text>
+        <text class="summary-label">{{ languageLabelText }}</text>
         <text class="summary-text">{{ languageSummary }}</text>
       </view>
     </view>
 
     <view class="wiki-entry-foot" @tap="emit('open-full')">
-      <text class="wiki-entry-foot-text">查看养护指南 ›</text>
+      <text class="wiki-entry-foot-text">{{ openFullText }}</text>
     </view>
   </view>
 </template>
@@ -31,6 +31,10 @@
 import { computed } from 'vue'
 import type { FlowerWiki } from '@/types/wiki'
 import { getWikiDisplayName, getWikiSubtitle } from '@/types/wiki'
+
+const careLabelText = '🌱 养护'
+const languageLabelText = '💬 花语'
+const openFullText = '查看养护指南 ›'
 
 const props = defineProps<{
   wiki: FlowerWiki

@@ -3,6 +3,7 @@
     class="page-merchant-goods"
     :class="{ 'batch-mode': batchMode, 'has-batch-bar': batchMode }"
     :style="navCssVars"
+    id="merchant-goods-scroll-body"
   >
     <AppNavBar />
     <view
@@ -22,12 +23,8 @@
       <view class="manage-toolbar__bar">
         <text class="manage-toolbar__count">共 {{ goodsList.length }} 件</text>
         <view class="manage-toolbar__actions">
-          <view class="tool-btn" hover-class="tool-btn--active" @tap.stop="goWarehouseHistory">
-            仓储历史
-          </view>
-          <view class="tool-btn" hover-class="tool-btn--active" @tap.stop="goStockInImport">
-            进货单入库
-          </view>
+          <view class="tool-btn" hover-class="tool-btn--active" @tap.stop="goWarehouseHistory">{{ uiText_23acb3 }}</view>
+          <view class="tool-btn" hover-class="tool-btn--active" @tap.stop="goStockInImport">{{ uiText_ac045b }}</view>
           <view
             class="tool-btn"
             :class="{ 'is-active': batchMode }"
@@ -42,7 +39,7 @@
             hover-class="tool-btn--active"
             @tap.stop="toggleFilterModal"
           >
-            <text class="tool-btn__label">筛选</text>
+            <text class="tool-btn__label">{{ filterActionText }}</text>
             <text class="tool-btn__count">{{ goodsList.length }}</text>
           </view>
         </view>
@@ -89,6 +86,12 @@
       />
     </view>
 
+    <ScrollListTailSpacer
+      content-selector="#merchant-goods-scroll-body"
+      :bottom-inset-px="batchMode ? batchBarInsetPx : fabInsetPx"
+      :watch-key="`${loading}-${goodsList.length}-${batchMode}`"
+    />
+
     <view v-if="!batchMode" class="fab-wrap">
       <nut-button type="primary" class="fab-btn" @click="addGoods">+ 新建商品</nut-button>
     </view>
@@ -110,44 +113,44 @@
           :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
           hover-class="batch-action--active"
           @tap.stop="runQuickBatch('onShelf')"
-        >上架</view>
+        >{{ onShelfActionText }}</view>
         <view
           class="batch-action"
           :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
           hover-class="batch-action--active"
           @tap.stop="runQuickBatch('offShelf')"
-        >下架</view>
+        >{{ offShelfActionText }}</view>
         <view
           class="batch-action"
           :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
           hover-class="batch-action--active"
           @tap.stop="runQuickBatch('recommendOn')"
-        >设推荐</view>
+        >{{ uiText_dbedac }}</view>
         <view
           class="batch-action"
           :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
           hover-class="batch-action--active"
           @tap.stop="runQuickBatch('recommendOff')"
-        >取消推荐</view>
+        >{{ uiText_5c20ca }}</view>
         <!-- TODO: 批量修改弹层待格式确定后恢复（MerchantGoodsBatchEditSheet） -->
         <view
           class="batch-action"
           :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
           hover-class="batch-action--active"
           @tap.stop="goBatchStockOut"
-        >批量出库</view>
+        >{{ uiText_24cdb6 }}</view>
         <view
           class="batch-action"
           :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
           hover-class="batch-action--active"
           @tap.stop="goBatchStockIn"
-        >批量入库</view>
+        >{{ uiText_01d9ac }}</view>
         <view
           class="batch-action danger"
           :class="{ 'is-disabled': !hasBatchSelection || batchWorking }"
           hover-class="batch-action--active"
           @tap.stop="runQuickBatch('remove')"
-        >删除</view>
+        >{{ deleteText }}</view>
       </view>
     </view>
 
@@ -173,7 +176,7 @@
             >
             <view class="filter-form">
             <view class="filter-section">
-              <view class="filter-section__label">上架状态</view>
+              <view class="filter-section__label">{{ uiText_dc0a7b }}</view>
               <view class="filter-chips">
                 <view
                   v-for="tab in shelfTabs"
@@ -185,7 +188,7 @@
                   {{ tab.label }}
                 </view>
               </view>
-              <view class="filter-section__label filter-section__label--sub">库存状态</view>
+              <view class="filter-section__label filter-section__label--sub">{{ uiText_a9fe27 }}</view>
               <view class="filter-chips">
                 <view
                   v-for="opt in stockStatusOptions"
@@ -200,7 +203,7 @@
             </view>
 
             <view class="filter-section">
-              <view class="filter-section__label">商品分类</view>
+              <view class="filter-section__label">{{ uiText_c3ece5 }}</view>
               <view class="filter-chips">
                 <view
                   v-for="opt in categoryOptions"
@@ -215,16 +218,14 @@
             </view>
 
             <view class="filter-section">
-              <view class="filter-section__label">花材种类</view>
-              <view v-if="!flowerKindOptions.length" class="filter-empty-hint">暂无花材</view>
+              <view class="filter-section__label">{{ uiText_640344 }}</view>
+              <view v-if="!flowerKindOptions.length" class="filter-empty-hint">{{ uiText_9a142f }}</view>
               <view v-else class="filter-chips">
                 <view
                   class="filter-chip"
                   :class="{ active: isFlowerKindActive(MERCHANT_FILTER_ALL_ID) }"
                   @tap="toggleFlowerKind(MERCHANT_FILTER_ALL_ID)"
-                >
-                  全部花材
-                </view>
+                >{{ uiText_f062b4 }}</view>
                 <view
                   v-for="opt in flowerKindOptions"
                   :key="opt.id"
@@ -238,16 +239,14 @@
             </view>
 
             <view class="filter-section">
-              <view class="filter-section__label">花卉品种</view>
-              <view v-if="!flowerVarietyOptions.length" class="filter-empty-hint">暂无品种</view>
+              <view class="filter-section__label">{{ uiText_345d93 }}</view>
+              <view v-if="!flowerVarietyOptions.length" class="filter-empty-hint">{{ uiText_37237b }}</view>
               <view v-else class="filter-chips">
                 <view
                   class="filter-chip"
                   :class="{ active: isFlowerVarietyActive(MERCHANT_FILTER_ALL_ID) }"
                   @tap="toggleFlowerVariety(MERCHANT_FILTER_ALL_ID)"
-                >
-                  全部品种
-                </view>
+                >{{ uiText_1a9a67 }}</view>
                 <view
                   v-for="opt in flowerVarietyOptions"
                   :key="opt.id"
@@ -261,7 +260,7 @@
             </view>
 
             <view class="filter-section">
-              <view class="filter-section__label">销售类型</view>
+              <view class="filter-section__label">{{ uiText_8cfc37 }}</view>
               <view class="filter-chips">
                 <view
                   v-for="opt in salesTypeOptions"
@@ -276,14 +275,14 @@
             </view>
 
             <view class="filter-section filter-section--price">
-              <view class="filter-section__label">价格区间</view>
+              <view class="filter-section__label">{{ uiText_8d8376 }}</view>
               <view class="price-slider-meta">
                 <text>¥{{ priceSliderMinLabel }}</text>
                 <text class="price-slider-meta__sep">—</text>
                 <text>¥{{ priceSliderMaxLabel }}</text>
               </view>
               <view class="price-slider-row">
-                <text class="price-slider-row__label">最低</text>
+                <text class="price-slider-row__label">{{ minPriceLabelText }}</text>
                 <slider
                   class="price-slider"
                   :min="priceBounds.floor"
@@ -298,7 +297,7 @@
                 />
               </view>
               <view class="price-slider-row">
-                <text class="price-slider-row__label">最高</text>
+                <text class="price-slider-row__label">{{ maxPriceLabelText }}</text>
                 <slider
                   class="price-slider"
                   :min="priceBounds.floor"
@@ -315,7 +314,7 @@
             </view>
 
             <view class="filter-section filter-section--switch">
-              <text class="filter-section__label">只看推荐</text>
+              <text class="filter-section__label">{{ uiText_17ec2a }}</text>
               <nut-switch v-model="filters.recommendOnly" />
             </view>
           </view>
@@ -335,6 +334,7 @@
 import { showNotifyConfirm, showToast } from '@/utils/feedback'
 import { computed, nextTick, ref, watch } from 'vue'
 import Taro from '@tarojs/taro'
+import { scrollTailActionBarInsetPx } from '@/utils/scrollListTailSpacer'
 import { usePageData } from '@/composables/usePageData'
 import { navigateTo, navigateToWithFeedback } from '@/utils/router'
 import {
@@ -371,6 +371,31 @@ import type { GoodsNameSuggestion } from '@/utils/goodsNameSuggest'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { rpxToPx, usePageSticky } from '@/composables/usePageSticky'
 
+const deleteText = '删除'
+const filterActionText = '筛选'
+const maxPriceLabelText = '最高'
+const minPriceLabelText = '最低'
+const offShelfActionText = '下架'
+const onShelfActionText = '上架'
+const uiText_01d9ac = '批量入库'
+const uiText_17ec2a = '只看推荐'
+const uiText_1a9a67 = '全部品种'
+const uiText_23acb3 = '仓储历史'
+const uiText_24cdb6 = '批量出库'
+const uiText_345d93 = '花卉品种'
+const uiText_37237b = '暂无品种'
+const uiText_5c20ca = '取消推荐'
+const uiText_640344 = '花材种类'
+const uiText_8cfc37 = '销售类型'
+const uiText_8d8376 = '价格区间'
+const uiText_9a142f = '暂无花材'
+const uiText_a9fe27 = '库存状态'
+const uiText_ac045b = '进货单入库'
+const uiText_c3ece5 = '商品分类'
+const uiText_dbedac = '设推荐'
+const uiText_dc0a7b = '上架状态'
+const uiText_f062b4 = '全部花材'
+
 const { cssVars: navCssVars, layout: navLayout } = useNavBarLayout()
 const { navSearchStickyStyle } = usePageSticky()
 const keyword = ref('')
@@ -393,6 +418,9 @@ const {
   categories,
   loadGoods,
 } = usePageData()
+
+const fabInsetPx = scrollTailActionBarInsetPx()
+const batchBarInsetPx = scrollTailActionBarInsetPx(true)
 
 const shelfTabs: Array<{ label: string; value: MerchantShelfStatus }> = [
   { label: '全部', value: 'all' },

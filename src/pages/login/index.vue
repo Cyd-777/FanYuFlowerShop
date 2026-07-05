@@ -13,7 +13,7 @@
       <template v-if="enablePhoneLogin">
         <view class="divider">
           <view class="divider-line" />
-          <text class="divider-text">或</text>
+          <text class="divider-text">{{ orDividerText }}</text>
           <view class="divider-line" />
         </view>
 
@@ -68,6 +68,8 @@ import { navigateToHome, hasToken, getCachedRole, sendPhoneLoginCode } from '@/s
 import { STORAGE_KEYS } from '@/utils/constants'
 import { redirectTo } from '@/utils/router'
 import { parsePendingStaffInvite } from '@/services/staff'
+
+const orDividerText = '或'
 
 const logoEmoji = '🌷'
 const descText = '每一束花，都是一次心动'

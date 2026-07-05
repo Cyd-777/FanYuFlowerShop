@@ -1,5 +1,5 @@
 <template>
-  <view class="page-goods-list" :style="navCssVars">
+  <view class="page-goods-list" :style="navCssVars" id="goods-list-scroll-body">
     <AppNavBar />
     <view class="search-bar page-sticky-search" :style="navSearchStickyStyle">
       <GoodsNameTypeahead
@@ -36,6 +36,10 @@
       </view>
     </view>
     <nut-empty v-if="!loading && !goodsList.length" description="暂无商品" />
+    <ScrollListTailSpacer
+      content-selector="#goods-list-scroll-body"
+      :watch-key="`${loading}-${goodsList.length}`"
+    />
   </view>
 </template>
 

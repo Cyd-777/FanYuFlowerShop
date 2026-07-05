@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue'
-import { isCloudFileId, readCachedImageUrl, resolveCloudImageUrl } from '@/utils/goodsImage'
+import { getAppResumeCount, isCloudFileId, readCachedImageUrl, resolveCloudImageUrl } from '@/utils/goodsImage'
 
 const props = withDefaults(
   defineProps<{
@@ -160,6 +160,24 @@ watch(
     init()
   },
   { immediate: true },
+)
+
+/** 后台切前台时检查缓存链接是否过期，过期则重新换链 */
+watch(
+  () => getAppResumeCount(),
+  () => {
+    if (!props.cloudFileId) return
+    const cached = readCachedImageUrl(props.cloudFileId)
+    if (!cached) {
+      // 缓存已过期（或不存在），重新解析
+      void resolveCloudImageUrl(props.cloudFileId).then((url) => {
+        if (url && url !== standardUrl.value) {
+          standardLoaded.value = false
+          standardUrl.value = url
+        }
+      })
+    }
+  },
 )
 
 onUnmounted(() => {

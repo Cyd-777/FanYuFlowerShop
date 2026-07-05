@@ -25,7 +25,9 @@ const WIKI_KIND_PROFILES = {
       summary: '喜光通风，瓶插需斜剪根并勤换水，避免阳光直射和空调风口。',
       waterChange: '瓶插每日换水，保持水质清洁',
       trim: '斜剪 45° 增加吸水面积',
-      environment: '明亮散射光，避开空调风口与直射阳光',
+      trimPosition: '切口保持在水面以上；去除浸水叶片，仅保留花头附近健康叶',
+      waterDepth: '水深约花瓶 1/3，没过茎部切口 2—3 cm',
+      environment: '明亮散射光，通风良好，避开空调风口与直射阳光',
     },
     atlas: {
       summary:
@@ -907,7 +909,241 @@ const WIKI_KIND_PROFILES = {
       ],
     },
   },
+  银莲花: {
+    taxonomy: {
+      kingdom: '植物界',
+      phylum: '被子植物门',
+      taxonomicClass: '双子叶植物纲',
+      order: '毛茛目',
+      family: '毛茛科',
+      genus: '银莲花属',
+    },
+    names: {
+      scientificName: 'Anemone coronaria',
+      commonNames: ['银莲花', '西洋银莲花', 'Anemone'],
+    },
+    bloom: { vase: '约 5—7 天', soil: '3—5 月' },
+    careVase: {
+      summary: '花茎纤细，宜浅水清洁换水，避免挤压与强风。',
+      waterChange: '每日换水，保持水质清洁',
+    },
+    atlas: {
+      summary: '毛茛科银莲花属草本。黑芯花型独特，色彩饱和，野趣与艺术感兼具。',
+      features: ['黑芯独特', '艺术感', '野趣', '配花百搭'],
+      bloomSeason: '3—5 月',
+      origin: '地中海东岸；现广泛作切花栽培',
+    },
+    careGuide: {
+      summary: '保持清洁水质与通风，轻拿轻放。',
+      light: '明亮散射光',
+      water: '切花勤换水，忌长期浸叶',
+      soil: '疏松排水良好',
+      temperature: '12—20℃',
+      tips: ['避免挤压折茎', '适合野趣混搭', '远离成熟水果'],
+    },
+    language: {
+      summary: '银莲花常象征期待与 delicate 的美，适合艺术感花束。',
+      meaning: '期待、独特、艺术感',
+      occasions: ['艺术花束', '野趣混搭', '春日赠礼'],
+      colorMeanings: [
+        { color: '红', meaning: '热情、独特' },
+        { color: '蓝', meaning: '梦幻、宁静' },
+        { color: '白', meaning: '纯洁、期待' },
+      ],
+    },
+  },
+  翠珠: {
+    taxonomy: {
+      kingdom: '植物界',
+      phylum: '被子植物门',
+      taxonomicClass: '双子叶植物纲',
+      order: '唇形目',
+      family: '唇形科',
+      genus: '翠珠属',
+    },
+    names: {
+      scientificName: 'Trachelium caeruleum',
+      commonNames: ['翠珠', 'Trachelium', '蓝花石松'],
+    },
+    bloom: { vase: '约 7—10 天', soil: '6—9 月' },
+    careVase: {
+      summary: '伞形花序，适合配花；保持通风与清洁水质。',
+      waterChange: '每日换水',
+    },
+    atlas: {
+      summary: '唇形科翠珠属草本。细小伞形花序如星点，野趣感强，是森系与法式混搭常用配花。',
+      features: ['伞形花序', '野趣', '配花', '森系'],
+      bloomSeason: '6—9 月',
+      origin: '地中海地区；现作切花栽培',
+    },
+    careGuide: {
+      summary: '容易养护，勤换水即可。',
+      light: '明亮散射光',
+      water: '切花勤换水',
+      soil: '疏松透气',
+      temperature: '15—24℃',
+      tips: ['适合填充层次', '避免高温闷热'],
+    },
+    language: {
+      summary: '翠珠轻盈点缀，常作配花表达细腻陪伴。',
+      meaning: '陪伴、野趣、细腻',
+      occasions: ['混搭配花', '森系花束', '婚礼配花'],
+      colorMeanings: [
+        { color: '蓝', meaning: '宁静、梦幻' },
+        { color: '白', meaning: '纯洁、轻盈' },
+      ],
+    },
+  },
+  蕾丝花: {
+    taxonomy: {
+      kingdom: '植物界',
+      phylum: '被子植物门',
+      taxonomicClass: '双子叶植物纲',
+      order: '伞形目',
+      family: '伞形科',
+      genus: '蕾丝花属',
+    },
+    names: {
+      scientificName: 'Orlaya grandiflora',
+      commonNames: ['蕾丝花', 'Orlaya', '大蕾丝花'],
+    },
+    bloom: { vase: '约 5—8 天', soil: '5—7 月' },
+    careVase: {
+      summary: '伞形花序轻盈，宜浅水、通风，避免挤压。',
+      waterChange: '每日换水',
+    },
+    atlas: {
+      summary: '伞形科蕾丝花属一年生草本。白色伞形小花轻盈如蕾丝，是野趣与法式花束常见配花。',
+      features: ['伞形花序', '轻盈', '配花', '野趣'],
+      bloomSeason: '5—7 月',
+      origin: '地中海地区；现作切花与花园栽培',
+    },
+    careGuide: {
+      summary: '保持清洁水质，避免高温。',
+      light: '明亮散射光',
+      water: '切花勤换水',
+      soil: '疏松肥沃',
+      temperature: '15—22℃',
+      tips: ['轻拿轻放', '适合混搭填充'],
+    },
+    language: {
+      summary: '蕾丝花象征纯洁与轻灵，常作配花提升层次。',
+      meaning: '纯洁、轻灵、点缀',
+      occasions: ['婚礼配花', '野趣花束', '法式混搭'],
+      colorMeanings: [{ color: '白', meaning: '纯洁、轻灵' }],
+    },
+  },
+  配叶: {
+    taxonomy: {
+      kingdom: '植物界',
+      phylum: '被子植物门',
+      taxonomicClass: '双子叶植物纲',
+      order: '—',
+      family: '—',
+      genus: '—',
+    },
+    names: {
+      scientificName: '',
+      commonNames: ['配叶', '叶材', '尤加利', '龟背竹', '雪柳'],
+    },
+    bloom: { vase: '约 7—14 天', soil: '因品种而异' },
+    careVase: {
+      summary: '叶材需清洁水质与通风，部分品种可制干花。',
+      waterChange: '2—3 天换水，保持清洁',
+      environment: '通风良好，避免闷热',
+    },
+    atlas: {
+      summary: '花店常用叶材与配叶，用于提升花束层次、色彩与风格（北欧、森系、热带等）。',
+      features: ['提升层次', '风格化', '耐插', '部分可干花'],
+      bloomSeason: '全年',
+      origin: '因品种而异',
+    },
+    careGuide: {
+      summary: '保持清洁水质，避免叶面积水腐烂。',
+      light: '明亮散射光',
+      water: '勤换水，水位不宜过深',
+      soil: '—',
+      temperature: '15—25℃',
+      tips: ['剪去浸水叶片', '尤加利可倒挂干花', '雪柳注意通风'],
+    },
+    language: {
+      summary: '配叶衬托主花，营造整体氛围与质感。',
+      meaning: '衬托、层次、风格',
+      occasions: ['花束搭配', '开业花篮', '家居插花'],
+      colorMeanings: [],
+    },
+  },
+  盆栽: {
+    taxonomy: {
+      kingdom: '植物界',
+      phylum: '—',
+      taxonomicClass: '—',
+      order: '—',
+      family: '—',
+      genus: '—',
+    },
+    names: {
+      scientificName: '',
+      commonNames: ['盆栽', '蝴蝶兰', '富贵竹', '发财树', '多肉'],
+    },
+    bloom: { vase: '盆栽观赏因品种而异', soil: '因品种而异' },
+    careVase: {
+      summary: '以盆栽观赏为主，见干见湿，忌积水与暴晒。',
+      waterChange: '见干见湿，保持基质透气',
+      environment: '明亮散射光，通风良好',
+    },
+    atlas: {
+      summary: '花店常见盆栽礼品，适合开业、贺寿与家居装饰；不同品种养护差异较大。',
+      features: ['礼品属性', '花期较长', '好养品种多', '装饰性强'],
+      bloomSeason: '因品种而异',
+      origin: '因品种而异',
+    },
+    careGuide: {
+      summary: '按品种选择光照与浇水频率，忌积水。',
+      light: '明亮散射光为主',
+      water: '见干见湿，忌积水',
+      soil: '疏松透气专用基质',
+      temperature: '因品种而异，多数 18—28℃',
+      tips: ['开业礼品注意包装通风', '蝴蝶兰避免叶心积水', '多肉忌长期闷湿'],
+    },
+    language: {
+      summary: '盆栽象征生机与祝福，是开业与贺礼常见选择。',
+      meaning: '生机、祝福、吉祥',
+      occasions: ['开业', '贺寿', '乔迁', '家居装饰'],
+      colorMeanings: [],
+    },
+  },
 }
+
+const VASE_TRIM_DEFAULTS = {
+  trim: '斜剪 45° 增加吸水面积',
+  trimPosition: '切口保持在水面以上；去除浸水叶片，仅保留花头附近健康叶',
+}
+
+function inferProfileWaterDepth(careVase) {
+  if (careVase.waterDepth) return careVase.waterDepth
+  const waterChange = String(careVase.waterChange || '')
+  if (/浅水|水位不宜过深|少量|见干见湿/.test(waterChange)) {
+    return '浅水养护，水深约花瓶 1/4，没过茎部切口 1—2 cm'
+  }
+  return '水深约花瓶 1/3，没过茎部切口 2—3 cm'
+}
+
+function normalizeKindCareVaseProfiles(profiles) {
+  for (const profile of Object.values(profiles)) {
+    const careVase = profile?.careVase
+    if (!careVase || typeof careVase !== 'object') continue
+    const summary = String(careVase.summary || '')
+    const isPottedOnly =
+      /以盆栽|盆栽观赏为主/.test(summary) && !/切花|瓶插/.test(summary)
+    if (isPottedOnly) continue
+    if (!careVase.trim) careVase.trim = VASE_TRIM_DEFAULTS.trim
+    if (!careVase.trimPosition) careVase.trimPosition = VASE_TRIM_DEFAULTS.trimPosition
+    if (!careVase.waterDepth) careVase.waterDepth = inferProfileWaterDepth(careVase)
+  }
+}
+
+normalizeKindCareVaseProfiles(WIKI_KIND_PROFILES)
 
 function getKindProfile(kindName) {
   const key = String(kindName || '').trim()

@@ -5,7 +5,7 @@ import { listMerchantCategories } from '@/services/category'
 import { merchantCategoriesRepository } from '@/data/repository/merchantCategoriesRepository'
 import type { Category } from '@/types/category'
 
-const CACHE_KEY = 'categories:merchant'
+const CACHE_KEY = 'categories:merchant:v3'
 
 export function useMerchantCategories() {
   const categories = ref<Category[]>([])

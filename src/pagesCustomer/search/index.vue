@@ -1,7 +1,7 @@
 <template>
-  <view class="page-customer-search" :style="navCssVars">
+  <view class="page-customer-search" :style="navCssVars" id="customer-search-scroll-body">
     <AppNavBar />
-    <view class="search-bar page-sticky-search" :style="navSearchStickyStyle">
+    <view class="search-bar page-sticky-search" :class="{ 'search-modal-host-open': searchModalHostOpen }" :style="navSearchStickyStyle">
       <AppSearchInput
         v-model="keyword"
         :placeholder="searchPlaceholder"
@@ -66,6 +66,10 @@
         {{ emptyText }}
       </view>
     </view>
+    <ScrollListTailSpacer
+      content-selector="#customer-search-scroll-body"
+      :watch-key="`${loading}-${goodsResults.length}-${wikiResults.length}`"
+    />
   </view>
 </template>
 
@@ -77,6 +81,7 @@ import { usePageSticky } from '@/composables/usePageSticky'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { usePageData } from '@/composables/usePageData'
 import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
+import { searchModalHostOpen } from '@/utils/searchModalHost'
 
 const { cssVars: navCssVars } = useNavBarLayout()
 const { navSearchStickyStyle } = usePageSticky()

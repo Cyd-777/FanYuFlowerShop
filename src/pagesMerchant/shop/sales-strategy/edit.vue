@@ -2,7 +2,7 @@
   <view class="page-theme-edit">
     <AppNavBar />
     <view class="section">
-      <view class="section-title">主题色</view>
+      <view class="section-title">{{ themeColorLabelText }}</view>
       <nut-form>
         <nut-form-item label="主色">
           <nut-input v-model="form.primaryColor" placeholder="如 #e53935" />
@@ -24,7 +24,7 @@
 
     <view class="section">
       <view class="section-head">
-        <view class="section-title">轮播 Banner</view>
+        <view class="section-title">{{ uiText_2fe4f0 }}</view>
         <view class="link-group">
           <view
             class="link"
@@ -42,7 +42,7 @@
           </view>
         </view>
       </view>
-      <view v-if="!banners.length" class="banner-empty">暂无轮播图，点击右上角上传</view>
+      <view v-if="!banners.length" class="banner-empty">{{ uiText_d72e2c }}</view>
       <view v-else class="banner-grid">
         <view v-for="(item, index) in banners" :key="item.fileId" class="banner-thumb">
           <GoodsImage
@@ -58,13 +58,13 @@
 
     <view class="section">
       <view class="section-head">
-        <view class="section-title">折扣设置</view>
+        <view class="section-title">{{ uiText_7cd925 }}</view>
         <view class="link" @click="addDiscount">+ 添加折扣</view>
       </view>
-      <view v-if="!discounts.length" class="empty">暂无折扣，可添加多档折扣并分别选商品</view>
+      <view v-if="!discounts.length" class="empty">{{ uiText_21fc06 }}</view>
       <view v-for="rule in discounts" :key="rule.id" class="discount-card">
         <view class="discount-row">
-          <text class="label">折扣（折）</text>
+          <text class="label">{{ uiText_4e94fe }}</text>
           <nut-input
             v-model="rule.rateText"
             type="digit"
@@ -72,13 +72,13 @@
           />
         </view>
         <view class="discount-row goods-row">
-          <text class="label">适用商品</text>
+          <text class="label">{{ uiText_409ea3 }}</text>
           <view class="goods-pick" @click="pickGoods(rule.id)">
             已选 {{ rule.goodsIds.length }} 件 ›
           </view>
         </view>
         <view class="goods-names">{{ goodsNames(rule.goodsIds) }}</view>
-        <view class="remove" @click="removeDiscount(rule.id)">删除此折扣</view>
+        <view class="remove" @click="removeDiscount(rule.id)">{{ uiText_246932 }}</view>
       </view>
     </view>
 
@@ -107,6 +107,16 @@ import {
   markMerchantGoodsPickConsumed,
 } from '@/types/merchantPick'
 import type { ThemeDiscountRule } from '@/types/shop'
+import { filterChooseMediaFiles } from '@/utils/uploadImageLimit'
+
+const themeColorLabelText = '主题色'
+const uiText_21fc06 = '暂无折扣，可添加多档折扣并分别选商品'
+const uiText_246932 = '删除此折扣'
+const uiText_2fe4f0 = '轮播 Banner'
+const uiText_409ea3 = '适用商品'
+const uiText_4e94fe = '折扣（折）'
+const uiText_7cd925 = '折扣设置'
+const uiText_d72e2c = '暂无轮播图，点击右上角上传'
 
 interface DiscountFormItem {
   id: string
@@ -264,7 +274,7 @@ async function chooseBanner() {
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
     })
-    const files = res.tempFiles || []
+    const files = filterChooseMediaFiles(res.tempFiles || [])
     if (!files.length) return
 
     wx.showLoading({ title: '上传中' })

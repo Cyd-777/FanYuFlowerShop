@@ -2,6 +2,11 @@ const cloud = require('wx-server-sdk')
 const { bumpCacheModule } = require('./common/cacheMeta')
 const { resolveUserByWechatMp } = require('./common/account')
 const {
+  buildWikiAliasToCanonical,
+  canonicalizeWikiKindName,
+  goodsBelongsToWikiKind,
+} = require('./common/wikiKindMatch')
+const {
   resolveFileUrls,
   enrichPublicGoodsList,
   enrichPublicGoods,
@@ -75,6 +80,12 @@ async function safeBumpCacheModule(module) {
   } catch (err) {
     console.error('[goods] bump cache failed:', err.message || err)
   }
+}
+
+/** 商品变更会影响分类启用状态（goodsCount），一并刷新分类缓存版本 */
+async function safeBumpGoodsRelatedCaches() {
+  await safeBumpCacheModule('goods')
+  await safeBumpCacheModule('categories')
 }
 
 cloud.init({
@@ -265,6 +276,14 @@ function inferSalesType(doc) {
 
 function pickGoods(doc) {
   const salesType = inferSalesType(doc)
+  const categoryId = String(doc.categoryId || '').trim()
+  let categoryName = String(doc.categoryName || doc.category || '').trim()
+  if (!categoryName && categoryId.startsWith('wiki:')) {
+    categoryName = categoryId.slice(5).trim()
+  }
+  if (!categoryName && (salesType === 'stem' || salesType === 'group')) {
+    categoryName = String(doc.flowerKindName || '').trim()
+  }
   return {
     _id: doc._id,
     name: doc.name || '',
@@ -273,8 +292,8 @@ function pickGoods(doc) {
     unit: normalizeUnit(doc.unit, salesType),
     stock: Number(doc.stock) || 0,
     description: doc.description || '',
-    categoryId: doc.categoryId || '',
-    categoryName: doc.categoryName || doc.category || '',
+    categoryId,
+    categoryName,
     flowerKindId: doc.flowerKindId || '',
     flowerKindName: doc.flowerKindName || '',
     flowerVarietyId: doc.flowerVarietyId || '',
@@ -300,15 +319,29 @@ async function resolveCategoryMeta(categoryId) {
     throw new Error('请选择商品分类')
   }
 
+  // wiki 衍生分类：从 ID 中提取名称，无需查库
+  if (categoryId.startsWith('wiki:')) {
+    return {
+      categoryId,
+      categoryName: categoryId.replace(/^wiki:/, '').trim(),
+      categoryType: '',
+    }
+  }
+
   await ensureCollection('categories')
   const { data } = await db.collection('categories').doc(categoryId).get()
   if (!data) {
     throw new Error('所选分类不存在')
   }
 
+  const categoryType = ['bouquet', 'material'].includes(data.categoryType)
+    ? data.categoryType
+    : ''
+
   return {
     categoryId,
     categoryName: data.name || '',
+    categoryType,
   }
 }
 
@@ -320,24 +353,36 @@ function normalizeGoodsInput(input) {
   const stockParsed = parseInt(input.stock, 10)
   const stock = Number.isNaN(stockParsed) ? 0 : stockParsed
   const description = String(input.description || '').trim()
-  const categoryId = String(input.categoryId || '').trim()
   const coverImage = String(input.coverImage || '').trim()
   const images = Array.isArray(input.images) ? input.images.filter(Boolean) : []
   const onSale = input.onSale !== false
   const recommend = input.recommend === true
   const sort = Number(input.sort) || 0
   const flowerKindId = String(input.flowerKindId || '').trim()
-  const flowerKindName = String(input.flowerKindName || '').trim()
+  let flowerKindName = String(input.flowerKindName || '').trim()
   const flowerVarietyId = String(input.flowerVarietyId || '').trim()
   const flowerVarietyName = String(input.flowerVarietyName || '').trim()
   const needsFlowerPick = salesType === 'stem' || salesType === 'group'
   const unitsPerGroupRaw =
     salesType === 'group' ? parseInt(input.unitsPerGroup, 10) : undefined
 
+  let resolvedCategoryId = String(input.categoryId || '').trim()
+  const wikiAliasMap = buildWikiAliasToCanonical()
+  if (needsFlowerPick && flowerKindName) {
+    flowerKindName = canonicalizeWikiKindName(flowerKindName, wikiAliasMap)
+    resolvedCategoryId = `wiki:${flowerKindName}`
+  } else if (needsFlowerPick && resolvedCategoryId.startsWith('wiki:')) {
+    const rawKind = resolvedCategoryId.slice(5).trim()
+    flowerKindName = canonicalizeWikiKindName(rawKind, wikiAliasMap)
+    resolvedCategoryId = `wiki:${flowerKindName}`
+  } else if (!needsFlowerPick && resolvedCategoryId.startsWith('wiki:')) {
+    throw new Error('束装/计件商品不能选择鲜花衍生分类，请重新选择分类')
+  }
+
   if (!name) {
     throw new Error('商品名称不能为空')
   }
-  if (!categoryId) {
+  if (!resolvedCategoryId) {
     throw new Error('请选择商品分类')
   }
   if (Number.isNaN(price) || price < 0) {
@@ -367,7 +412,7 @@ function normalizeGoodsInput(input) {
     unit,
     stock,
     description,
-    categoryId,
+    categoryId: resolvedCategoryId,
     flowerKindId: needsFlowerPick ? flowerKindId : '',
     flowerKindName: needsFlowerPick ? flowerKindName : '',
     flowerVarietyId: needsFlowerPick ? flowerVarietyId : '',
@@ -384,9 +429,24 @@ function normalizeGoodsInput(input) {
 async function finalizeGoodsPayload(input) {
   const payload = normalizeGoodsInput(input)
   const categoryMeta = await resolveCategoryMeta(payload.categoryId)
+
+  if (payload.salesType === 'bouquet' && categoryMeta.categoryType === 'material') {
+    throw new Error('捆扎成束商品请选择花束场景分类')
+  }
+  if (payload.salesType === 'other' && categoryMeta.categoryType === 'bouquet') {
+    throw new Error('计件商品请选择物料品类')
+  }
+  if (payload.salesType === 'other' && categoryMeta.categoryType && categoryMeta.categoryType !== 'material') {
+    throw new Error('计件商品请选择物料品类')
+  }
+  if (payload.salesType === 'bouquet' && categoryMeta.categoryType && categoryMeta.categoryType !== 'bouquet') {
+    throw new Error('捆扎成束商品请选择花束场景分类')
+  }
+
   return {
     ...payload,
-    ...categoryMeta,
+    categoryId: categoryMeta.categoryId,
+    categoryName: categoryMeta.categoryName,
   }
 }
 
@@ -708,7 +768,7 @@ exports.main = async (event) => {
         })
 
         const { data } = await db.collection('goods').doc(addRes._id).get()
-        await safeBumpCacheModule('goods')
+        await safeBumpGoodsRelatedCaches()
         return { success: true, goods: pickGoods(data) }
       }
 
@@ -733,7 +793,7 @@ exports.main = async (event) => {
       })
 
       const { data } = await db.collection('goods').doc(id).get()
-      await safeBumpCacheModule('goods')
+      await safeBumpGoodsRelatedCaches()
       return { success: true, goods: pickGoods(data) }
     } catch (err) {
       return {
@@ -756,7 +816,7 @@ exports.main = async (event) => {
 
     await ensureCollection('goods')
     await db.collection('goods').doc(id).remove()
-    await safeBumpCacheModule('goods')
+    await safeBumpGoodsRelatedCaches()
     return { success: true }
   }
 
@@ -779,7 +839,7 @@ exports.main = async (event) => {
         console.error('[goods] batch remove failed:', id, err.message || err)
       }
     }
-    await safeBumpCacheModule('goods')
+    await safeBumpGoodsRelatedCaches()
     return { success: true, removed: ids.length }
   }
 
@@ -844,7 +904,7 @@ exports.main = async (event) => {
         console.error('[goods] batch update failed:', id, err.message || err)
       }
     }
-    await safeBumpCacheModule('goods')
+    await safeBumpGoodsRelatedCaches()
     return { success: true, updated: ids.length }
   }
 
@@ -892,7 +952,7 @@ exports.main = async (event) => {
       }
     }
 
-    await safeBumpCacheModule('goods')
+    await safeBumpGoodsRelatedCaches()
     return { success: true, applied }
   }
 
@@ -940,7 +1000,7 @@ exports.main = async (event) => {
       }
     }
 
-    await safeBumpCacheModule('goods')
+    await safeBumpGoodsRelatedCaches()
     return { success: true, applied }
   }
 

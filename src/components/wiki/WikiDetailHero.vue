@@ -1,19 +1,37 @@
 <template>
   <view class="wiki-detail-hero">
     <view class="wiki-detail-hero-icon">{{ wiki.icon }}</view>
-    <view class="wiki-detail-hero-name">{{ displayName }}</view>
-    <view v-if="displaySubtitle" class="wiki-detail-hero-kind">{{ displaySubtitle }}</view>
-    <view v-if="scientificName" class="wiki-detail-hero-scientific">{{ scientificName }}</view>
-    <view class="wiki-detail-hero-meta">
-      <text class="wiki-detail-hero-chip">{{ plantFormLabel }}</text>
-    </view>
+    <WikiDataText
+      class="wiki-detail-hero-name-wrap"
+      :text="displayName"
+      source="varietyName"
+      :inline="false"
+      extra-class="wiki-detail-hero-name"
+    />
+    <WikiDataText
+      v-if="displaySubtitle"
+      class="wiki-detail-hero-kind-wrap"
+      :text="displaySubtitle"
+      source="kindName"
+      :inline="false"
+      extra-class="wiki-detail-hero-kind"
+    />
+    <WikiDataText
+      v-if="scientificName"
+      class="wiki-detail-hero-scientific-wrap"
+      :text="scientificName"
+      source="names.scientificName"
+      :inline="false"
+      extra-class="wiki-detail-hero-scientific"
+    />
   </view>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import WikiDataText from '@/components/wiki/WikiDataText.vue'
 import type { FlowerWiki } from '@/types/wiki'
-import { getWikiDisplayName, getWikiPlantFormLabel, getWikiSubtitle } from '@/types/wiki'
+import { getWikiDisplayName, getWikiSubtitle } from '@/types/wiki'
 
 const props = defineProps<{
   wiki: FlowerWiki
@@ -22,14 +40,15 @@ const props = defineProps<{
 const displayName = computed(() => getWikiDisplayName(props.wiki))
 const displaySubtitle = computed(() => getWikiSubtitle(props.wiki))
 const scientificName = computed(() => props.wiki.names?.scientificName?.trim() || '')
-const plantFormLabel = computed(() => getWikiPlantFormLabel(props.wiki.plantForm))
 </script>
 
 <style lang="less">
 .wiki-detail-hero {
-  padding: 48rpx 32rpx 32rpx;
-  background: linear-gradient(180deg, #fff5f5 0%, #f8f8f8 100%);
+  padding: 32rpx 32rpx 48rpx;
+  min-height: 280rpx;
+  background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
   text-align: center;
+  box-sizing: border-box;
 }
 
 .wiki-detail-hero-icon {
@@ -37,36 +56,35 @@ const plantFormLabel = computed(() => getWikiPlantFormLabel(props.wiki.plantForm
   line-height: 1;
 }
 
-.wiki-detail-hero-name {
+.wiki-detail-hero-name-wrap {
+  display: block;
   margin-top: 16rpx;
+}
+
+.wiki-detail-hero-name {
   font-size: 40rpx;
   font-weight: 700;
   color: #333;
 }
 
-.wiki-detail-hero-kind {
+.wiki-detail-hero-kind-wrap {
+  display: block;
   margin-top: 8rpx;
+}
+
+.wiki-detail-hero-kind {
   font-size: 24rpx;
   color: #e53935;
 }
 
-.wiki-detail-hero-scientific {
+.wiki-detail-hero-scientific-wrap {
+  display: block;
   margin-top: 8rpx;
+}
+
+.wiki-detail-hero-scientific {
   font-size: 24rpx;
   font-style: italic;
   color: #888;
-}
-
-.wiki-detail-hero-meta {
-  margin-top: 16rpx;
-}
-
-.wiki-detail-hero-chip {
-  display: inline-block;
-  padding: 4rpx 16rpx;
-  font-size: 20rpx;
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.12);
-  border-radius: 999rpx;
 }
 </style>

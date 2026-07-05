@@ -1,7 +1,7 @@
 <template>
   <view class="page-staff-invite">
     <AppNavBar />
-    <view v-if="loading" class="state-box">加载邀请信息…</view>
+    <view v-if="loading" class="state-box">{{ uiText_1ab91d }}</view>
 
     <view v-else-if="errorMsg" class="state-box error">
       <view class="state-icon">⚠️</view>
@@ -11,7 +11,7 @@
 
     <view v-else-if="accepted" class="state-box success">
       <view class="state-icon">✅</view>
-      <view class="state-title">已成为工作人员</view>
+      <view class="state-title">{{ uiText_39d6a3 }}</view>
       <view class="state-desc">身份：{{ accepted.roleLabel }} · {{ accepted.name }}</view>
       <nut-button type="primary" block class="action-btn" @click="goMerchant">进入商家工作台</nut-button>
       <nut-button plain block class="action-btn secondary" @click="goHome">返回首页</nut-button>
@@ -19,20 +19,20 @@
 
     <view v-else-if="invite" class="invite-card">
       <view class="invite-icon">🏪</view>
-      <view class="invite-title">商家团队邀请</view>
-      <view class="invite-desc">店长邀请你加入梵宇花店商家后台</view>
+      <view class="invite-title">{{ uiText_fe62fa }}</view>
+      <view class="invite-desc">{{ uiText_b627cb }}</view>
 
       <view class="info-block">
         <view class="info-row">
-          <text class="label">预设姓名</text>
+          <text class="label">{{ uiText_5eceae }}</text>
           <text class="value">{{ invite.name }}</text>
         </view>
         <view class="info-row">
-          <text class="label">身份</text>
+          <text class="label">{{ roleLabelText }}</text>
           <text class="value">{{ invite.roleLabel }}</text>
         </view>
         <view class="info-row">
-          <text class="label">有效期至</text>
+          <text class="label">{{ uiText_6460f4 }}</text>
           <text class="value">{{ expiresText }}</text>
         </view>
       </view>
@@ -78,6 +78,14 @@ import {
 import { acceptStaffInvite, previewStaffInvite, type StaffInvitePreview } from '@/services/staff'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useUserStore } from '@/stores/user'
+
+const roleLabelText = '身份'
+const uiText_1ab91d = '加载邀请信息…'
+const uiText_39d6a3 = '已成为工作人员'
+const uiText_5eceae = '预设姓名'
+const uiText_6460f4 = '有效期至'
+const uiText_b627cb = '店长邀请你加入梵宇花店商家后台'
+const uiText_fe62fa = '商家团队邀请'
 
 const userStore = useUserStore()
 

@@ -1,0 +1,122 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "多头康乃馨，花量大，观赏期 7—14 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.carnation.vase_base",
+  "careVaseOverride": {
+    "summary": "多头康乃馨花量大；预留瓶口空间，枯谢小头及时剪除，勤换水。",
+    "tips": [
+      "枯谢小头及时剪除",
+      "预留瓶口，避免拥挤闷湿"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.carnation",
+      "identity": {
+        "scientificName": "Dianthus 'Spray Carnation'",
+        "namingNote": "多朵同枝开放，花量大、性价比高，配花与家居常用",
+        "horticulturalGroup": "group.carnation_cut",
+        "breeder": "哥伦比亚商业切花培育",
+        "introducedYear": "1970 年代起现代切花体系"
+      },
+      "origin": {
+        "breedingOrigin": "哥伦比亚",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色可选，同一枝多朵小花开放，整体花量感强",
+        "scent": "淡香",
+        "stem": "茎节明显，需撕去下部叶片",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "petalCount": "花瓣边缘呈锯齿状，层叠繁密",
+        "bloomDiameterCm": "6 至 8",
+        "flowerForm": [
+          "trait.multi_head"
+        ]
+      }
+    },
+    "featureRefs": [
+      "trait.multi_head",
+      "trait.spray_huge"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "单头康乃馨",
+        "difference": "单朵更大，而非多朵同枝"
+      },
+      {
+        "name": "满天星",
+        "difference": "细碎配花，而非康乃馨瓣形"
+      },
+      {
+        "name": "多头康乃馨",
+        "difference": "多朵同枝、性价比高，是配花高频选择"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花康乃馨",
+      "namingNote": "多朵同枝开放，花量大、性价比高，配花与家居常用"
+    }
+  },
+  "language": {
+    "meaning": "热闹、实惠与「把气氛撑起来」",
+    "paragraphs": [
+      "多头康乃馨的价值在于花量——同一束里能看到很多朵小花依次开放，适合插满一瓶、做配花、或预算有限但想要「看起来很满」的场景。",
+      "枯谢小头及时剪除，可延长整体观赏；与玫瑰、百合主花同插时，注意留足瓶口空间。"
+    ],
+    "occasions": [
+      "配花",
+      "日常家居",
+      "开业填充",
+      "预算友好"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "热闹、实惠、花量大"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "满瓶家居",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "单品种多色即可"
+      },
+      {
+        "style": "主花配搭",
+        "flowers": [
+          "玫瑰",
+          "百合"
+        ],
+        "note": "增加花量层次"
+      }
+    ],
+    "caution": "多头需预留瓶口空间；枯谢小头及时剪除。"
+  },
+  "names": {
+    "scientificName": "Dianthus 'Spray Carnation'",
+    "commonNames": [
+      "Spray Carnation",
+      "多头康乃馨"
+    ]
+  }
+}

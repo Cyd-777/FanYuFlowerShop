@@ -4,13 +4,13 @@
     <view class="shop-header">
       <view class="shop-logo">🌷</view>
       <view class="shop-name">{{ shopName }}</view>
-      <view class="shop-tagline">每一束花，都是一次心动</view>
+      <view class="shop-tagline">{{ uiText_79f79a }}</view>
     </view>
 
     <view class="section">
-      <view class="section-title">门店信息</view>
+      <view class="section-title">{{ uiText_ca3282 }}</view>
       <view class="info-row">
-        <text class="label">联系电话</text>
+        <text class="label">{{ uiText_09a1f6 }}</text>
         <text
           class="value"
           :class="{ link: phone }"
@@ -20,19 +20,19 @@
         </text>
       </view>
       <view class="info-row">
-        <text class="label">营业时间</text>
+        <text class="label">{{ uiText_cc3307 }}</text>
         <text class="value">{{ businessHours }}</text>
       </view>
       <view class="info-row info-row-block">
-        <text class="label">配送说明</text>
+        <text class="label">{{ uiText_c29950 }}</text>
         <text class="value multiline">{{ deliveryNote || '暂未设置' }}</text>
       </view>
     </view>
 
     <view class="section">
-      <view class="section-title">账号信息</view>
+      <view class="section-title">{{ uiText_53cab4 }}</view>
       <view class="info-row">
-        <text class="label">当前身份</text>
+        <text class="label">{{ uiText_e0caaf }}</text>
         <text class="value">{{ roleLabel }}</text>
       </view>
     </view>
@@ -49,6 +49,14 @@ import { useDidShow } from '@tarojs/taro'
 import { useUserStore } from '@/stores/user'
 import { useShopStore } from '@/stores/shop'
 import { logout } from '@/services/auth'
+
+const uiText_09a1f6 = '联系电话'
+const uiText_53cab4 = '账号信息'
+const uiText_79f79a = '每一束花，都是一次心动'
+const uiText_c29950 = '配送说明'
+const uiText_ca3282 = '门店信息'
+const uiText_cc3307 = '营业时间'
+const uiText_e0caaf = '当前身份'
 
 const userStore = useUserStore()
 const shopStore = useShopStore()

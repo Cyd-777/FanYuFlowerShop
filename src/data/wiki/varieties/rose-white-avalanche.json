@@ -1,0 +1,125 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'White Avalanche'",
+    "commonNames": [
+      "White Avalanche",
+      "白雪山玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "纯白高杯，勤换水保持洁净感",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "白雪山瓣层多、花型好，需勤换水保持水质清澈，避免外瓣发黄。",
+    "tips": [
+      "纯白品种水质浑浊时外瓣易发黄",
+      "醒花 4 小时以上"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'White Avalanche'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "breeder": "荷兰 De Ruiter",
+        "namingNote": "雪山系列纯白代表，婚礼与悼念皆常见",
+        "introducedYear": "1990 年代"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "纯白高杯，花瓣厚实，开放后花型仍较保持",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white",
+      "trait.large_head"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "艾莎",
+        "difference": "白底红边复色，而非纯白"
+      },
+      {
+        "name": "粉雪山",
+        "difference": "柔粉色，而非纯白"
+      },
+      {
+        "name": "白雪山",
+        "difference": "纯白、高杯、花头大，婚礼白玫瑰最常见之一"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "荷兰 De Ruiter",
+      "introducedYear": "1990 年代",
+      "namingNote": "雪山系列纯白代表，婚礼与悼念皆常见"
+    }
+  },
+  "language": {
+    "meaning": "纯洁、尊重与新的开始",
+    "paragraphs": [
+      "白雪山是婚礼、洗礼、毕业典礼里「最标准」的白玫瑰之一。它表达纯洁与尊重，也适合道歉后重归于好的「重新开始」。",
+      "悼念场合也常用白雪山表达哀思与怀念——若需庄重、克制，纯白往往比彩色更合适。"
+    ],
+    "occasions": [
+      "婚礼",
+      "毕业典礼",
+      "道歉",
+      "悼念",
+      "探病"
+    ],
+    "colorMeanings": [
+      {
+        "color": "纯白",
+        "meaning": "纯洁、尊重、新开始"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼",
+        "flowers": [
+          "粉雪山",
+          "尤加利叶"
+        ],
+        "note": "白粉绿婚礼经典"
+      },
+      {
+        "style": "庄重悼念",
+        "flowers": [
+          "绿康",
+          "白桔梗"
+        ],
+        "note": "白绿克制配色"
+      }
+    ],
+    "caution": "纯白对水质最敏感；须每日换水并洗净花瓶。"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "深粉紫风信子",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.hyacinth.vase_base",
+  "careVaseOverride": {
+    "summary": "吉普赛女王深粉紫风信子；浅水冷凉，通风。",
+    "tips": [
+      "远离暖气"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.hyacinth",
+      "identity": {
+        "scientificName": "Hyacinthus 'Gypsy Queen'",
+        "namingNote": "深粉紫风信子，个性色调",
+        "horticulturalGroup": "group.hyacinth_cut",
+        "breeder": "荷兰球根花卉育种",
+        "introducedYear": "球根切花长期商用品种"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "深粉紫，穗形，色调偏个性",
+        "scent": "浓香",
+        "stem": "穗形花序，整体紧凑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "穗长 8 至 15 cm"
+      }
+    },
+    "featureRefs": [
+      "trait.strong_scent",
+      "trait.muted_retro"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "蓝星",
+        "difference": "蓝色风信子，与此品种形态或色调不同"
+      },
+      {
+        "name": "粉珍珠",
+        "difference": "粉色风信子，与此品种形态或色调不同"
+      },
+      {
+        "name": "吉普赛女王",
+        "difference": "深粉紫风信子，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花风信子",
+      "namingNote": "深粉紫风信子，个性色调"
+    }
+  },
+  "language": {
+    "meaning": "个性、春日与「不那么「标准」的风信子」",
+    "paragraphs": [
+      "吉普赛女王色调更深——适合审美偏成熟、喜欢深色花材的人，与银叶、尤加利很搭。",
+      "养护同风信子共通：浅水、冷凉、注意浓香。"
+    ],
+    "occasions": [
+      "纪念日",
+      "家居",
+      "个性赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "深粉紫",
+        "meaning": "个性、成熟"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "个性",
+        "flowers": [
+          "银芽柳",
+          "尤加利叶"
+        ],
+        "note": "深色系"
+      }
+    ],
+    "caution": "浓香；避暖气。"
+  },
+  "names": {
+    "scientificName": "Hyacinthus 'Gypsy Queen'",
+    "commonNames": [
+      "Gypsy Queen",
+      "吉普赛女王"
+    ]
+  }
+}

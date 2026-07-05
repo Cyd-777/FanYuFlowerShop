@@ -331,7 +331,11 @@ export function setupHomePageData(): PageSetupResult & Record<string, unknown> {
   }
 
   function goCategory(cat: Category) {
-    navigateTo({ url: '/pagesCustomer/goods/list?categoryId=' + cat._id })
+    if (cat._id.startsWith('wiki:')) {
+      navigateTo({ url: '/pagesCustomer/goods/list?kindName=' + encodeURIComponent(cat.name) })
+    } else {
+      navigateTo({ url: '/pagesCustomer/goods/list?categoryId=' + cat._id })
+    }
   }
 
   function goDetail(id: string, coverPreview?: string, coverFileId?: string) {

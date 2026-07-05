@@ -1,0 +1,124 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Pink Avalanche'",
+    "commonNames": [
+      "Pink Avalanche",
+      "粉雪山玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "雪山系列花头大，醒花需充分",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "粉雪山花头大、瓣层多，醒花建议不少于 4 小时，勤换水可延长瓶插期。",
+    "tips": [
+      "雪山系列花头重，瓶口需稳固",
+      "低饱和粉色避强光可减缓褪色"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Pink Avalanche'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "breeder": "荷兰 De Ruiter",
+        "introducedYear": "1990 年代",
+        "namingNote": "Avalanche 雪山系列低饱和粉色代表"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 40 至 50 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "低饱和柔粉色，花型规整、花头偏大，开放后层次清晰",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.low_sat_pink",
+      "trait.large_head"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "戴安娜",
+        "difference": "更偏均匀正粉，花头略小"
+      },
+      {
+        "name": "粉红雪山",
+        "difference": "粉白过渡更柔、更浅"
+      },
+      {
+        "name": "粉雪山",
+        "difference": "低饱和柔粉、花头大，是雪山系列粉色代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "荷兰 De Ruiter",
+      "introducedYear": "1990 年代",
+      "namingNote": "Avalanche 雪山系列低饱和粉色代表"
+    }
+  },
+  "language": {
+    "meaning": "温柔、婚礼与「很上镜的粉」",
+    "paragraphs": [
+      "粉雪山的粉，是低饱和、适合拍照与婚礼的「高级粉」。它比戴安娜更浅、更柔，常用于新娘侧花、桌花与大型花艺。",
+      "婚礼、生日、送女性长辈都合适；若对方喜欢「很仙的粉」，粉雪山比正粉更安全。"
+    ],
+    "occasions": [
+      "婚礼",
+      "生日",
+      "送长辈",
+      "拍照花束"
+    ],
+    "colorMeanings": [
+      {
+        "color": "低饱和粉",
+        "meaning": "温柔、婚礼、上镜"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼",
+        "flowers": [
+          "白雪山",
+          "喷泉草"
+        ],
+        "note": "白粉绿经典婚礼色"
+      },
+      {
+        "style": "温柔礼盒",
+        "flowers": [
+          "洋桔梗",
+          "满天星"
+        ],
+        "note": "浅粉层次"
+      }
+    ],
+    "caution": "花头大，运输后务必醒花；忌挤压花头。"
+  }
+}

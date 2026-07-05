@@ -1,0 +1,125 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Peach Avalanche'",
+    "commonNames": [
+      "Peach Avalanche",
+      "蜜桃雪山玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "杏色雪山系列，勤换水稳定观赏",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "蜜桃雪山为杏色雪山系列，花头大，醒花充分后瓶插表现稳定。",
+    "tips": [
+      "杏色调避强光",
+      "雪山系列每日换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Peach Avalanche'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "breeder": "荷兰 De Ruiter",
+        "namingNote": "雪山系列杏色/蜜桃色代表",
+        "introducedYear": "1990 年代"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "外层杏色、向内渐变为浅粉，整体温暖复古",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.large_head",
+      "trait.apricot_cup"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "朱丽叶",
+        "difference": "奥斯汀杯状重瓣，而非雪山高杯"
+      },
+      {
+        "name": "猪小姐",
+        "difference": "粉橙渐变更活泼"
+      },
+      {
+        "name": "蜜桃雪山",
+        "difference": "杏色雪山、花头大，偏婚礼与复古暖调"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "荷兰 De Ruiter",
+      "introducedYear": "1990 年代",
+      "namingNote": "雪山系列杏色/蜜桃色代表"
+    }
+  },
+  "language": {
+    "meaning": "温暖、感谢与「长辈也会喜欢的花」",
+    "paragraphs": [
+      "蜜桃雪山的杏色，比纯粉更暖、比橙色更柔，常被用来表达感谢与祝福——探病、看望长辈、教师节都很得体。",
+      "婚礼与家居插瓶也常见；与绿色、白色配花能突出其暖调，适合秋冬氛围。"
+    ],
+    "occasions": [
+      "感谢",
+      "探病",
+      "送长辈",
+      "婚礼",
+      "家居插瓶"
+    ],
+    "colorMeanings": [
+      {
+        "color": "杏色",
+        "meaning": "温暖、复古、感谢"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "感谢花束",
+        "flowers": [
+          "尤加利叶",
+          "白雪山"
+        ],
+        "note": "暖杏+白绿，得体不张扬"
+      },
+      {
+        "style": "复古暖调",
+        "flowers": [
+          "卡布奇诺",
+          "洋甘菊"
+        ],
+        "note": "同色系低饱和"
+      }
+    ],
+    "caution": "杏色在强光下易偏浅；醒花不足时外瓣易发软。"
+  }
+}

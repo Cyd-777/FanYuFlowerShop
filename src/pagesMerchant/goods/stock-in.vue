@@ -1,7 +1,7 @@
 <template>
   <view class="page-stock-in" :class="{ 'has-footer': lines.length }">
     <AppNavBar />
-    <view v-if="!lines.length" class="empty-tip">暂无入库项，请从商品列表进入</view>
+    <view v-if="!lines.length" class="empty-tip">{{ uiText_a543ee }}</view>
 
     <view v-else>
       <view class="mode-tip">{{ modeTip }}</view>
@@ -16,7 +16,7 @@
         <view class="line-main">
           <view class="line-name">{{ line.name }}</view>
           <view v-if="line.colorHint" class="line-hint">花色：{{ line.colorHint }}</view>
-          <view v-if="!line.goodsId" class="line-status">仓库暂无此商品，点击创建</view>
+          <view v-if="!line.goodsId" class="line-status">{{ uiText_d23414 }}</view>
           <view v-else class="line-status ok">
             当前在库 {{ line.currentStock ?? 0 }}{{ line.unit || '件' }}
           </view>
@@ -59,6 +59,9 @@ import { computed } from 'vue'
 import { usePageData } from '@/composables/usePageData'
 import { navigateTo } from '@/utils/router'
 import type { StockInLine } from '@/types/stockIn'
+
+const uiText_a543ee = '暂无入库项，请从商品列表进入'
+const uiText_d23414 = '仓库暂无此商品，点击创建'
 
 const {
   session,

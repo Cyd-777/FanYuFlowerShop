@@ -1,6 +1,8 @@
 import type { Goods, GoodsListFilter, GoodsSalesType } from '@/types/goods'
 import { inferSalesType } from '@/types/goods'
+import { getGoodsFlowerDisplayLabel } from '@/types/wiki'
 import { isGoodsOffSale, isGoodsOnSale } from '@/utils/goodsAvailability'
+import { buildWikiKindAliasMap, goodsMatchesWikiCategory } from '@/utils/wikiFlowerGoods'
 import {
   matchMerchantGoodsSearch,
   type MerchantGoodsSearchContext,
@@ -229,7 +231,7 @@ export function collectFlowerVarietyOptions(
     if (!id) continue
     map.set(id, {
       id,
-      name: item.flowerVarietyName?.trim() || id,
+      name: getGoodsFlowerDisplayLabel(item) || id,
       kindId,
     })
   }
@@ -251,5 +253,9 @@ export function filterPublicGoodsList(list: Goods[], categoryId = ''): Goods[] {
   const onSale = list.filter((item) => item.onSale !== false)
   const id = categoryId.trim()
   if (!id) return onSale
+  if (id.startsWith('wiki:')) {
+    const aliasToCanonical = buildWikiKindAliasMap([], [])
+    return onSale.filter((item) => goodsMatchesWikiCategory(item, id, aliasToCanonical))
+  }
   return onSale.filter((item) => item.categoryId === id)
 }

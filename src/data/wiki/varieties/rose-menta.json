@@ -1,0 +1,123 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Menta'",
+    "commonNames": [
+      "Menta",
+      "曼塔玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "莫兰迪灰紫，避强光",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "曼塔为莫兰迪灰紫色玫瑰，低饱和色系避直射可减缓褪色。",
+    "tips": [
+      "低饱和色系避强光",
+      "勤换水保持雾面色感"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Menta'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "namingNote": "Menta 意为薄荷，指其灰绿紫调的莫兰迪色",
+        "introducedYear": "2010 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "灰紫或灰绿调，低饱和，雾面质感",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.morandi",
+      "trait.muted_retro"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "迷雾泡泡",
+        "difference": "多头灰紫，而非单头"
+      },
+      {
+        "name": "流沙",
+        "difference": "裸粉，而非灰紫"
+      },
+      {
+        "name": "曼塔",
+        "difference": "莫兰迪灰紫、单头高级，社交媒体高频"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2010 年代",
+      "namingNote": "Menta 意为薄荷，指其灰绿紫调的莫兰迪色"
+    }
+  },
+  "language": {
+    "meaning": "高级、克制与「不讨好的美」",
+    "paragraphs": [
+      "曼塔的灰紫，是「不用很红很艳也能成立」的高级色——适合送审美成熟、喜欢极简与莫兰迪风的朋友。",
+      "拍照、家居插瓶、秋冬生日都很合适；与裸粉、咖啡色系同搭非常和谐。"
+    ],
+    "occasions": [
+      "生日",
+      "送友人",
+      "拍照",
+      "家居插瓶"
+    ],
+    "colorMeanings": [
+      {
+        "color": "灰紫",
+        "meaning": "莫兰迪、高级、克制"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "莫兰迪单束",
+        "flowers": [
+          "流沙",
+          "鼠尾草"
+        ],
+        "note": "灰紫裸粉同系"
+      },
+      {
+        "style": "拍照",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "少配叶突出色块"
+      }
+    ],
+    "caution": "灰紫对光线敏感；若对方只接受传统红粉，可能觉得「不够喜庆」。"
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "bloom": {
+    "vase": "约 3—5 天",
+    "vaseNote": "黄色芍药，约 3—5 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.peony.vase_base",
+  "careVaseOverride": {
+    "summary": "芭茨拉黄色重瓣；高瓶支撑，浅水阴凉，勤换水。",
+    "tips": [
+      "高瓶支撑大花头",
+      "浅水养护"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.peony",
+      "identity": {
+        "scientificName": "Paeonia 'Bartzella'",
+        "namingNote": "黄色交谊芍药，花型大、色调明亮，相对少见",
+        "horticulturalGroup": "group.herbaceous_peony",
+        "breeder": "荷兰 / 法国芍药育种",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "明亮黄色重瓣，层叠饱满，开放后花径大",
+        "scent": "淡香至中等",
+        "stem": "茎干粗壮，花头重，需高瓶支撑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "12 至 18"
+      }
+    },
+    "featureRefs": [
+      "trait.yellow_gold",
+      "trait.huge_flower"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "落日珊瑚",
+        "difference": "珊瑚变色，而非正黄"
+      },
+      {
+        "name": "红富士",
+        "difference": "正红，而非黄色"
+      },
+      {
+        "name": "芭茨拉",
+        "difference": "明亮黄色、花大，是黄芍药代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "草本芍药",
+      "namingNote": "黄色交谊芍药，花型大、色调明亮，相对少见"
+    }
+  },
+  "language": {
+    "meaning": "明亮、稀有与「芍药里的阳光」",
+    "paragraphs": [
+      "黄色芍药并不常见——芭茨拉适合想要「芍药但不想粉红白」的场合，开业、生日、送长辈都很明亮。",
+      "与白色、绿色配花同插，黄色主花会更高级；注意高瓶支撑与浅水养护。"
+    ],
+    "occasions": [
+      "开业",
+      "生日",
+      "贺寿",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "明黄",
+        "meaning": "明亮、祝福、稀有"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "明亮庆典",
+        "flowers": [
+          "绿康",
+          "白玫瑰"
+        ],
+        "note": "黄白绿"
+      },
+      {
+        "style": "家居",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "单品种即可"
+      }
+    ],
+    "caution": "花头重；瓶插期短。高瓶支撑。"
+  },
+  "names": {
+    "scientificName": "Paeonia 'Bartzella'",
+    "commonNames": [
+      "Bartzella",
+      "芭茨拉"
+    ]
+  }
+}

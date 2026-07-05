@@ -2,9 +2,9 @@
   <view class="page-staff" :style="navCssVars">
     <AppNavBar />
     <view class="intro">
-      <view class="title">工作人员</view>
-      <view class="desc">生成邀请码发给同事，对方在小程序「我的」自行输入邀请码即可加入团队</view>
-      <view class="prelaunch-tip">请将邀请码通过微信发给对方；对方打开小程序 → 我的 → 输入邀请码。微信分享链接待正式上线后再验证</view>
+      <view class="title">{{ uiText_ad7915 }}</view>
+      <view class="desc">{{ uiText_9ec52a }}</view>
+      <view class="prelaunch-tip">{{ uiText_467876 }}</view>
     </view>
 
     <view class="add-card">
@@ -30,12 +30,12 @@
       </nut-button>
 
       <view v-if="activeInvite" class="invite-panel">
-        <view class="invite-panel-title">请将下方邀请码发给对方（24 小时内有效，仅可使用一次）</view>
+        <view class="invite-panel-title">{{ uiText_625391 }}</view>
         <view class="invite-code">{{ activeInvite.code }}</view>
         <view class="invite-meta">身份：{{ activeInvite.roleLabel }}</view>
         <view class="invite-meta">过期：{{ inviteExpiresText }}</view>
         <nut-button type="primary" block class="copy-code-btn" @click="copyInviteCode">复制邀请码发给对方</nut-button>
-        <button class="share-btn" open-type="share">发送微信邀请</button>
+        <button class="share-btn" open-type="share">{{ uiText_a7040a }}</button>
         <nut-button plain block class="copy-btn" @click="copyInvitePath">复制小程序路径</nut-button>
       </view>
     </view>
@@ -69,7 +69,7 @@
     </view>
 
     <view class="empty" v-else-if="!loading">
-      <view class="empty-text">暂无工作人员，请生成邀请码发给同事，由对方自行输入加入</view>
+      <view class="empty-text">{{ uiText_c16bed }}</view>
     </view>
   </view>
 </template>
@@ -93,6 +93,13 @@ import {
 } from '@/services/staff'
 import { resolveAvatarDisplayPath } from '@/services/userProfile'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
+
+const uiText_467876 = '请将邀请码通过微信发给对方；对方打开小程序 → 我的 → 输入邀请码。微信分享链接待正式上线后再验证'
+const uiText_625391 = '请将下方邀请码发给对方（24 小时内有效，仅可使用一次）'
+const uiText_9ec52a = '生成邀请码发给同事，对方在小程序「我的」自行输入邀请码即可加入团队'
+const uiText_a7040a = '发送微信邀请'
+const uiText_ad7915 = '工作人员'
+const uiText_c16bed = '暂无工作人员，请生成邀请码发给同事，由对方自行输入加入'
 
 type StaffListItem = StaffMember & { avatarDisplay?: string }
 

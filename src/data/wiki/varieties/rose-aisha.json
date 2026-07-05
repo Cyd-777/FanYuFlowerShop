@@ -1,0 +1,125 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Aisha'",
+    "commonNames": [
+      "Aisha",
+      "艾莎玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "复色边对水质与剪根较敏感",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "复色边玫瑰，瓶插期对水质与剪根同样敏感。",
+    "trimPosition": "复色品种更忌叶浸水，仅保留花头附近少量健康叶",
+    "tips": [
+      "边色品种避免阳光直射以防褪色过快"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Aisha'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "introducedYear": "2000 年代",
+        "namingNote": "红边白底的复色切花，婚礼与表白场景极高频",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "厄瓜多尔",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "白色或奶油色底，边缘晕染鲜红或玫红，层次清晰；开放后仍保持复色边界",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.bicolor_edge",
+      "trait.high_cup"
+    ],
+    "origin": "主产区厄瓜多尔、哥伦比亚、中国云南",
+    "distinguishFrom": [
+      {
+        "name": "金辉",
+        "difference": "黄底红边，而非白底红边"
+      },
+      {
+        "name": "闪耀",
+        "difference": "条纹复色，而非整边晕染"
+      },
+      {
+        "name": "艾莎",
+        "difference": "红边白底、边界清晰，是婚礼复色玫瑰代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2000 年代",
+      "namingNote": "红边白底的复色切花，婚礼与表白场景极高频"
+    }
+  },
+  "language": {
+    "meaning": "我的心中只有你；纯净底色上的热烈边缘",
+    "paragraphs": [
+      "艾莎的白底与红边，像「表面克制、内里炽烈」——适合表白、婚礼与纪念日。它比纯红含蓄，又比纯粉更有宣言感。",
+      "婚礼手捧、领证花束、求婚都常见；送给恋人表达「你是我唯一的选择」非常贴切。搭配白绿或同色系低饱和配花，能突出边色。"
+    ],
+    "occasions": [
+      "婚礼",
+      "表白",
+      "纪念日",
+      "求婚"
+    ],
+    "colorMeanings": [
+      {
+        "color": "红边白底",
+        "meaning": "复色、高级感；婚礼与表白高频"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼",
+        "flowers": [
+          "白雪山",
+          "尤加利叶"
+        ],
+        "note": "白绿衬托红边"
+      },
+      {
+        "style": "表白",
+        "flowers": [
+          "戴安娜",
+          "洋桔梗"
+        ],
+        "note": "粉白系过渡更柔和"
+      }
+    ],
+    "caution": "边色避强光；水质不清易导致整朵提前萎蔫，须勤换水。"
+  }
+}

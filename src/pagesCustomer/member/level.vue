@@ -1,7 +1,7 @@
 <template>
   <view class="page-level">
     <AppNavBar />
-    <view class="intro">会员等级以花卉命名，积分越高，花开越盛，礼遇越多。</view>
+    <view class="intro">{{ uiText_3c8c2d }}</view>
 
     <view class="levels">
       <view
@@ -18,7 +18,7 @@
     </view>
 
     <view class="benefits">
-      <view class="title">等级权益</view>
+      <view class="title">{{ uiText_1d3970 }}</view>
       <view v-for="(item, idx) in benefits" :key="idx" class="benefit-item">{{ item }}</view>
     </view>
   </view>
@@ -32,6 +32,9 @@ import {
   resolveMemberLevelIndex,
   formatMemberDiscount,
 } from '@/types/member'
+
+const uiText_1d3970 = '等级权益'
+const uiText_3c8c2d = '会员等级以花卉命名，积分越高，花开越盛，礼遇越多。'
 
 const points = ref(120)
 

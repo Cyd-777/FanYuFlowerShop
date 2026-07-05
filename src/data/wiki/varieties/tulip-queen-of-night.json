@@ -1,0 +1,122 @@
+{
+  "bloom": {
+    "vase": "约 5—7 天",
+    "vaseNote": "深紫郁金香，约 5—7 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.tulip.vase_base",
+  "careVaseOverride": {
+    "summary": "夜皇后深紫郁金香；浅水、冷凉、避暖气，花茎可每日微调。",
+    "tips": [
+      "远离暖气",
+      "浅水养护"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.tulip",
+      "identity": {
+        "scientificName": "Tulipa 'Queen of Night'",
+        "namingNote": "深紫近黑单瓣郁金香，神秘系代表",
+        "horticulturalGroup": "group.tulip_single",
+        "breeder": "荷兰球根花卉育种",
+        "introducedYear": "球根切花长期商用品种"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "深紫近黑，杯形，色调神秘而饱和",
+        "scent": "几乎无香",
+        "stem": "花茎会继续生长，需预留瓶高",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "7 至 9",
+        "flowerForm": [
+          "trait.cup_trumpet"
+        ]
+      }
+    },
+    "featureRefs": [
+      "trait.cup_trumpet",
+      "trait.muted_retro"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "王朝",
+        "difference": "正红，而非深紫"
+      },
+      {
+        "name": "白梦",
+        "difference": "纯白，而非深紫"
+      },
+      {
+        "name": "夜皇后",
+        "difference": "深紫近黑，是神秘系郁金香代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "单瓣郁金香",
+      "namingNote": "深紫近黑单瓣郁金香，神秘系代表"
+    }
+  },
+  "language": {
+    "meaning": "神秘、个性与「郁金香里的暗夜」",
+    "paragraphs": [
+      "夜皇后适合送给审美偏酷、喜欢深色花材的人——它不是「丧」，而是神秘与高级，和银叶、尤加利极搭。",
+      "与白色、黄色郁金香对比搭配，视觉冲击力很强；单品种插瓶也足够有态度。"
+    ],
+    "occasions": [
+      "纪念日",
+      "个性赠礼",
+      "家居",
+      "拍照"
+    ],
+    "colorMeanings": [
+      {
+        "color": "深紫近黑",
+        "meaning": "神秘、个性、高级"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "对比",
+        "flowers": [
+          "白梦",
+          "纯金"
+        ],
+        "note": "黑白黄"
+      },
+      {
+        "style": "酷感",
+        "flowers": [
+          "银芽柳",
+          "尤加利叶"
+        ],
+        "note": "深色系"
+      }
+    ],
+    "caution": "喜冷凉；远离暖气。浅水养护。"
+  },
+  "names": {
+    "scientificName": "Tulipa 'Queen of Night'",
+    "commonNames": [
+      "Queen of Night",
+      "夜皇后"
+    ]
+  }
+}

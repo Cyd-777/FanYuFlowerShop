@@ -1,5 +1,6 @@
 const { bumpCacheModule } = require('./cacheMeta')
 const { fetchAllDocs } = require('./db')
+const { mergeFlowerCatalog } = require('./flowerCatalogMerge')
 const { FLOWER_SEED } = require('./flowerSeed')
 
 async function ensureCollection(db, name) {
@@ -36,6 +37,8 @@ async function addKindWithVarieties(db, kindSeed) {
         kindId,
         name: varietySeed.name,
         aliases: varietySeed.aliases || [],
+        color: varietySeed.color || '',
+        featureTags: varietySeed.featureTags || [],
         defaultUnit: varietySeed.defaultUnit || kindData.defaultUnit || '束',
         description: varietySeed.description || '',
         sort: Number(varietySeed.sort) || 0,
@@ -64,7 +67,7 @@ async function ensureMissingKindsFromSeed(db) {
   }
 }
 
-/** 确保 flower_kinds / flower_varieties 存在且种子品类已写入 */
+/** 确保 flower_kinds / flower_varieties 存在；空库种子写入，非空库走合并 */
 async function ensureDefaultFlowerCatalog(db) {
   await ensureCollection(db, 'flower_kinds')
   await ensureCollection(db, 'flower_varieties')
@@ -75,12 +78,15 @@ async function ensureDefaultFlowerCatalog(db) {
       await addKindWithVarieties(db, kindSeed)
     }
     await bumpCacheModule('flower')
-    return
+    return { mode: 'seed' }
   }
 
   await ensureMissingKindsFromSeed(db)
+  const mergeStats = await mergeFlowerCatalog(db)
+  return { mode: 'merge', mergeStats }
 }
 
 module.exports = {
   ensureDefaultFlowerCatalog,
+  mergeFlowerCatalog,
 }

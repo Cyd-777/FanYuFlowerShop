@@ -1,0 +1,120 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "白色康乃馨，勤换水可稳定 7—14 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.carnation.vase_base",
+  "careVaseOverride": {
+    "summary": "白雪公主为纯白康乃馨；勤换水、撕去茎节叶片，保持水质洁净。",
+    "tips": [
+      "白色花瓣对水质敏感，每日换水",
+      "撕去关节处叶片"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.carnation",
+      "identity": {
+        "scientificName": "Dianthus 'Snow White'",
+        "namingNote": "白色康乃馨代表，纯洁与感谢，教师节常见",
+        "horticulturalGroup": "group.carnation_cut",
+        "breeder": "哥伦比亚商业切花培育",
+        "introducedYear": "1970 年代起现代切花体系"
+      },
+      "origin": {
+        "breedingOrigin": "哥伦比亚",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "纯白，瓣层洁净，开放后仍保持较好轮廓",
+        "scent": "淡香",
+        "stem": "茎节明显，需撕去下部叶片",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "petalCount": "花瓣边缘呈锯齿状，层叠繁密",
+        "bloomDiameterCm": "6 至 8"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white",
+      "trait.thick_petal"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "马斯特",
+        "difference": "正红，而非纯白"
+      },
+      {
+        "name": "粉钻",
+        "difference": "柔粉，而非白色"
+      },
+      {
+        "name": "白雪公主",
+        "difference": "纯白、耐插，是白康乃馨最常见辨识"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花康乃馨",
+      "namingNote": "白色康乃馨代表，纯洁与感谢，教师节常见"
+    }
+  },
+  "language": {
+    "meaning": "纯洁、感谢与「很干净的心意」",
+    "paragraphs": [
+      "白雪公主的白康乃馨，适合教师节、感谢、探望——比百合更日常，比玫瑰更克制，表达「谢谢」非常准确。",
+      "与红、粉康乃馨同插能做出层次；婚礼白绿系也常用，但需注意勿与易染花粉的花材混放。"
+    ],
+    "occasions": [
+      "教师节",
+      "感谢",
+      "探望",
+      "婚礼配花"
+    ],
+    "colorMeanings": [
+      {
+        "color": "纯白",
+        "meaning": "纯洁、感谢、真诚"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "感谢花束",
+        "flowers": [
+          "马斯特",
+          "粉钻"
+        ],
+        "note": "红白粉组合"
+      },
+      {
+        "style": "婚礼白绿",
+        "flowers": [
+          "绿康",
+          "尤加利叶"
+        ],
+        "note": "洁净高级"
+      }
+    ],
+    "caution": "白色花瓣易显水质问题，须勤换水、洗净花瓶。"
+  },
+  "names": {
+    "scientificName": "Dianthus 'Snow White'",
+    "commonNames": [
+      "Snow White",
+      "白雪公主"
+    ]
+  }
+}

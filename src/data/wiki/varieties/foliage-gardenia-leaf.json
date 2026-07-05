@@ -1,0 +1,92 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "厚叶配材"
+  },
+  "careBaseRef": "care.foliage.vase_base",
+  "careVaseOverride": {
+    "summary": "栀子叶厚叶配材；清洁水质，去除浸水叶。",
+    "tips": [
+      "去除浸水叶片"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.foliage",
+      "identity": {
+        "scientificName": "Gardenia jasminoides",
+        "namingNote": "深绿厚叶，与白色花材绝配",
+        "horticulturalGroup": "group.cut_foliage"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "深绿厚叶，革质有光泽",
+        "scent": "几乎无香",
+        "stem": "以叶材线条与层次为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.cut_foliage"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "尤加利",
+        "difference": "最常用配叶，与此品种形态或色调不同"
+      },
+      {
+        "name": "龟背竹",
+        "difference": "大叶配材，与此品种形态或色调不同"
+      },
+      {
+        "name": "栀子叶",
+        "difference": "深绿厚叶，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花配叶",
+      "namingNote": "深绿厚叶，与白色花材绝配"
+    }
+  },
+  "language": {
+    "meaning": "衬托、洁净与「让白更白」",
+    "paragraphs": [
+      "栀子叶常用来衬托白色花材——与白玫瑰、白百合、马蹄莲同插，白色更干净。",
+      "厚叶耐插；清洁水质即可。"
+    ],
+    "occasions": [
+      "配花",
+      "婚礼",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "深绿",
+        "meaning": "衬托、洁净"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "白绿",
+        "flowers": [
+          "白梦",
+          "白马"
+        ],
+        "note": "白绿"
+      }
+    ],
+    "caution": "清洁水质；避免叶浸水。"
+  },
+  "names": {
+    "scientificName": "Gardenia jasminoides",
+    "commonNames": [
+      "Gardenia Leaf",
+      "栀子叶"
+    ]
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "names": {
+    "scientificName": "Rosa 'Ausjuli'",
+    "commonNames": ["Juliet", "朱丽叶玫瑰", "奥斯汀朱丽叶"]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "杯状重瓣需充分醒花，养护到位可稳定观赏期",
+    "vaseBySeason": [
+      { "season": "夏季", "days": "约 7—8 天" },
+      { "season": "冬季", "days": "约 9—10 天", "note": "室温较低时" }
+    ]
+  },
+  "careBaseRef": "care.rose.vase_base",
+  "careVaseOverride": {
+    "summary": "朱丽叶为奥斯汀杯状重瓣，花头饱满易挤伤，收到后先深水醒花再插瓶。",
+    "trimPosition": "重瓣品种保留花头附近少量健康叶，确保无叶浸水",
+    "tips": [
+      "运输后先深水醒花 4—8 小时，待花瓣硬挺再插瓶",
+      "开放度大，忌挤压花头与过度捆扎茎部"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Ausjuli'",
+        "horticulturalGroup": "group.english_rose",
+        "breeder": "英国 David Austin Roses",
+        "introducedYear": "2007 年",
+        "namingNote": "品种名取自莎士比亚名剧《罗密欧与朱丽叶》，寓意古典而炽热的浪漫"
+      },
+      "origin": {
+        "breedingOrigin": "英国",
+        "productionRegions": ["region.yunnan", "region.ecuador", "region.colombia"]
+      },
+      "morphology": {
+        "flowerForm": ["trait.cup_rosette"],
+        "petalCount": "约 90 枚以上",
+        "bloomDiameterCm": "8 至 10",
+        "color": "外层杏橙、向内渐变为柔粉，整体呈现温暖而高级的复古色调",
+        "stem": "茎干挺直，刺中等，适合做主花与新娘手捧",
+        "foliage": "叶片深绿有光泽",
+        "scent": "淡而清雅的玫瑰香气"
+      }
+    },
+    "featureRefs": [
+      "trait.cup_rosette",
+      "trait.apricot_cup",
+      "trait.classic_elegant"
+    ],
+    "origin": "育种英国；主产区中国云南、厄瓜多尔、哥伦比亚",
+    "cultivar": {
+      "horticulturalGroup": "英国蔷薇 English Rose",
+      "breeder": "David Austin",
+      "introducedYear": "2007 年",
+      "namingNote": "名剧《罗密欧与朱丽叶》"
+    },
+    "distinguishFrom": [
+      { "name": "猪小姐", "difference": "粉橙渐变更活泼，花型略偏现代切花感" },
+      { "name": "卡布奇诺", "difference": "偏咖啡棕复古色，而非杏橙暖调" },
+      {
+        "name": "朱丽叶",
+        "difference": "标志性的奥斯汀杯状重瓣与杏橙—柔粉层次，是婚礼与高级花礼最常见的「朱丽叶」辨识点"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "温柔而坚定的爱；古典浪漫与长久陪伴",
+    "paragraphs": [
+      "朱丽叶的杏橙与柔粉层次，不像正红那样直白炽烈，却有一种「经得起细看」的古典美。它常被称作「玫瑰中的爱马仕」，不是因为张扬，而是因为花型、色泽与气质都足够完整——适合表达「我认真考虑过，而你值得最好的一切」。",
+      "婚礼手捧、求婚与纪念日是它最自然的舞台；送给母亲、师长或重要女性，也寓意尊重与长久陪伴。搭配白色或绿色系配花，能突出它的暖调；若对方偏好极简，一束纯朱丽叶往往比混搭更高级。"
+    ],
+    "occasions": ["婚礼", "求婚", "纪念日", "表白", "送母亲", "送长辈"],
+    "colorMeanings": [
+      {
+        "color": "杏橙",
+        "meaning": "温暖、复古、高级；比纯粉更有层次"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼经典",
+        "flowers": ["白雪山", "尤加利叶", "喷泉草"],
+        "note": "白绿衬托杏橙暖调，干净而隆重"
+      },
+      {
+        "style": "复古油画",
+        "flowers": ["卡布奇诺", "洋牡丹", "鼠尾草"],
+        "note": "低饱和同色系，适合秋冬氛围花礼"
+      }
+    ],
+    "caution": "花头饱满、瓣层多，运输后务必醒花；若对方需要「极简小花束」，可考虑单朵或少量搭配，避免过于隆重。"
+  }
+}

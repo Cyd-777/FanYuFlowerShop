@@ -31,22 +31,28 @@ async function isMerchant(openid) {
   return data.length > 0
 }
 
-async function findCategoryByName(name) {
-  const { data } = await db.collection('categories').where({ name }).limit(1).get()
+async function findTypedCategory(name, categoryType) {
+  const { data } = await db
+    .collection('categories')
+    .where({ name, categoryType })
+    .limit(1)
+    .get()
   return data[0] || null
 }
 
-async function ensureCategory({ name, icon, sort, customRole = '' }) {
-  const existing = await findCategoryByName(name)
+async function ensureTypedCategory({ name, icon, sort, categoryType, customRole = '' }) {
+  const existing = await findTypedCategory(name, categoryType)
   if (existing) {
-    if (customRole && existing.customRole !== customRole) {
-      await db.collection('categories').doc(existing._id).update({
-        data: {
-          customRole,
-          updatedAt: db.serverDate(),
-        },
-      })
+    const patch = {
+      icon,
+      sort,
+      categoryType,
+      updatedAt: db.serverDate(),
     }
+    if (categoryType === 'material' && customRole) {
+      patch.customRole = customRole
+    }
+    await db.collection('categories').doc(existing._id).update({ data: patch })
     return existing._id
   }
 
@@ -56,12 +62,17 @@ async function ensureCategory({ name, icon, sort, customRole = '' }) {
       icon,
       sort,
       enabled: true,
-      customRole,
+      categoryType,
+      customRole: categoryType === 'material' ? customRole : '',
       createdAt: db.serverDate(),
       updatedAt: db.serverDate(),
     },
   })
   return res._id
+}
+
+function wikiCategoryId(kindName) {
+  return `wiki:${kindName}`
 }
 
 async function upsertDemoGoods(doc) {
@@ -108,19 +119,30 @@ exports.main = async (event = {}) => {
   await ensureCollection('categories')
   await ensureCollection('goods')
 
-  const roseId = await ensureCategory({ name: '玫瑰', icon: '🌹', sort: 90 })
-  const sunflowerId = await ensureCategory({ name: '向日葵', icon: '🌻', sort: 80 })
-  const mixId = await ensureCategory({ name: '混搭花束', icon: '💐', sort: 100 })
-  const packagingId = await ensureCategory({
+  const dailyBouquetId = await ensureTypedCategory({
+    name: '日常',
+    icon: '🌻',
+    sort: 50,
+    categoryType: 'bouquet',
+  })
+  const proposeBouquetId = await ensureTypedCategory({
+    name: '求婚',
+    icon: '💍',
+    sort: 100,
+    categoryType: 'bouquet',
+  })
+  const packagingId = await ensureTypedCategory({
     name: '包装定制',
     icon: '🎀',
     sort: 75,
+    categoryType: 'material',
     customRole: 'packaging',
   })
-  const cardId = await ensureCategory({
+  const cardId = await ensureTypedCategory({
     name: '贺卡商品',
     icon: '💌',
     sort: 65,
+    categoryType: 'material',
     customRole: 'card',
   })
 
@@ -132,8 +154,9 @@ exports.main = async (event = {}) => {
       unit: '支',
       stock: 50,
       description: '经典红色玫瑰，定制花束常用花材。',
-      categoryId: roseId,
+      categoryId: wikiCategoryId('玫瑰'),
       categoryName: '玫瑰',
+      flowerKindName: '玫瑰',
       sort: 100,
       recommend: true,
     },
@@ -144,8 +167,9 @@ exports.main = async (event = {}) => {
       unit: '支',
       stock: 50,
       description: '温柔粉色调，适合告白与纪念日。',
-      categoryId: roseId,
+      categoryId: wikiCategoryId('玫瑰'),
       categoryName: '玫瑰',
+      flowerKindName: '玫瑰',
       sort: 99,
     },
     {
@@ -155,8 +179,9 @@ exports.main = async (event = {}) => {
       unit: '支',
       stock: 40,
       description: '纯净白色，简约高级。',
-      categoryId: roseId,
+      categoryId: wikiCategoryId('玫瑰'),
       categoryName: '玫瑰',
+      flowerKindName: '玫瑰',
       sort: 98,
     },
     {
@@ -166,8 +191,9 @@ exports.main = async (event = {}) => {
       unit: '支',
       stock: 35,
       description: '香槟色系，优雅复古。',
-      categoryId: roseId,
+      categoryId: wikiCategoryId('玫瑰'),
       categoryName: '玫瑰',
+      flowerKindName: '玫瑰',
       sort: 97,
     },
     {
@@ -177,8 +203,9 @@ exports.main = async (event = {}) => {
       unit: '支',
       stock: 60,
       description: '明亮大朵向日葵，活力满满。',
-      categoryId: sunflowerId,
+      categoryId: wikiCategoryId('向日葵'),
       categoryName: '向日葵',
+      flowerKindName: '向日葵',
       sort: 96,
       recommend: true,
     },
@@ -189,8 +216,9 @@ exports.main = async (event = {}) => {
       unit: '支',
       stock: 80,
       description: '清新点缀花材，适合混搭。',
-      categoryId: mixId,
-      categoryName: '混搭花束',
+      categoryId: wikiCategoryId('菊花'),
+      categoryName: '菊花',
+      flowerKindName: '菊花',
       sort: 95,
     },
     {
@@ -200,8 +228,9 @@ exports.main = async (event = {}) => {
       unit: '支',
       stock: 100,
       description: '轻盈填充花材，增加层次感。',
-      categoryId: mixId,
-      categoryName: '混搭花束',
+      categoryId: wikiCategoryId('满天星'),
+      categoryName: '满天星',
+      flowerKindName: '满天星',
       sort: 94,
     },
     {
@@ -211,8 +240,9 @@ exports.main = async (event = {}) => {
       unit: '支',
       stock: 30,
       description: '香气清雅，适合重要场合。',
-      categoryId: mixId,
-      categoryName: '混搭花束',
+      categoryId: wikiCategoryId('百合'),
+      categoryName: '百合',
+      flowerKindName: '百合',
       sort: 93,
     },
     {
@@ -222,8 +252,9 @@ exports.main = async (event = {}) => {
       unit: '支',
       stock: 45,
       description: '母亲节与日常祝福常用花材。',
-      categoryId: roseId,
-      categoryName: '玫瑰',
+      categoryId: wikiCategoryId('康乃馨'),
+      categoryName: '康乃馨',
+      flowerKindName: '康乃馨',
       sort: 92,
     },
     {
@@ -289,8 +320,8 @@ exports.main = async (event = {}) => {
       unit: '束',
       stock: 20,
       description: '多色混搭，日常送花首选。',
-      categoryId: mixId,
-      categoryName: '混搭花束',
+      categoryId: dailyBouquetId,
+      categoryName: '日常',
       sort: 60,
       recommend: true,
     },
@@ -301,8 +332,8 @@ exports.main = async (event = {}) => {
       unit: '束',
       stock: 15,
       description: '九枝红玫瑰经典款。',
-      categoryId: roseId,
-      categoryName: '玫瑰',
+      categoryId: proposeBouquetId,
+      categoryName: '求婚',
       sort: 59,
     },
     {
@@ -312,8 +343,8 @@ exports.main = async (event = {}) => {
       unit: '束',
       stock: 18,
       description: '三枝向日葵搭配绿叶，明亮温暖。',
-      categoryId: sunflowerId,
-      categoryName: '向日葵',
+      categoryId: dailyBouquetId,
+      categoryName: '日常',
       sort: 58,
     },
   ]

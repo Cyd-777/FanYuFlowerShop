@@ -1,0 +1,123 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Toffee'",
+    "commonNames": [
+      "Toffee",
+      "太妃糖玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "棕粉复古，勤换水",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "太妃糖为棕粉复古色玫瑰，勤换水、避直射可保持色泽与花型。",
+    "tips": [
+      "复古色避强光",
+      "丝绒感忌挤压"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Toffee'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "namingNote": "名称取自太妃糖棕粉色，复古独特",
+        "introducedYear": "2010 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "棕粉或焦糖色，低饱和，带轻微丝绒感",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.muted_retro",
+      "trait.chocolate_tone"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "卡布奇诺",
+        "difference": "偏咖啡棕，而非棕粉焦糖"
+      },
+      {
+        "name": "流沙",
+        "difference": "裸粉更浅，而非棕粉"
+      },
+      {
+        "name": "太妃糖",
+        "difference": "棕粉焦糖、复古独特，秋冬混搭常见"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2010 年代",
+      "namingNote": "名称取自太妃糖棕粉色，复古独特"
+    }
+  },
+  "language": {
+    "meaning": "复古、独特与「像糖果一样的温柔」",
+    "paragraphs": [
+      "太妃糖的棕粉，像一颗太妃糖——适合送给喜欢复古、独立审美的人，或作为秋冬花束的主色。",
+      "与卡布奇诺、朱丽叶等同系搭配，整体非常「咖啡店午后」。"
+    ],
+    "occasions": [
+      "生日",
+      "秋冬花礼",
+      "送友人",
+      "混搭主花"
+    ],
+    "colorMeanings": [
+      {
+        "color": "棕粉",
+        "meaning": "复古、焦糖色、独特"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "秋冬同系",
+        "flowers": [
+          "卡布奇诺",
+          "尤加利叶"
+        ],
+        "note": "咖啡棕粉层次"
+      },
+      {
+        "style": "独特单束",
+        "flowers": [
+          "芦苇"
+        ],
+        "note": "突出焦糖色"
+      }
+    ],
+    "caution": "棕粉在强光下易偏浅；若对方只接受鲜艳色，可能觉得不够亮。"
+  }
+}

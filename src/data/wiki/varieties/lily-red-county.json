@@ -1,0 +1,117 @@
+{
+  "names": {
+    "scientificName": "Lilium 'Red County'",
+    "commonNames": [
+      "Red County",
+      "西诺红百合"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "正红东方百合，相对稀有",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.lily.vase_base",
+  "careVaseOverride": {
+    "summary": "西诺红为正红东方百合，相对稀有；摘除花蕊、勤换水，可稳定观赏期。",
+    "tips": [
+      "正红百合在市场中相对少见，收到时建议拍照记录开放过程",
+      "摘除花蕊可减少花粉污染"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.lily",
+      "identity": {
+        "scientificName": "Lilium 'Red County'",
+        "horticulturalGroup": "group.oriental_lily",
+        "namingNote": "正红东方百合，花店相对少见，辨识度高",
+        "breeder": "荷兰百合育种体系",
+        "introducedYear": "1990 年代起"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.ecuador",
+          "region.colombia"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [],
+        "bloomDiameterCm": "16 至 22",
+        "color": "正红至深红，东方百合杯形，开放后色彩饱和",
+        "stem": "茎干粗壮，建议高瓶或深瓶支撑",
+        "foliage": "叶片狭长，沿茎分布",
+        "scent": "浓香，室内插瓶时明显"
+      }
+    },
+    "featureRefs": [
+      "trait.strong_scent",
+      "trait.classic_red",
+      "trait.huge_flower"
+    ],
+    "origin": "主产区中国云南、厄瓜多尔、哥伦比亚等地",
+    "cultivar": {
+      "horticulturalGroup": "东方百合",
+      "namingNote": "正红东方百合，花店相对少见，辨识度高"
+    },
+    "distinguishFrom": [
+      {
+        "name": "罗宾娜",
+        "difference": "粉渐变，而非正红"
+      },
+      {
+        "name": "玫瑰",
+        "difference": "百合杯形与茎叶形态完全不同"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "热烈、稀有与「不是玫瑰的红色主花」",
+    "paragraphs": [
+      "西诺红的正红在百合里相对少见——适合想要红色主花但想避开玫瑰「标准答案」的时刻，以及喜欢百合杯形线条的收花人。",
+      "与白色、绿色配花同插，红色主花会更高级；记得为花粉敏感者摘花蕊。"
+    ],
+    "occasions": [
+      "纪念日",
+      "庆典",
+      "独特赠礼",
+      "春节"
+    ],
+    "colorMeanings": [
+      {
+        "color": "正红",
+        "meaning": "热烈、稀有、辨识度"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "红白对比",
+        "flowers": [
+          "西伯利亚",
+          "绿康"
+        ],
+        "note": "红百白百，节日感"
+      },
+      {
+        "style": "独特主花",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "单品种即可"
+      }
+    ],
+    "caution": "浓香且花粉多；相对稀有，运输后建议醒花再插瓶。"
+  }
+}

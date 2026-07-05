@@ -1,0 +1,91 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "羽状配叶"
+  },
+  "careBaseRef": "care.foliage.vase_base",
+  "careVaseOverride": {
+    "summary": "散尾葵配叶；清洁水质，避免浸水腐烂。",
+    "tips": [
+      "去除浸水叶片"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.foliage",
+      "identity": {
+        "scientificName": "Dypsis lutescens",
+        "namingNote": "羽状叶配材，热带开业常见",
+        "horticulturalGroup": "group.cut_foliage"
+      },
+      "origin": {
+        "breedingOrigin": "因品种而异",
+        "productionRegions": [
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "color": "羽状深绿叶，热带感",
+        "scent": "几乎无香",
+        "stem": "以叶材线条与层次为主",
+        "foliage": "叶片健康即可保留少量，避免浸水"
+      }
+    },
+    "featureRefs": [
+      "trait.tropical_leaf"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "尤加利",
+        "difference": "最常用配叶，与此品种形态或色调不同"
+      },
+      {
+        "name": "龟背竹",
+        "difference": "大叶配材，与此品种形态或色调不同"
+      },
+      {
+        "name": "散尾葵",
+        "difference": "羽状叶配材，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花配叶",
+      "namingNote": "羽状叶配材，热带开业常见"
+    }
+  },
+  "language": {
+    "meaning": "热带、开业与「很大气的羽叶」",
+    "paragraphs": [
+      "散尾葵叶适合开业、热带风——与白色百合、绿康同插，气场足。",
+      "叶材清洁水质；避免叶浸水腐烂。"
+    ],
+    "occasions": [
+      "开业",
+      "热带风"
+    ],
+    "colorMeanings": [
+      {
+        "color": "深绿",
+        "meaning": "热带、气场"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "开业",
+        "flowers": [
+          "百合",
+          "绿康"
+        ],
+        "note": "热带"
+      }
+    ],
+    "caution": "避免叶长期浸水。"
+  },
+  "names": {
+    "scientificName": "Dypsis lutescens",
+    "commonNames": [
+      "Areca Palm",
+      "散尾葵"
+    ]
+  }
+}

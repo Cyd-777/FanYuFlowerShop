@@ -5,20 +5,18 @@
       :class="[
         `app-nav-bar--${mode}`,
         `app-nav-bar--bg-${resolvedBackground}`,
+        { 'app-nav-bar--search-modal-open': searchModalHostOpen },
       ]"
       :style="barStyle"
     >
       <view class="app-nav-bar__status" :style="{ height: `${layout.statusBarHeight}px` }" />
       <view class="app-nav-bar__content" :style="contentStyle">
-        <view
+        <AppNavBackButton
           v-if="showBack"
-          class="app-nav-bar__back"
-          hover-class="app-nav-bar__back--active"
-          :style="backStyle"
+          :width-px="backWidthPx"
+          :height-px="layout.capsuleHeight"
           @tap="onBack"
-        >
-          <AppIcon type="返回" :size="24" />
-        </view>
+        />
         <view
           v-if="title"
           class="app-nav-bar__title-wrap"
@@ -53,8 +51,9 @@ import {
   type NavBarTitleAlign,
 } from '@/config/pageNav'
 import { getNavBarLayout, type NavBarLayout } from '@/utils/navBarLayout'
-import AppIcon from '@/components/AppIcon.vue'
+import AppNavBackButton from '@/components/AppNavBackButton.vue'
 import { layoutDebugConfig } from '@/config/layoutDebug'
+import { searchModalHostOpen } from '@/utils/searchModalHost'
 
 /** 左对齐标题与返回图标之间的固定间距（px） */
 const TITLE_LEFT_GAP_PX = 8
@@ -149,17 +148,9 @@ const contentStyle = computed(() => ({
     : {}),
 }))
 
-const backStyle = computed(() => ({
-  width: `${backWidthPx.value}px`,
-  height: `${layout.value.capsuleHeight}px`,
-  background: layoutDebugConfig.showNavLayoutDebugBg
-    ? layoutDebugConfig.backBg
-    : 'transparent',
-}))
-
 const titleWrapStyle = computed(() => {
-  const debugBg = layoutDebugConfig.showNavLayoutDebugBg
-    ? layoutDebugConfig.titleBg
+  const debugBg = layoutDebugConfig.showLayoutDebugBg
+    ? layoutDebugConfig.navTitleBg
     : 'transparent'
 
   if (titleAlign.value === 'center') {
@@ -207,6 +198,10 @@ function onBack() {
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
   will-change: opacity, transform;
+
+  &--search-modal-open {
+    z-index: 50;
+  }
 
   &--bg-transparent {
     background: transparent;

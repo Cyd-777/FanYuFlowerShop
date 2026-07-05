@@ -1,0 +1,123 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Firebird'",
+    "commonNames": [
+      "Firebird",
+      "火灵鸟玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "开放过程会变色，阴凉通风可稳定观赏",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "火灵鸟开放过程中色调会变化，阴凉通风、勤换水可稳定观赏期。",
+    "tips": [
+      "开放后期色调会变浅，属正常现象",
+      "渐变色避直射"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Firebird'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "namingNote": "名称取自火鸟，寓意开放过程中如火焰般变幻的色调",
+        "introducedYear": "2010 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "初开偏橙红，开放后渐变为粉或浅橙，渐变明显",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.color_shift",
+      "trait.gradient_warm"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "猪小姐",
+        "difference": "粉橙渐变稳定，而非开放明显变色"
+      },
+      {
+        "name": "橙芭比",
+        "difference": "多头橙色，而非单头变色"
+      },
+      {
+        "name": "火灵鸟",
+        "difference": "开放过程色调变幻，是「会变色」玫瑰代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2010 年代",
+      "namingNote": "名称取自火鸟，寓意开放过程中如火焰般变幻的色调"
+    }
+  },
+  "language": {
+    "meaning": "变幻、活力与「每一阶段都不一样」",
+    "paragraphs": [
+      "火灵鸟适合送给喜欢观察、喜欢「养花开盲盒」的人——收到时与完全开放后，颜色可能差别很大，这是品种特性而非品质问题。",
+      "生日、送创意朋友、家居插瓶都适合；若对方希望「收到即固定颜色」，请提前说明会变色。"
+    ],
+    "occasions": [
+      "生日",
+      "送友人",
+      "家居插瓶",
+      "创意礼物"
+    ],
+    "colorMeanings": [
+      {
+        "color": "橙红渐变",
+        "meaning": "开放变色、活力、独特"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "观察型瓶插",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "单品种即可看变化"
+      },
+      {
+        "style": "活力混搭",
+        "flowers": [
+          "橙芭比",
+          "猪小姐"
+        ],
+        "note": "暖色同系"
+      }
+    ],
+    "caution": "开放会变色——若收花人不知道，可能误以为「送错了」；赠送时可附一句说明。"
+  }
+}

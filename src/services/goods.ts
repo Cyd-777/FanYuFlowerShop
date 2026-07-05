@@ -11,6 +11,14 @@ import type { StockInSubmitItem } from '@/types/stockIn'
 import type { StockOutSubmitItem } from '@/types/stockOut'
 import { salesTypeFromUnit } from '@/types/goods'
 import { CACHE_KEYS, goodsPublicDetailKey } from '@/data/cacheKeys'
+import { assertLocalImageWithinLimit } from '@/utils/uploadImageLimit'
+import { resolveGoodsFormCategoryId } from '@/utils/goodsCategory'
+
+/** 商品增删改会影响分类 goodsCount / enabled，一并失效分类缓存 */
+function invalidateGoodsAndCategoriesCache() {
+  invalidateCacheModule('goods')
+  invalidateCacheModule('categories')
+}
 
 /** 表单可售数：空视为 0，允许零库存建品后再进货单累加 */
 export function parseGoodsStockField(raw: string | number | undefined | null): number {
@@ -328,6 +336,8 @@ export function toGoodsPayload(form: GoodsForm) {
   const unitsPerGroup =
     unit === '组' ? parseInt(form.unitsPerGroup, 10) : undefined
   const stock = parseGoodsStockField(form.stock)
+  const categoryId = resolveGoodsFormCategoryId(form)
+  const needsFlower = unit === '支' || unit === '组'
   return {
     name: form.name.trim(),
     price: Number(form.price),
@@ -335,11 +345,11 @@ export function toGoodsPayload(form: GoodsForm) {
     unit,
     stock: Number.isNaN(stock) ? 0 : stock,
     description: form.description.trim(),
-    categoryId: form.categoryId.trim(),
-    flowerKindId: form.flowerKindId.trim(),
-    flowerKindName: form.flowerKindName.trim(),
-    flowerVarietyId: form.flowerVarietyId.trim(),
-    flowerVarietyName: form.flowerVarietyName.trim(),
+    categoryId,
+    flowerKindId: needsFlower ? form.flowerKindId.trim() : '',
+    flowerKindName: needsFlower ? form.flowerKindName.trim() : '',
+    flowerVarietyId: needsFlower ? form.flowerVarietyId.trim() : '',
+    flowerVarietyName: needsFlower ? form.flowerVarietyName.trim() : '',
     coverImage: form.coverImage,
     images: form.images,
     previewFileId: form.previewFileId || '',
@@ -360,7 +370,7 @@ export async function createGoods(form: GoodsForm): Promise<Goods> {
   if (!result.success || !result.goods) {
     throw new Error(result.errMsg || '创建商品失败')
   }
-  invalidateCacheModule('goods')
+  invalidateGoodsAndCategoriesCache()
   return result.goods
 }
 
@@ -374,7 +384,7 @@ export async function updateGoods(id: string, form: GoodsForm): Promise<Goods> {
   if (!result.success || !result.goods) {
     throw new Error(result.errMsg || '更新商品失败')
   }
-  invalidateCacheModule('goods')
+  invalidateGoodsAndCategoriesCache()
   return result.goods
 }
 
@@ -383,7 +393,7 @@ export async function removeGoods(id: string): Promise<void> {
   if (!result.success) {
     throw new Error(result.errMsg || '删除商品失败')
   }
-  invalidateCacheModule('goods')
+  invalidateGoodsAndCategoriesCache()
 }
 
 export async function batchRemoveGoods(ids: string[]): Promise<number> {
@@ -394,7 +404,7 @@ export async function batchRemoveGoods(ids: string[]): Promise<number> {
   if (!result.success) {
     throw new Error(result.errMsg || '批量删除失败')
   }
-  invalidateCacheModule('goods')
+  invalidateGoodsAndCategoriesCache()
   return Number((result as { removed?: number }).removed) || ids.length
 }
 
@@ -407,7 +417,7 @@ export async function batchUpdateGoods(ids: string[], patch: GoodsBatchPatch): P
   if (!result.success) {
     throw new Error(result.errMsg || '批量修改失败')
   }
-  invalidateCacheModule('goods')
+  invalidateGoodsAndCategoriesCache()
   return Number((result as { updated?: number }).updated) || ids.length
 }
 
@@ -419,7 +429,7 @@ export async function submitStockIn(items: StockInSubmitItem[]): Promise<number>
   if (!result.success) {
     throw new Error(result.errMsg || '提交进货单失败')
   }
-  invalidateCacheModule('goods')
+  invalidateGoodsAndCategoriesCache()
   return Number((result as { applied?: number }).applied) || items.length
 }
 
@@ -431,11 +441,13 @@ export async function submitStockOut(items: StockOutSubmitItem[]): Promise<numbe
   if (!result.success) {
     throw new Error(result.errMsg || '提交出库单失败')
   }
-  invalidateCacheModule('goods')
+  invalidateGoodsAndCategoriesCache()
   return Number((result as { applied?: number }).applied) || items.length
 }
 
 export async function uploadGoodsImage(localPath: string): Promise<string> {
+  await assertLocalImageWithinLimit(localPath)
+
   const extMatch = localPath.match(/\.(\w+)(?:\?|$)/)
   const ext = extMatch?.[1] || 'jpg'
   const cloudPath = `goods/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`

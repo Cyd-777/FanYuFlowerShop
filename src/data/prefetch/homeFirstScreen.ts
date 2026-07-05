@@ -4,6 +4,7 @@ import { resolveActiveTheme } from '@/types/shopTheme'
 import type { ShopSettings } from '@/types/shop'
 import { goodsRepository } from '@/data/repository/goodsRepository'
 import { categoriesRepository } from '@/data/repository/categoriesRepository'
+import { shopRepository } from '@/data/repository/shopRepository'
 import { startAggressivePrefetch } from './aggressivePrefetch'
 
 function readLocalShopSettings(): ShopSettings | null {

@@ -1,0 +1,119 @@
+{
+  "bloom": {
+    "vase": "约 3—5 天",
+    "vaseNote": "粉白渐变芍药，约 3—5 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.peony.vase_base",
+  "careVaseOverride": {
+    "summary": "杨妃出浴粉白渐变；浅水、高瓶、阴凉，轻拿轻放。",
+    "tips": [
+      "轻拿轻放，避免挤压重瓣",
+      "选微开入瓶"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.peony",
+      "identity": {
+        "scientificName": "Paeonia 'Yang Fei'",
+        "namingNote": "粉白渐变芍药，中式古典名，层次柔美",
+        "horticulturalGroup": "group.herbaceous_peony",
+        "breeder": "荷兰 / 法国芍药育种",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "外瓣粉、内瓣渐白，开放后层次如「出浴」般柔美",
+        "scent": "浓香",
+        "stem": "茎干粗壮，花头重，需高瓶支撑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "12 至 18"
+      }
+    },
+    "featureRefs": [
+      "trait.soft_pink",
+      "trait.huge_flower",
+      "trait.gradient_warm"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "莎拉",
+        "difference": "整体柔粉，而非粉白渐变"
+      },
+      {
+        "name": "奶油碗",
+        "difference": "乳白为主，而非粉白"
+      },
+      {
+        "name": "杨妃出浴",
+        "difference": "粉白渐变、古典，是中式芍药代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "草本芍药",
+      "namingNote": "粉白渐变芍药，中式古典名，层次柔美"
+    }
+  },
+  "language": {
+    "meaning": "古典、柔美与「有故事感的粉白」",
+    "paragraphs": [
+      "杨妃出浴的粉白渐变，适合送给喜欢中式审美、文学意象的人——名字本身就有画面感，不必解释太多。",
+      "与莎拉、蕾丝花同插，婚礼与家居都成立；芍药季短暂，收到即珍惜。"
+    ],
+    "occasions": [
+      "婚礼",
+      "纪念日",
+      "探望",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "粉白渐变",
+        "meaning": "古典、柔美、诗意"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "中式婚礼",
+        "flowers": [
+          "莎拉",
+          "蕾丝花"
+        ],
+        "note": "粉白轻"
+      },
+      {
+        "style": "家居",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "单品种即可"
+      }
+    ],
+    "caution": "瓶插期短；粉白瓣易损，轻拿轻放。"
+  },
+  "names": {
+    "scientificName": "Paeonia 'Yang Fei'",
+    "commonNames": [
+      "Yang Fei",
+      "杨妃出浴"
+    ]
+  }
+}

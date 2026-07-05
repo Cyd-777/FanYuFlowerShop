@@ -2,7 +2,7 @@
 
 微信花店小程序，包含 **顾客端（A 端）** 与 **商家端（B 端）**。技术栈：Taro 4 + Vue 3 + NutUI + 微信云开发。
 
-> **版本**：当前 **0.1.x**（`package.json` 为 `0.1.4`）；**推进目标** [0.2.0](docs/versions/0.2.0.md)（三环闭环，必做项完成后才改号）。详见 [docs/versions/README.md](docs/versions/README.md)。
+> **版本**：当前 **0.1.x**（`package.json` 为 `0.1.4`）；**推进目标** [0.2.0](docs/待处理/versions/0.2.0.md)（三环闭环，必做项完成后才改号）。详见 [docs/待处理/versions/README.md](docs/待处理/versions/README.md)。
 
 ---
 
@@ -143,8 +143,8 @@ src/pagesMerchant/
 
 ### 2.4 页面 ↔ 业务模块（速查）
 
-- **商品** — 浏览 → 加购 → 购物车（至点击「结算」前）；详见 [docs/goods.md](docs/goods.md)
-- **订单** — 确认页填单及之后；详见 [docs/order.md](docs/order.md)
+- **商品** — 浏览 → 加购 → 购物车（至点击「结算」前）；详见 [docs/待处理/goods.md](docs/待处理/goods.md)
+- **订单** — 确认页填单及之后；详见 [docs/待处理/order.md](docs/待处理/order.md)
 
 ---
 
@@ -201,41 +201,54 @@ FanYuFlowerShop/
 
 ## 四、文档索引
 
-完整分类、过时项标注与后续整理建议见 **[docs/文档规划.md](docs/文档规划.md)**。
+> **2026-07-02 重组中**：模块占位见 [docs/README.md](docs/README.md)；旧正文在 [docs/待处理/](docs/待处理/)；工作面板 [🎛️ CURRENT](docs/🎛️%20CURRENT.md) / [🎛️ DONE](docs/🎛️%20DONE.md) 仍在 `docs/` 根目录。  
+> **完整清单与用途说明** → [docs/文档清单.md](docs/文档清单.md)
+
+### 业务模块（新结构）
+
+- [docs/商品模块.md](docs/商品模块.md) · [docs/订单模块.md](docs/订单模块.md) · [docs/智库模块.md](docs/智库模块.md)
+
+### 工程模块（新结构）
+
+- [docs/开发环境与部署模块.md](docs/开发环境与部署模块.md) · [docs/云开发模块.md](docs/云开发模块.md) · [docs/数据加载模块.md](docs/数据加载模块.md)
+- [docs/身份与登录模块.md](docs/身份与登录模块.md) · [docs/页面地图模块.md](docs/页面地图模块.md)
+- 完整索引：[docs/README.md](docs/README.md)
+
+### 旧版专题（待处理 · 迁移参考）
 
 ### 4.1 入门与运维
 
-- [docs/setup.md](docs/setup.md) — 环境要求、首次配置、日常编译、云函数部署命令与清单。
-- [docs/cloud.md](docs/cloud.md) — 云函数 action、数据库集合字段、云存储读法、店长白名单与 initDb 流程。
+- [docs/待处理/setup.md](docs/待处理/setup.md) — 环境要求、首次配置、日常编译、云函数部署命令与清单。
+- [docs/待处理/cloud.md](docs/待处理/cloud.md) — 云函数 action、数据库集合字段、云存储读法、店长白名单与 initDb 流程。
 
 ### 4.2 架构与技术
 
-- [docs/architecture.md](docs/architecture.md) — 主包 / 分包分工、NutUI 使用规范、主包体积约束与构建检查。
-- [docs/app-nav-bar.md](docs/app-nav-bar.md) — 自定义 Head（`AppNavBar`）API：overlay / spacer 模式、尺寸公式、路由配置、`AppIcon` base64 图标与新页接入。
-- [docs/data-loading.md](docs/data-loading.md) — 数据加载目标架构：SWR、Repository、调度队列、**§4.3 静态资源 / Base64 图标**与分阶段落地清单。
-- [docs/cache.md](docs/cache.md) — 已实现的本地缓存与 meta 版本号策略、模块接入进度与运维项。
+- [docs/待处理/architecture.md](docs/待处理/architecture.md) — 主包 / 分包分工、NutUI 使用规范、主包体积约束与构建检查。
+- [docs/待处理/app-nav-bar.md](docs/待处理/app-nav-bar.md) — 自定义 Head（`AppNavBar`）API。
+- [docs/待处理/data-loading.md](docs/待处理/data-loading.md) — 数据加载目标架构（SWR、Repository 等）。
+- [docs/待处理/cache.md](docs/待处理/cache.md) — 本地缓存与 meta 版本策略。
 
 ### 4.3 业务功能
 
-- [docs/features.md](docs/features.md) — 全项目功能总览、模块进度勾选、页面路由速查与建议推进顺序。
-- [docs/goods.md](docs/goods.md) — **商品模块**边界：商家 CRUD / 分类 / 花卉库、顾客浏览加购购物车。
-- [docs/order.md](docs/order.md) — **订单模块**边界：确认页、创建订单、列表详情、商家履约与库存扣减。
+- [docs/待处理/features.md](docs/待处理/features.md) — 全项目功能总览（待拆入各模块）。
+- [docs/待处理/goods.md](docs/待处理/goods.md) — 已迁移 → [商品模块](docs/商品模块.md)
+- [docs/待处理/order.md](docs/待处理/order.md) — 已迁移 → [订单模块](docs/订单模块.md)
 
 ### 4.4 规划与进度（历史 + 路线图）
 
-- [docs/功能实施策略.md](docs/功能实施策略.md) — **跨模块实施策略**与 **§7 十六段原话归档**（智库、AI、加载、OA、支付过渡等）。
-- [docs/bugs.md](docs/bugs.md) — **重大代码缺陷**台账（根因、修法、复发对照）。
-- [docs/ux-improvements.md](docs/ux-improvements.md) — **体验优化**与策略调整台账（非 bug）。
-- [docs/closed-loop-plan.md](docs/closed-loop-plan.md) — **基础三环闭环**分步计划（商品维护 → 顾客下单 → 商家处理）；步骤 1–6 已完成记录。
-- [docs/post-closed-loop-branches.md](docs/post-closed-loop-branches.md) — 闭环之上的 Git 功能分支地图（Issue #1：会员、批处理、配送方式等）。
-- [docs/👥-feature-layers.md](docs/👥-feature-layers.md) — **你 ↔ AI 协作用**功能分层清单；可随手改标记，与专题文档互补。
+- [docs/待处理/功能实施策略.md](docs/待处理/功能实施策略.md) — 策略索引（正文在各模块 README）
+- [docs/待处理/bugs.md](docs/待处理/bugs.md) — 重大缺陷台账。
+- [docs/待处理/ux-improvements.md](docs/待处理/ux-improvements.md) — 体验优化台账。
+- [docs/待处理/closed-loop-plan.md](docs/待处理/closed-loop-plan.md) — 三环闭环分步计划（ largely 已完成）。
+- [docs/待处理/post-closed-loop-branches.md](docs/待处理/post-closed-loop-branches.md) — 闭环后 Git 分支地图。
+- [docs/待处理/👥-feature-layers.md](docs/待处理/👥-feature-layers.md) — 功能分层勾选（你 ↔ AI）。
 
 ### 4.5 版本记录
 
-- [docs/versions/README.md](docs/versions/README.md) — 当前 0.1.x vs 推进目标 0.2.0 的关系说明
-- [docs/versions/0.1.0.md](docs/versions/0.1.0.md) — **当前 0.1.x 版本线**（能力与范围）
-- [docs/versions/0.2.0.md](docs/versions/0.2.0.md) — **发版目标**：推进到 0.2.0 的必做项（非当前版本号）
-- [docs/versions/0.3.0.md](docs/versions/0.3.0.md) — **更后目标**：会员 / 优惠券
+- [docs/待处理/versions/README.md](docs/待处理/versions/README.md) — 当前 vs 目标版本说明
+- [docs/待处理/versions/0.1.0.md](docs/待处理/versions/0.1.0.md) — 当前 0.1.x
+- [docs/待处理/versions/0.2.0.md](docs/待处理/versions/0.2.0.md) — 发版目标 0.2.0
+- [docs/待处理/versions/0.3.0.md](docs/待处理/versions/0.3.0.md) — 目标 0.3.0
 
 ---
 
@@ -259,7 +272,7 @@ npm run dev:weapp      # 监听模式
 ## 六、版本
 
 - **当前**：**0.1.x**（`package.json` 为 `0.1.4`）
-- **推进目标**：[docs/versions/0.2.0.md](docs/versions/0.2.0.md)（三环闭环；必做项完成后才改号为 0.2.0）
-- **更后**：[docs/versions/0.3.0.md](docs/versions/0.3.0.md)（会员 / 优惠券）
-- **说明**：[docs/versions/README.md](docs/versions/README.md)（当前 vs 目标）
-- **0.1.x 范围**：[docs/versions/0.1.0.md](docs/versions/0.1.0.md)
+- **推进目标**：[docs/待处理/versions/0.2.0.md](docs/待处理/versions/0.2.0.md)（三环闭环；必做项完成后才改号为 0.2.0）
+- **更后**：[docs/待处理/versions/0.3.0.md](docs/待处理/versions/0.3.0.md)（会员 / 优惠券）
+- **说明**：[docs/待处理/versions/README.md](docs/待处理/versions/README.md)（当前 vs 目标）
+- **0.1.x 范围**：[docs/待处理/versions/0.1.0.md](docs/待处理/versions/0.1.0.md)

@@ -59,10 +59,21 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
         enable: false
       }
     },
+    vueLoaderOption: {
+      compilerOptions: {
+        hoistStatic: false,
+        cacheHandlers: false,
+      },
+    },
     cache: {
       enable: false // Webpack 持久化缓存配置，建议开启。默认配置请参考：https://docs.taro.zone/docs/config-detail#cache
     },
     mini: {
+      // 微信小程序不支持 Vue createStaticVNode；关闭静态提升避免页面崩溃白屏
+      compilerOptions: {
+        hoistStatic: false,
+        cacheHandlers: false,
+      },
       miniCssExtractPluginOption: {
         ignoreOrder: true,
       },

@@ -14,6 +14,7 @@ import { setupMerchantWarehouseHistoryPageData } from './pages/merchantWarehouse
 import { setupFlowerPickerPageData } from './pages/flowerPicker'
 import { setupGoodsDetailPageData } from './pages/goodsDetail'
 import { setupMerchantCategoryListPageData } from './pages/merchantCategoryList'
+import { setupMerchantWikiListPageData } from './pages/merchantWikiList'
 import { setupMerchantGoodsPickerPageData } from './pages/merchantGoodsPicker'
 import { setupSalesStrategyEditPageData } from './pages/salesStrategyEdit'
 
@@ -38,6 +39,7 @@ export function registerAllPageSetups() {
   registerPageSetup('pagesMerchant/goods/stock-out', setupMerchantGoodsStockOutPageData)
   registerPageSetup('pagesMerchant/goods/warehouse-history', setupMerchantWarehouseHistoryPageData)
   registerPageSetup('pagesMerchant/category/list', setupMerchantCategoryListPageData)
+  registerPageSetup('pagesMerchant/wiki/index', setupMerchantWikiListPageData)
   registerPageSetup('pagesMerchant/flower/picker', setupFlowerPickerPageData)
   registerPageSetup('pagesMerchant/shop/goods-picker', setupMerchantGoodsPickerPageData)
   registerPageSetup('pagesMerchant/shop/sales-strategy/edit', setupSalesStrategyEditPageData)

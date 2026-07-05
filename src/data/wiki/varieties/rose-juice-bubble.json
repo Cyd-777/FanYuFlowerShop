@@ -1,0 +1,124 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Juice Bubble'",
+    "commonNames": [
+      "Juice Bubble",
+      "果汁泡泡玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "多头复古色，勤换水",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "果汁泡泡为多头发散状切花，分枝多需预留瓶口空间，勤换水可延长整体观赏期。",
+    "tips": [
+      "多头发散，勿过度捆扎茎部",
+      "枯谢小头及时剪除"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Juice Bubble'",
+        "horticulturalGroup": "group.spray_rose",
+        "namingNote": "橙粉复古多头，日常与家居插瓶高频",
+        "introducedYear": "2010 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "4 至 6",
+        "color": "橙粉或珊瑚色小头，复古而温暖，花量极大",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.multi_head",
+      "trait.spray_huge",
+      "trait.muted_retro"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "橙芭比",
+        "difference": "更偏纯橙明亮，而非橙粉复古"
+      },
+      {
+        "name": "狂欢泡泡",
+        "difference": "红黄复色更热闹"
+      },
+      {
+        "name": "果汁泡泡",
+        "difference": "橙粉复古、花量极大，日常家居插瓶常见"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "多头切花玫瑰",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2010 年代",
+      "namingNote": "橙粉复古多头，日常与家居插瓶高频"
+    }
+  },
+  "language": {
+    "meaning": "日常、小确幸与「一大把的温柔」",
+    "paragraphs": [
+      "果汁泡泡像「把果汁的颜色装进一把玫瑰里」——适合日常家居、送室友同事、自我奖励，不必等节日。",
+      "多头花量大，单束就有存在感；与洋甘菊、尤加利等同系配花，轻松而好看。"
+    ],
+    "occasions": [
+      "日常",
+      "家居插瓶",
+      "送同事",
+      "自我奖励"
+    ],
+    "colorMeanings": [
+      {
+        "color": "橙粉",
+        "meaning": "复古、日常、花量大"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "家居瓶插",
+        "flowers": [
+          "洋甘菊",
+          "尤加利叶"
+        ],
+        "note": "轻松日常"
+      },
+      {
+        "style": "同事礼",
+        "flowers": [
+          "绿康"
+        ],
+        "note": "一小把也好看"
+      }
+    ],
+    "caution": "多头需预留瓶口空间；勿过度捆扎茎部。"
+  }
+}

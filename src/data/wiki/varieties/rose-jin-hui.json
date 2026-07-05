@@ -1,0 +1,124 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Jin Hui'",
+    "commonNames": [
+      "Jin Hui",
+      "金辉玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "复色边避直射",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "黄底红边复色玫瑰，避直射可减缓边色褪色，勤换水斜剪根。",
+    "trimPosition": "复色品种更忌叶浸水",
+    "tips": [
+      "边色品种避免阳光直射"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Jin Hui'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "namingNote": "国内常见黄底红边复色切花",
+        "introducedYear": "2000 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "中国",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "底色金黄或橙黄，边缘晕染红色，复色对比鲜明",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.bicolor_edge",
+      "trait.yellow_gold"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "艾莎",
+        "difference": "白底红边，而非黄底红边"
+      },
+      {
+        "name": "闪耀",
+        "difference": "条纹复色，而非整边晕染"
+      },
+      {
+        "name": "金辉",
+        "difference": "黄底红边、对比鲜明，是国内复色玫瑰高频品种"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2000 年代",
+      "namingNote": "国内常见黄底红边复色切花"
+    }
+  },
+  "language": {
+    "meaning": "独特、活力与「很上镜的复色」",
+    "paragraphs": [
+      "金辉的黄红对比，在混搭花束里非常抢镜——适合生日、毕业、送给喜欢「有点特别」的朋友。",
+      "与橙色、红色或绿色配花都能形成强烈视觉；若对方偏好极简素雅，可能略张扬。"
+    ],
+    "occasions": [
+      "生日",
+      "毕业",
+      "送友人",
+      "混搭主花"
+    ],
+    "colorMeanings": [
+      {
+        "color": "黄底红边",
+        "meaning": "复色、独特、活力"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "活力混搭",
+        "flowers": [
+          "橙芭比",
+          "绿康"
+        ],
+        "note": "暖色对比"
+      },
+      {
+        "style": "拍照花束",
+        "flowers": [
+          "白雪山",
+          "喷泉草"
+        ],
+        "note": "复色+白绿更出片"
+      }
+    ],
+    "caution": "边色避强光；与艾莎等复色一样忌水质浑浊。"
+  }
+}

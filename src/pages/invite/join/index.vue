@@ -3,7 +3,7 @@
     <AppNavBar />
     <view v-if="accepted" class="state-box success">
       <view class="state-icon">✅</view>
-      <view class="state-title">已成为工作人员</view>
+      <view class="state-title">{{ uiText_39d6a3 }}</view>
       <view class="state-desc">身份：{{ accepted.roleLabel }} · {{ accepted.name }}</view>
       <nut-button type="primary" block class="action-btn" @click="goMerchant">进入商家工作台</nut-button>
       <nut-button plain block class="action-btn secondary" @click="goMine">返回我的</nut-button>
@@ -11,8 +11,8 @@
 
     <view v-else class="join-card">
       <view class="join-icon">🔑</view>
-      <view class="join-title">输入邀请码</view>
-      <view class="join-desc">输入店长发来的 6 位邀请码，验证后自行加入商家团队</view>
+      <view class="join-title">{{ uiText_9920d3 }}</view>
+      <view class="join-desc">{{ uiText_05460d }}</view>
 
       <view class="code-input-wrap">
         <nut-input
@@ -37,15 +37,15 @@
 
       <view v-if="invite" class="info-block">
         <view class="info-row">
-          <text class="label">预设姓名</text>
+          <text class="label">{{ uiText_5eceae }}</text>
           <text class="value">{{ invite.name }}</text>
         </view>
         <view class="info-row">
-          <text class="label">身份</text>
+          <text class="label">{{ roleLabelText }}</text>
           <text class="value">{{ invite.roleLabel }}</text>
         </view>
         <view class="info-row">
-          <text class="label">有效期至</text>
+          <text class="label">{{ uiText_6460f4 }}</text>
           <text class="value">{{ expiresText }}</text>
         </view>
       </view>
@@ -95,6 +95,13 @@ import {
 } from '@/services/staff'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useUserStore } from '@/stores/user'
+
+const roleLabelText = '身份'
+const uiText_05460d = '输入店长发来的 6 位邀请码，验证后自行加入商家团队'
+const uiText_39d6a3 = '已成为工作人员'
+const uiText_5eceae = '预设姓名'
+const uiText_6460f4 = '有效期至'
+const uiText_9920d3 = '输入邀请码'
 
 const userStore = useUserStore()
 

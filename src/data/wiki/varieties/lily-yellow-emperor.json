@@ -1,0 +1,134 @@
+{
+  "names": {
+    "scientificName": "Lilium 'Yellow Emperor'",
+    "commonNames": [
+      "Yellow Emperor",
+      "黄天霸百合",
+      "OT 百合"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "浓香 OT 百合，摘除花蕊可延长观赏并减少花粉污染",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.lily.vase_base",
+  "careVaseOverride": {
+    "summary": "黄天霸为 OT 杂交百合，花大浓香；建议摘除花蕊，勤换水并保持通风。",
+    "tips": [
+      "开放前或初开时摘除花蕊，可减少花粉沾染与过敏",
+      "浓香品种远离密闭小空间"
+    ],
+    "commonIssues": [
+      {
+        "title": "花粉大量沾染",
+        "cause": "OT 百合花大、花粉多，开放后尤其明显",
+        "prevention": "开放前或初开时摘除花蕊；远离浅色织物与过敏者"
+      }
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.lily",
+      "identity": {
+        "scientificName": "Lilium 'Yellow Emperor'",
+        "horticulturalGroup": "group.ot_lily",
+        "breeder": "荷兰百合育种体系",
+        "introducedYear": "1990 年代起",
+        "namingNote": "花店语境里「黄天霸」常指大型黄色 OT 百合，春节与庆典极高频"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.ecuador",
+          "region.colombia"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.recurved_petal"
+        ],
+        "petalCount": "约 6 枚外瓣，花型舒展",
+        "bloomDiameterCm": "18 至 22",
+        "color": "明亮金黄色，花瓣略反卷，开放后花径大、存在感强",
+        "stem": "茎干粗壮，需高瓶或深瓶支撑",
+        "foliage": "叶片狭长，沿茎分布",
+        "scent": "浓香，室内插瓶时尤为明显"
+      }
+    },
+    "featureRefs": [
+      "trait.strong_scent",
+      "trait.recurved_petal",
+      "trait.huge_flower"
+    ],
+    "origin": "主产区中国云南、厄瓜多尔、哥伦比亚等地",
+    "cultivar": {
+      "horticulturalGroup": "OT 杂交百合",
+      "namingNote": "春节黄色主花高频品种"
+    },
+    "distinguishFrom": [
+      {
+        "name": "木门",
+        "difference": "偏深黄/金黄色调，花型与香气接近但市场命名不同"
+      },
+      {
+        "name": "曼尼莎",
+        "difference": "同为黄色系，瓣形与开放度略异"
+      },
+      {
+        "name": "黄天霸",
+        "difference": "大型黄色 OT、浓香卷瓣，是春节与庆典最辨识的黄色百合之一"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "繁荣、祝福与「很隆重的大花」",
+    "paragraphs": [
+      "黄天霸的黄色大花，天然带着节庆与祝福感——春节、开业、贺寿、探望长辈都很常见。它不是 subtle 的小清新，而是「一进门就看得见」的主花气场。",
+      "若收花人对花粉或浓香敏感，赠送时说明「可摘花蕊」会更贴心；与白色、绿色配花能压住浓香视觉，整体更高级。"
+    ],
+    "occasions": [
+      "春节",
+      "开业",
+      "贺寿",
+      "探望长辈",
+      "庆典"
+    ],
+    "colorMeanings": [
+      {
+        "color": "金黄",
+        "meaning": "繁荣、祝福、隆重"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "节庆主花",
+        "flowers": [
+          "白雪山",
+          "绿康"
+        ],
+        "note": "黄白绿喜庆而不俗"
+      },
+      {
+        "style": "开业贺礼",
+        "flowers": [
+          "向日葵",
+          "尤加利叶"
+        ],
+        "note": "明亮暖色，气场足"
+      }
+    ],
+    "caution": "浓香且花粉多；过敏者、密闭卧室慎选，建议摘花蕊。"
+  }
+}

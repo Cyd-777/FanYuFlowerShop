@@ -1,0 +1,121 @@
+{
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "粉色康乃馨，勤换水可稳定保持 7—14 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.carnation.vase_base",
+  "careVaseOverride": {
+    "summary": "粉钻瓣层多、耐插；撕去关节处叶片，勤换水，避免花瓣沾水。",
+    "tips": [
+      "撕去关节处叶片，减少腐烂",
+      "远离热源与成熟水果"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.carnation",
+      "identity": {
+        "scientificName": "Dianthus 'Pink Diamond'",
+        "namingNote": "温柔粉色康乃馨代表，母亲节与感恩场景高频，瓣层繁密",
+        "horticulturalGroup": "group.carnation_cut",
+        "breeder": "哥伦比亚商业切花培育",
+        "introducedYear": "1970 年代起现代切花体系"
+      },
+      "origin": {
+        "breedingOrigin": "哥伦比亚",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "柔和粉色，瓣缘锯齿、层叠繁密，开放后仍较饱满",
+        "scent": "淡香",
+        "stem": "茎节明显，需撕去下部叶片",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "petalCount": "花瓣边缘呈锯齿状，层叠繁密",
+        "bloomDiameterCm": "6 至 8"
+      }
+    },
+    "featureRefs": [
+      "trait.soft_pink",
+      "trait.thick_petal"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "马斯特",
+        "difference": "正红经典，而非柔粉"
+      },
+      {
+        "name": "野马",
+        "difference": "复古紫调，更特别"
+      },
+      {
+        "name": "粉钻",
+        "difference": "柔粉、瓣多、耐插，是粉色康乃馨最常见辨识"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花康乃馨",
+      "namingNote": "温柔粉色康乃馨代表，母亲节与感恩场景高频，瓣层繁密"
+    }
+  },
+  "language": {
+    "meaning": "感恩、温柔与「很体贴的粉色祝福」",
+    "paragraphs": [
+      "粉钻的柔粉不像玫瑰那样直白——它更适合母亲节、感谢老师、探望女性长辈：热烈里带着体贴，不会过于张扬。",
+      "与红、白康乃馨混搭是花店经典组合；单品种粉钻也适合日常家居，配绿康或尤加利即可。"
+    ],
+    "occasions": [
+      "母亲节",
+      "教师节",
+      "感恩",
+      "探望",
+      "日常家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "柔粉",
+        "meaning": "感恩、温柔、体贴"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "母亲节",
+        "flowers": [
+          "马斯特",
+          "白雪公主"
+        ],
+        "note": "红粉白康乃馨"
+      },
+      {
+        "style": "日常温柔",
+        "flowers": [
+          "洋桔梗",
+          "翠珠"
+        ],
+        "note": "粉白轻盈"
+      }
+    ],
+    "caution": "撕去茎节叶片，避免花瓣沾水；远离成熟水果（乙烯）。"
+  },
+  "names": {
+    "scientificName": "Dianthus 'Pink Diamond'",
+    "commonNames": [
+      "Pink Diamond",
+      "粉钻"
+    ]
+  }
+}

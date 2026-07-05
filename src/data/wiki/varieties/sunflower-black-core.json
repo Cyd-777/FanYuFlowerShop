@@ -1,0 +1,109 @@
+{
+  "bloom": {
+    "vase": "约 5—8 天",
+    "vaseNote": "深芯向日葵",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.sunflower.vase_base",
+  "careVaseOverride": {
+    "summary": "黑芯向日葵；高瓶支撑，勤换水。",
+    "tips": [
+      "高瓶支撑"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.sunflower",
+      "identity": {
+        "scientificName": "Helianthus 'Black Core'",
+        "namingNote": "深色花心向日葵，对比更强",
+        "horticulturalGroup": "group.sunflower_cut",
+        "breeder": "商业切花向日葵培育",
+        "introducedYear": "2000 年代起切花向日葵"
+      },
+      "origin": {
+        "breedingOrigin": "商业化种植",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "金黄瓣，花心深近黑，对比强",
+        "scent": "几乎无香",
+        "stem": "茎干粗壮，花盘重，需高瓶支撑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "10 至 20"
+      }
+    },
+    "featureRefs": [
+      "trait.yellow_gold"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "泰迪熊",
+        "difference": "重瓣矮生向日葵，与此品种形态或色调不同"
+      },
+      {
+        "name": "文森特",
+        "difference": "标准切花向日葵，与此品种形态或色调不同"
+      },
+      {
+        "name": "黑芯向日葵",
+        "difference": "深色花心向日葵，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花向日葵",
+      "namingNote": "深色花心向日葵，对比更强"
+    }
+  },
+  "language": {
+    "meaning": "阳光、个性与「更有态度的太阳」",
+    "paragraphs": [
+      "黑芯向日葵比标准款更「酷」一点——适合年轻人、拍照、以及想要向日葵但不想太「村」。",
+      "养护同向日葵：高瓶、勤换水。"
+    ],
+    "occasions": [
+      "生日",
+      "拍照",
+      "开业",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "金黄+深芯",
+        "meaning": "阳光、个性"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "酷感",
+        "flowers": [
+          "尤加利叶",
+          "银芽柳"
+        ],
+        "note": "黄绿灰"
+      }
+    ],
+    "caution": "高瓶支撑；勤换水。"
+  },
+  "names": {
+    "scientificName": "Helianthus 'Black Core'",
+    "commonNames": [
+      "Black Core",
+      "黑芯向日葵"
+    ]
+  }
+}

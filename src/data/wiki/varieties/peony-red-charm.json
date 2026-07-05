@@ -1,0 +1,119 @@
+{
+  "bloom": {
+    "vase": "约 3—5 天",
+    "vaseNote": "正红重瓣芍药，约 3—5 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.peony.vase_base",
+  "careVaseOverride": {
+    "summary": "红富士正红重瓣；高瓶支撑，浅水阴凉，选微开入瓶。",
+    "tips": [
+      "花头重，需高瓶",
+      "浅水养护"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.peony",
+      "identity": {
+        "scientificName": "Paeonia 'Red Charm'",
+        "namingNote": "正红重瓣芍药，喜庆场合常见",
+        "horticulturalGroup": "group.herbaceous_peony",
+        "breeder": "荷兰 / 法国芍药育种",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "正红重瓣，层叠繁密，色调饱和",
+        "scent": "浓香",
+        "stem": "茎干粗壮，花头重，需高瓶支撑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "12 至 18"
+      }
+    },
+    "featureRefs": [
+      "trait.classic_red",
+      "trait.huge_flower"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "落日珊瑚",
+        "difference": "珊瑚变色，而非正红"
+      },
+      {
+        "name": "莎拉",
+        "difference": "柔粉，而非正红"
+      },
+      {
+        "name": "红富士",
+        "difference": "正红重瓣，是喜庆芍药代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "草本芍药",
+      "namingNote": "正红重瓣芍药，喜庆场合常见"
+    }
+  },
+  "language": {
+    "meaning": "热烈、喜庆与「很东方的红」",
+    "paragraphs": [
+      "红富士的正红很适合春节、贺寿、开业——有牡丹的隆重感，但瓶插更「当下」，是中式喜庆花束常用芍药。",
+      "与黄色、白色芍药或配花同插，可压住浓香的视觉重量；收到后尽快插瓶，微开状态最佳。"
+    ],
+    "occasions": [
+      "春节",
+      "贺寿",
+      "开业",
+      "庆典"
+    ],
+    "colorMeanings": [
+      {
+        "color": "正红",
+        "meaning": "喜庆、热烈、祝福"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "喜庆",
+        "flowers": [
+          "黄天霸",
+          "绿康"
+        ],
+        "note": "红黄金绿"
+      },
+      {
+        "style": "庆典",
+        "flowers": [
+          "莎拉",
+          "尤加利叶"
+        ],
+        "note": "红粉层次"
+      }
+    ],
+    "caution": "浓香；瓶插期短。高瓶支撑重瓣花头。"
+  },
+  "names": {
+    "scientificName": "Paeonia 'Red Charm'",
+    "commonNames": [
+      "Red Charm",
+      "红富士"
+    ]
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "bloom": {
+    "vase": "约 5—7 天",
+    "vaseNote": "白色郁金香，约 5—7 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.tulip.vase_base",
+  "careVaseOverride": {
+    "summary": "白梦纯白郁金香；浅水、冷凉，勤换水保持洁净。",
+    "tips": [
+      "勤换水",
+      "花茎继续生长可修剪"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.tulip",
+      "identity": {
+        "scientificName": "Tulipa 'White Dream'",
+        "namingNote": "白色单瓣郁金香，洁净婚礼与春日常用",
+        "horticulturalGroup": "group.tulip_single",
+        "breeder": "荷兰球根花卉育种",
+        "introducedYear": "球根切花长期商用品种"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "纯白，杯形线条干净，开放后优雅",
+        "scent": "几乎无香",
+        "stem": "花茎会继续生长，需预留瓶高",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "7 至 9",
+        "flowerForm": [
+          "trait.cup_trumpet"
+        ]
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white",
+      "trait.cup_trumpet"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "夜皇后",
+        "difference": "深紫近黑，而非白"
+      },
+      {
+        "name": "王朝",
+        "difference": "正红，而非白"
+      },
+      {
+        "name": "白梦",
+        "difference": "纯白高脚杯，是白郁金香代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "单瓣郁金香",
+      "namingNote": "白色单瓣郁金香，洁净婚礼与春日常用"
+    }
+  },
+  "language": {
+    "meaning": "纯洁、春日与「很干净的一束白」",
+    "paragraphs": [
+      "白梦的纯白适合婚礼、日常家居、以及任何需要「白但不想用玫瑰」的郁金香场景——线条比百合更几何。",
+      "与黄、橙、红郁金香同插，是经典荷兰色盘；单品种白郁金香也足够高级。"
+    ],
+    "occasions": [
+      "婚礼",
+      "春日",
+      "日常家居",
+      "赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "纯白",
+        "meaning": "纯洁、清新、简约"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "婚礼白",
+        "flowers": [
+          "尤加利叶",
+          "翠珠"
+        ],
+        "note": "白绿"
+      },
+      {
+        "style": "荷兰色盘",
+        "flowers": [
+          "王朝",
+          "纯金"
+        ],
+        "note": "红白黄"
+      }
+    ],
+    "caution": "喜冷凉；白瓣对水质敏感，勤换水。"
+  },
+  "names": {
+    "scientificName": "Tulipa 'White Dream'",
+    "commonNames": [
+      "White Dream",
+      "白梦"
+    ]
+  }
+}

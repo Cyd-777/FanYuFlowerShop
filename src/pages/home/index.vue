@@ -1,5 +1,5 @@
 <template>
-  <view class="page-home">
+  <view class="page-home" id="home-page-scroll-body">
     <AppFeedbackHost />
     <view
       v-if="statusBarFillStyle"
@@ -16,7 +16,7 @@
     <view
       id="home-search-sticky"
       class="home-search page-sticky-search"
-      :class="searchStuckClass"
+      :class="[searchStuckClass, { 'search-modal-host-open': searchModalHostOpen }]"
       :style="searchStickyStyle"
     >
       <AppSearchInput
@@ -130,6 +130,11 @@
       </view>
     </view>
     <view v-if="!loading && !goodsList.length" class="empty-tip">{{ emptyText }}</view>
+    <ScrollListTailSpacer
+      content-selector="#home-page-scroll-body"
+      tab-bar
+      :watch-key="`${loading}-${goodsList.length}`"
+    />
   </view>
 </template>
 
@@ -148,6 +153,7 @@ import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsSalesTagRow from '@/components/GoodsSalesTagRow.vue'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
 import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
+import { searchModalHostOpen } from '@/utils/searchModalHost'
 
 const {
   shopStore,

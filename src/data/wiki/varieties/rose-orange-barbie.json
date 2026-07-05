@@ -1,0 +1,124 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Orange Barbie'",
+    "commonNames": [
+      "Orange Barbie",
+      "橙芭比玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "多头发散，枯谢小头及时剪除",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "橙芭比为多头发散状切花，分枝多需预留瓶口空间，勤换水可延长整体观赏期。",
+    "tips": [
+      "多头发散，勿过度捆扎茎部",
+      "枯谢小头及时剪除"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Orange Barbie'",
+        "horticulturalGroup": "group.spray_rose",
+        "namingNote": "橙色多头切花，花量大、氛围活泼",
+        "introducedYear": "2010 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "每朵约 20 至 30 枚",
+        "bloomDiameterCm": "4 至 6",
+        "color": "明亮橙色，多朵小头同一分枝开放，整体花量感强",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.multi_head",
+      "trait.spray_huge"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "果汁泡泡",
+        "difference": "橙粉复古，而非纯橙明亮"
+      },
+      {
+        "name": "火灵鸟",
+        "difference": "单头渐变变色，而非多头"
+      },
+      {
+        "name": "橙芭比",
+        "difference": "明亮橙色、多头花量大，毕业与庆典常见"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "多头切花玫瑰",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2010 年代",
+      "namingNote": "橙色多头切花，花量大、氛围活泼"
+    }
+  },
+  "language": {
+    "meaning": "活泼、庆祝与「很多朵的小确幸」",
+    "paragraphs": [
+      "橙芭比的一束里有很多小头——视觉热闹、价格 often 友好，适合毕业、生日派对、儿童庆祝，也适合「想送一大束但预算有限」。",
+      "与黄色、绿色配花能强化活力；若对方偏好极简高级，多头可能显得略满。"
+    ],
+    "occasions": [
+      "毕业",
+      "生日",
+      "庆典",
+      "送同学"
+    ],
+    "colorMeanings": [
+      {
+        "color": "橙色",
+        "meaning": "活泼、花量大、庆祝"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "毕业庆祝",
+        "flowers": [
+          "黄天霸",
+          "绿康"
+        ],
+        "note": "橙黄绿热闹"
+      },
+      {
+        "style": "桌花",
+        "flowers": [
+          "白雪山",
+          "尤加利叶"
+        ],
+        "note": "橙白对比"
+      }
+    ],
+    "caution": "多头勿过度捆扎；枯谢小头及时剪掉可延长整体观赏。"
+  }
+}

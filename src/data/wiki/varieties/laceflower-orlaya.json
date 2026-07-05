@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "约 7—10 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.laceflower.vase_base",
+  "careVaseOverride": {
+    "summary": "蕾丝花伞形配花；清洁水质，轻拿轻放。",
+    "tips": [
+      "可制干花"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.laceflower",
+      "identity": {
+        "scientificName": "Orlaya grandiflora",
+        "namingNote": "白色伞形配花，法式野趣",
+        "horticulturalGroup": "group.fill_flower",
+        "breeder": "欧洲切花配花培育",
+        "introducedYear": "2010 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "白色伞形小花，轻盈",
+        "scent": "淡香",
+        "stem": "伞形花序，轻盈飘逸",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "伞径 8 至 15 cm"
+      }
+    },
+    "featureRefs": [
+      "trait.pure_white"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "小雏菊",
+        "difference": "扁瓣菊形，而非伞形细花"
+      },
+      {
+        "name": "满天星",
+        "difference": "雾状密点，而非伞形轮廓"
+      },
+      {
+        "name": "蕾丝花",
+        "difference": "白色伞形，是法式野趣标配"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花配花",
+      "namingNote": "白色伞形配花，法式野趣"
+    }
+  },
+  "language": {
+    "meaning": "轻灵、法式与「雾状的白」",
+    "paragraphs": [
+      "蕾丝花是法式野趣标配——与郁金香、小菊、尤加利同插，整束立刻「会呼吸」。",
+      "清洁水质；也可制干花。"
+    ],
+    "occasions": [
+      "婚礼",
+      "法式",
+      "野趣"
+    ],
+    "colorMeanings": [
+      {
+        "color": "白",
+        "meaning": "轻灵、纯洁"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "法式",
+        "flowers": [
+          "小雏菊",
+          "尤加利叶"
+        ],
+        "note": "白绿"
+      }
+    ],
+    "caution": "轻盈易损；勤换水。"
+  },
+  "names": {
+    "scientificName": "Orlaya grandiflora",
+    "commonNames": [
+      "Orlaya",
+      "蕾丝花"
+    ]
+  }
+}

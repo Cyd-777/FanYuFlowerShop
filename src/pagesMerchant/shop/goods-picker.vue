@@ -1,7 +1,7 @@
 <template>
-  <view class="page-goods-picker">
+  <view class="page-goods-picker" id="shop-goods-picker-scroll-body">
     <AppNavBar />
-    <view class="tip">勾选参与此折扣的商品</view>
+    <view class="tip">{{ uiText_f696fe }}</view>
     <GoodsCardSkeleton v-if="loading" variant="row" :count="6" />
     <view v-else class="list">
       <view
@@ -27,6 +27,12 @@
       </view>
     </view>
 
+    <ScrollListTailSpacer
+      content-selector="#shop-goods-picker-scroll-body"
+      :bottom-inset-px="actionBarInsetPx"
+      :watch-key="`${loading}-${displayList.length}-${selectedIds.length}`"
+    />
+
     <view class="action-bar">
       <view class="count">已选 {{ selectedIds.length }} 件</view>
       <nut-button type="primary" @tap="confirm">确定</nut-button>
@@ -39,6 +45,11 @@ import { usePageData } from '@/composables/usePageData'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
 import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
+import { scrollTailActionBarInsetPx } from '@/utils/scrollListTailSpacer'
+
+const uiText_f696fe = '勾选参与此折扣的商品'
+
+const actionBarInsetPx = scrollTailActionBarInsetPx()
 
 const {
   displayList,

@@ -1,0 +1,121 @@
+{
+  "names": {
+    "scientificName": "Lilium 'Conca d'Or'",
+    "commonNames": [
+      "Conca d'Or",
+      "木门百合",
+      "康考德"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—14 天",
+    "vaseNote": "深黄 OT 百合，花大浓香",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.lily.vase_base",
+  "careVaseOverride": {
+    "summary": "木门（Conca d'Or）为深黄 OT 百合，花大浓香；摘除花蕊、勤换水。",
+    "tips": [
+      "摘除花蕊可减少花粉污染",
+      "深黄色系对水质敏感，须勤换水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.lily",
+      "identity": {
+        "scientificName": "Lilium 'Conca d'Or'",
+        "horticulturalGroup": "group.ot_lily",
+        "namingNote": "花店常称「木门」，深金黄 OT 百合代表之一",
+        "breeder": "荷兰百合育种体系",
+        "introducedYear": "1990 年代起"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.ecuador",
+          "region.colombia"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.recurved_petal"
+        ],
+        "bloomDiameterCm": "16 至 22",
+        "color": "深黄至金黄色，花瓣厚实，开放后花径大、色调偏暖金",
+        "stem": "茎干粗壮，建议高瓶或深瓶支撑",
+        "foliage": "叶片狭长，沿茎分布",
+        "scent": "浓香，室内插瓶时尤为明显"
+      }
+    },
+    "featureRefs": [
+      "trait.strong_scent",
+      "trait.yellow_gold",
+      "trait.huge_flower"
+    ],
+    "origin": "主产区中国云南、厄瓜多尔、哥伦比亚等地",
+    "cultivar": {
+      "horticulturalGroup": "OT 杂交百合",
+      "namingNote": "花店常称「木门」，深金黄 OT 百合代表之一"
+    },
+    "distinguishFrom": [
+      {
+        "name": "黄天霸",
+        "difference": "偏明亮黄，而非深金黄"
+      },
+      {
+        "name": "曼尼莎",
+        "difference": "明亮黄色系，色调更浅"
+      }
+    ]
+  },
+  "language": {
+    "meaning": "尊贵、庆典与「很有分量的金色主花」",
+    "paragraphs": [
+      "木门的深金黄比明亮黄更「沉」、更贵气——适合开业、贺寿、高端庆典，以及一切需要金色主花但不想用菊花的场合。",
+      "与绿色叶材、白色配花同插，金色主花会更显高级；记得为花粉敏感者摘花蕊。"
+    ],
+    "occasions": [
+      "开业",
+      "贺寿",
+      "庆典",
+      "高端赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "深金黄",
+        "meaning": "尊贵、庆典、分量感"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "金色庆典",
+        "flowers": [
+          "绿康",
+          "尤加利叶"
+        ],
+        "note": "金绿对比，大气"
+      },
+      {
+        "style": "贺寿主花",
+        "flowers": [
+          "康乃馨",
+          "铁炮百合"
+        ],
+        "note": "暖色层次"
+      }
+    ],
+    "caution": "浓香且花粉多；过敏者慎选，建议摘花蕊。"
+  }
+}

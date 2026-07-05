@@ -1,5 +1,12 @@
 <template>
-  <view class="app-search-input-wrap" :class="{ 'is-sticky': sticky && !modalOpen }" :style="stickyWrapStyle">
+  <view
+    class="app-search-input-wrap"
+    :class="{
+      'is-sticky': sticky && !modalOpen,
+      'is-modal-open': modalOpen,
+    }"
+    :style="stickyWrapStyle"
+  >
     <!-- 页内：外观同搜索框，实为打开模态的按钮（不可输入） -->
     <view
       class="search-trigger"
@@ -12,25 +19,34 @@
       <text class="search-trigger-text is-placeholder">{{ placeholder }}</text>
     </view>
 
-    <!-- 全屏模态（无半透明遮罩、无模糊） -->
-    <view
+    <!-- 全屏模态：page-container 拦截物理返回 / 侧滑返回，先关模态不退出小程序 -->
+    <page-container
       v-if="modalOpen"
-      class="search-modal"
-      catchtouchmove
-      @touchmove.stop.prevent
+      :show="true"
+      :overlay="false"
+      :round="false"
+      :duration="0"
+      position="bottom"
+      custom-style="height:100vh;background:#fff;"
+      @beforeleave="onPageContainerBeforeLeave"
     >
+      <view
+        class="search-modal"
+        catchtouchmove
+        @touchmove.stop.prevent
+      >
       <view class="search-modal__inner">
         <!-- 占位区：高度 = 自定义 Head（无 AppNavBar，仅用 navBarLayout 数据） -->
         <view class="search-modal__head" :style="modalHeadStyle">
           <view class="search-modal__status" :style="{ height: `${navLayout.statusBarHeight}px` }" />
           <view class="search-modal__nav" :style="modalNavStyle">
-            <view
-              class="search-modal__cancel"
-              hover-class="search-modal__cancel--active"
-              :style="modalCancelStyle"
+            <AppNavBackButton
+              :width-px="modalBackWidthPx"
+              :height-px="navLayout.capsuleHeight"
               @tap="closeModal"
-            >
-              取消
+            />
+            <view class="search-modal__title-wrap" :style="modalTitleWrapStyle">
+              <text class="search-modal__title">{{ resolvedModalTitle }}</text>
             </view>
           </view>
         </view>
@@ -41,8 +57,8 @@
             <input
               class="search-input"
               :value="inputValue"
-              :focus="inputFocused"
-              :hold-keyboard="true"
+              :focus="modalOpen && inputFocused"
+              :hold-keyboard="modalOpen && inputFocused"
               adjust-position
               :placeholder="placeholder"
               confirm-type="search"
@@ -55,7 +71,7 @@
               class="search-action"
               @tap.stop="onConfirm"
             >
-              搜索
+              {{ searchActionText }}
             </text>
           </view>
         </view>
@@ -63,8 +79,8 @@
         <scroll-view class="search-modal__body" :scroll-y="true" :enhanced="true" :show-scrollbar="false">
           <view v-if="showHistoryPanel" class="history-panel">
             <view class="history-header">
-              <text class="history-title">搜索历史</text>
-              <text class="history-clear" @tap.stop="onClearHistory">清空</text>
+              <text class="history-title">{{ historyTitleText }}</text>
+              <text class="history-clear" @tap.stop="onClearHistory">{{ historyClearText }}</text>
             </view>
             <view class="history-tags">
               <view
@@ -97,7 +113,7 @@
                   hover-class="suggest-tag--active"
                   @tap.stop="onPickChannel(item, 'wiki')"
                 >
-                  百科
+                  {{ wikiChannelText }}
                 </view>
                 <view
                   v-if="suggestChannels(item).includes('goods')"
@@ -105,22 +121,27 @@
                   hover-class="suggest-tag--active"
                   @tap.stop="onPickChannel(item, 'goods')"
                 >
-                  商品
+                  {{ goodsChannelText }}
                 </view>
               </view>
             </view>
           </view>
-          <view v-else-if="inputValue.trim()" class="suggest-empty">暂无匹配，可点「搜索」查看结果</view>
+          <view v-else-if="inputValue.trim()" class="suggest-empty">{{ suggestEmptyText }}</view>
         </scroll-view>
       </view>
-    </view>
+      </view>
+    </page-container>
   </view>
 </template>
 
 <script setup lang="ts">
+import Taro from '@tarojs/taro'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import AppNavBackButton from '@/components/AppNavBackButton.vue'
 import type { CustomerUnifiedSearchScope, SearchSuggestion } from '@/types/search'
 import { getNavBarLayout, type NavBarLayout } from '@/utils/navBarLayout'
+import { getCurrentPageRoute, resolvePageNav } from '@/config/pageNav'
+import { searchModalHostOpen } from '@/utils/searchModalHost'
 import { hideTabBarForSearch, showTabBarAfterSearch } from '@/utils/searchFullscreen'
 import {
   clearSearchHistory,
@@ -145,6 +166,8 @@ const props = withDefaults(
     historyProfile?: SearchHistoryProfile
     /** 历史项展示「百科」「商品」标签（顾客端联合搜索） */
     historyDualChannel?: boolean
+    /** 模态 Head 标题；默认取当前页 AppNavBar 标题，无则「搜索」 */
+    modalTitle?: string
   }>(),
   {
     placeholder: '搜索…',
@@ -166,12 +189,20 @@ const emit = defineEmits<{
   'focus-change': [focused: boolean]
 }>()
 
+const searchActionText = '搜索'
+const historyTitleText = '搜索历史'
+const historyClearText = '清空'
+const wikiChannelText = '百科'
+const goodsChannelText = '商品'
+const suggestEmptyText = '暂无匹配，可点「搜索」查看结果'
+
 const inputValue = ref(props.modelValue)
 const modalOpen = ref(false)
 const inputFocused = ref(false)
 const historyList = ref<string[]>([])
 let tabBarHidden = false
 let focusToken = 0
+let closingModal = false
 
 const navLayout = ref<NavBarLayout>(getNavBarLayout())
 
@@ -193,10 +224,30 @@ const modalNavStyle = computed(() => ({
   paddingRight: `${navLayout.value.titleAreaPaddingRight}px`,
 }))
 
-const modalCancelStyle = computed(() => ({
-  width: `${Math.max(navLayout.value.capsuleHeight + 16, 44)}px`,
-  height: `${navLayout.value.capsuleHeight}px`,
-}))
+const modalBackWidthPx = computed(() =>
+  Math.max(navLayout.value.capsuleHeight + 16, 44),
+)
+
+const resolvedModalTitle = computed(() => {
+  const explicit = String(props.modalTitle || '').trim()
+  if (explicit) return explicit
+  const route = getCurrentPageRoute()
+  const navTitle = resolvePageNav(route).title?.trim()
+  return navTitle || '搜索'
+})
+
+const modalTitleWrapStyle = computed(() => {
+  const symmetricInset = Math.max(
+    modalBackWidthPx.value,
+    navLayout.value.titleAreaPaddingRight,
+  )
+  return {
+    top: `${navLayout.value.capsuleTopGap}px`,
+    height: `${navLayout.value.capsuleHeight}px`,
+    paddingLeft: `${symmetricInset}px`,
+    paddingRight: `${symmetricInset}px`,
+  }
+})
 
 const stickyWrapStyle = computed(() => {
   if (!props.sticky || modalOpen.value) return {}
@@ -224,6 +275,10 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  if (modalOpen.value) {
+    defocusModalInput()
+    searchModalHostOpen.value = false
+  }
   if (tabBarHidden) {
     showTabBarAfterSearch()
     tabBarHidden = false
@@ -232,6 +287,7 @@ onBeforeUnmount(() => {
 
 function setModalOpen(value: boolean) {
   modalOpen.value = value
+  searchModalHostOpen.value = value
   emit('focus-change', value)
   if (value) {
     tabBarHidden = hideTabBarForSearch()
@@ -265,15 +321,21 @@ function onClearHistory() {
   historyList.value = []
 }
 
+function defocusModalInput() {
+  focusToken += 1
+  inputFocused.value = false
+  void Taro.hideKeyboard().catch(() => {})
+}
+
 async function focusModalInput() {
   const token = ++focusToken
   inputFocused.value = false
   await nextTick()
-  if (token !== focusToken || !modalOpen.value) return
+  if (token !== focusToken || !modalOpen.value || closingModal) return
   await new Promise<void>((resolve) => {
     setTimeout(resolve, 120)
   })
-  if (token !== focusToken || !modalOpen.value) return
+  if (token !== focusToken || !modalOpen.value || closingModal) return
   inputFocused.value = true
 }
 
@@ -284,11 +346,19 @@ async function openModal() {
   await focusModalInput()
 }
 
-function closeModal() {
-  focusToken += 1
-  inputFocused.value = false
+async function closeModal() {
+  if (!modalOpen.value || closingModal) return
+  closingModal = true
+  defocusModalInput()
+  await nextTick()
   resetInput()
   setModalOpen(false)
+  closingModal = false
+}
+
+/** 物理返回 / 侧滑返回：先失焦收键盘，再关模态 */
+function onPageContainerBeforeLeave() {
+  void closeModal()
 }
 
 function onModalInputBlur() {
@@ -374,6 +444,18 @@ export default {
 </script>
 
 <style lang="less">
+.app-search-input-wrap.is-modal-open {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff;
+}
+
 .app-search-input-wrap.is-sticky {
   position: -webkit-sticky;
   position: sticky;
@@ -428,7 +510,7 @@ export default {
   top: 0;
   right: 0;
   bottom: 0;
-  z-index: 10000;
+  z-index: 200;
   background: #fff;
 }
 
@@ -449,6 +531,7 @@ export default {
 }
 
 .search-modal__nav {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -456,18 +539,27 @@ export default {
   width: 100%;
 }
 
-.search-modal__cancel {
-  flex-shrink: 0;
+.search-modal__title-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28rpx;
-  color: #666;
   box-sizing: border-box;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-.search-modal__cancel--active {
-  opacity: 0.55;
+.search-modal__title {
+  max-width: 100%;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
 }
 
 .search-modal__search-bar {

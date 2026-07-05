@@ -1,5 +1,5 @@
 <template>
-  <view class="page-address">
+  <view class="page-address" id="address-list-scroll-body">
     <AppNavBar />
     <view v-if="list.length" class="addr-list">
       <view
@@ -12,18 +12,24 @@
           <view class="addr-top">
             <view class="name">{{ item.name }}</view>
             <view class="phone">{{ item.phone }}</view>
-            <view class="default-tag" v-if="item.isDefault">默认</view>
+            <view class="default-tag" v-if="item.isDefault">{{ defaultBadgeText }}</view>
           </view>
           <view class="addr-detail">{{ formatAddressLine(item) }}</view>
         </view>
         <view v-if="!fromConfirm" class="addr-actions" @click.stop>
-          <text class="action-btn" @click="goEdit(item.id)">编辑</text>
-          <text class="action-btn danger" @click="handleRemove(item.id)">删除</text>
+          <text class="action-btn" @click="goEdit(item.id)">{{ editText }}</text>
+          <text class="action-btn danger" @click="handleRemove(item.id)">{{ deleteText }}</text>
         </view>
       </view>
     </view>
 
     <nut-empty v-else description="还没有收货地址，请从微信添加" />
+
+    <ScrollListTailSpacer
+      content-selector="#address-list-scroll-body"
+      :bottom-inset-px="addressFooterInsetPx"
+      :watch-key="list.length"
+    />
 
     <view class="footer">
       <nut-button
@@ -54,10 +60,16 @@ import {
   handleLocationError,
 } from '@/services/address'
 import type { UserAddress } from '@/types/address'
+import { scrollTailActionBarInsetPx } from '@/utils/scrollListTailSpacer'
+
+const defaultBadgeText = '默认'
+const deleteText = '删除'
+const editText = '编辑'
 
 const list = ref<UserAddress[]>([])
 const fromConfirm = ref(false)
 const importing = ref(false)
+const addressFooterInsetPx = scrollTailActionBarInsetPx()
 
 useLoad((options) => {
   fromConfirm.value = options?.from === 'confirm'

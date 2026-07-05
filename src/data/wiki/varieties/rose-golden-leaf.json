@@ -1,0 +1,125 @@
+{
+  "careBaseRef": "care.rose.vase_base",
+  "names": {
+    "scientificName": "Rosa 'Golden Leaf'",
+    "commonNames": [
+      "Golden Leaf",
+      "金枝玉叶玫瑰"
+    ]
+  },
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "明亮黄色，避乙烯与直射",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—8 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 9—10 天"
+      }
+    ]
+  },
+  "careVaseOverride": {
+    "summary": "金黄色玫瑰对乙烯与高温较敏感，远离水果与空调出风口。",
+    "tips": [
+      "黄色系避强光",
+      "远离成熟水果"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.rose",
+      "identity": {
+        "scientificName": "Rosa 'Golden Leaf'",
+        "horticulturalGroup": "group.hybrid_tea",
+        "namingNote": "名称寓意友谊与明亮祝福",
+        "introducedYear": "2000 年代",
+        "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.ecuador",
+          "region.colombia",
+          "region.yunnan"
+        ]
+      },
+      "morphology": {
+        "flowerForm": [
+          "trait.cup_heart"
+        ],
+        "petalCount": "约 35 至 45 枚",
+        "bloomDiameterCm": "8 至 10",
+        "color": "明亮金黄色，花瓣层叠，开放后色泽饱和",
+        "stem": "茎干挺直，刺中等，便于打刺与瓶插",
+        "foliage": "叶片深绿",
+        "scent": "淡香"
+      }
+    },
+    "featureRefs": [
+      "trait.yellow_gold",
+      "trait.thick_petal"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "金辉",
+        "difference": "黄底红边复色，而非纯金黄"
+      },
+      {
+        "name": "橙芭比",
+        "difference": "多头橙色，而非单头金黄"
+      },
+      {
+        "name": "金枝玉叶",
+        "difference": "明亮金黄、友谊花语，开业与送友常见"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "杂交茶香月季 Hybrid Tea",
+      "breeder": "厄瓜多尔 / 荷兰商业切花玫瑰培育",
+      "introducedYear": "2000 年代",
+      "namingNote": "名称寓意友谊与明亮祝福"
+    }
+  },
+  "language": {
+    "meaning": "友谊、快乐与明亮的祝福",
+    "paragraphs": [
+      "黄玫瑰在中文语境里常代表友谊与祝福——金枝玉叶的色调明亮而不俗，适合送朋友、同事、开业庆功，也适合「想让你开心一点」的日常惊喜。",
+      "探病场景需留意：部分长辈对黄色花礼有忌讳，赠送前最好了解对方习惯。"
+    ],
+    "occasions": [
+      "友谊",
+      "开业",
+      "生日",
+      "庆功",
+      "送友人"
+    ],
+    "colorMeanings": [
+      {
+        "color": "金黄",
+        "meaning": "友谊、快乐、明亮"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "友谊花束",
+        "flowers": [
+          "绿康",
+          "向日葵"
+        ],
+        "note": "明亮暖色，适合庆功"
+      },
+      {
+        "style": "开业",
+        "flowers": [
+          "白雪山",
+          "尤加利叶"
+        ],
+        "note": "黄白绿喜庆而不俗"
+      }
+    ],
+    "caution": "部分场合对黄色花礼有忌讳，探病、丧事请先确认对方偏好。"
+  }
+}

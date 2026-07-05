@@ -10,15 +10,16 @@ import type { SearchSuggestion, WikiAnswerSnippet } from '@/types/search'
 import type { FlowerWikiListItem } from '@/types/wiki'
 import {
   buildWikiBrowseFlow,
+  buildWikiKindSidebar,
   filterWikiCatalog,
   getWikiDisplayName,
+  getWikiFullLabel,
   getWikiKindCardPreview,
   getWikiSubtitle,
-  getWikiKindTabs,
-  WIKI_KIND_SIDEBAR,
 } from '@/types/wiki'
 import { isEmptyWikiQuery, parseWikiSearchQuery } from '@/utils/parseWikiSearchQuery'
-import { suggestWikiEntries } from '@/utils/wikiSuggest'
+import { buildWikiTabSuggestions } from '@/utils/wikiSuggest'
+import { wikiCardUsesKindVarietyTags } from '@/utils/wikiCardTags'
 import type { PageEnsureContext } from '../types'
 import type { PageSetupResult } from '../pageRegistry'
 
@@ -29,8 +30,6 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
   const suggestTitle = '花卉预判'
   const loadingText = '正在加载云端智库...'
   const emptyText = '暂无百科内容，请先在云数据库维护 flower_wiki'
-
-  const kindTabItems = getWikiKindTabs()
 
   const keyword = ref('')
   /** 当前生效的智库筛选词（搜索框提交后清空，筛选仍保留） */
@@ -43,11 +42,13 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
   const suggestCatalog = ref<FlowerWikiListItem[]>([])
   const wikiCatalog = ref<FlowerWikiListItem[]>([])
 
+  const wikiKindSidebar = computed(() => buildWikiKindSidebar(wikiCatalog.value))
+
   const isSearchMode = computed(() => Boolean(activeWikiQuery.value.trim()))
 
   const browseFlow = computed<FlowerWikiListItem[]>(() => {
     if (isSearchMode.value) return []
-    return buildWikiBrowseFlow(wikiCatalog.value, WIKI_KIND_SIDEBAR, selectedKindName.value)
+    return buildWikiBrowseFlow(wikiCatalog.value, wikiKindSidebar.value, selectedKindName.value)
   })
 
   const filterEmptyText = computed(() => {
@@ -144,7 +145,12 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
     return getWikiDisplayName(item)
   }
 
+  function displaySearchName(item: FlowerWikiListItem) {
+    return getWikiFullLabel(item)
+  }
+
   function displaySubtitle(item: FlowerWikiListItem) {
+    if (wikiCardUsesKindVarietyTags(item)) return ''
     return getWikiSubtitle(item)
   }
 
@@ -157,7 +163,7 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
   }
 
   function wikiSuggest(query: string) {
-    return suggestWikiEntries(suggestCatalog.value, query)
+    return buildWikiTabSuggestions(suggestCatalog.value, query)
   }
 
   function onSearchKeyword(value: string) {
@@ -174,13 +180,9 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
     void runWikiSearch(item.label)
   }
 
-  function selectKindTab(kindName: string | null) {
-    selectedKindName.value = kindName
-  }
-
   function goDetail(id: string) {
     navigateTo({
-      url: `/pagesCustomer/wiki/detail?id=${id}&tab=atlas`,
+      url: `/pagesCustomer/wiki/detail?id=${id}`,
     })
   }
 
@@ -196,23 +198,23 @@ export function setupWikiTabPageData(): PageSetupResult & Record<string, unknown
     suggestTitle,
     loadingText,
     emptyText,
-    kindTabItems,
-    selectedKindName,
     isSearchMode,
     filterEmptyText,
     browseFlow,
+    wikiKindSidebar,
     keyword,
     loading,
     wikiList,
+    wikiCatalog,
     wikiAnswer,
     loadWikiList,
     displayName,
+    displaySearchName,
     displaySubtitle,
     cardPreview,
     wikiSuggest,
     onSearchKeyword,
     onPickSuggestion,
-    selectKindTab,
     goDetail,
     isWikiKindEntry,
   }

@@ -1,0 +1,110 @@
+{
+  "bloom": {
+    "vase": "约 10—14 天",
+    "vaseNote": "扁盘菊，色彩饱和",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.chrysanthemum.vase_base",
+  "careVaseOverride": {
+    "summary": "非洲菊扁盘花型；高瓶支撑，勤换水，避免折茎。",
+    "tips": [
+      "花茎中空，宜高瓶支撑"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.chrysanthemum",
+      "identity": {
+        "scientificName": "Gerbera jamesonii",
+        "namingNote": "扁盘花型，色彩饱和，主花与配花皆宜",
+        "horticulturalGroup": "group.chrysanthemum_cut",
+        "breeder": "中国切花菊培育",
+        "introducedYear": "1990 年代起切花菊体系"
+      },
+      "origin": {
+        "breedingOrigin": "中国",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色，大圆盘，色调饱和明亮",
+        "scent": "几乎无香",
+        "stem": "茎干挺直，耐插",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "5 至 12"
+      }
+    },
+    "featureRefs": [
+      "trait.huge_flower",
+      "trait.classic_red"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "乒乓菊",
+        "difference": "球形小菊，与此品种形态或色调不同"
+      },
+      {
+        "name": "小雏菊",
+        "difference": "扁瓣小菊，与此品种形态或色调不同"
+      },
+      {
+        "name": "非洲菊",
+        "difference": "扁盘花型，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花菊",
+      "namingNote": "扁盘花型，色彩饱和，主花与配花皆宜"
+    }
+  },
+  "language": {
+    "meaning": "阳光、直接与「很亮的一朵」",
+    "paragraphs": [
+      "非洲菊像「缩小版的向日葵盘」——适合生日、探望、开业，表达「开心、阳光」。",
+      "花茎中空，宜高瓶支撑；勤换水，避免折茎。"
+    ],
+    "occasions": [
+      "生日",
+      "探望",
+      "开业",
+      "家居"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "阳光、快乐"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "阳光",
+        "flowers": [
+          "向日葵",
+          "绿康"
+        ],
+        "note": "明亮"
+      }
+    ],
+    "caution": "茎中空易折；高瓶支撑。勤换水。"
+  },
+  "names": {
+    "scientificName": "Gerbera jamesonii",
+    "commonNames": [
+      "Gerbera",
+      "非洲菊"
+    ]
+  }
+}

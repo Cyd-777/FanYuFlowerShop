@@ -1,5 +1,11 @@
 const cloud = require('wx-server-sdk')
 const { bumpCacheModule } = require('./common/cacheMeta')
+
+/** 智库变更会衍生 wiki: 分类，一并刷新分类缓存版本 */
+async function bumpWikiRelatedCaches() {
+  await bumpCacheModule('wiki')
+  await bumpCacheModule('categories')
+}
 const { fetchAllDocs } = require('./common/db')
 const { ensureDefaultFlowerCatalog } = require('./common/ensureFlowerCatalog')
 const { excludeWikiDocs, isExcludedWikiKind } = require('./common/wikiExcluded')
@@ -13,7 +19,7 @@ const {
   searchWikiDocs,
 } = require('./wikiSchema')
 const { getKindProfile } = require('./wikiKindProfiles')
-const { syncAllKindProfiles, ensureMissingWikiEntries } = require('./wikiKindSync')
+const { syncAllKindProfiles, ensureMissingWikiEntries, syncRoseCareProfiles } = require('./wikiKindSync')
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
@@ -134,7 +140,53 @@ async function isMerchant(openid) {
   }
 }
 
-async function ensureDefaultWiki() {
+/** 商户手建词条补全 kindId / varietyId，供花卉选择与 match 使用 */
+async function resolveWikiEntryIds(docId, kindName, varietyName) {
+  const variety = String(varietyName || '').trim()
+  if (!variety) {
+    return { kindId: docId, varietyId: '' }
+  }
+
+  const { data: kindOnlyRows } = await db
+    .collection('flower_wiki')
+    .where({ kindName, varietyName: '' })
+    .limit(1)
+    .get()
+  const kindAnchor = kindOnlyRows[0]
+  if (kindAnchor) {
+    return {
+      kindId: kindAnchor.kindId || kindAnchor._id,
+      varietyId: docId,
+    }
+  }
+
+  const { data: siblings } = await db.collection('flower_wiki').where({ kindName }).limit(20).get()
+  const siblingKindId = siblings
+    .map((row) => String(row.kindId || row._id || '').trim())
+    .find(Boolean)
+
+  return {
+    kindId: siblingKindId || docId,
+    varietyId: docId,
+  }
+}
+
+/** C 端读路径：只保证集合存在，不跑品种合并 / 补词条（否则单次请求易超时） */
+async function ensureWikiReadReady() {
+  await ensureCollection('flower_wiki')
+}
+
+/** 空库首次访问列表时再跑完整初始化 */
+async function ensureDefaultWikiIfEmpty() {
+  await ensureCollection('flower_wiki')
+  const { data: existing } = await db.collection('flower_wiki').limit(1).get()
+  if (existing.length === 0) {
+    await ensureDefaultWikiFull()
+  }
+}
+
+/** 完整初始化：种子、品种合并、补缺失词条 — 管理端 / 空库专用 */
+async function ensureDefaultWikiFull() {
   await ensureCollection('flower_wiki')
   await ensureDefaultFlowerCatalog(db)
 
@@ -143,7 +195,7 @@ async function ensureDefaultWiki() {
     try {
       const created = await ensureMissingWikiEntries(db)
       if (created > 0) {
-        await bumpCacheModule('wiki')
+        await bumpWikiRelatedCaches()
       }
     } catch (err) {
       console.warn('[wiki] ensureMissingWikiEntries failed', err.message || err)
@@ -226,11 +278,11 @@ async function ensureDefaultWiki() {
     }
   }
 
-  await bumpCacheModule('wiki')
+  await bumpWikiRelatedCaches()
 }
 
 async function listWiki(keyword = '') {
-  await ensureDefaultWiki()
+  await ensureDefaultWikiIfEmpty()
   const data = await fetchAllDocs(db, 'flower_wiki')
   const query = normalizeWikiQuery({
     text: keyword,
@@ -241,21 +293,21 @@ async function listWiki(keyword = '') {
 }
 
 async function searchWiki(queryInput = {}) {
-  await ensureDefaultWiki()
+  await ensureDefaultWikiIfEmpty()
   const query = normalizeWikiQuery(queryInput)
   const data = excludeWikiDocs(await fetchAllDocs(db, 'flower_wiki'))
   return searchWikiDocs(data, { ...queryInput, ...query })
 }
 
 async function getWikiById(id) {
-  await ensureDefaultWiki()
+  await ensureWikiReadReady()
   const { data } = await db.collection('flower_wiki').doc(id).get()
   if (!data || data.enabled === false) return null
   return pickWiki(data)
 }
 
 async function matchWiki(kindId = '', varietyId = '') {
-  await ensureDefaultWiki()
+  await ensureWikiReadReady()
   const kind = String(kindId).trim()
   const variety = String(varietyId).trim()
   if (!kind && !variety) return null
@@ -291,6 +343,16 @@ exports.main = async (event) => {
       }
       await ensureCollection('flower_wiki')
       const result = await syncAllKindProfiles(db)
+      return { success: true, ...result }
+    }
+
+    if (action === 'syncRoseCare') {
+      const canManage = await isMerchant(operatorOpenid)
+      if (!canManage) {
+        return { success: false, errMsg: '无权限同步玫瑰养护' }
+      }
+      await ensureCollection('flower_wiki')
+      const result = await syncRoseCareProfiles(db)
       return { success: true, ...result }
     }
 
@@ -344,6 +406,119 @@ exports.main = async (event) => {
         },
       })
 
+      return { success: true }
+    }
+
+    // ====== 商户端词条 CRUD ======
+
+    if (action === 'list') {
+      const canManage = await isMerchant(operatorOpenid)
+      if (!canManage) {
+        return { success: false, errMsg: '无权限查看词条' }
+      }
+
+      await ensureDefaultWikiIfEmpty()
+      const data = excludeWikiDocs(await fetchAllDocs(db, 'flower_wiki'))
+      const list = data.map(pickWikiListItem).sort((a, b) => b.sort - a.sort)
+      return { success: true, list }
+    }
+
+    if (action === 'get') {
+      const canManage = await isMerchant(operatorOpenid)
+      if (!canManage) {
+        return { success: false, errMsg: '无权限查看词条' }
+      }
+
+      const id = String(event.id || '').trim()
+      if (!id) return { success: false, errMsg: '缺少词条 ID' }
+
+      await ensureCollection('flower_wiki')
+      const { data } = await db.collection('flower_wiki').doc(id).get()
+      if (!data) return { success: false, errMsg: '词条不存在' }
+
+      return { success: true, wiki: pickWiki(data) }
+    }
+
+    if (action === 'add') {
+      const canManage = await isMerchant(operatorOpenid)
+      if (!canManage) {
+        return { success: false, errMsg: '无权限创建词条' }
+      }
+
+      const wiki = event.wiki || {}
+      const kindName = String(wiki.kindName || '').trim()
+      const varietyName = String(wiki.varietyName || '').trim()
+      if (!kindName) {
+        return { success: false, errMsg: '种类名称不能为空' }
+      }
+
+      await ensureCollection('flower_wiki')
+      const insert = {
+        kindId: '',
+        varietyId: '',
+        kindName,
+        varietyName,
+        icon: String(wiki.icon || '🌷').trim() || '🌷',
+        coverImage: '',
+        ...emptyWikiPayload(),
+        enabled: true,
+        sort: 0,
+        createdAt: db.serverDate(),
+        updatedAt: db.serverDate(),
+      }
+
+      const addRes = await db.collection('flower_wiki').add({ data: insert })
+      const docId = addRes._id
+      const ids = await resolveWikiEntryIds(docId, kindName, varietyName)
+      await db.collection('flower_wiki').doc(docId).update({
+        data: {
+          ...ids,
+          updatedAt: db.serverDate(),
+        },
+      })
+
+      const { data: created } = await db.collection('flower_wiki').doc(docId).get()
+      await bumpWikiRelatedCaches()
+      return { success: true, wiki: pickWikiListItem(created) }
+    }
+
+    if (action === 'update') {
+      const canManage = await isMerchant(operatorOpenid)
+      if (!canManage) {
+        return { success: false, errMsg: '无权限更新词条' }
+      }
+
+      const id = String(event.id || '').trim()
+      if (!id) return { success: false, errMsg: '缺少词条 ID' }
+
+      const wiki = event.wiki || {}
+      const patch = {}
+      if (wiki.kindName !== undefined) patch.kindName = String(wiki.kindName || '').trim()
+      if (wiki.varietyName !== undefined) patch.varietyName = String(wiki.varietyName || '').trim()
+      if (wiki.icon !== undefined) patch.icon = String(wiki.icon || '🌷').trim() || '🌷'
+      if (wiki.enabled !== undefined) patch.enabled = wiki.enabled !== false
+      patch.updatedAt = db.serverDate()
+
+      await ensureCollection('flower_wiki')
+      await db.collection('flower_wiki').doc(id).update({ data: patch })
+
+      const { data: updated } = await db.collection('flower_wiki').doc(id).get()
+      await bumpWikiRelatedCaches()
+      return { success: true, wiki: pickWikiListItem(updated) }
+    }
+
+    if (action === 'remove') {
+      const canManage = await isMerchant(operatorOpenid)
+      if (!canManage) {
+        return { success: false, errMsg: '无权限删除词条' }
+      }
+
+      const id = String(event.id || '').trim()
+      if (!id) return { success: false, errMsg: '缺少词条 ID' }
+
+      await ensureCollection('flower_wiki')
+      await db.collection('flower_wiki').doc(id).remove()
+      await bumpWikiRelatedCaches()
       return { success: true }
     }
 

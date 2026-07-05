@@ -1,0 +1,108 @@
+{
+  "bloom": {
+    "vase": "约 5—7 天",
+    "vaseNote": "约 5—7 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.violet.vase_base",
+  "careVaseOverride": {
+    "summary": "紫罗兰穗形；勤换水，通风。",
+    "tips": [
+      "浓香，注意通风"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.violet",
+      "identity": {
+        "scientificName": "Matthiola incana",
+        "namingNote": "穗形紫罗兰，浓香，春日应季",
+        "horticulturalGroup": "group.violet_cut",
+        "breeder": "欧洲切花紫罗兰培育",
+        "introducedYear": "1990 年代起春日切花"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "多色，穗形花序",
+        "scent": "浓香",
+        "stem": "穗形花序，紧凑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "穗长 6 至 10 cm"
+      }
+    },
+    "featureRefs": [
+      "trait.strong_scent"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "风信子",
+        "difference": "球状穗更粗，而非紫罗兰式长穗"
+      },
+      {
+        "name": "洋桔梗",
+        "difference": "单朵杯形，而非穗形花序"
+      },
+      {
+        "name": "紫罗兰",
+        "difference": "穗形浓香，有复古花店气质"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花紫罗兰",
+      "namingNote": "穗形紫罗兰，浓香，春日应季"
+    }
+  },
+  "language": {
+    "meaning": "春日、浓香与「很复古的一穗」",
+    "paragraphs": [
+      "紫罗兰适合喜欢浓香、复古感的人——春日应季，与郁金香、小菊同插有老派花店气质。",
+      "勤换水；通风；过敏者慎选。"
+    ],
+    "occasions": [
+      "春日",
+      "家居",
+      "复古"
+    ],
+    "colorMeanings": [
+      {
+        "color": "多色",
+        "meaning": "复古、浓香"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "复古",
+        "flowers": [
+          "郁金香",
+          "康乃馨"
+        ],
+        "note": "春日"
+      }
+    ],
+    "caution": "浓香；过敏者慎选。"
+  },
+  "names": {
+    "scientificName": "Matthiola incana",
+    "commonNames": [
+      "Matthiola",
+      "紫罗兰"
+    ]
+  }
+}

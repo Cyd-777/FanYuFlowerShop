@@ -1,0 +1,109 @@
+{
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "粉色风信子",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.hyacinth.vase_base",
+  "careVaseOverride": {
+    "summary": "粉珍珠柔粉色风信子；浅水冷凉，保持通风。",
+    "tips": [
+      "保持通风"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.hyacinth",
+      "identity": {
+        "scientificName": "Hyacinthus 'Pink Pearl'",
+        "namingNote": "粉色风信子，温柔穗形",
+        "horticulturalGroup": "group.hyacinth_cut",
+        "breeder": "荷兰球根花卉育种",
+        "introducedYear": "球根切花长期商用品种"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "柔粉，穗形，密集小朵",
+        "scent": "浓香",
+        "stem": "穗形花序，整体紧凑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "穗长 8 至 15 cm"
+      }
+    },
+    "featureRefs": [
+      "trait.strong_scent",
+      "trait.soft_pink"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "蓝星",
+        "difference": "蓝色风信子，与此品种形态或色调不同"
+      },
+      {
+        "name": "白珍珠",
+        "difference": "白色风信子，与此品种形态或色调不同"
+      },
+      {
+        "name": "粉珍珠",
+        "difference": "粉色风信子，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花风信子",
+      "namingNote": "粉色风信子，温柔穗形"
+    }
+  },
+  "language": {
+    "meaning": "温柔、春日与「很甜的香气」",
+    "paragraphs": [
+      "粉珍珠适合送女性、家居春日点缀——颜色比蓝星更软，但香气同样明显。",
+      "与蓝星、白珍珠混搭，是经典风信子组合。"
+    ],
+    "occasions": [
+      "春日",
+      "家居",
+      "赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "柔粉",
+        "meaning": "温柔、春日"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "组合",
+        "flowers": [
+          "蓝星",
+          "白珍珠"
+        ],
+        "note": "蓝粉白"
+      }
+    ],
+    "caution": "浓香；过敏者慎选。"
+  },
+  "names": {
+    "scientificName": "Hyacinthus 'Pink Pearl'",
+    "commonNames": [
+      "Pink Pearl",
+      "粉珍珠"
+    ]
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "bloom": {
+    "vase": "约 5—10 天",
+    "vaseNote": "复古变色绣球，观赏期约 5—10 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.hydrangea.vase_base",
+  "careVaseOverride": {
+    "summary": "魔幻系列开放过程色调变化；阴凉通风、充足吸水，可喷雾保湿。",
+    "tips": [
+      "开放后期色调变化属正常",
+      "茎部可十字剪增加吸水"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.hydrangea",
+      "identity": {
+        "scientificName": "Hydrangea 'Magical'",
+        "namingNote": "复古色调、开放过程变色的绣球系列，艺术感强",
+        "horticulturalGroup": "group.hydrangea_mophead",
+        "breeder": "欧美园艺绣球培育",
+        "introducedYear": "1990 年代起广泛商用"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "复古蓝紫或粉绿，开放过程中色调持续变化",
+        "scent": "几乎无香",
+        "stem": "茎干粗壮，吸水需求大",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "15 至 25"
+      }
+    },
+    "featureRefs": [
+      "trait.color_shift",
+      "trait.muted_retro",
+      "trait.spray_ball"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "无尽夏",
+        "difference": "更偏经典蓝粉，变色不如魔幻明显"
+      },
+      {
+        "name": "爆米花",
+        "difference": "瓣缘卷曲可爱，而非复古变色"
+      },
+      {
+        "name": "魔幻系列",
+        "difference": "复古变色、艺术感，是绣球特色系列"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "大花绣球",
+      "namingNote": "复古色调、开放过程变色的绣球系列，艺术感强"
+    }
+  },
+  "language": {
+    "meaning": "变化、艺术感与「时间会改变的美」",
+    "paragraphs": [
+      "魔幻系列的魅力在于「会变」——收到时的颜色未必是三天后的颜色，适合喜欢观察花材变化、审美偏艺术的人。",
+      "阴凉通风可减缓开放速度；与尤加利、银叶类同插，复古色调更完整。"
+    ],
+    "occasions": [
+      "家居观赏",
+      "艺术花束",
+      "纪念日",
+      "拍照"
+    ],
+    "colorMeanings": [
+      {
+        "color": "复古多色",
+        "meaning": "变化、艺术、独特"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "复古森系",
+        "flowers": [
+          "尤加利叶",
+          "银芽柳"
+        ],
+        "note": "灰绿蓝紫"
+      },
+      {
+        "style": "家居主花",
+        "flowers": [
+          "洋桔梗"
+        ],
+        "note": "单球即可"
+      }
+    ],
+    "caution": "色调变化属正常；避直射可减缓。须保持吸水。"
+  },
+  "names": {
+    "scientificName": "Hydrangea 'Magical'",
+    "commonNames": [
+      "Magical",
+      "魔幻系列"
+    ]
+  }
+}

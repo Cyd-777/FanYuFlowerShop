@@ -3,9 +3,7 @@ export type GoodsSalesType = 'stem' | 'group' | 'bouquet' | 'other'
 
 export type GoodsUnit = '支' | '组' | '束' | '件'
 
-export const GOODS_UNITS: GoodsUnit[] = ['支', '组', '束', '件']
-
-export interface GoodsUnitOption {
+interface GoodsUnitOption {
   value: GoodsUnit
   /** 表单/卡片展示文案（支 → 枝） */
   label: string
@@ -104,10 +102,6 @@ export type GoodsListFilter = 'all' | 'onSale' | 'offSale'
 
 export function getSalesTypeOption(type: GoodsSalesType): GoodsSalesTypeOption {
   return GOODS_SALES_TYPE_OPTIONS.find((item) => item.value === type) || GOODS_SALES_TYPE_OPTIONS[2]
-}
-
-export function needsFlowerPickForSalesType(type: GoodsSalesType): boolean {
-  return getSalesTypeOption(type).needsFlowerPick
 }
 
 export function unitFromSalesType(type: GoodsSalesType): GoodsUnit {

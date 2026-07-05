@@ -1,0 +1,121 @@
+{
+  "bloom": {
+    "vase": "约 5—7 天",
+    "vaseNote": "橙色高脚杯郁金香，约 5—7 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.tulip.vase_base",
+  "careVaseOverride": {
+    "summary": "阿波罗橙色郁金香；浅水养护，喜冷凉，花茎会继续生长可每日修剪。",
+    "tips": [
+      "花茎会继续伸长，可每日修剪高度",
+      "避免与成熟水果同放"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.tulip",
+      "identity": {
+        "scientificName": "Tulipa 'Apeldoorn'",
+        "namingNote": "经典橙色单瓣郁金香，高脚杯形，春日高频",
+        "horticulturalGroup": "group.tulip_single",
+        "breeder": "荷兰球根花卉育种",
+        "introducedYear": "球根切花长期商用品种"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "明亮橙色，杯形线条挺拔，单朵辨识度高",
+        "scent": "几乎无香或极淡",
+        "stem": "花茎会继续生长，需预留瓶高",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "7 至 9",
+        "flowerForm": [
+          "trait.cup_trumpet"
+        ]
+      }
+    },
+    "featureRefs": [
+      "trait.cup_trumpet",
+      "trait.yellow_gold"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "纯金",
+        "difference": "偏金黄，而非橙"
+      },
+      {
+        "name": "王朝",
+        "difference": "正红，而非橙"
+      },
+      {
+        "name": "阿波罗",
+        "difference": "橙色高脚杯，是经典橙郁金香代表"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "单瓣郁金香",
+      "namingNote": "经典橙色单瓣郁金香，高脚杯形，春日高频"
+    }
+  },
+  "language": {
+    "meaning": "活力、春日与「很标准的橙色郁金香」",
+    "paragraphs": [
+      "阿波罗的橙，比红郁金香更暖、比黄更跳——适合春日、生日、以及想要「一眼是郁金香」的明亮场景。",
+      "郁金香花茎会继续生长，瓶口勿过窄；与纯金、白梦同插，荷兰田园感立刻出来。"
+    ],
+    "occasions": [
+      "春日",
+      "生日",
+      "家居",
+      "赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "橙",
+        "meaning": "活力、温暖、春日"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "荷兰春日",
+        "flowers": [
+          "纯金",
+          "白梦"
+        ],
+        "note": "橙黄白"
+      },
+      {
+        "style": "单品种",
+        "flowers": [
+          "尤加利叶"
+        ],
+        "note": "简约即可"
+      }
+    ],
+    "caution": "喜冷凉；远离暖气。花茎会继续生长，可每日微调。"
+  },
+  "names": {
+    "scientificName": "Tulipa 'Apeldoorn'",
+    "commonNames": [
+      "Apeldoorn",
+      "阿波罗"
+    ]
+  }
+}

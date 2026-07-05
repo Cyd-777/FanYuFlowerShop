@@ -1,0 +1,109 @@
+{
+  "bloom": {
+    "vase": "约 7—10 天",
+    "vaseNote": "蓝色风信子，约 7—10 天",
+    "vaseBySeason": [
+      {
+        "season": "夏季",
+        "days": "约 7—10 天"
+      },
+      {
+        "season": "冬季",
+        "days": "约 10—14 天",
+        "note": "室温较低、养护得当时"
+      }
+    ]
+  },
+  "careBaseRef": "care.hyacinth.vase_base",
+  "careVaseOverride": {
+    "summary": "蓝星蓝色风信子；浅水、冷凉，浓香注意通风。",
+    "tips": [
+      "浓香，注意通风"
+    ]
+  },
+  "atlas": {
+    "intro": {
+      "taxonomyRef": "taxonomy.hyacinth",
+      "identity": {
+        "scientificName": "Hyacinthus 'Blue Star'",
+        "namingNote": "蓝色风信子，穗形紧凑，春日浓香",
+        "horticulturalGroup": "group.hyacinth_cut",
+        "breeder": "荷兰球根花卉育种",
+        "introducedYear": "球根切花长期商用品种"
+      },
+      "origin": {
+        "breedingOrigin": "荷兰",
+        "productionRegions": [
+          "region.yunnan",
+          "region.colombia",
+          "region.ecuador"
+        ]
+      },
+      "morphology": {
+        "color": "蓝色，穗形花序，花朵密集",
+        "scent": "浓香，室内明显",
+        "stem": "穗形花序，整体紧凑",
+        "foliage": "叶片健康即可保留少量，避免浸水",
+        "bloomDiameterCm": "穗长 8 至 15 cm"
+      }
+    },
+    "featureRefs": [
+      "trait.strong_scent",
+      "trait.cool_season"
+    ],
+    "distinguishFrom": [
+      {
+        "name": "粉珍珠",
+        "difference": "粉色风信子，与此品种形态或色调不同"
+      },
+      {
+        "name": "白珍珠",
+        "difference": "白色风信子，与此品种形态或色调不同"
+      },
+      {
+        "name": "蓝星",
+        "difference": "蓝色风信子，是最核心的辨识特征"
+      }
+    ],
+    "cultivar": {
+      "horticulturalGroup": "切花风信子",
+      "namingNote": "蓝色风信子，穗形紧凑，春日浓香"
+    }
+  },
+  "language": {
+    "meaning": "春日、持久与「一进屋就闻到」",
+    "paragraphs": [
+      "蓝星的风信子适合春日、家居——浓香是小空间里的「存在感」，过敏者慎选。",
+      "浅水、冷凉；与粉、白风信子同插，色盘完整。"
+    ],
+    "occasions": [
+      "春日",
+      "家居",
+      "赠礼"
+    ],
+    "colorMeanings": [
+      {
+        "color": "蓝",
+        "meaning": "宁静、春日"
+      }
+    ],
+    "pairing": [
+      {
+        "style": "春日",
+        "flowers": [
+          "粉珍珠",
+          "白珍珠"
+        ],
+        "note": "蓝粉白"
+      }
+    ],
+    "caution": "浓香；过敏者、密闭卧室慎选。"
+  },
+  "names": {
+    "scientificName": "Hyacinthus 'Blue Star'",
+    "commonNames": [
+      "Blue Star",
+      "蓝星"
+    ]
+  }
+}
