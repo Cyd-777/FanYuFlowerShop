@@ -2,9 +2,9 @@ import { showToast } from '@/utils/feedback'
 import { computed, ref, type Ref } from 'vue'
 import { hasCacheEntry, readCacheEntry } from '@/utils/cache'
 import {
+  listMerchantGoodsCached,
   MERCHANT_GOODS_LIST_CACHE_KEY,
 } from '@/modules/goods'
-import { merchantGoodsRepository } from '@/data/repository/merchantGoodsRepository'
 import {
   attachGoodsCoverImages,
   attachGoodsCoverImagesFromCache,
@@ -69,7 +69,7 @@ export function useMerchantGoods(categories?: Ref<Category[]>) {
 
     try {
       const previous = sourceGoods.value
-      const { data } = await merchantGoodsRepository.ensureList({
+      const { data } = await listMerchantGoodsCached({
         force: options?.force,
         onUpdate: (list) => {
           void withCoverImages(

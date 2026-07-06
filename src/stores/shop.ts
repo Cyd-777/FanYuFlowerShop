@@ -6,7 +6,7 @@ import {
   saveThemeConfig,
   setActiveTheme,
 } from '@/modules/shop'
-import { shopRepository } from '@/data/repository'
+import { fetchShopSettingsCached } from '@/modules/shop'
 import { CACHE_KEYS } from '@/data/cacheKeys'
 import { hasCacheEntry } from '@/utils/cache'
 import type { ShopSettings, ShopDecoration, ShopThemeConfig } from '@/types/shop'
@@ -57,7 +57,7 @@ export const useShopStore = defineStore('shop', () => {
     const cacheKey = CACHE_KEYS.shopSettings
     loading.value = options?.force ? true : !hasCacheEntry(cacheKey)
     try {
-      const { data } = await shopRepository.ensureSettings({
+      const { data } = await fetchShopSettingsCached({
         force: options?.force,
         onUpdate: (remote) => {
           settings.value = {

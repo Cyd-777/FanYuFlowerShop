@@ -1,6 +1,6 @@
 import { showToast } from '@/utils/feedback'
 import { navigateTo } from '@/utils/router'
-import { wikiRepository } from '@/data/repository'
+import { listPublicWikiCached } from '@/modules/wiki'
 import { getWikiDisplayName, wikiEntryIdentityKey } from '@/types/wiki'
 
 /** 按种类+品种名跳转智库详情（依赖 wiki 列表缓存） */
@@ -17,7 +17,7 @@ export async function navigateToWikiVariety(
   }
 
   try {
-    const { data: list } = await wikiRepository.ensurePublicList()
+    const { data: list } = await listPublicWikiCached()
     const key = wikiEntryIdentityKey({ kindName: kind, varietyName: variety })
     const found = list.find((item) => {
       if (options?.excludeWikiId && item._id === options.excludeWikiId) return false
@@ -54,7 +54,7 @@ export async function navigateToWikiByName(
   }
 
   try {
-    const { data: list } = await wikiRepository.ensurePublicList()
+    const { data: list } = await listPublicWikiCached()
     const found = list.find((item) => {
       if (context.excludeWikiId && item._id === context.excludeWikiId) return false
       return getWikiDisplayName(item) === variety || item.varietyName === variety

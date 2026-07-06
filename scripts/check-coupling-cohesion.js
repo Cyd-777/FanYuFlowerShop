@@ -17,15 +17,7 @@ const CF_DIR = path.join(__dirname, '../cloudfunctions')
 const MAX_PAGE_MODULES = 3
 
 /** 已知的 layer violation（待迁移的 composable / utils / store），不阻断 CI */
-const KNOWN_DEBTS = [
-  'composables/useMerchantCategories.ts',
-  'composables/useMerchantGoods.ts',
-  'composables/usePublicCategories.ts',
-  'composables/usePublicGoods.ts',
-  'pagesMerchant/asset/index.vue',
-  'stores/shop.ts',
-  'utils/wikiNavigate.ts',
-]
+const KNOWN_DEBTS = []
 
 const MODULE_IMPORT_RE = /from\s+['"]@\/modules\/(\w+)/g
 const REPO_IMPORT_RE = /from\s+['"]@\/data\/repository/g

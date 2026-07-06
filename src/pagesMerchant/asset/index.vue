@@ -126,7 +126,7 @@ import {
   type AssetItem,
 } from '@/modules/asset'
 import { writeAssetPick } from '@/types/assetPick'
-import { wikiRepository } from '@/data/repository'
+import { listPublicWikiCached } from '@/modules/wiki'
 import { getCloud, getCloudCallConfig, parseCloudResult } from '@/services/cloud'
 import type { FlowerWikiListItem } from '@/types/wiki'
 import { filterWikiCatalog, getWikiFullLabel } from '@/types/wiki'
@@ -345,7 +345,7 @@ const wikiPreviewUrls = ref<Record<string, string>>({})
 async function loadWikiList() {
   wikiLoading.value = true
   try {
-    const { data } = await wikiRepository.ensurePublicList({})
+    const { data } = await listPublicWikiCached()
     wikiList.value = filterWikiCatalog(data)
     // 尝试加载已有 cover 的预览
     const { readCachedImageUrl } = await import('@/utils/goodsImage')

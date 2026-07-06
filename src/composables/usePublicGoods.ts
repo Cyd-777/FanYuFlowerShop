@@ -1,8 +1,7 @@
 import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { hasCacheEntry, readCacheEntry } from '@/utils/cache'
-import { listPublicGoods, syncPublicGoodsListFromCloud } from '@/modules/goods'
-import { goodsRepository } from '@/data/repository'
+import { listPublicGoods, listPublicGoodsCached, searchPublicGoods, syncPublicGoodsListFromCloud } from '@/modules/goods'
 import { parseCustomerGoodsSearchQuery } from '@/utils/parseCustomerGoodsSearchQuery'
 import { CACHE_KEYS } from '@/data/cacheKeys'
 import { attachGoodsCoverImages, attachGoodsCoverImagesFromCache } from '@/utils/goodsImage'
@@ -55,7 +54,7 @@ export function usePublicGoods() {
         const query = parseCustomerGoodsSearchQuery(trimmedKeyword, categoryId, {
           exactName: options?.exactName,
         })
-        const list = await goodsRepository.search(query)
+        const list = await searchPublicGoods(query)
         searchResults.value = await attachGoodsCoverImages(list)
       } catch (err) {
         console.error('[goods] load failed:', err)
@@ -86,7 +85,7 @@ export function usePublicGoods() {
 
     try {
       const previous = sourceGoods.value
-      const { data } = await goodsRepository.ensurePublicList({
+      const { data } = await listPublicGoodsCached({
         force: options?.force,
         onUpdate: (list) => {
           if (!list.length) return
