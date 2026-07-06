@@ -56,9 +56,10 @@ import { navigateBack } from '@/utils/router'
 import {
   listNotifyRecipients,
   sendBizNotification,
-} from '@/services/notification'
-import type { BizNotificationContext, BizNotificationType } from '@/types/notification'
-import type { NotifyRecipient } from '@/types/notification'
+  type BizNotificationContext,
+  type BizNotificationType,
+  type NotifyRecipient,
+} from '@/modules/notify'
 
 const pageTitle = '发送通知'
 const recipientLabel = '接收同事'

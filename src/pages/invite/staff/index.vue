@@ -75,7 +75,7 @@ import {
   checkAccess,
   hasToken,
 } from '@/services/auth'
-import { acceptStaffInvite, previewStaffInvite, type StaffInvitePreview } from '@/services/staff'
+import { acceptStaffInvite, previewStaffInvite, type StaffInvitePreview } from '@/modules/staff'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useUserStore } from '@/stores/user'
 

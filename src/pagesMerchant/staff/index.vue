@@ -90,7 +90,7 @@ import {
   listStaff,
   type StaffInviteCreated,
   type StaffMember,
-} from '@/services/staff'
+} from '@/modules/staff'
 import { resolveAvatarDisplayPath } from '@/services/userProfile'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 

@@ -92,7 +92,7 @@ import {
   normalizeStaffInviteCode,
   previewStaffInviteByCode,
   type StaffInvitePreview,
-} from '@/services/staff'
+} from '@/modules/staff'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useUserStore } from '@/stores/user'
 

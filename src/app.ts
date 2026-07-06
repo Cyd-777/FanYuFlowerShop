@@ -18,7 +18,7 @@ const App = createApp({
   onLaunch() {
     try {
       initCloud()
-      void import('./utils/bizNotifySubscribe').then((m) => m.prefetchSubscribeTmplIds())
+      void import('@/modules/notify').then((m) => m.prefetchSubscribeTmplIds())
       void fetchCacheVersions().catch((err) => {
         console.warn('[cache] launch meta prefetch failed:', err)
       })

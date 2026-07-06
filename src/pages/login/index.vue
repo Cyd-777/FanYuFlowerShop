@@ -68,13 +68,13 @@ import { ENABLE_PHONE_LOGIN } from '@/config/login'
 import { navigateToHome, hasToken, getCachedRole, sendPhoneLoginCode } from '@/services/auth'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { redirectTo } from '@/utils/router'
-import { parsePendingStaffInvite } from '@/services/staff'
+import { parsePendingStaffInvite } from '@/modules/staff'
 import {
   prefetchSubscribeTmplIds,
+  recordBizNotifySubscribe,
   requestSubscribeOnLoginTap,
   resolveSubscribeTmplIds,
-} from '@/utils/bizNotifySubscribe'
-import { recordBizNotifySubscribe } from '@/services/notification'
+} from '@/modules/notify'
 
 const orDividerText = '或'
 

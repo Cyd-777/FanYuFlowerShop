@@ -5,8 +5,7 @@ import { STORAGE_KEYS } from '@/utils/constants'
 import { assertLocalImageWithinLimit } from '@/utils/uploadImageLimit'
 import type { UserAccount } from '@/types/account'
 import { getBizNotifySubscribeTmplIds } from '@/config/subscribe'
-import { recordBizNotifySubscribe } from '@/services/notification'
-import { invokeBizNotifySubscribe } from '@/utils/bizNotifySubscribe'
+import { recordBizNotifySubscribe, invokeBizNotifySubscribe } from '@/modules/notify'
 
 interface ProfileCloudResult {
   success: boolean

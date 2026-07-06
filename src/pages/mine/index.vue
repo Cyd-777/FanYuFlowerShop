@@ -119,7 +119,7 @@ import { useUserStore } from '@/stores/user'
 import { hasToken } from '@/services/auth'
 import { fetchUserProfile, resolveAvatarDisplayPath } from '@/services/userProfile'
 import { getBizNotifySubscribeTmplIds } from '@/config/subscribe'
-import { invokeBizNotifySubscribe } from '@/utils/bizNotifySubscribe'
+import { invokeBizNotifySubscribe } from '@/modules/notify'
 import { useNotificationStore } from '@/stores/notification'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
@@ -180,7 +180,7 @@ async function refreshNotifySection() {
     console.warn('[mine] refresh notify failed:', err)
   }
   try {
-    const { fetchBizNotifySubscribeConfig } = await import('@/services/notification')
+    const { fetchBizNotifySubscribeConfig } = await import('@/modules/notify')
     const ids = await fetchBizNotifySubscribeConfig()
     if (ids.length) subscribeTmplIds.value = ids
   } catch (err) {
@@ -293,7 +293,7 @@ function requestSubscribe() {
   void invokeBizNotifySubscribe(tmplIds)
     .then(async (accepted) => {
       if (accepted.length) {
-        const { recordBizNotifySubscribe } = await import('@/services/notification')
+        const { recordBizNotifySubscribe } = await import('@/modules/notify')
         await recordBizNotifySubscribe(accepted).catch((err) => {
           console.warn('[mine] record subscribe failed:', err)
         })

@@ -53,12 +53,14 @@ import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import { showToast } from '@/utils/feedback'
 import { navigateTo } from '@/utils/router'
 import {
+  formatNotifyTime,
   listBizNotifications,
   markBizNotificationsRead,
-} from '@/services/notification'
+  notifyTypeLabel,
+  type BizNotification,
+  type NotifyListCategory,
+} from '@/modules/notify'
 import { useNotificationStore } from '@/stores/notification'
-import type { BizNotification, NotifyListCategory } from '@/types/notification'
-import { formatNotifyTime, notifyTypeLabel } from '@/types/notification'
 
 const pageTitle = '消息通知'
 const loadingText = '加载中…'

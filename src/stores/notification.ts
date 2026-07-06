@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { hasToken } from '@/services/auth'
-import { fetchNotifyUnreadCount } from '@/services/notification'
+import { fetchNotifyUnreadCount } from '@/modules/notify'
 import { updateNotifyTabBadge } from '@/utils/notifyTabBadge'
 
 export const useNotificationStore = defineStore('notification', () => {
