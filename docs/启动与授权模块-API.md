@@ -14,7 +14,7 @@
 | 微信 / 手机号登录与会话持久化 | 用户资料云端保存（见 `services/userProfile`） |
 | 本地 token / 角色 / 资料缓存读写 | 商家 staff 权限明细（见 `@/modules/staff`） |
 | `checkAccess` / `refreshSessionAccess` 权限版本校验 | 订阅消息（见 `@/modules/notify`） |
-| 按角色跳转首页 / 商家台 | 协议勾选、欢迎模态 UI（产品待做） |
+| 按角色跳转首页 / 商家台 | 协议勾选 / 资料浮层 **UI**（`LoginLegalSheet` / `LoginProfileSheet`，非本模块 API） |
 
 ---
 

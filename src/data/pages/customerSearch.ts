@@ -4,7 +4,7 @@ import { goodsRepository, wikiRepository } from '@/data/repository'
 import {
   searchCustomerUnified,
   suggestCustomerUnified,
-} from '@/services/customerUnifiedSearch'
+} from '@/modules/search'
 import { attachGoodsCoverImages } from '@/utils/goodsImage'
 import {
   getWikiDisplayName,

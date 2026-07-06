@@ -2,7 +2,7 @@ import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { hasCacheEntry } from '@/utils/cache'
 import { buildFlowerLabel } from '@/services/flower'
-import { flowerRepository } from '@/data/repository'
+import { ensureFlowerCatalog } from '@/modules/flower'
 import { wikiRepository } from '@/data/repository/wikiRepository'
 import { CACHE_KEYS } from '@/data/cacheKeys'
 import { navigateBack } from '@/utils/router'
@@ -79,7 +79,7 @@ export function setupFlowerPickerPageData(): PageSetupResult & Record<string, un
         const wikiList = await wikiRepository.searchPublicList(keyword.value.trim())
         catalog.value = buildFlowerCatalogFromWiki(wikiList)
       } else {
-        const { data } = await flowerRepository.ensureCatalog({
+        const { data } = await ensureFlowerCatalog({
           force,
           onUpdate: (updated) => {
             catalog.value = updated

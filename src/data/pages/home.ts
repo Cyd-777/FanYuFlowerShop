@@ -23,7 +23,7 @@ import { prefetchHomeFirstScreen, readCachedHomeBannerUrls, readHomeBannerFileId
 import { startAggressivePrefetch } from '@/data/prefetch/aggressivePrefetch'
 import { prefetchOtherCustomerTabs } from '@/data/prefetch/routeP0'
 import { goodsRepository, wikiRepository } from '@/data/repository'
-import { suggestCustomerUnified, buildCustomerSearchPageUrl } from '@/services/customerUnifiedSearch'
+import { suggestCustomerUnified, buildCustomerSearchPageUrl } from '@/modules/search'
 import type { CustomerUnifiedSearchScope, SearchSuggestion } from '@/types/search'
 import type { FlowerWikiListItem } from '@/types/wiki'
 import type { PageEnsureContext } from '../types'

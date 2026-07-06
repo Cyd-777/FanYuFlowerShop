@@ -48,8 +48,8 @@ docs/{模块名}模块-API.md   # 该模块 API 文档（前端 + 云 action）
 | 6 | 店铺设置 | `@/modules/shop` | 2 · 迭代2 | ✅ 读 API |
 | 7 | 销售策略 | `@/modules/salesStrategy` | 2 | 待做（在 shop 后） |
 | 8 | 素材 | `@/modules/asset` | 2 | 待做 |
-| 9 | 搜索 | `@/modules/search` | 3 · 迭代3 | 待做 |
-| 10 | 花卉目录读 | `@/modules/flower` | 3 | 待做 |
+| 9 | 搜索 | `@/modules/search` | 3 · 迭代3 | ✅ |
+| 10 | 花卉目录读 | `@/modules/flower` | 3 · 迭代3 | ✅ |
 | 11 | 智库读/写 | `@/modules/wiki` | 4 | 待做 |
 | 12 | 分类 | `@/modules/category` | 4 | 待做 |
 | 13 | 可售数进货 | `@/modules/warehouse` | 5 | 待做 |
