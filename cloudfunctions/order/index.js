@@ -1,5 +1,17 @@
 const cloud = require('wx-server-sdk')
 const { bumpCacheModule } = require('./common/cacheMeta')
+const { bumpCacheEvent } = require('./common/cacheInvalidation')
+const {
+  isMerchant,
+  ensureCollection,
+  isCollectionMissingError,
+} = require('./common/merchantGate')
+const {
+  notifyOrderCreated,
+  notifyOrderCancelled,
+  notifyOrderStatusChange,
+  safeFireAndForget,
+} = require('./common/bizNotifyEmit')
 
 async function safeBumpCacheModule(module) {
   try {
@@ -9,55 +21,20 @@ async function safeBumpCacheModule(module) {
   }
 }
 
+async function safeBumpGoodsStockCache() {
+  try {
+    await bumpCacheEvent('goodsStock')
+  } catch (err) {
+    console.error('[order] bump goods stock cache failed:', err.message || err)
+  }
+}
+
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
 })
 
 const db = cloud.database()
 const _ = db.command
-
-const OWNER_OPENIDS = ['oiDICxmmuGHJTKQzDsG9X32n2fAs']
-
-function isCollectionMissingError(err) {
-  const msg = [err.errMsg, err.message, String(err.errCode), String(err.code)]
-    .filter(Boolean)
-    .join(' ')
-  return (
-    msg.includes('DATABASE_COLLECTION_NOT_EXIST') ||
-    msg.includes('collection not exists') ||
-    msg.includes('Db or Table not exist') ||
-    msg.includes('-502005') ||
-    msg.includes('50200')
-  )
-}
-
-async function ensureCollection(name) {
-  try {
-    await db.createCollection(name)
-  } catch (err) {
-    const msg = [err.errMsg, err.message].filter(Boolean).join(' ')
-    const alreadyExists =
-      msg.includes('already exist') ||
-      msg.includes('已存在') ||
-      msg.includes('ResourceExist') ||
-      msg.includes('Table exist')
-    if (!alreadyExists && !msg.includes('createCollection is not a function')) {
-      throw err
-    }
-  }
-}
-
-async function isMerchant(openid) {
-  if (OWNER_OPENIDS.includes(openid)) return true
-
-  try {
-    const { data } = await db.collection('merchants').where({ openid }).limit(1).get()
-    return data.length > 0
-  } catch (err) {
-    if (isCollectionMissingError(err)) return OWNER_OPENIDS.includes(openid)
-    throw err
-  }
-}
 
 function pickGoods(doc) {
   return {
@@ -452,7 +429,8 @@ async function createOrder(event, customerOpenid) {
     await writeOrderOutLedgers(applied, addRes._id, orderNo, batchId)
 
     const { data } = await db.collection('orders').doc(addRes._id).get()
-    await safeBumpCacheModule('goods')
+    await safeBumpGoodsStockCache()
+    safeFireAndForget(() => notifyOrderCreated(data, customerOpenid, applied))
     return { success: true, orderId: addRes._id, order: pickOrder(data) }
   } catch (err) {
     if (applied.length) {
@@ -545,9 +523,10 @@ async function updateOrderStatus(event, operatorOpenid) {
         updatedAt: db.serverDate(),
       },
     })
-    await safeBumpCacheModule('goods')
+    await safeBumpGoodsStockCache()
 
     const { data } = await db.collection('orders').doc(id).get()
+    safeFireAndForget(() => notifyOrderCancelled(data))
     return { success: true, order: pickOrder(data) }
   }
 
@@ -638,6 +617,7 @@ async function updateOrderStatus(event, operatorOpenid) {
   await db.collection('orders').doc(id).update({ data: patch })
 
   const { data } = await db.collection('orders').doc(id).get()
+  safeFireAndForget(() => notifyOrderStatusChange(orderDoc, data))
   return { success: true, order: pickOrder(data) }
 }
 
@@ -845,8 +825,9 @@ exports.main = async (event) => {
         },
       })
 
-      await safeBumpCacheModule('goods')
+      await safeBumpGoodsStockCache()
       const { data: updated } = await db.collection('orders').doc(id).get()
+      safeFireAndForget(() => notifyOrderStatusChange(data, updated))
       return { success: true, order: pickOrder(updated) }
     } catch (err) {
       return {

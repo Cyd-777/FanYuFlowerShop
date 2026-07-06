@@ -1,4 +1,5 @@
 export { loadWithCache, invalidateCacheModule } from './loadWithCache'
+export { invalidateCacheEvent, type CacheInvalidationEventKey } from './invalidateEvent'
 export type { LoadWithCacheOptions, LoadWithCacheResult } from './loadWithCache'
 export { hasCacheEntry, readCacheEntry } from './storage'
 export { fetchCacheVersions, resetCacheVersionsMemory } from './meta'

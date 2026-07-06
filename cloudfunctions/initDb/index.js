@@ -1,15 +1,11 @@
 const cloud = require('wx-server-sdk')
+const { OWNER_OPENIDS, isMerchant, ensureCollection, isCollectionMissingError } = require('./common/merchantGate')
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
 })
 
 const db = cloud.database()
-
-/** 与 login / staff / shop 云函数保持一致 */
-const OWNER_OPENIDS = [
-  'oiDICxmmuGHJTKQzDsG9X32n2fAs',
-]
 
 const DEFAULT_SHOP = {
   shopKey: 'default',
@@ -18,47 +14,6 @@ const DEFAULT_SHOP = {
   openTime: '09:00',
   closeTime: '21:00',
   deliveryNote: '',
-}
-
-function isCollectionMissingError(err) {
-  const msg = [err.errMsg, err.message, String(err.errCode), String(err.code)]
-    .filter(Boolean)
-    .join(' ')
-  return (
-    msg.includes('DATABASE_COLLECTION_NOT_EXIST') ||
-    msg.includes('collection not exists') ||
-    msg.includes('Db or Table not exist') ||
-    msg.includes('-502005') ||
-    msg.includes('50200')
-  )
-}
-
-async function ensureCollection(name) {
-  try {
-    await db.createCollection(name)
-  } catch (err) {
-    const msg = [err.errMsg, err.message].filter(Boolean).join(' ')
-    const alreadyExists =
-      msg.includes('already exist') ||
-      msg.includes('已存在') ||
-      msg.includes('ResourceExist') ||
-      msg.includes('Table exist')
-    if (!alreadyExists && !msg.includes('createCollection is not a function')) {
-      throw err
-    }
-  }
-}
-
-async function isMerchant(openid) {
-  if (OWNER_OPENIDS.includes(openid)) return true
-
-  try {
-    const { data } = await db.collection('merchants').where({ openid }).limit(1).get()
-    return data.length > 0
-  } catch (err) {
-    if (isCollectionMissingError(err)) return OWNER_OPENIDS.includes(openid)
-    throw err
-  }
 }
 
 async function ensureShops() {

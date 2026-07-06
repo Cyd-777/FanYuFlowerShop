@@ -7,7 +7,26 @@ const path = require('path')
 
 const root = path.join(__dirname, '../cloudfunctions')
 const srcDir = path.join(root, 'common')
-const commonFiles = ['cacheMeta.js', 'fileUrls.js', 'accessControl.js', 'authIdentifier.js', 'account.js', 'db.js', 'flowerCatalogCut.js', 'flowerCatalogMerge.js', 'flowerSeed.js', 'ensureFlowerCatalog.js', 'wikiExcluded.js', 'wikiKindMatch.js']
+const commonFiles = [
+  'cacheMeta.js',
+  'cacheInvalidation.js',
+  'fileUrls.js',
+  'accessControl.js',
+  'authIdentifier.js',
+  'account.js',
+  'db.js',
+  'merchantGate.js',
+  'flowerIdentity.js',
+  'flowerIdentity.json',
+  'subscribeMessage.js',
+  'flowerCatalogCut.js',
+  'flowerCatalogMerge.js',
+  'flowerSeed.js',
+  'ensureFlowerCatalog.js',
+  'wikiExcluded.js',
+  'wikiKindMatch.js',
+  'bizNotifyEmit.js',
+]
 const targets = [
   'goods',
   'category',
@@ -20,7 +39,17 @@ const targets = [
   'favorite',
   'login',
   'staff',
+  'notify',
+  'initDb',
+  'scheduler',
 ]
+
+const sharedIdentity = path.join(__dirname, '../shared/flower-identity.json')
+const commonIdentity = path.join(srcDir, 'flowerIdentity.json')
+if (fs.existsSync(sharedIdentity)) {
+  fs.copyFileSync(sharedIdentity, commonIdentity)
+  console.log('[sync-cloud-common] common/flowerIdentity.json ← shared/flower-identity.json')
+}
 
 for (const file of commonFiles) {
   const src = path.join(srcDir, file)

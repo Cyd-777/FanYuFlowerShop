@@ -590,6 +590,8 @@ export interface FlowerWiki {
   icon: string
   coverImage: string
   plantForm: WikiPlantForm
+  /** 种类养护底稿块编码（云库；前端 overlay 同名字段） */
+  careBaseRef?: string
   bloom: WikiBloom
   careVase: WikiCareVase
   careSoil: WikiCareSoil

@@ -67,7 +67,7 @@ async function ensureMissingKindsFromSeed(db) {
   }
 }
 
-/** 确保 flower_kinds / flower_varieties 存在；空库种子写入，非空库走合并 */
+/** 确保 flower_kinds / flower_varieties 存在；空库种子写入（读路径不自动 merge） */
 async function ensureDefaultFlowerCatalog(db) {
   await ensureCollection(db, 'flower_kinds')
   await ensureCollection(db, 'flower_varieties')
@@ -82,11 +82,21 @@ async function ensureDefaultFlowerCatalog(db) {
   }
 
   await ensureMissingKindsFromSeed(db)
+  return { mode: 'ready' }
+}
+
+/** 品种归并单一写入口 — 显式 merge + flowerCatalog 缓存失效 */
+async function runFlowerCatalogMerge(db) {
+  await ensureCollection(db, 'flower_kinds')
+  await ensureCollection(db, 'flower_varieties')
   const mergeStats = await mergeFlowerCatalog(db)
-  return { mode: 'merge', mergeStats }
+  const { bumpCacheEvent } = require('./cacheInvalidation')
+  await bumpCacheEvent('flowerCatalog')
+  return mergeStats
 }
 
 module.exports = {
   ensureDefaultFlowerCatalog,
+  runFlowerCatalogMerge,
   mergeFlowerCatalog,
 }

@@ -8,8 +8,8 @@ export const CACHE_KEYS = {
   goodsRecommend: 'goods:public:recommend:v3',
   goodsPublicAll: 'goods:public:all:v3',
   goodsMerchantAll: 'goods:merchant:all',
-  wikiList: 'wiki:public:list',
-  wikiMerchantList: 'wiki:merchant:list',
+  wikiList: 'wiki:public:list:v2',
+  wikiMerchantList: 'wiki:merchant:list:v2',
   flowerCatalog: 'flower:catalog:list',
 } as const
 
@@ -18,9 +18,9 @@ export function goodsPublicDetailKey(id: string) {
 }
 
 export function wikiPublicDetailKey(id: string) {
-  return `wiki:public:detail:v3:${id}`
+  return `wiki:public:detail:v4:${id}`
 }
 
 export function wikiPublicMatchKey(kindId = '', varietyId = '') {
-  return `wiki:public:match:v2:${kindId || '_'}:${varietyId || '_'}`
+  return `wiki:public:match:v3:${kindId || '_'}:${varietyId || '_'}`
 }

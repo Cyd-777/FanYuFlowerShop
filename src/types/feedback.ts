@@ -1,6 +1,6 @@
 export type FeedbackTone = 'primary' | 'success' | 'warning' | 'danger'
 
-export type NotifyBarPosition = 'top' | 'bottom'
+export type NotifyBarPosition = 'head' | 'bottom'
 
 export interface NotifyBarOptions {
   message: string

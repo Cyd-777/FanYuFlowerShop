@@ -1,4 +1,4 @@
-export type CacheModule = 'categories' | 'goods' | 'wiki' | 'flower' | 'shop'
+export type CacheModule = 'categories' | 'goods' | 'wiki' | 'flower' | 'shop' | 'notify'
 
 export interface CacheEntry<T> {
   data: T

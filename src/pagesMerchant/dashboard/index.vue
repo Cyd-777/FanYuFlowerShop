@@ -44,7 +44,12 @@
             class="action-item"
             @click="handleAction(item.key)"
           >
-            <view class="action-icon">{{ item.icon }}</view>
+            <view class="action-icon-wrap">
+              <view class="action-icon">{{ item.icon }}</view>
+              <view v-if="item.key === 'notify' && notifyUnread > 0" class="action-badge">
+                {{ notifyUnread > 99 ? '99+' : notifyUnread }}
+              </view>
+            </view>
             <view class="action-label">{{ item.label }}</view>
           </view>
         </view>
@@ -70,6 +75,7 @@ import { resolveAvatarDisplayPath } from '@/services/userProfile'
 import { useShopDisplay } from '@/composables/useShopDisplay'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
+import { useNotificationStore } from '@/stores/notification'
 import type { OrderStatus } from '@/types/order'
 
 const uiText_047109 = '待处理'
@@ -92,6 +98,8 @@ const stats = ref({
 const statsLoading = ref(false)
 const displayName = ref('店长')
 const avatarDisplay = ref('')
+const notificationStore = useNotificationStore()
+const notifyUnread = ref(0)
 
 const greetingText = computed(() => {
   const hour = new Date().getHours()
@@ -106,6 +114,7 @@ const actionGroups = [
     title: '📋 订单',
     items: [
       { key: 'order', icon: '📋', label: '订单管理' },
+      { key: 'notify', icon: '🔔', label: '消息通知' },
       { key: 'verify', icon: '📱', label: '扫码核销' },
     ],
   },
@@ -128,7 +137,17 @@ const actionGroups = [
 useDidShow(() => {
   void loadStats()
   void loadMerchantProfile()
+  void refreshNotifyBadge()
 })
+
+async function refreshNotifyBadge() {
+  try {
+    await notificationStore.refreshBadge({ silent: true })
+    notifyUnread.value = notificationStore.unread
+  } catch (err) {
+    console.warn('[dashboard] refresh notify failed:', err)
+  }
+}
 
 async function loadMerchantProfile() {
   try {
@@ -168,6 +187,12 @@ function goOrders(tab: OrderStatus | 'all') {
 async function handleAction(page: string) {
   if (page === 'verify') {
     await scanAndVerifyPickup()
+    return
+  }
+  if (page === 'notify') {
+    navigateTo({ url: '/pagesCustomer/notify/list' }).catch((err) => {
+      console.error('[dashboard] navigate notify failed:', err)
+    })
     return
   }
   go(page)
@@ -245,7 +270,24 @@ function previewCustomer() {
 }
 .action-item {
   background: #fff; border-radius: 16rpx; padding: 32rpx 16rpx; text-align: center;
+  .action-icon-wrap {
+    position: relative;
+    display: inline-block;
+  }
   .action-icon { font-size: 56rpx; }
+  .action-badge {
+    position: absolute;
+    top: -8rpx;
+    right: -16rpx;
+    min-width: 32rpx;
+    padding: 0 8rpx;
+    border-radius: 999rpx;
+    background: #e53935;
+    color: #fff;
+    font-size: 20rpx;
+    line-height: 32rpx;
+    font-weight: 600;
+  }
   .action-label { margin-top: 8rpx; font-size: 24rpx; color: #666; }
 }
 .preview-section { padding: 48rpx 32rpx; }

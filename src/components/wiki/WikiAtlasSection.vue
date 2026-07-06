@@ -3,7 +3,11 @@
     <view
       id="wiki-anchor-atlas"
       class="wiki-section__intro wiki-prose"
-      :class="{ 'wiki-section__intro--highlight': highlightAnchor === 'wiki-anchor-atlas' }"
+      :class="{
+        'wiki-section__intro--highlight': highlightAnchor === 'wiki-anchor-atlas',
+        'wiki-note-editable--zone': editable,
+      }"
+      @tap="onEdit('atlasIntroParagraphsText')"
     >
       <WikiAtlasIntro v-if="fields.introSegments.length" :segments="fields.introSegments" />
       <WikiArticleBody
@@ -11,10 +15,16 @@
         :paragraphs="fields.paragraphs"
         source-prefix="atlas.paragraphs"
       />
-      <text v-else class="wiki-section__empty">{{ emptyText }}</text>
+      <text v-else class="wiki-section__empty">{{ editable ? emptyEditableText : emptyText }}</text>
+      <text v-if="editable" class="wiki-note-tap-hint">{{ tapHint }}</text>
     </view>
 
-    <view v-if="fields.features.length" class="wiki-section__features">
+    <view
+      v-if="fields.features.length || editable"
+      class="wiki-section__features"
+      :class="{ 'wiki-note-editable--zone': editable }"
+      @tap="onEdit('picker:features')"
+    >
       <text
         v-for="(feature, idx) in fields.features"
         :key="idx"
@@ -22,6 +32,7 @@
       >
         {{ feature }}
       </text>
+      <text v-if="editable && !fields.features.length" class="wiki-section__empty">{{ tapPickFeatures }}</text>
     </view>
 
     <view v-if="cultivarLine" class="wiki-section__meta">
@@ -72,10 +83,14 @@
     </view>
 
     <view
-      v-if="fields.vaseLife || fields.vaseBySeason.length"
+      v-if="fields.vaseLife || fields.vaseBySeason.length || editable"
       id="wiki-anchor-bloom"
       class="wiki-section__block"
-      :class="{ 'wiki-section__block--highlight': highlightAnchor === 'wiki-anchor-bloom' }"
+      :class="{
+        'wiki-section__block--highlight': highlightAnchor === 'wiki-anchor-bloom',
+        'wiki-note-editable--zone': editable,
+      }"
+      @tap="onEdit('bloomVase')"
     >
       <WikiVaseLifeBar
         v-if="fields.vaseLife"
@@ -121,12 +136,22 @@ import type { FlowerWiki } from '@/types/wiki'
 import { getWikiDisplayName, resolveWikiAtlas } from '@/types/wiki'
 import { navigateToWikiByName } from '@/utils/wikiNavigate'
 
+import type { WikiNoteEditTarget } from '@/utils/wikiNoteEdit'
+
 const props = defineProps<{
   wiki: FlowerWiki
   highlightAnchor?: string
+  editable?: boolean
+}>()
+
+const emit = defineEmits<{
+  edit: [target: WikiNoteEditTarget]
 }>()
 
 const emptyText = '暂无简介'
+const emptyEditableText = '点击填写介绍正文'
+const tapHint = '点击编辑'
+const tapPickFeatures = '点击选择特征 chip'
 const originLead = '主要产地：'
 const distinguishTitle = '易混辨识'
 
@@ -164,6 +189,11 @@ function onDistinguishNavigate(name: string) {
     excludeWikiId: props.wiki._id,
   })
 }
+
+function onEdit(target: WikiNoteEditTarget) {
+  if (!props.editable) return
+  emit('edit', target)
+}
 </script>
 
 <style lang="less">
@@ -195,6 +225,13 @@ function onDistinguishNavigate(name: string) {
   background: rgba(229, 57, 53, 0.08);
   border-radius: 999rpx;
   line-height: 1.3;
+}
+
+.wiki-note-tap-hint {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: #a78bfa;
 }
 
 .wiki-section__empty {

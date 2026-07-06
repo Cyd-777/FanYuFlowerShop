@@ -1,4 +1,4 @@
-import { getWikiVarietyOverlay } from '@/data/wiki/varieties'
+import { getWikiVarietyOverlay, resolveWikiVarietyName } from '@/data/wiki/varieties'
 import type {
   WikiAtlasDocFields,
   WikiAtlasIntro,
@@ -420,15 +420,20 @@ function buildAtlasFromSources(
 function applyOverlayCare(
   wiki: FlowerWiki,
   overlay: WikiVarietyOverlay | null,
+  docCareBaseRef?: string,
+  docCareOverride?: Partial<WikiCareVase>,
 ): void {
   const careRef =
     overlay?.careBaseRef ||
+    docCareBaseRef ||
     (isRoseKind(wiki.kindName) && wiki.varietyName.trim() ? DEFAULT_ROSE_CARE_REF : '')
   if (!careRef) return
 
   const base = resolveCareVaseBlock(careRef)
   if (base) {
-    wiki.careVase = mergeCareVase(base, overlay?.careVaseOverride)
+    const override = overlay?.careVaseOverride || docCareOverride
+    wiki.careVase = mergeCareVase(base, override)
+    wiki.careBaseRef = careRef
   }
 }
 
@@ -449,16 +454,28 @@ function applyTaxonomyFromBlocks(wiki: FlowerWiki, intro?: WikiAtlasIntro): void
  */
 export function assembleFlowerWiki(raw: Record<string, unknown>): FlowerWiki {
   const kindName = String(raw.kindName || '').trim()
-  const varietyName = String(raw.varietyName || '').trim()
-  const overlay = varietyName ? getWikiVarietyOverlay(kindName, varietyName) : null
+  const rawVariety = String(raw.varietyName || '').trim()
+  const varietyName = rawVariety ? resolveWikiVarietyName(kindName, rawVariety) : ''
+  const overlay = varietyName ? getWikiVarietyOverlay(kindName, rawVariety || varietyName) : null
   const prepared = prepareRawDocForAssembly(raw, overlay)
-  const displayName = getWikiDisplayName({ kindName, varietyName })
+  const displayName = getWikiDisplayName({ kindName, varietyName: varietyName || rawVariety })
+
+  const rawAliases = Array.isArray(raw.aliases)
+    ? (raw.aliases as string[]).map((item) => String(item || '').trim()).filter(Boolean)
+    : []
+  const aliases =
+    rawVariety && varietyName && rawVariety !== varietyName
+      ? [...new Set([...rawAliases, rawVariety])]
+      : rawAliases
 
   const docAtlas = (prepared.atlas || {}) as WikiAtlasDocFields
   const atlas = buildAtlasFromSources(docAtlas, overlay?.atlas, displayName)
 
   const wiki = normalizeFlowerWiki({
     ...(prepared as FlowerWiki),
+    kindName,
+    varietyName,
+    aliases,
     names: {
       scientificName: overlay?.names?.scientificName || (prepared.names as FlowerWiki['names'])?.scientificName,
       commonNames:
@@ -475,7 +492,12 @@ export function assembleFlowerWiki(raw: Record<string, unknown>): FlowerWiki {
   })
 
   applyTaxonomyFromBlocks(wiki, docAtlas.intro || overlay?.atlas?.intro)
-  applyOverlayCare(wiki, overlay)
+  applyOverlayCare(
+    wiki,
+    overlay,
+    String(raw.careBaseRef || '').trim() || undefined,
+    overlay ? undefined : (prepared.careVase as WikiCareVase),
+  )
 
   if (wiki.atlas?.intro?.identity) {
     wiki.atlas.introSegments = composeAtlasIntroSegments(

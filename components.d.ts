@@ -43,6 +43,7 @@ declare module 'vue' {
     WikiArticleBody: typeof import('./src/components/wiki/WikiArticleBody.vue')['default']
     WikiAtlasIntro: typeof import('./src/components/wiki/WikiAtlasIntro.vue')['default']
     WikiAtlasSection: typeof import('./src/components/wiki/WikiAtlasSection.vue')['default']
+    WikiBlockPickerSheet: typeof import('./src/components/wiki/WikiBlockPickerSheet.vue')['default']
     WikiBloomSeasonBar: typeof import('./src/components/wiki/WikiBloomSeasonBar.vue')['default']
     WikiCareCommonIssuesCard: typeof import('./src/components/wiki/WikiCareCommonIssuesCard.vue')['default']
     WikiCareConditionItem: typeof import('./src/components/wiki/WikiCareConditionItem.vue')['default']
@@ -57,11 +58,15 @@ declare module 'vue' {
     WikiDetailHero: typeof import('./src/components/wiki/WikiDetailHero.vue')['default']
     WikiEntryLink: typeof import('./src/components/wiki/WikiEntryLink.vue')['default']
     WikiEntryPanel: typeof import('./src/components/wiki/WikiEntryPanel.vue')['default']
+    WikiExternalPrefillBar: typeof import('./src/components/wiki/WikiExternalPrefillBar.vue')['default']
     WikiFieldSlot: typeof import('./src/components/WikiFieldSlot.vue')['default']
     WikiKindCardTags: typeof import('./src/components/wiki/WikiKindCardTags.vue')['default']
     WikiLanguageColorCard: typeof import('./src/components/wiki/WikiLanguageColorCard.vue')['default']
     WikiLanguageOccasionChip: typeof import('./src/components/wiki/WikiLanguageOccasionChip.vue')['default']
     WikiLanguageSection: typeof import('./src/components/wiki/WikiLanguageSection.vue')['default']
+    WikiMerchantNoteEditor: typeof import('./src/components/wiki/WikiMerchantNoteEditor.vue')['default']
+    WikiNoteEditSheet: typeof import('./src/components/wiki/WikiNoteEditSheet.vue')['default']
+    WikiSmartPasteCard: typeof import('./src/components/wiki/WikiSmartPasteCard.vue')['default']
     WikiVaseLifeBar: typeof import('./src/components/wiki/WikiVaseLifeBar.vue')['default']
   }
 }

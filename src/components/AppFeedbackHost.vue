@@ -73,6 +73,7 @@ import {
   FEEDBACK_TONE_STYLES,
   feedbackAlertState,
   feedbackBarState,
+  getNotifyBarBottomOffsetPx,
   getNotifyBarTopOffsetPx,
   getPullRefreshTopOffsetPx,
   onNotifyAlertCancel,
@@ -82,14 +83,16 @@ import {
 } from '@/utils/feedback'
 
 const notifyTopPx = ref(getNotifyBarTopOffsetPx())
+const notifyBottomPx = ref(getNotifyBarBottomOffsetPx())
 const pullRefreshTopPx = ref(getPullRefreshTopOffsetPx())
 
-function refreshTopOffset() {
+function refreshLayout() {
   notifyTopPx.value = getNotifyBarTopOffsetPx(true)
+  notifyBottomPx.value = getNotifyBarBottomOffsetPx()
   pullRefreshTopPx.value = getPullRefreshTopOffsetPx()
 }
 
-useDidShow(refreshTopOffset)
+useDidShow(refreshLayout)
 
 function noop() {}
 
@@ -104,7 +107,9 @@ const isConfirmMode = computed(() => feedbackAlertState.mode === 'confirm')
 const barStyle = computed(() => FEEDBACK_TONE_STYLES[feedbackBarState.tone])
 
 const wrapPositionStyle = computed(() => {
-  if (feedbackBarState.position === 'bottom') return {}
+  if (feedbackBarState.position === 'bottom') {
+    return { bottom: `${notifyBottomPx.value}px` }
+  }
   return { top: `${notifyTopPx.value}px` }
 })
 
@@ -145,11 +150,7 @@ const alertDialogClass = computed(
   pointer-events: none;
 }
 
-.app-notify-bar-wrap--bottom {
-  bottom: calc(24rpx + env(safe-area-inset-bottom));
-}
-
-.app-notify-bar-wrap:not(.app-notify-bar-wrap--bottom) {
+.app-notify-bar-wrap--head {
   padding-top: 12rpx;
 }
 
@@ -181,6 +182,7 @@ const alertDialogClass = computed(
   font-size: @font-size-md;
   line-height: 1.45;
   word-break: break-word;
+  color: inherit;
 }
 
 .app-pull-refresh {

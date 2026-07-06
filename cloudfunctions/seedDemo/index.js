@@ -1,35 +1,12 @@
 const cloud = require('wx-server-sdk')
-const { bumpCacheModule } = require('./common/cacheMeta')
+const { bumpCacheEvent } = require('./common/cacheInvalidation')
+const { isMerchant, ensureCollection } = require('./common/merchantGate')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const db = cloud.database()
 
-const OWNER_OPENIDS = ['oiDICxmmuGHJTKQzDsG9X32n2fAs']
-
 const SEED_TAG = 'demo_v1'
-
-async function ensureCollection(name) {
-  try {
-    await db.createCollection(name)
-  } catch (err) {
-    const msg = [err.errMsg, err.message].filter(Boolean).join(' ')
-    const alreadyExists =
-      msg.includes('already exist') ||
-      msg.includes('已存在') ||
-      msg.includes('ResourceExist') ||
-      msg.includes('Table exist')
-    if (!alreadyExists && !msg.includes('createCollection is not a function')) {
-      throw err
-    }
-  }
-}
-
-async function isMerchant(openid) {
-  if (OWNER_OPENIDS.includes(openid)) return true
-  const { data } = await db.collection('merchants').where({ openid }).limit(1).get()
-  return data.length > 0
-}
 
 async function findTypedCategory(name, categoryType) {
   const { data } = await db
@@ -355,8 +332,7 @@ exports.main = async (event = {}) => {
   }
 
   try {
-    await bumpCacheModule('categories')
-    await bumpCacheModule('goods')
+    await bumpCacheEvent('goodsCatalog')
   } catch (err) {
     console.warn('[seedDemo] cache bump failed:', err.message || err)
   }

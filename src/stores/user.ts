@@ -41,11 +41,20 @@ export const useUserStore = defineStore('user', () => {
     return role.value === UserRole.Merchant
   }
 
+  function syncCachedRole() {
+    const cached = getCachedRole()
+    if (cached) role.value = cached
+  }
+
   return {
+    userId,
     profile,
+    role,
+    isLoggedIn,
     doLoginWechat,
     doLoginPhone,
     syncSession,
+    syncCachedRole,
     isMerchant,
   }
 })

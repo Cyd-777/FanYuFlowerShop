@@ -3,71 +3,23 @@
  * （重命名/归并旧品种，停用冗余词条，不另起平行体系）
  */
 const { bumpCacheModule } = require('./cacheMeta')
+const { bumpCacheEvent } = require('./cacheInvalidation')
 const { fetchAllDocs } = require('./db')
 const { CUT_FLOWER_CATALOG, KIND_META, buildFlowerSeedFromCatalog } = require('./flowerCatalogCut')
+const {
+  getLegacyVarietyMap,
+  getKindAbsorbMap,
+  absorbKindName,
+} = require('./flowerIdentity')
 
 const CATALOG_KINDS = new Set(Object.keys(KIND_META))
 const FLOWER_SEED = buildFlowerSeedFromCatalog()
 
-/** 旧种子/通用品名 → 清单 canonical 品种名 */
-const LEGACY_VARIETY_MAP = {
-  '玫瑰:红玫瑰': '卡罗拉',
-  '玫瑰:粉玫瑰': '戴安娜',
-  '玫瑰:白玫瑰': '白雪山',
-  '玫瑰:佛洛依德': '弗洛伊德',
-  '百合:白百合': '西伯利亚',
-  '百合:粉百合': '索邦',
-  '百合:黄百合': '黄天霸',
-  '百合:香水百合': '黄天霸',
-  '百合:西伯利亚百合': '西伯利亚',
-  '康乃馨:红色康乃馨': '马斯特',
-  '康乃馨:粉色康乃馨': '粉钻',
-  '康乃馨:白色康乃馨': '白雪公主',
-  '向日葵:向日葵': '黑芯向日葵',
-  '向日葵:迷你向日葵': '泰迪熊',
-  '郁金香:红色郁金香': '王朝',
-  '郁金香:黄色郁金香': '纯金',
-  '郁金香:粉色郁金香': '夜皇后',
-  '郁金香:白色郁金香': '白梦',
-  '绣球:蓝色绣球': '无尽夏',
-  '绣球:粉色绣球': '无尽夏',
-  '绣球:白色绣球': '贝拉安娜',
-  '洋桔梗:白色洋桔梗': '露西塔系列',
-  '洋桔梗:紫色洋桔梗': '波浪系列',
-  '洋桔梗:绿色洋桔梗': '花束系列',
-  '满天星:白色满天星': '仙女',
-  '满天星:彩色满天星': '粉满天星',
-  '芍药:粉色芍药': '莎拉',
-  '芍药:白色芍药': '奶油碗',
-  '芍药:珊瑚芍药': '落日珊瑚',
-  '菊花:黄菊花': '乒乓菊',
-  '菊花:白菊花': '乒乓菊',
-  '马蹄莲:白色马蹄莲': '白马',
-  '马蹄莲:黄色马蹄莲': '黄金',
-  '马蹄莲:粉色马蹄莲': '粉钻',
-  '洋牡丹:粉色洋牡丹': '花毛茛',
-  '洋牡丹:白色洋牡丹': '花毛茛',
-  '洋牡丹:橙色洋牡丹': '花毛茛',
-  '勿忘我:蓝色勿忘我': '勿忘我',
-  '勿忘我:粉色勿忘我': '勿忘我',
-  '紫罗兰:紫色紫罗兰': '紫罗兰',
-  '紫罗兰:白色紫罗兰': '紫罗兰',
-  '风信子:蓝色风信子': '蓝星',
-  '风信子:粉色风信子': '粉珍珠',
-  '风信子:白色风信子': '白珍珠',
-  '非洲菊:红色非洲菊': '非洲菊',
-  '非洲菊:黄色非洲菊': '非洲菊',
-  '非洲菊:粉色非洲菊': '非洲菊',
-  '蝴蝶兰:白色蝴蝶兰': '蝴蝶兰',
-  '蝴蝶兰:粉色蝴蝶兰': '蝴蝶兰',
-  '蝴蝶兰:黄色蝴蝶兰': '蝴蝶兰',
-}
+/** @deprecated 使用 flowerIdentity.getLegacyVarietyMap() */
+const LEGACY_VARIETY_MAP = getLegacyVarietyMap()
 
-/** 旧独立种类并入清单种类 */
-const KIND_ABSORB = {
-  非洲菊: '菊花',
-  蝴蝶兰: '盆栽',
-}
+/** @deprecated 使用 flowerIdentity.getKindAbsorbMap() */
+const KIND_ABSORB = getKindAbsorbMap()
 
 function catalogRowsForKind(kindName) {
   return CUT_FLOWER_CATALOG.filter((row) => row.kind === kindName)
@@ -85,14 +37,32 @@ function findCanonicalByAlias(kindName, rawName) {
 }
 
 function resolveCanonicalVarietyName(kindName, rawName) {
+  const kind = absorbKindName(kindName)
   const name = String(rawName || '').trim()
   if (!name) return ''
-  const legacy = LEGACY_VARIETY_MAP[`${kindName}:${name}`]
+  const legacy = getLegacyVarietyMap()[`${kind}:${name}`]
   if (legacy) return legacy
-  const byAlias = findCanonicalByAlias(kindName, name)
+  const byAlias = findCanonicalByAlias(kind, name)
   if (byAlias) return byAlias
-  if (catalogRowsForKind(kindName).some((row) => row.variety === name)) return name
+  if (catalogRowsForKind(kind).some((row) => row.variety === name)) return name
   return ''
+}
+
+/** 旧品种名 → canonical；旧名写入 aliases 供搜索 */
+function canonicalizeVarietyIdentity(kindName, varietyName, aliases = []) {
+  const kind = String(kindName || '').trim()
+  const raw = String(varietyName || '').trim()
+  if (!kind || !raw) {
+    return { varietyName: raw, aliases: aliases || [] }
+  }
+  const canonical = resolveCanonicalVarietyName(kind, raw)
+  if (!canonical || canonical === raw) {
+    return { varietyName: raw, aliases: aliases || [] }
+  }
+  return {
+    varietyName: canonical,
+    aliases: mergeAliasList(aliases, [raw]),
+  }
 }
 
 function mergeAliasList(existing, incoming) {
@@ -235,16 +205,80 @@ async function mergeVarietiesForKind(db, kind, absorbFromKindName = '') {
   return { varietyIdMap, canonicalIdByName, merged, disabled }
 }
 
+async function canonicalizeWikiDocsForKind(db, kind, canonicalIdByName) {
+  const wikiDocs = (await fetchAllDocs(db, 'flower_wiki')).filter(
+    (doc) =>
+      doc.enabled !== false &&
+      (doc.kindId === kind._id || doc.kindName === kind.name),
+  )
+  let renamed = 0
+
+  for (const doc of wikiDocs) {
+    const kindName = String(doc.kindName || kind.name || '').trim()
+    const rawVariety = String(doc.varietyName || '').trim()
+    if (!rawVariety) continue
+
+    const { varietyName, aliases } = canonicalizeVarietyIdentity(
+      kindName,
+      rawVariety,
+      doc.aliases,
+    )
+    if (varietyName === rawVariety) continue
+
+    const canonicalId = canonicalIdByName.get(varietyName) || ''
+    const patch = {
+      varietyName,
+      aliases,
+      updatedAt: db.serverDate(),
+    }
+    if (canonicalId) patch.varietyId = canonicalId
+
+    await db.collection('flower_wiki').doc(doc._id).update({ data: patch })
+    renamed += 1
+  }
+
+  return renamed
+}
+
+async function migrateGoodsVarietyNames(db) {
+  let migrated = 0
+  const goods = await fetchAllDocs(db, 'goods')
+
+  for (const item of goods) {
+    const kindName = String(item.flowerKindName || '').trim()
+    const raw = String(item.flowerVarietyName || '').trim()
+    if (!kindName || !raw) continue
+
+    const canonical = resolveCanonicalVarietyName(kindName, raw)
+    if (!canonical || canonical === raw) continue
+
+    await db.collection('goods').doc(item._id).update({
+      data: {
+        flowerVarietyName: canonical,
+        updatedAt: db.serverDate(),
+      },
+    })
+    migrated += 1
+  }
+
+  if (migrated > 0) {
+    await bumpCacheModule('goods')
+  }
+
+  return migrated
+}
+
 async function mergeWikiForKind(db, kind, varietyIdMap, canonicalIdByName) {
   const idToName = new Map(
     [...canonicalIdByName.entries()].map(([name, id]) => [id, name]),
   )
+
+  let wikiMerged = await canonicalizeWikiDocsForKind(db, kind, canonicalIdByName)
+  let wikiDisabled = 0
+
   const wikiDocs = (await fetchAllDocs(db, 'flower_wiki')).filter(
     (doc) => doc.kindId === kind._id || doc.kindName === kind.name,
   )
-
-  let wikiMerged = 0
-  let wikiDisabled = 0
 
   for (const doc of wikiDocs) {
     if (!doc.varietyId || !varietyIdMap.has(doc.varietyId)) continue
@@ -347,6 +381,7 @@ async function mergeFlowerCatalog(db) {
     varietiesDisabled: 0,
     wikiMerged: 0,
     wikiDisabled: 0,
+    goodsVarietyRenamed: 0,
     absorbed: [],
   }
 
@@ -376,9 +411,9 @@ async function mergeFlowerCatalog(db) {
     stats.wikiDisabled += wikiStats.wikiDisabled
   }
 
-  await bumpCacheModule('flower')
-  await bumpCacheModule('wiki')
-  await bumpCacheModule('categories')
+  stats.goodsVarietyRenamed = await migrateGoodsVarietyNames(db)
+
+  await bumpCacheEvent('flowerCatalog')
 
   return stats
 }
@@ -387,5 +422,6 @@ module.exports = {
   LEGACY_VARIETY_MAP,
   KIND_ABSORB,
   resolveCanonicalVarietyName,
+  canonicalizeVarietyIdentity,
   mergeFlowerCatalog,
 }

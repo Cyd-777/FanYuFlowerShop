@@ -4,7 +4,11 @@
       v-if="showVase"
       id="wiki-anchor-careVase"
       class="wiki-care-panel"
-      :class="{ 'wiki-care-panel--highlight': highlightAnchor === 'wiki-anchor-careVase' }"
+      :class="{
+        'wiki-care-panel--highlight': highlightAnchor === 'wiki-anchor-careVase',
+        'wiki-note-editable--zone': editable,
+      }"
+      @tap="onPanelTap"
     >
       <WikiCareHighlightText
         v-if="vase.summary"
@@ -12,6 +16,7 @@
         source="careVase.summary"
         extra-class="wiki-care-panel__summary"
       />
+      <text v-else-if="editable" class="wiki-care-panel__empty">{{ emptyEditableSummary }}</text>
 
       <view v-if="hasWakeUp" class="wiki-care-panel__phase">
         <text class="wiki-care-panel__phase-title">{{ wakeUpTitle }}</text>
@@ -83,9 +88,15 @@
           />
         </view>
 
-        <view v-if="vase.waterChange" class="wiki-care-panel__block">
+        <view v-if="vase.waterChange || editable" class="wiki-care-panel__block" @tap.stop="onEdit('careWaterChange')">
           <text class="wiki-care-panel__lead">{{ waterChangeLead }}</text>
-          <WikiCareHighlightText :text="vase.waterChange" source="careVase.waterChange" extra-class="wiki-care-panel__text" />
+          <WikiCareHighlightText
+            v-if="vase.waterChange"
+            :text="vase.waterChange"
+            source="careVase.waterChange"
+            extra-class="wiki-care-panel__text"
+          />
+          <text v-else-if="editable" class="wiki-care-panel__empty">{{ tapEditWater }}</text>
         </view>
       </view>
 
@@ -119,7 +130,7 @@
         </view>
       </view>
 
-      <view v-if="vase.tips.length" class="wiki-care-panel__tips">
+      <view v-if="vase.tips.length || editable" class="wiki-care-panel__tips" @tap.stop="onEdit('careTipsText')">
         <WikiCareHighlightText
           v-for="(tip, idx) in vase.tips"
           :key="idx"
@@ -127,6 +138,7 @@
           :source="`careVase.tips[${idx}]`"
           extra-class="wiki-care-panel__tip"
         />
+        <text v-if="editable && !vase.tips.length" class="wiki-care-panel__empty">{{ tapEditTips }}</text>
       </view>
     </view>
 
@@ -177,11 +189,21 @@ import {
   resolveWikiCareVase,
 } from '@/types/wiki'
 import { buildWikiCareConditions, resolveWikiCareDisplay } from '@/utils/wikiCareDisplay'
+import type { WikiNoteEditTarget } from '@/utils/wikiNoteEdit'
 
 const props = defineProps<{
   wiki: FlowerWiki
   highlightAnchor?: string
+  editable?: boolean
 }>()
+
+const emit = defineEmits<{
+  edit: [target: WikiNoteEditTarget]
+}>()
+
+const emptyEditableSummary = '点击填写养护摘要'
+const tapEditWater = '点击填写换水说明'
+const tapEditTips = '点击填写养护提示（每行一条）'
 
 const waterChangeLead = '换水：'
 const additivesLead = '延长花期：'
@@ -279,6 +301,20 @@ const soilConditions = computed(() => {
   }
   return [...items, ...extras]
 })
+
+function onEdit(target: WikiNoteEditTarget) {
+  if (!props.editable) return
+  emit('edit', target)
+}
+
+function onPanelTap() {
+  if (!props.editable) return
+  if (!showVase.value) {
+    onEdit('picker:careBase')
+    return
+  }
+  onEdit('careSummary')
+}
 </script>
 
 <style lang="less">
@@ -404,6 +440,13 @@ const soilConditions = computed(() => {
   font-size: 24rpx;
   color: #666;
   line-height: 1.6;
+}
+
+.wiki-care-panel__empty {
+  display: block;
+  font-size: 24rpx;
+  color: #a78bfa;
+  line-height: 1.5;
 }
 
 </style>

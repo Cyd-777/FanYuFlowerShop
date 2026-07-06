@@ -33,6 +33,15 @@ function copyTabIcons() {
     }
   }
 
+  for (const suffix of ['', '-active']) {
+    const file = `mine-notify${suffix}.png`
+    const src = path.join(SRC_DIR, file)
+    const dest = path.join(DIST_DIR, file)
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, dest)
+    }
+  }
+
   if (ok) {
     console.log('[tab-icons] dist/images/tab ready (10 icons)')
   }

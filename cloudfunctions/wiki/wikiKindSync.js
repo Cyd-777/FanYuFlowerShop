@@ -3,7 +3,7 @@
  */
 
 const { bumpCacheModule } = require('./common/cacheMeta')
-const { mergeFlowerCatalog } = require('./common/flowerCatalogMerge')
+const { runFlowerCatalogMerge } = require('./common/ensureFlowerCatalog')
 const { isExcludedWikiKind } = require('./common/wikiExcluded')
 const { fetchAllDocs } = require('./common/db')
 const { getKindProfile, WIKI_KIND_PROFILES } = require('./wikiKindProfiles')
@@ -331,7 +331,7 @@ async function ensureMissingWikiEntries(db) {
 }
 
 async function syncAllKindProfiles(db) {
-  const mergeStats = await mergeFlowerCatalog(db)
+  const mergeStats = await runFlowerCatalogMerge(db)
 
   const [wikiDocs, varieties] = await Promise.all([
     fetchAllDocs(db, 'flower_wiki'),

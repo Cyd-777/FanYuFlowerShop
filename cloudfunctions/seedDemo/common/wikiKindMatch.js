@@ -2,6 +2,12 @@
  * 智库种类名 / 别名归一（云函数共用，npm run sync:cloud 同步到各函数 ./common/）
  * 与客户端 src/utils/wikiFlowerGoods.ts 语义一致
  */
+const {
+  buildWikiCategoryId,
+  parseWikiKindNameFromCategoryId,
+  normalizeWikiCategoryId,
+  absorbKindName,
+} = require('./flowerIdentity')
 
 /** 与 wikiKindProfiles.js names.commonNames 对齐 */
 const WIKI_KIND_COMMON_NAMES = {
@@ -63,9 +69,7 @@ function canonicalizeWikiKindName(raw, aliasToCanonical) {
 }
 
 function wikiKindFromCategoryId(categoryId) {
-  const id = String(categoryId || '').trim()
-  if (!id.startsWith('wiki:')) return ''
-  return id.slice(5).trim()
+  return parseWikiKindNameFromCategoryId(categoryId)
 }
 
 function goodsBelongsToWikiKind(goods, canonicalKind, aliasToCanonical) {
@@ -74,8 +78,10 @@ function goodsBelongsToWikiKind(goods, canonicalKind, aliasToCanonical) {
 
   const categoryId = String(goods.categoryId || '').trim()
   const flowerKindName = String(goods.flowerKindName || '').trim()
+  const targetId = buildWikiCategoryId(target)
+  const legacyId = `wiki:${target}`
 
-  if (categoryId === `wiki:${target}`) return true
+  if (categoryId === targetId || categoryId === legacyId) return true
   if (flowerKindName === target) return true
 
   const kindFromId = wikiKindFromCategoryId(categoryId)
@@ -135,4 +141,6 @@ module.exports = {
   wikiKindFromCategoryId,
   goodsBelongsToWikiKind,
   countGoodsForWikiCategory,
+  buildWikiCategoryId,
+  normalizeWikiCategoryId,
 }

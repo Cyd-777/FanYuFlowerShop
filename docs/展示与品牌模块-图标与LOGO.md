@@ -17,4 +17,5 @@
 
 - 几乎不变的小图标（约 30–40 个）：Base64 PNG 打进分包 → [导航与图标](./导航与图标模块.md)
 - Tab 图标仍走 `images/` 构建脚本
+- **Tab 消息态 icon（铃兰）**：未读业务通知时「我的」Tab 切换为铃兰花朵造型 → [src/images/tab/README.md](../src/images/tab/README.md)（**设计待做**，当前占位）
 

@@ -1,6 +1,6 @@
 # 当前工作
 
-> 更新：`2026-07-01`（分类审计 1–6 修复）· `Cursor`  
+> 更新：`2026-07-06`（转向代码质量 · 智库维护/类 OA 暂停）· `Cursor`  
 > 已完成 → [🎛️ DONE.md](./🎛️%20DONE.md)（本面板不再显示）  
 > 三区：**正在做的** → **还没做的** → **暂停的**  
 > 一级 = **项目**（`[x]` 正在做 · `[ ]` 没做 · ~~`⏸` · 标题~~ 暂停）· 标题后 `**[████░░░░] done/total`**  
@@ -9,109 +9,44 @@
 
 ## 正在做的
 
-- [x] · 智库（百科）优化升级 `[█████░░░] 5/9`
-  - `需求`：百科页的内容展示和搜索体验需要打磨——百科 Tab 搜索缺乏语义预判、词条详情页样式粗糙、商品详情内嵌的智库内容过多；需统一百科相关页面的视觉风格，优化搜索体验，并精简商品详情中的智库展示
+- [x] · 代码质量与模块封装 `[░░░░░░░░] 0/6`
+  - `需求`：为后续 **AI 导管**（§7.2）接入打底——非闭环模块（**智库维护**、**类 OA**）可**放下迭代**而不拖垮商品/订单闭环；边界清晰、规范可检、改一处不全链路回归
   - `清单`
-    - ~~**百科 Tab 搜索语义预判**~~ — 首页搜索已有语义预判（如「玫瑰怎么养」→百科答案），百科 Tab 搜索没有；需要在百科语境下也支持问法预判和答案卡片
-    - **百科词条详情页样式统一** — WikiDetailHero / WikiDetailContent；分阶长文 + 锚点导航已完成，间距/字体等 polish 待续
-    - **百科 Tab 「全部」分类精简** — 当前显示所有词条，可考虑分组/更清晰的入口
-    - ~~商品详情智库内容精简~~ — 改为精简摘要 + 「查看养护指南」入口
-    - ~~品种关联主图~~ — 商品选择对应品种后使用词条配图
-    - ~~Wiki 数据字段规范~~ — 分类去掉「界」
-    - **智库词条信息可视化** — 鲜切花水位可视化，扁平化花瓶+水位刻度（类似充电电池图标），标记详细参数（瓶%多少、没过根部多高）；降低用户理解成本
-    - **智库词条维护功能** — B 端提供词条编辑/维护入口
-    - **智库词条与内容优化** — 内容补充与数据规范
-    - ~~**HonorShare · 花语正文精简**~~ — 试过下沉「送花物语」，验收后改回原布局（核心花语 → 正文 → 场景/色彩/搭配）
-    - ~~**HonorShare · 切花易得病害**~~ — 养护「常见现象 · 怎么防」：成因 + 预防；`commonIssues` 块 + 弗洛伊德 override
-    - **HonorShare · 浮动面板跟手** — 已改 translate3d 单步跟手；待真机验收
-  - `进度`：全库 **103/103 L2 手写标杆**（玫瑰 24 + 非玫瑰 79；原 65 篇模板已全部升格为康乃馨/绣球/郁金香等分种专文）
+    - **模块边界图** — 闭环核 / 只读展示 / 可暂停维护 / 反应层（notify emit）；对照 [架构耦合内聚优化](./架构耦合内聚优化.md) 标已落地与缺口
+    - **「放下」契约** — 智库维护与类 OA：冻结清单、保留运行面、AI 接入点（智能粘贴/笔记编辑/消息摘要）文档化
+    - **花卉数据分层** — 评估 `flower_wiki` 读路径 vs 商家维护写路径解耦（商品花卉选择不依赖维护 UI）
+    - **services / Repository facade 审计** — 跨模块 import 热点、页面直连云函数排查
+    - **死代码与废弃面清理** — 如 `WikiExternalPrefillBar`、`notify.send` 等已决策不用的残留
+    - **CI 规范检查扩展** — 在 `check-cache-matrix` 基础上补模块边界或 import 规则（按需）
+  - `进度`：架构 P0/P1（merchantGate、cache 矩阵、bizNotifyEmit 分层）已落地；**本轮刚立项**，尚未开工
   - `下步可做`
-    - 小程序抽测各品类 L2 详情（图鉴分段 + 花语 + 特征 chip + 养护）
-    - 逐步写入云库 `flower_wiki`
-    - Hero 配图暂缓
-    - HonorShare 浮动面板真机验收
-    - ~~百科卡片 tag（形态、园艺分类、花期、香气）~~；详情 Head 动态标题
+    - 写模块边界图 +「放下」契约（智库维护 / 类 OA 各一节）
+    - 从 `services/*`、`data/repository/*` 做跨域 import 扫描
   - `工作历史`
-    - 2026-06-29：自 **仓储管理优化** 验收归档后立项
-    - 2026-06-29：商品详情智库精简、品种关联主图、字段规范完成
-    - 2026-07-01：`buildWikiGroupedBrowseFlow` — 百科 Tab 与商家智库维护共用分组（去重、sort 顺序、种类词条在前）；搜索模态返回按钮与 AppNavBar 左缘对齐
-    - 2026-07-01：商家智库维护 — 对齐分类管理（一阶种类 / 二阶品种胶囊、`usePageData` + `listMerchantWikisCached` SWR）
-    - 2026-07-02：图鉴词条内容原型 — `WikiAtlasIntro` / `WikiBloomSeasonBar`；分类仅目科属；特征词搜索提示
-    - 2026-07-02：白屏一次性修复 — `WikiAtlasIntro` 改 view 包裹（禁止 text 嵌 block）；`check-mp-vue-template` + `cacheHandlers:false` + App onError
-    - 2026-07-02：养护指南原型 — `WikiCareTrimGuide` / `WikiCareWaterGuide` / `WikiCareConditionItem`
-    - 2026-07-02：养护三图统一 `wiki-care-visual.less` 尺寸；加水量拆「瓶高 % + 切口浸没 cm」
-    - 2026-07-02：花语 Tab — `WikiLanguageColorCard` / `WikiLanguageOccasionChip`；去边框改引述+胶囊布局
-    - 2026-07-02：Tab 页静态中文绑定 — 购物车/分类/我的、`AppSearchInput`、`WikiEntryPanel`、`WikiAnswerCard` 改 script 常量 + `{{ }}`
-    - 2026-07-02：顾客订单链路静态中文绑定 — confirm/detail/list、`OrderStatusSteps`、`PickupCodeCard`、`OrderListCard`、`GoodsNewListingBadge`
-    - 2026-07-02：全仓库静态中文绑定收尾 — `scripts/bind-static-cn-template.js` 批量处理剩余 34 个 vue（177 常量）；`check-mp-vue-template` 扫描 0 处未绑定
-    - 2026-07-02：白屏修复 — 批量脚本误把 `const` 插入多行 `import` 中间（level/category/list/warehouse-history），导致编译失败；已修复并重建，`check-static-hoist` 通过
-    - 2026-07-02：启动报错 — `homeFirstScreen` 补 `shopRepository` import；购物车角标仅在 Tab 页调用 API
-    - 2026-07-02：养护剪根图示 — 种类 profile 补全 trim/trimPosition/waterDepth；`resolveWikiCareVase` 前端默认推断；云 `pickCareVase` 补 trimPosition
-    - 2026-07-02：修剪角度图加虚线角度轴；商家端「养护图示说明」汇总页 + 智库维护入口
-    - 2026-07-02：修剪角度图 — 仅角度图保留红虚线；从垂直方向逆时针旋转；修剪位置/加水量去掉红线
-    - 2026-07-03：上传「无依赖 sub-common」排查 — 9×2 个 orphan chunk 为 Taro 跨分包复制残留；postbuild 加 `prune-sub-common.js` 自动清理
-    - 2026-07-03：养护图 — 修剪角度+位置合并为一张；加水量图瓶高/浸没标签分列水面两侧防重叠
-    - 2026-07-03：养护文案操作数值高亮 — `WikiCareHighlightText` + `splitWikiCareHighlightText`（角度/cm/比例/剪法词）
-    - 2026-07-03：智库品类清单更新 — `flowerCatalogCut` 103 品种；`flowerCatalogMerge` 合并旧名（红玫瑰→卡罗拉等）归并 wiki，非平行新增
-    - 2026-07-03：词条 schema 2.1 — 图鉴/花语 paragraphs；养护 wakeUp/environment.avoid；弗洛伊德图鉴/花语草稿
-    - 2026-07-03：玫瑰养护试点 — `wikiRoseCare` 24 品种底稿齐备；`syncRoseCare` 仅写玫瑰；计划见 docs/智库/玫瑰养护试点计划.md
-    - 2026-07-03：词条详情白屏 — `WikiCareSection` 误引不存在的 `./wiki-care-visual.less`，已删；build 通过
-    - 2026-07-03：`push:cloud` — 对比本地/云端云函数哈希，仅上传差异；`npm run push:cloud -- --yes`
-    - 2026-07-03：弗洛伊德详情空白 — `publicGet` 每次跑 `mergeFlowerCatalog` 致 15s 超时；读路径改轻量 bootstrap；`pickWiki` 读时合并玫瑰养护；已 push wiki
-    - 2026-07-04：智库内容策略 — 内置 `src/data/wiki/blocks.json` 公共块；品种 overlay JSON；前端 `assembleFlowerWiki` 云库直读 + 拼装（花语仍原模型；容器不变）
-    - 2026-07-04：词条详情 — 三 Tab 改分阶长文（介绍/养护方式/花语）；顶栏锚点跳转 + 滚动高亮 `useWikiDetailScrollLink`
-    - 2026-07-04：HonorShare 需求 — 抽屉式详情布局、花期双线段、末段锚点触底、易混品种虚线链接；LeiOA 通知入口待立项
-    - 2026-07-04：详情 Tab 吸顶逻辑审查 — 修复吸顶后 fixed 脱流污染阈值、loading 后补测量（对齐分类页）、释放滞回
-    - 2026-07-04：详情改 **Floating Panel 分层滚动** — Hero 底层 + 面板 translateY 升降；贴满后 Tab 吸顶、内层 scroll-view 滚正文；顶部下拉降面板
-    - 2026-07-04：浮动面板默认收起 — 初始 offset 按 55vh 可见高度计算，非 0
-    - 2026-07-04：浮动面板松手不吸附 — 拖到哪停哪；内滚仍仅在 translateY≈0 时开启
-    - 2026-07-04：浮动面板默认全屏排查 — 百科 Tab 带 tab=atlas 误触 ensureExpanded；改 top 定位；atlas 进页不收起
-    - 2026-07-04：面板顶部下拉降面板 — 方向锁定 + scrollTop 容差/同步 + scroll-top 锁定 + catch-move
-    - 2026-07-04：滚到顶同次触摸连续降面板 — 取消 scroll 锁死，单帧交接 + reachedTopThisTouch
-    - 2026-07-04：瓶插花期条 — 「最短 / 最长」标注对齐各段刻度终点（右对齐于 min/max 位置）
-    - 2026-07-04：图鉴长文样式 — `composeAtlasIntroSegments` 由 `atlas.intro` 生成带标记段落；学名斜体、块引用（分类/群/产区/特征）加粗着色；`WikiAtlasIntro` 优先于纯文本 `WikiArticleBody`
-    - 2026-07-04：图鉴长文无样式排查 — `resolveWikiAtlas` 有 `atlas.intro` 时始终 compose segments（不再因已有 paragraphs 退回纯文本）；云函数回退改 `assembleFlowerWiki`；图鉴区字号统一 28rpx、去掉首段放大
-    - 2026-07-04：瓶插花期条标注 — 改 flex 与色条同宽右对齐（去掉 absolute + 固定高度裁切）；`parseVaseLifeRange` 合并「可至 15 天」等上限；刻度旁仅标「7天 / 15天」不写最短最长
-    - 2026-07-04：HonorShare 新需求 — 花语正文尽量短；补充切花易得病害；浮动面板滑动不跟手/卡顿
-    - 2026-07-04：HonorShare 落地 — 花语长文迁「送花物语」；养护加 commonIssues（玫瑰块+弗洛伊德）；面板 drag 改 translate3d 单步跟手
-    - 2026-07-04：花语布局回滚 — 恢复核心花语 → 正文 → 场景/色彩/搭配原顺序
-    - 2026-07-04：layoutDebug 智库字段标注 — `WikiDataText` 下划线 + 16rpx 来源 tag；`composeAtlasIntroSegments` 带 source
-    - 2026-07-04：智库字段标注修复 — 改独立开关 `showWikiDataSourceLabels`（不再依赖底色）；MP 用 border-bottom + view 包裹
-    - 2026-07-05：全库对齐弗洛伊德 — `audit:wiki-completeness` 脚本；图鉴 `features` 特征 chip 行；卡罗拉/艾莎 L1 overlay 注册
-    - 2026-07-05：玫瑰 24 品种 L1 overlay 批量生成（`generate:wiki-rose-l1`）；index 全量注册 24/24
-    - 2026-07-05：标杆 L2 — 朱丽叶 / 戴安娜 / 卡布奇诺 升满（图鉴 intro + 花语 + 特征 chip）；blocks 补 english_rose 等 trait
-    - 2026-07-05：玫瑰 20 品种 L2 批量（`rose-l2-content` + `generate:wiki-rose-l2`）；审计 24/24 L2
-    - 2026-07-05：非玫瑰 79 品种 L1 — `sync:wiki-kind-care` + `generate:wiki-nonrose-l1`；`applyOverlayCare` 全种类；审计 103/103
-    - 2026-07-05：非玫瑰 L2 标杆 6 篇 — 百合×2、康乃馨、绣球、芍药、郁金香；`generate:wiki-nonrose-l2`
-    - 2026-07-05：百科卡片 tag（形态+园艺+花期+香气）；详情 AppNavBar 显示词条名
-    - 2026-07-05：详情回旧版修复 — overlay 优先覆盖云 pickWiki 正文；详情缓存升 v2 + 读出时再拼装
-    - 2026-07-05：百科 Tab 问法语义预判 — `buildWikiTabSuggestions`（「玫瑰怎么养」等补全）
-    - 2026-07-05：百合 8 品种 L2 批量 — `lily-l2-content`；全种 10/10 L2，全库 L2 38
-    - 2026-07-05：全库 L2 对齐 — `generate:wiki-all-l2` + `wiki-l2-catalog-builder`；103/103 L2；blocks 补 taxonomy
-    - 2026-07-05：百科卡片补「花型」tag — overlay trait + catalog 特征 + 种类默认；园艺群种类回退
-    - 2026-07-05：65 篇模板 L2 升格 — `scripts/l2-handwritten/` 分种专文（康乃馨/绣球/芍药/郁金香等）；`generate:wiki-all-l2` 重写 79 非玫瑰 overlay；审计 103/103 L2
-    - 2026-07-05：园艺分类补全 — `KIND_META` + `blocks.json` 新增 14 个 `group.*`；50 篇缺归属 overlay 重写；详情「在园艺分类上归属于…」103/103 可解析
-    - 2026-07-05：L2 字段对齐 — 易混辨识 / cultivar / featureRefs 103/103；`inferDistinguishFrom` + 玫瑰 cultivar 注入 + 配叶盆栽 trait 块
-    - 2026-07-05：弗洛伊德级 enrichment — 19 种 care 底稿补 `commonIssues`；非玫瑰 overlay 补 `breeder`；玫瑰批量注入育种者；`sync:wiki-care-common-issues`
-    - 2026-07-05：enrichment 分批 1–5 — 百合 group 修正；玫瑰/切花 `introducedYear`（90/103，配叶盆栽不写）；标杆品种级 commonIssues；见 docs/智库/词条enrichment批次.md
-    - 2026-07-05：详情「常见现象 · 怎么防」改折叠卡片 — `WikiCareCommonIssuesCard` 默认收起，外层 + 单条二级展开，缩减垂直占用
-    - 2026-07-05：百科卡片 tag — 「鲜切」改「切花」；玫瑰/百合品种卡片补种类+品种 tag，副标题改由 tag 承担；identity 合并单胶囊 + view 渲染修 MP 圆角
-    - 2026-07-05：详情回旧版再修 — 有 overlay 时 `toWikiAssemblySeed` 剥离云库/缓存旧正文；详情缓存升 v3；match 走 assemble + reassemble
-    - 2026-07-05：百科卡片 preview — `getWikiKindCardPreview` 优先 overlay 图鉴 intro 首段，与详情介绍同源
-    - 2026-07-05：养护「常见现象 · 怎么防」取消折叠，始终展示全文
+    - 2026-07-06：用户确认先放下智库维护与类 OA，转向封装与规范；Issue #2「代码质量检查」并入本项目
+
 
 ---
 
 ## 还没做的
 
-- [ ] · LeiOA 通知 · 我的页入口 `[░░░░░░░░] 0/3`
-  - `需求`：LeiOA 通知入口放在「我的」页；有未读时 TabBar「我的」icon 切为信息 icon 并显示数量气泡
+- [ ] · 启动授权（§7.11）· 登录合规与资料采集 `[░░░░░░░░] 0/8`
+  - `需求`：登录页过简（无协议勾选、无资料告知）；头像昵称不应仅以「旧 API 不可用」为由全部推到「我的 → 编辑资料」。按微信**新方式**：先 OpenID 登录，再用 `chooseAvatar` + `nickname` 主动采集；对齐策略 [启动与授权模块](./启动与授权模块.md)（首次 OpenID + 头像 + 昵称；欢迎/资料步骤；订阅不阻断进入）
   - `清单`
-    - **我的页通知入口**
-    - **TabBar 未读态 icon + 气泡**
-    - **LeiOA 接口 / 未读数同步**
-  - `进度`：HonorShare 需求录入，代码未做
-  - `下步可做`：确认 LeiOA API 与未读字段 → 我的页入口 → 自定义 TabBar 或角标方案
+    - **用户协议 + 隐私政策** — 可点击查看正文；登录页**主勾选**，未勾不可点登录
+    - **登录页 · 头像/昵称告知勾选** — 两项勾选（说明将收集头像、昵称，非旧版 getUserProfile 一键授权）
+    - **登录页 · 整合布局** — Logo + 三勾选 + 微信一键登录（替换当前仅按钮的极简页）
+    - **登录成功 · 资料采集浮层** — 首次或资料未完善时弹出浮层/欢迎模态：`open-type="chooseAvatar"` + `input type="nickname"` → `saveProfile` 写云端
+    - **引导只显示一次** — 本地标记已同意协议版本、已完成/跳过资料引导；已有完整资料则登录后直接进首页
+    - **订阅消息衔接** — 保持**不阻断**进入；与登录 tap 或资料浮层内「开启通知」衔接（拒也进；「我的」保留补开入口）
+    - **编辑资料页保留** — `pagesCustomer/profile/edit` 作后续修改入口，不与首次浮层重复逻辑
+    - **体验版联测** — 新用户全流程（三勾选 → 登录 → 资料浮层）；老用户 token 静默进首页
+  - `进度`：仅现有极简登录 + 登录 tap 订阅 + 独立编辑资料页；**协议勾选、告知勾选、登录后资料浮层均未做**
+  - `下步可做`
+    - 定案：资料浮层可否「稍后再说」；协议/隐私正文文稿与版本号
+    - 实现登录页三勾选 + 资料浮层组件
+  - `工作历史`
+    - 2026-07-06：对齐旧版产品记忆与 §7.11 — 确认用新 API 路径立项（非 getUserProfile）；待开发
 
 - [ ] · 文档按功能大模块重组 `[███████░] 6/7`
   - `需求`：现有专题文档零碎、维护弱、有过期内容；按功能大模块重写（每模块 README 含 `## 策略` + 子文档）；工作面板二文件不动
@@ -168,7 +103,7 @@
     - **emoji→icon 替换** — 应用中当前用的 icon 都是 emoji，需替换为统一风格的图标
     - **商品管理新建表单体验优化** — 表单填写流程和交互优化
     - **商品管理筛选优化** — 滑动条 + 输入框替代部分表单组件
-  - `进度`：上传图片 10MB 上限；方向 icon 已接入商城胶囊、智库折叠、购物车空链；购物车空态 `nut-empty`；商家台扫码核销直达 scanCode；顾客/商家订单列表 Tab 吸顶；搜索模态物理返回拦截；订单列表 item 三段布局 + 三种配送 tag；**通知条改居中短圆角卡片 + tone icon**；**白屏排查** — 全局 `hoistStatic: false`、商城/百科去重 AppFeedbackHost、启动预取推迟
+  - `进度`：上传图片 10MB 上限；方向 icon 已接入商城胶囊、智库折叠、购物车空链；购物车空态 `nut-empty`；商家台扫码核销直达 scanCode；顾客/商家订单列表 Tab 吸顶；搜索模态物理返回拦截；订单列表 item 三段布局 + 三种配送 tag；**通知条** — 功能色底白字，贴系统状态栏下沿
   - `下步可做`
     - emoji→icon 替换（商家台快捷入口等待续）
   - `工作历史`
@@ -185,6 +120,7 @@
     - 2026-07-01：Issue #2 #8 — 顾客「我的订单」/ 商家「订单管理」状态 Tab 吸顶于 AppNavBar 下
     - 2026-07-01：搜索模态 `page-container` — 物理返回 / 侧滑先关模态，不退出 Tab 页小程序
     - 2026-07-01：`OrderListCard` — 图/商品行/状态价量三段；配送 tag 在单号左（自提·商家配送·第三方）；多商品逐行；去地址
+    - 2026-07-05：通知条 — 位置改至系统状态栏（设备通知栏）下方
     - 2026-07-01：`AppFeedbackHost` 通知条 — 居中短圆角卡片 + 四类 tone icon；弹窗通知未改
     - 2026-07-01：`OrderListCard` — 状态与单号同行；第三段仅金额+件数；pickup tag 改「门店自提」
     - 2026-07-01：白屏排查 — `hoistStatic:false`、category/wiki 去重 AppFeedbackHost、启动预取推迟
@@ -257,7 +193,7 @@
   - 给商户端提供一个可设置起送价格的入口
   - ~~流程中缺少了门店自提的流程和选项~~
   - 当ab端组合方案的包的体积超阈值之后要考虑前后端分开开发。
-  - 代码质量检查（模块封装、功能划分、耦合内聚）
+  - ~~代码质量检查（模块封装、功能划分、耦合内聚）~~ — 已并入 **代码质量与模块封装**
   - ~~**后台图片过期不加载新图** — App onShow 时通知 GoodsImage 重新检查缓存过期；已实现~~
   - ~~**检查组件/全局变量使用** — NavBackIcon、SmartAddressInput、useMerchantAccessGuard 已删；store 未使用导出已清理~~
   - **详情页图片加载偶发白屏** — 实现了预加载但个别情况仍有进来没加载的情况
@@ -265,7 +201,7 @@
 - `进度`：5 条待处理（优化 4 项已抽成立项）
 - `下步可做`
   - 出货地点方案设计
-  - 代码质量检查
+  - ~~代码质量检查~~ — 见 **代码质量与模块封装**
 - `工作历史`
   - 2026-06-30：优化项抽为独立项目「界面与体验优化」
   - 2026-06-30：自选花束相关条目抽为新项目
@@ -283,7 +219,7 @@
     - 7.7 包装 — 线上显性可选；基础免费、升级付费
     - 7.8 推广 — 养护指南拉新；扫码进百科；鲜花群内测、暂不对外推
     - 7.9 支付配送过渡 — 个人主体；客服下单开关；支付/第三方配送后置
-    - 7.11 启动授权 — 首次欢迎模态；订阅消息不阻断进入
+    - 7.11 启动授权 — 首次欢迎模态；订阅消息不阻断进入 → 见 **启动授权（§7.11）· 登录合规与资料采集**
     - 7.12 展示原则 — 情绪价值导向；促销显眼不抢眼（视觉由你主导）
     - 7.13 智库×商品 — matchWiki 已有；商品详情已内嵌词条（见搜索×智库归档）
     - 7.14 盈利预期 — 净利公式；固定成本用量摊；平台佣金测算
@@ -300,6 +236,34 @@
 ---
 
 ## 暂停的
+
+- [ ] ~~`⏸` · 智库（百科）优化升级 · 维护侧~~ `[█████████░] 9/14`
+  - `需求`：百科展示/搜索体验 + 商家维护效率；**维护侧迭代暂停**，待 AI 导管（§7.2）接入后再续
+  - `清单`（冻结，恢复时继续）
+    - **百科词条详情页样式统一**
+    - **百科 Tab 「全部」分类精简**
+    - **智库词条信息可视化**
+    - **笔记式行内编辑 · 标签 chip 深化**
+    - **笔记式行内编辑 · 体验版验收**
+    - **智库词条与内容优化**
+    - **HonorShare · 浮动面板跟手**
+  - `进度`：顾客端百科 Tab/详情、商品 match、智能粘贴+笔记 P1 **已实现**；**维护体验 polish 与验收暂停**
+  - `保留运行`（放下不等于摘除）：百科 Tab、顾客详情、`flower_wiki` 花卉库、商品花卉选择、`wiki:` 衍生分类
+  - `AI 接入点`：`wikiSmartPastePrompt` / `WikiSmartPasteCard`；`WikiMerchantNoteEditor`；块 ID 对照审核
+  - `下步可做`：待 §7.2 AI 导管定案后恢复维护侧
+  - `工作历史`
+    - 2026-07-06：用户决定先放下维护迭代，转向代码质量与模块封装
+
+- [ ] ~~`⏸` · 类 OA 通知~~ `[███████░] 7/7`
+  - `需求`：App 内消息 + 微信双模板；开发交付已完成，**体验版联测与 AI 增强暂停**
+  - `清单`
+    - **体验版联测** — 登录订阅双模板、下单/改状态/库存预警
+  - `进度`：`bizNotifyEmit` 反应层已落地；订单 hook 不阻塞；收件箱 UI 可用
+  - `保留运行`：下单仍写 `biz_notifications`；我的/工作台入口可保留
+  - `AI 接入点`：消息摘要、进货建议文案（§7.5 依赖智库标签）
+  - `下步可做`：待 AI 能力就绪后联测 + 智能化
+  - `工作历史`
+    - 2026-07-06：与智库维护一并暂停，优先模块封装
 
 - [ ] ~~`⏸` · 人员邀请链接~~ `[█████░░░] 2/3`
   - `需求`：B 端加人不再用身份码/二维码传播 openid；店长生成短期一次性邀请码**发给对方**，被邀请人**自行输入邀请码**接受后写入 staff 权限；未发布阶段走邀请码；微信分享链接待正式上线后实测

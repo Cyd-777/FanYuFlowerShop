@@ -9,6 +9,7 @@ const {
   normalizePhone,
 } = require('./common/account')
 const { getAccessEpoch } = require('./common/accessControl')
+const { resolveMerchantActor } = require('./common/merchantGate')
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
@@ -16,75 +17,18 @@ cloud.init({
 
 const db = cloud.database()
 
-/** 黑箱录入的商家 OpenID（上线前迁移至 merchants 集合） */
-const MERCHANT_OPENIDS = [
-  'oiDICxmmuGHJTKQzDsG9X32n2fAs',
-]
-
-function isCollectionMissingError(err) {
-  const msg = [err.errMsg, err.message, String(err.errCode), String(err.code)]
-    .filter(Boolean)
-    .join(' ')
-  return (
-    msg.includes('DATABASE_COLLECTION_NOT_EXIST') ||
-    msg.includes('collection not exists') ||
-    msg.includes('Db or Table not exist') ||
-    msg.includes('-502005') ||
-    msg.includes('50200')
-  )
-}
-
-async function ensureCollection(name) {
-  try {
-    await db.createCollection(name)
-  } catch (err) {
-    const msg = [err.errMsg, err.message].filter(Boolean).join(' ')
-    const alreadyExists =
-      msg.includes('already exist') ||
-      msg.includes('已存在') ||
-      msg.includes('ResourceExist') ||
-      msg.includes('Table exist')
-    if (!alreadyExists && !msg.includes('createCollection is not a function')) {
-      throw err
-    }
+async function resolveMerchant(operatorOpenid) {
+  const actor = await resolveMerchantActor(operatorOpenid)
+  return {
+    isMerchant: !!actor,
+    merchantName: actor?.displayName || '',
   }
-}
-
-async function resolveMerchant(userId, operatorOpenid) {
-  let isMerchant = MERCHANT_OPENIDS.includes(operatorOpenid)
-  let merchantName = ''
-
-  if (!userId) {
-    return { isMerchant, merchantName }
-  }
-
-  try {
-    await ensureCollection('merchants')
-    if (userId) {
-      const { data } = await db.collection('merchants').where({ userId }).limit(1).get()
-      if (data.length > 0) {
-        isMerchant = true
-        merchantName = data[0].name || ''
-      }
-    }
-    if (!merchantName && operatorOpenid) {
-      const { data } = await db.collection('merchants').where({ openid: operatorOpenid }).limit(1).get()
-      if (data.length > 0) {
-        isMerchant = true
-        merchantName = data[0].name || ''
-      }
-    }
-  } catch (err) {
-    if (!isCollectionMissingError(err)) throw err
-  }
-
-  return { isMerchant, merchantName }
 }
 
 async function buildSession(openid, userDoc) {
   const profile = pickUser(userDoc)
   const userId = profile?.userId || ''
-  const { isMerchant, merchantName } = await resolveMerchant(userId, openid)
+  const { isMerchant, merchantName } = await resolveMerchant(openid)
   const accessEpoch = await getAccessEpoch(userId)
   return {
     success: true,

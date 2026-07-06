@@ -47,6 +47,26 @@
       </view>
     </view>
 
+    <view class="menu-list" v-if="isLoggedIn">
+      <view class="menu-item" @tap="goNotifyList">
+        <view class="menu-main">
+          <view class="menu-title">{{ notifyTitle }}</view>
+          <view class="menu-desc">{{ notifyDesc }}</view>
+        </view>
+        <view v-if="notifyUnread > 0" class="menu-badge">
+          {{ notifyUnread > 99 ? '99+' : notifyUnread }}
+        </view>
+        <text class="menu-arrow">{{ entryArrow }}</text>
+      </view>
+      <view class="menu-item" @tap="requestSubscribe">
+        <view class="menu-main">
+          <view class="menu-title">{{ subscribeTitle }}</view>
+          <view class="menu-desc">{{ subscribeDesc }}</view>
+        </view>
+        <text class="menu-arrow">{{ entryArrow }}</text>
+      </view>
+    </view>
+
     <view class="menu-list" v-if="!isMerchant">
       <view class="menu-item" @tap="goJoinStaff">
         <view class="menu-main">
@@ -91,12 +111,16 @@
 </template>
 
 <script setup lang="ts">
+import { showToast } from '@/utils/feedback'
 import { ref, computed } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
 import { useUserStore } from '@/stores/user'
-import { getCachedRole, hasToken } from '@/services/auth'
+import { hasToken } from '@/services/auth'
 import { fetchUserProfile, resolveAvatarDisplayPath } from '@/services/userProfile'
+import { getBizNotifySubscribeTmplIds } from '@/config/subscribe'
+import { invokeBizNotifySubscribe } from '@/utils/bizNotifySubscribe'
+import { useNotificationStore } from '@/stores/notification'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
@@ -127,28 +151,55 @@ const feedbackTitle = 'Bug 反馈'
 const otherTitle = '关于我们'
 const joinStaffTitle = '输入邀请码'
 const joinStaffDesc = '输入店长发来的邀请码，自行加入商家团队'
+const notifyTitle = '消息通知'
+const notifyDesc = '订单与库存等业务提醒'
+const subscribeTitle = '开启微信服务通知'
+const subscribeDesc = '订单状态等提醒推送到微信（需授权）'
+
+const notificationStore = useNotificationStore()
+const notifyUnread = ref(0)
+const subscribeTmplIds = ref<string[]>(getBizNotifySubscribeTmplIds())
 
 const isLoggedIn = ref(hasToken())
 const displayNickName = ref(defaultNickname)
 const avatarDisplay = ref('')
 
+const isMerchant = computed(() => userStore.isMerchant())
+
 useCartTabBadgeSync()
+
+async function refreshNotifySection() {
+  if (!isLoggedIn.value) {
+    notifyUnread.value = 0
+    return
+  }
+  try {
+    await notificationStore.refreshBadge({ silent: true })
+    notifyUnread.value = notificationStore.unread
+  } catch (err) {
+    console.warn('[mine] refresh notify failed:', err)
+  }
+  try {
+    const { fetchBizNotifySubscribeConfig } = await import('@/services/notification')
+    const ids = await fetchBizNotifySubscribeConfig()
+    if (ids.length) subscribeTmplIds.value = ids
+  } catch (err) {
+    console.warn('[mine] fetch subscribe config failed:', err)
+  }
+}
 
 useDidShow(() => {
   isLoggedIn.value = hasToken()
-  const role = getCachedRole()
-  if (role) {
-    userStore.$patch({ role })
-  }
+  userStore.syncCachedRole()
   if (isLoggedIn.value) {
     void refreshProfileDisplay()
+    void refreshNotifySection()
   } else {
+    notifyUnread.value = 0
     displayNickName.value = defaultNickname
     avatarDisplay.value = ''
   }
 })
-
-const isMerchant = computed(() => userStore.isMerchant())
 
 const orderNavs = ref([
   { key: 'all', icon: '📋', label: '全部' },
@@ -221,6 +272,42 @@ function goJoinStaff() {
 
 function goMerchant() {
   navigateTo({ url: '/pagesMerchant/dashboard/index' })
+}
+
+function goNotifyList() {
+  if (!isLoggedIn.value) {
+    navigateTo({ url: '/pages/login/index' })
+    return
+  }
+  navigateTo({ url: '/pagesCustomer/notify/list' })
+}
+
+function requestSubscribe() {
+  const tmplIds = subscribeTmplIds.value
+  if (!tmplIds.length) {
+    showToast({ title: '未配置订阅模板 ID', icon: 'none' })
+    return
+  }
+
+  // 须在 tap 回调中同步发起，不可先 await 再调（微信会拦截弹窗）
+  void invokeBizNotifySubscribe(tmplIds)
+    .then(async (accepted) => {
+      if (accepted.length) {
+        const { recordBizNotifySubscribe } = await import('@/services/notification')
+        await recordBizNotifySubscribe(accepted).catch((err) => {
+          console.warn('[mine] record subscribe failed:', err)
+        })
+      }
+      if (accepted.length) {
+        showToast({ title: '已开启服务通知', icon: 'success' })
+        return
+      }
+      showToast({ title: '未授权服务通知', icon: 'none' })
+    })
+    .catch((err) => {
+      console.warn('[mine] requestSubscribeMessage failed:', err)
+      showToast({ title: '未开启服务通知', icon: 'none' })
+    })
 }
 </script>
 
@@ -358,6 +445,18 @@ function goMerchant() {
   font-size: 36rpx;
   color: @color-text-placeholder;
   margin-left: 16rpx;
+}
+.menu-badge {
+  min-width: 36rpx;
+  height: 36rpx;
+  padding: 0 10rpx;
+  border-radius: 999rpx;
+  background: #e53935;
+  color: #fff;
+  font-size: 22rpx;
+  line-height: 36rpx;
+  text-align: center;
+  margin-right: 8rpx;
 }
 .other-list {
   margin-top: 16rpx;

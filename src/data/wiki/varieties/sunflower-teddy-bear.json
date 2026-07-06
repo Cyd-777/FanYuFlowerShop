@@ -1,24 +1,24 @@
 {
+  "names": {
+    "scientificName": "Helianthus 'Teddy Bear'",
+    "commonNames": ["Teddy Bear", "泰迪熊", "迷你向日葵"]
+  },
   "bloom": {
     "vase": "约 5—8 天",
-    "vaseNote": "重瓣矮向日葵",
+    "vaseNote": "重瓣矮生迷你向日葵，花盘小但吸水需求不低",
     "vaseBySeason": [
-      {
-        "season": "夏季",
-        "days": "约 7—10 天"
-      },
-      {
-        "season": "冬季",
-        "days": "约 10—14 天",
-        "note": "室温较低、养护得当时"
-      }
+      { "season": "夏季", "days": "约 5—7 天" },
+      { "season": "冬季", "days": "约 7—10 天", "note": "室温较低、养护得当时" }
     ]
   },
   "careBaseRef": "care.sunflower.vase_base",
   "careVaseOverride": {
-    "summary": "泰迪熊重瓣向日葵；高瓶支撑，勤换水。",
+    "summary": "迷你向日葵（泰迪熊）重瓣团状，花头仍偏重；中高瓶支撑，勤换水。",
+    "waterDepth": "日常花瓶水位约 1/3 至 1/2，茎口充分吸水即可",
     "tips": [
-      "高瓶支撑花盘"
+      "花盘虽小仍偏重，建议中高瓶支撑",
+      "重瓣结构易藏水，换水时轻晃花头帮助排水",
+      "避免挤压毛绒花瓣，以免折损开放度"
     ]
   },
   "atlas": {
@@ -26,85 +26,72 @@
       "taxonomyRef": "taxonomy.sunflower",
       "identity": {
         "scientificName": "Helianthus 'Teddy Bear'",
-        "namingNote": "重瓣矮生向日葵，毛绒质感，可爱系",
         "horticulturalGroup": "group.sunflower_cut",
         "breeder": "商业切花向日葵培育",
-        "introducedYear": "2000 年代起切花向日葵"
+        "introducedYear": "2000 年代起切花向日葵",
+        "namingNote": "重瓣矮生向日葵，花市常称「迷你向日葵」；花瓣层叠蓬松，整体如毛绒小圆盘"
       },
       "origin": {
         "breedingOrigin": "商业化种植",
-        "productionRegions": [
-          "region.yunnan",
-          "region.colombia",
-          "region.ecuador"
-        ]
+        "productionRegions": ["region.yunnan", "region.colombia", "region.ecuador"]
       },
       "morphology": {
-        "color": "金黄重瓣，花盘相对小，轮廓毛绒",
-        "scent": "几乎无香",
-        "stem": "茎干粗壮，花盘重，需高瓶支撑",
-        "foliage": "叶片健康即可保留少量，避免浸水",
-        "bloomDiameterCm": "10 至 20"
+        "flowerForm": ["trait.spray_ball"],
+        "bloomDiameterCm": "6 至 10",
+        "color": "正黄至金黄，重瓣堆叠如毛绒小球，几乎不见典型大深色花盘",
+        "stem": "茎相对矮壮，节间较短，花头仍偏重，建议中高瓶支撑",
+        "foliage": "叶片阔大、健康即可保留少量，避免浸水",
+        "scent": "几乎无香"
       }
     },
-    "featureRefs": [
-      "trait.yellow_gold",
-      "trait.huge_flower"
-    ],
+    "featureRefs": ["trait.yellow_gold", "trait.spray_ball"],
+    "origin": "育种商业化体系；主产区云南、哥伦比亚、厄瓜多尔",
+    "cultivar": {
+      "horticulturalGroup": "切花向日葵",
+      "breeder": "商业切花向日葵培育",
+      "introducedYear": "2000 年代起切花向日葵",
+      "namingNote": "又称迷你向日葵，重瓣矮生、毛绒团状"
+    },
     "distinguishFrom": [
       {
         "name": "文森特",
-        "difference": "标准切花向日葵，与此品种形态或色调不同"
+        "difference": "标准切花向日葵，单瓣感强、花盘大，花径明显大于迷你款"
       },
       {
         "name": "黑芯向日葵",
-        "difference": "深色花心向日葵，与此品种形态或色调不同"
+        "difference": "典型大花盘配深色花心，轮廓扁平开阔，非重瓣毛绒团状"
       },
       {
         "name": "泰迪熊",
-        "difference": "重瓣矮生向日葵，是最核心的辨识特征"
+        "difference": "重瓣矮生、花盘小、轮廓毛绒，迷你向日葵辨识度最高"
       }
-    ],
-    "cultivar": {
-      "horticulturalGroup": "切花向日葵",
-      "namingNote": "重瓣矮生向日葵，毛绒质感，可爱系"
-    }
+    ]
   },
   "language": {
     "meaning": "可爱、阳光与「毛绒绒的小太阳」",
     "paragraphs": [
-      "泰迪熊向日葵适合送朋友、儿童、家居——比标准向日葵更「萌」，花盘小、重瓣毛绒。",
-      "高瓶支撑；勤换水。与尤加利、小菊同插，整束更可爱。"
+      "它的金黄色调不像标准向日葵那样铺张外放，而是堆叠在小小的重瓣花盘里，像一颗可以捧在手心的「小太阳」。花市里常说的迷你向日葵，多半指的就是这类泰迪熊型重瓣矮生切花——比文森特更小、更圆、更蓬松，少了大花盘的压迫感，却保留了向日葵标志性的明亮与积极。",
+      "它很适合送给朋友、同学或小朋友，毕业季、生日、乔迁或只是想给桌面添一点阳光时都很得体。与尤加利、小雏菊或绿康同插，黄白绿层次清爽；单独几支放进中小号花瓶，也能做出可爱而不幼稚的家居点缀。花头虽不大，仍建议中高瓶支撑并勤换水，才能让这层叠的重瓣尽量保持蓬松开放。"
     ],
-    "occasions": [
-      "送朋友",
-      "生日",
-      "家居",
-      "开业"
-    ],
+    "occasions": ["送朋友", "毕业", "生日", "家居", "探望", "儿童节"],
     "colorMeanings": [
       {
         "color": "金黄",
-        "meaning": "可爱、阳光"
+        "meaning": "可爱、阳光；比标准向日葵更柔和亲近"
       }
     ],
     "pairing": [
       {
-        "style": "可爱",
-        "flowers": [
-          "小雏菊",
-          "尤加利叶"
-        ],
-        "note": "黄白绿"
+        "style": "可爱森系",
+        "flowers": ["小雏菊", "尤加利叶"],
+        "note": "黄白绿，适合生日或日常桌面"
+      },
+      {
+        "style": "毕业庆祝",
+        "flowers": ["绿康", "满天星"],
+        "note": "明亮而不喧闹，迷你花盘更适合手持或中小花束"
       }
     ],
-    "caution": "花盘重；高瓶支撑。勤换水。"
-  },
-  "names": {
-    "scientificName": "Helianthus 'Teddy Bear'",
-    "commonNames": [
-      "Teddy Bear",
-      "泰迪熊"
-    ]
+    "caution": "花头仍偏重，勿用过低花瓶；重瓣结构怕挤压，运输与插瓶时轻拿轻放。"
   }
 }

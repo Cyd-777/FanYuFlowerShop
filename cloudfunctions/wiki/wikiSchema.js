@@ -22,6 +22,7 @@ const {
   pickLanguageSection,
 } = require('./wikiCarePick')
 const { isRoseKind, applyRoseCareToDraft } = require('./wikiRoseCare')
+const { canonicalizeVarietyIdentity } = require('./common/flowerCatalogMerge')
 
 const SEARCH_VERSION = 1
 
@@ -125,7 +126,13 @@ function pickAtlas(doc, profile, varietyArticle) {
   const baseProfile = profile?.atlas && typeof profile.atlas === 'object' ? profile.atlas : {}
   const baseArticle =
     varietyArticle?.atlas && typeof varietyArticle.atlas === 'object' ? varietyArticle.atlas : {}
-  return pickAtlasSection(raw, pickAtlasSection(baseArticle, baseProfile))
+  const out = pickAtlasSection(raw, pickAtlasSection(baseArticle, baseProfile))
+  if (raw.intro && typeof raw.intro === 'object') {
+    out.intro = raw.intro
+  }
+  const featureRefs = asStringArray(raw.featureRefs)
+  if (featureRefs.length) out.featureRefs = featureRefs
+  return out
 }
 
 function pickCareGuide(doc, profile) {
@@ -289,16 +296,33 @@ function buildSearchText(wiki) {
 }
 
 function pickWiki(doc) {
-  const kindProfile = getKindProfile(doc.kindName || '')
-  const varietyArticle = doc.varietyName
-    ? getVarietyArticle(doc.kindName, doc.varietyName)
+  const raw = doc && typeof doc === 'object' ? doc : {}
+  const kindName = String(raw.kindName || '').trim()
+  const rawVariety = String(raw.varietyName || '').trim()
+  const identity = rawVariety
+    ? canonicalizeVarietyIdentity(kindName, rawVariety, asStringArray(raw.aliases))
+    : { varietyName: '', aliases: asStringArray(raw.aliases) }
+  const normalizedDoc = {
+    ...raw,
+    varietyName: identity.varietyName,
+    aliases: identity.aliases,
+  }
+
+  const kindProfile = getKindProfile(normalizedDoc.kindName || '')
+  const varietyArticle = normalizedDoc.varietyName
+    ? getVarietyArticle(normalizedDoc.kindName, normalizedDoc.varietyName)
     : null
-  const atlas = pickAtlas(doc, kindProfile, varietyArticle)
-  const careGuide = pickCareGuide(doc, kindProfile)
-  const language = pickLanguage(doc, kindProfile, doc.varietyName, varietyArticle)
-  const careVase = pickCareVase(doc, kindProfile, varietyArticle)
-  const careSoil = pickCareSoil(doc, kindProfile)
-  const bloomRaw = pickBloom(doc, kindProfile, varietyArticle)
+  const atlas = pickAtlas(normalizedDoc, kindProfile, varietyArticle)
+  const careGuide = pickCareGuide(normalizedDoc, kindProfile)
+  const language = pickLanguage(
+    normalizedDoc,
+    kindProfile,
+    normalizedDoc.varietyName,
+    varietyArticle,
+  )
+  const careVase = pickCareVase(normalizedDoc, kindProfile, varietyArticle)
+  const careSoil = pickCareSoil(normalizedDoc, kindProfile)
+  const bloomRaw = pickBloom(normalizedDoc, kindProfile, varietyArticle)
   const bloom = {
     vase: bloomRaw.vase,
     vaseNote: bloomRaw.vaseNote,
@@ -307,29 +331,29 @@ function pickWiki(doc) {
     vaseBySeason: bloomRaw.vaseBySeason || [],
   }
 
-  const keywords = asStringArray(doc.keywords)
-  let aliases = asStringArray(doc.aliases)
-  const tags = asStringArray(doc.tags)
-  const occasions = collectOccasions(doc, language)
-  const seasonMonths = asNumberArray(doc.seasonMonths)
-  const restockHints = asStringArray(doc.restockHints)
-  const names = pickNames(doc, kindProfile, doc.varietyName, varietyArticle)
+  const keywords = asStringArray(normalizedDoc.keywords)
+  let aliases = asStringArray(normalizedDoc.aliases)
+  const tags = asStringArray(normalizedDoc.tags)
+  const occasions = collectOccasions(normalizedDoc, language)
+  const seasonMonths = asNumberArray(normalizedDoc.seasonMonths)
+  const restockHints = asStringArray(normalizedDoc.restockHints)
+  const names = pickNames(normalizedDoc, kindProfile, normalizedDoc.varietyName, varietyArticle)
   aliases = mergeAliasesFromNames(aliases, names)
 
   const wiki = {
-    _id: doc._id,
-    kindId: doc.kindId || '',
-    varietyId: doc.varietyId || '',
-    kindName: doc.kindName || '',
-    varietyName: doc.varietyName || '',
-    icon: doc.icon || '🌷',
-    coverImage: doc.coverImage || '',
-    plantForm: normalizePlantForm(doc.plantForm),
+    _id: normalizedDoc._id,
+    kindId: normalizedDoc.kindId || '',
+    varietyId: normalizedDoc.varietyId || '',
+    kindName: normalizedDoc.kindName || '',
+    varietyName: normalizedDoc.varietyName || '',
+    icon: normalizedDoc.icon || '🌷',
+    coverImage: normalizedDoc.coverImage || '',
+    plantForm: normalizePlantForm(normalizedDoc.plantForm),
     bloom,
     careVase,
     careSoil,
     atlas,
-    taxonomy: pickTaxonomy(doc, kindProfile),
+    taxonomy: pickTaxonomy(normalizedDoc, kindProfile),
     names,
     careGuide,
     language,
@@ -339,10 +363,11 @@ function pickWiki(doc) {
     occasions,
     seasonMonths,
     restockHints,
-    searchVersion: Number(doc.searchVersion) || SEARCH_VERSION,
-    enabled: doc.enabled !== false,
-    sort: Number(doc.sort) || 0,
-    searchText: String(doc.searchText || '').trim(),
+    searchVersion: Number(normalizedDoc.searchVersion) || SEARCH_VERSION,
+    enabled: normalizedDoc.enabled !== false,
+    sort: Number(normalizedDoc.sort) || 0,
+    searchText: String(normalizedDoc.searchText || '').trim(),
+    careBaseRef: String(normalizedDoc.careBaseRef || '').trim(),
   }
 
   if (!wiki.searchText) {
@@ -853,6 +878,133 @@ function searchWikiDocs(docs, queryInput = {}) {
   return { list, answer }
 }
 
+/** 商家端词条编辑 → 云库 patch（合并现有 doc，并重算 searchText） */
+function buildMerchantWikiPatch(wikiInput = {}, existingDoc = {}) {
+  const patch = {}
+
+  if (wikiInput.kindName !== undefined) patch.kindName = String(wikiInput.kindName || '').trim()
+  if (wikiInput.varietyName !== undefined) {
+    patch.varietyName = String(wikiInput.varietyName || '').trim()
+  }
+  if (wikiInput.icon !== undefined) patch.icon = String(wikiInput.icon || '🌷').trim() || '🌷'
+  if (wikiInput.enabled !== undefined) patch.enabled = wikiInput.enabled !== false
+  if (wikiInput.sort !== undefined) patch.sort = Number(wikiInput.sort) || 0
+  if (wikiInput.plantForm !== undefined) patch.plantForm = normalizePlantForm(wikiInput.plantForm)
+
+  if (wikiInput.aliases !== undefined) patch.aliases = asStringArray(wikiInput.aliases)
+  if (wikiInput.tags !== undefined) patch.tags = asStringArray(wikiInput.tags)
+  if (wikiInput.keywords !== undefined) patch.keywords = asStringArray(wikiInput.keywords)
+  if (wikiInput.occasions !== undefined) patch.occasions = asStringArray(wikiInput.occasions)
+
+  if (wikiInput.careBaseRef !== undefined) {
+    patch.careBaseRef = String(wikiInput.careBaseRef || '').trim()
+  }
+
+  if (wikiInput.bloom !== undefined) {
+    const b = wikiInput.bloom && typeof wikiInput.bloom === 'object' ? wikiInput.bloom : {}
+    const prev = existingDoc.bloom && typeof existingDoc.bloom === 'object' ? existingDoc.bloom : {}
+    patch.bloom = {
+      ...prev,
+      vase: b.vase !== undefined ? String(b.vase || '').trim() : prev.vase || '',
+      vaseNote: b.vaseNote !== undefined ? String(b.vaseNote || '').trim() : prev.vaseNote || '',
+      soil: b.soil !== undefined ? String(b.soil || '').trim() : prev.soil || '',
+      soilNote: b.soilNote !== undefined ? String(b.soilNote || '').trim() : prev.soilNote || '',
+    }
+  }
+
+  if (wikiInput.atlas !== undefined) {
+    const a = wikiInput.atlas && typeof wikiInput.atlas === 'object' ? wikiInput.atlas : {}
+    const prev = existingDoc.atlas && typeof existingDoc.atlas === 'object' ? existingDoc.atlas : {}
+    const distinguishFrom = (a.distinguishFrom !== undefined ? a.distinguishFrom : prev.distinguishFrom || [])
+      .map((item) => ({
+        name: String(item?.name || '').trim(),
+        difference: String(item?.difference || '').trim(),
+      }))
+      .filter((item) => item.name && item.difference)
+    const cultivarRaw = a.cultivar !== undefined ? a.cultivar : prev.cultivar || {}
+    patch.atlas = {
+      ...prev,
+      summary: a.summary !== undefined ? String(a.summary || '').trim() : prev.summary || '',
+      paragraphs: a.paragraphs !== undefined ? asStringArray(a.paragraphs) : asStringArray(prev.paragraphs),
+      features: a.features !== undefined ? asStringArray(a.features) : asStringArray(prev.features),
+      origin: a.origin !== undefined ? String(a.origin || '').trim() : prev.origin || '',
+      featureRefs: a.featureRefs !== undefined ? asStringArray(a.featureRefs) : asStringArray(prev.featureRefs),
+      distinguishFrom,
+      cultivar: {
+        horticulturalGroup: String(cultivarRaw.horticulturalGroup || '').trim(),
+        breeder: String(cultivarRaw.breeder || '').trim(),
+        introducedYear: String(cultivarRaw.introducedYear || '').trim(),
+        namingNote: String(cultivarRaw.namingNote || '').trim(),
+      },
+    }
+    if (a.intro !== undefined && a.intro && typeof a.intro === 'object') {
+      patch.atlas.intro = a.intro
+    } else if (prev.intro) {
+      patch.atlas.intro = prev.intro
+    }
+  }
+
+  if (wikiInput.language !== undefined) {
+    const l = wikiInput.language && typeof wikiInput.language === 'object' ? wikiInput.language : {}
+    const prev =
+      existingDoc.language && typeof existingDoc.language === 'object' ? existingDoc.language : {}
+    const pairing = (l.pairing !== undefined ? l.pairing : prev.pairing || [])
+      .map((item) => ({
+        style: String(item?.style || '').trim(),
+        flowers: asStringArray(item?.flowers),
+        note: String(item?.note || '').trim(),
+      }))
+      .filter((item) => item.style || item.flowers.length)
+    patch.language = {
+      ...prev,
+      meaning: l.meaning !== undefined ? String(l.meaning || '').trim() : prev.meaning || '',
+      summary: l.summary !== undefined ? String(l.summary || '').trim() : prev.summary || '',
+      paragraphs:
+        l.paragraphs !== undefined ? asStringArray(l.paragraphs) : asStringArray(prev.paragraphs),
+      caution: l.caution !== undefined ? String(l.caution || '').trim() : prev.caution || '',
+      occasions: l.occasions !== undefined ? asStringArray(l.occasions) : asStringArray(prev.occasions),
+      colorMeanings: Array.isArray(l.colorMeanings) ? l.colorMeanings : prev.colorMeanings || [],
+      pairing,
+    }
+  }
+
+  if (wikiInput.careVase !== undefined) {
+    const c = wikiInput.careVase && typeof wikiInput.careVase === 'object' ? wikiInput.careVase : {}
+    const prev =
+      existingDoc.careVase && typeof existingDoc.careVase === 'object' ? existingDoc.careVase : {}
+    patch.careVase = {
+      ...prev,
+      summary: c.summary !== undefined ? String(c.summary || '').trim() : prev.summary || '',
+      waterChange: c.waterChange !== undefined ? String(c.waterChange || '').trim() : prev.waterChange || '',
+      trim: c.trim !== undefined ? String(c.trim || '').trim() : prev.trim || '',
+      waterDepth: c.waterDepth !== undefined ? String(c.waterDepth || '').trim() : prev.waterDepth || '',
+      additives: c.additives !== undefined ? String(c.additives || '').trim() : prev.additives || '',
+      tips: c.tips !== undefined ? asStringArray(c.tips) : asStringArray(prev.tips),
+    }
+  }
+
+  if (wikiInput.names !== undefined) {
+    const n = wikiInput.names && typeof wikiInput.names === 'object' ? wikiInput.names : {}
+    const prev = existingDoc.names && typeof existingDoc.names === 'object' ? existingDoc.names : {}
+    patch.names = {
+      ...prev,
+      scientificName:
+        n.scientificName !== undefined
+          ? String(n.scientificName || '').trim()
+          : prev.scientificName || '',
+      commonNames:
+        n.commonNames !== undefined ? asStringArray(n.commonNames) : asStringArray(prev.commonNames),
+    }
+  }
+
+  const mergedDoc = { ...existingDoc, ...patch }
+  const wiki = pickWiki(mergedDoc)
+  patch.searchText = buildSearchText(wiki)
+  patch.searchVersion = SEARCH_VERSION
+
+  return patch
+}
+
 module.exports = {
   SEARCH_VERSION,
   emptyWikiPayload,
@@ -861,6 +1013,7 @@ module.exports = {
   emptyBloom,
   pickWiki,
   pickWikiListItem,
+  buildMerchantWikiPatch,
   buildSearchText,
   normalizeWikiQuery,
   tokenizeQuery,

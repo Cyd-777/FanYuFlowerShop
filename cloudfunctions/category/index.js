@@ -1,16 +1,17 @@
 const cloud = require('wx-server-sdk')
 const { bumpCacheModule } = require('./common/cacheMeta')
+const { bumpCacheEvent } = require('./common/cacheInvalidation')
+const { isMerchant, ensureCollection, isCollectionMissingError } = require('./common/merchantGate')
 const {
   buildWikiAliasMapFromWikiDocs,
   canonicalizeWikiKindName,
   countGoodsForWikiCategory,
+  buildWikiCategoryId,
 } = require('./common/wikiKindMatch')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const db = cloud.database()
-
-const OWNER_OPENIDS = ['oiDICxmmuGHJTKQzDsG9X32n2fAs']
 
 /** 花束场景标签（束） */
 const DEFAULT_BOUQUET_SCENES = [
@@ -31,31 +32,6 @@ const DEFAULT_MATERIAL_CATEGORIES = [
 
 /** 旧版默认花材名（已迁移到百科衍生，不在侧边栏显示） */
 const LEGACY_FLOWER_NAMES = new Set(['玫瑰', '向日葵', '百合', '康乃馨', '芍药', '菊花', '绣球', '郁金香', '马蹄莲', '非洲菊', '洋桔梗', '满天星', '勿忘我', '紫罗兰', '风信子', '蝴蝶兰', '洋牡丹', '混搭花束'])
-
-function isCollectionMissingError(err) {
-  const msg = [err.errMsg, err.message, String(err.errCode), String(err.code)].filter(Boolean).join(' ')
-  return msg.includes('DATABASE_COLLECTION_NOT_EXIST') || msg.includes('collection not exists') || msg.includes('Db or Table not exist') || msg.includes('-502005') || msg.includes('50200')
-}
-
-async function ensureCollection(name) {
-  try { await db.createCollection(name) }
-  catch (err) {
-    const msg = [err.errMsg, err.message].filter(Boolean).join(' ')
-    const alreadyExists = msg.includes('already exist') || msg.includes('已存在') || msg.includes('ResourceExist') || msg.includes('Table exist')
-    if (!alreadyExists && !msg.includes('createCollection is not a function')) throw err
-  }
-}
-
-async function isMerchant(openid) {
-  if (OWNER_OPENIDS.includes(openid)) return true
-  try {
-    const { data } = await db.collection('merchants').where({ openid }).limit(1).get()
-    return data.length > 0
-  } catch (err) {
-    if (isCollectionMissingError(err)) return OWNER_OPENIDS.includes(openid)
-    throw err
-  }
-}
 
 const MALL_NAV_PARENT = {
   flower: 'nav:flower',
@@ -277,7 +253,7 @@ async function fetchDerivedWikiCategories() {
       }
     }
     return Array.from(kindMap.values()).sort((a, b) => b.sort - a.sort).map((item, idx) => ({
-      _id: `wiki:${item.name}`,
+      _id: buildWikiCategoryId(item.name),
       name: item.name,
       icon: item.icon,
       sort: (kindMap.size - idx) * 10,

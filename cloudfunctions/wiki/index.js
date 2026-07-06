@@ -1,16 +1,18 @@
 const cloud = require('wx-server-sdk')
-const { bumpCacheModule } = require('./common/cacheMeta')
+const { bumpCacheEvent } = require('./common/cacheInvalidation')
+const { isMerchant: gateIsMerchant, ensureCollection, isCollectionMissingError } = require('./common/merchantGate')
 
 /** 智库变更会衍生 wiki: 分类，一并刷新分类缓存版本 */
 async function bumpWikiRelatedCaches() {
-  await bumpCacheModule('wiki')
-  await bumpCacheModule('categories')
+  await bumpCacheEvent('wikiContent')
 }
 const { fetchAllDocs } = require('./common/db')
 const { ensureDefaultFlowerCatalog } = require('./common/ensureFlowerCatalog')
+const { canonicalizeVarietyIdentity } = require('./common/flowerCatalogMerge')
 const { excludeWikiDocs, isExcludedWikiKind } = require('./common/wikiExcluded')
 const {
   emptyWikiPayload,
+  buildMerchantWikiPatch,
   pickWiki,
   pickWikiListItem,
   normalizeWikiQuery,
@@ -26,10 +28,6 @@ cloud.init({
 })
 
 const db = cloud.database()
-
-const OWNER_OPENIDS = [
-  'oiDICxmmuGHJTKQzDsG9X32n2fAs',
-]
 
 function defaultWikiForKind(kind) {
   const profile = getKindProfile(kind.name)
@@ -93,35 +91,6 @@ function wikiForVariety(kind, variety) {
   }
 }
 
-function isCollectionMissingError(err) {
-  const msg = [err.errMsg, err.message, String(err.errCode), String(err.code)]
-    .filter(Boolean)
-    .join(' ')
-  return (
-    msg.includes('DATABASE_COLLECTION_NOT_EXIST') ||
-    msg.includes('collection not exists') ||
-    msg.includes('Db or Table not exist') ||
-    msg.includes('-502005') ||
-    msg.includes('50200')
-  )
-}
-
-async function ensureCollection(name) {
-  try {
-    await db.createCollection(name)
-  } catch (err) {
-    const msg = [err.errMsg, err.message].filter(Boolean).join(' ')
-    const alreadyExists =
-      msg.includes('already exist') ||
-      msg.includes('已存在') ||
-      msg.includes('ResourceExist') ||
-      msg.includes('Table exist')
-    if (!alreadyExists && !msg.includes('createCollection is not a function')) {
-      throw err
-    }
-  }
-}
-
 async function ensureFlowerCollections() {
   await ensureCollection('flower_kinds')
   await ensureCollection('flower_varieties')
@@ -129,15 +98,7 @@ async function ensureFlowerCollections() {
 
 async function isMerchant(openid) {
   if (!openid) return true
-  if (OWNER_OPENIDS.includes(openid)) return true
-
-  try {
-    const { data } = await db.collection('merchants').where({ openid }).limit(1).get()
-    return data.length > 0
-  } catch (err) {
-    if (isCollectionMissingError(err)) return OWNER_OPENIDS.includes(openid)
-    throw err
-  }
+  return gateIsMerchant(openid)
 }
 
 /** 商户手建词条补全 kindId / varietyId，供花卉选择与 match 使用 */
@@ -447,7 +408,11 @@ exports.main = async (event) => {
 
       const wiki = event.wiki || {}
       const kindName = String(wiki.kindName || '').trim()
-      const varietyName = String(wiki.varietyName || '').trim()
+      const rawVariety = String(wiki.varietyName || '').trim()
+      const identity = rawVariety
+        ? canonicalizeVarietyIdentity(kindName, rawVariety, wiki.aliases)
+        : { varietyName: '', aliases: wiki.aliases || [] }
+      const varietyName = identity.varietyName
       if (!kindName) {
         return { success: false, errMsg: '种类名称不能为空' }
       }
@@ -470,16 +435,22 @@ exports.main = async (event) => {
       const addRes = await db.collection('flower_wiki').add({ data: insert })
       const docId = addRes._id
       const ids = await resolveWikiEntryIds(docId, kindName, varietyName)
+      const { data: created } = await db.collection('flower_wiki').doc(docId).get()
+      const contentPatch = buildMerchantWikiPatch(
+        { ...wiki, varietyName, aliases: identity.aliases },
+        created,
+      )
       await db.collection('flower_wiki').doc(docId).update({
         data: {
           ...ids,
+          ...contentPatch,
           updatedAt: db.serverDate(),
         },
       })
 
-      const { data: created } = await db.collection('flower_wiki').doc(docId).get()
+      const { data: finalDoc } = await db.collection('flower_wiki').doc(docId).get()
       await bumpWikiRelatedCaches()
-      return { success: true, wiki: pickWikiListItem(created) }
+      return { success: true, wiki: pickWikiListItem(finalDoc) }
     }
 
     if (action === 'update') {
@@ -492,14 +463,38 @@ exports.main = async (event) => {
       if (!id) return { success: false, errMsg: '缺少词条 ID' }
 
       const wiki = event.wiki || {}
-      const patch = {}
-      if (wiki.kindName !== undefined) patch.kindName = String(wiki.kindName || '').trim()
-      if (wiki.varietyName !== undefined) patch.varietyName = String(wiki.varietyName || '').trim()
-      if (wiki.icon !== undefined) patch.icon = String(wiki.icon || '🌷').trim() || '🌷'
-      if (wiki.enabled !== undefined) patch.enabled = wiki.enabled !== false
-      patch.updatedAt = db.serverDate()
 
       await ensureCollection('flower_wiki')
+      const { data: existing } = await db.collection('flower_wiki').doc(id).get()
+      if (!existing) return { success: false, errMsg: '词条不存在' }
+
+      const nextKind = String(
+        wiki.kindName !== undefined ? wiki.kindName : existing.kindName || '',
+      ).trim()
+      const rawNextVariety = String(
+        wiki.varietyName !== undefined ? wiki.varietyName : existing.varietyName || '',
+      ).trim()
+      const identity = rawNextVariety
+        ? canonicalizeVarietyIdentity(
+            nextKind,
+            rawNextVariety,
+            wiki.aliases !== undefined ? wiki.aliases : existing.aliases,
+          )
+        : { varietyName: '', aliases: existing.aliases || [] }
+
+      const patch = buildMerchantWikiPatch(
+        { ...wiki, varietyName: identity.varietyName, aliases: identity.aliases },
+        existing,
+      )
+      patch.updatedAt = db.serverDate()
+
+      const resolvedKind = patch.kindName !== undefined ? patch.kindName : existing.kindName
+      const resolvedVariety =
+        patch.varietyName !== undefined ? patch.varietyName : existing.varietyName
+      if (patch.kindName !== undefined || patch.varietyName !== undefined) {
+        Object.assign(patch, await resolveWikiEntryIds(id, resolvedKind, resolvedVariety))
+      }
+
       await db.collection('flower_wiki').doc(id).update({ data: patch })
 
       const { data: updated } = await db.collection('flower_wiki').doc(id).get()

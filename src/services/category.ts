@@ -1,5 +1,5 @@
 import { getCloud, getCloudCallConfig, parseCloudResult } from './cloud'
-import { invalidateCacheModule, loadWithCache } from '@/utils/cache'
+import { invalidateCacheEvent, loadWithCache } from '@/utils/cache'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
 import type { Category, CategoryForm } from '@/types/category'
 
@@ -100,7 +100,7 @@ export async function createCategory(form: CategoryForm): Promise<Category> {
   if (!result.success || !result.category) {
     throw new Error(result.errMsg || '创建分类失败')
   }
-  invalidateCacheModule('categories')
+  invalidateCacheEvent('categoriesOnly')
   return result.category
 }
 
@@ -113,7 +113,7 @@ export async function updateCategory(id: string, form: CategoryForm): Promise<Ca
   if (!result.success || !result.category) {
     throw new Error(result.errMsg || '更新分类失败')
   }
-  invalidateCacheModule('categories')
+  invalidateCacheEvent('categoriesOnly')
   return result.category
 }
 
@@ -122,7 +122,7 @@ export async function removeCategory(id: string): Promise<void> {
   if (!result.success) {
     throw new Error(result.errMsg || '删除分类失败')
   }
-  invalidateCacheModule('categories')
+  invalidateCacheEvent('categoriesOnly')
 }
 
 export async function reorderMerchantCategories(orderedIds: string[]): Promise<Category[]> {
@@ -130,7 +130,7 @@ export async function reorderMerchantCategories(orderedIds: string[]): Promise<C
   if (result.success !== true) {
     throw new Error(result.errMsg || '排序保存失败')
   }
-  invalidateCacheModule('categories')
+  invalidateCacheEvent('categoriesOnly')
   return Array.isArray(result.list) ? result.list : []
 }
 
@@ -148,7 +148,7 @@ export async function setCategoryNavTier(
   if (!result.success || !result.category) {
     throw new Error(result.errMsg || '调整分类层级失败')
   }
-  invalidateCacheModule('categories')
+  invalidateCacheEvent('categoriesOnly')
   return result.category
 }
 

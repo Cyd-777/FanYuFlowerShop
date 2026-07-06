@@ -58,6 +58,16 @@ function fillCircle(buf, cx, cy, r, color) {
   }
 }
 
+function fillEllipse(buf, cx, cy, rx, ry, color) {
+  for (let y = -ry; y <= ry; y += 1) {
+    for (let x = -rx; x <= rx; x += 1) {
+      if ((x * x) / (rx * rx) + (y * y) / (ry * ry) <= 1) {
+        setPixel(buf, cx + x, cy + y, color)
+      }
+    }
+  }
+}
+
 function strokeRect(buf, x, y, w, h, color, stroke = 5) {
   fillRect(buf, x, y, w, stroke, color)
   fillRect(buf, x, y + h - stroke, w, stroke, color)
@@ -122,6 +132,29 @@ function drawCart(buf, color) {
 function drawMine(buf, color) {
   fillCircle(buf, 40, 26, 11, color)
   fillRect(buf, 20, 40, 40, 22, color)
+}
+
+/** 铃兰：弯曲花茎 + 串铃小花 + 基叶（与默认「我的」人形区分） */
+function drawLilyBell(buf, x, y, color) {
+  fillCircle(buf, x, y - 2, 3, color)
+  fillRect(buf, x - 3, y - 1, 6, 6, color)
+  fillTriangle(buf, x - 3, y + 5, x + 3, y + 5, x, y + 8, color)
+}
+
+function drawMineNotify(buf, color) {
+  fillRect(buf, 39, 30, 4, 44, color)
+  fillEllipse(buf, 27, 66, 11, 5, color)
+  fillEllipse(buf, 53, 64, 11, 5, color)
+  const bells = [
+    [40, 22],
+    [33, 32],
+    [47, 40],
+    [35, 48],
+    [45, 54],
+  ]
+  for (const [x, y] of bells) {
+    drawLilyBell(buf, x, y, color)
+  }
 }
 
 function crc32(buf) {
@@ -196,6 +229,12 @@ function main() {
     fs.writeFileSync(path.join(primaryDir, `${icon.name}-active.png`), active)
     console.log(`[tab-icons] ${icon.name}.png / ${icon.name}-active.png`)
   }
+
+  const notifyNormal = renderIcon(drawMineNotify, COLORS.normal)
+  const notifyActive = renderIcon(drawMineNotify, COLORS.active)
+  fs.writeFileSync(path.join(primaryDir, 'mine-notify.png'), notifyNormal)
+  fs.writeFileSync(path.join(primaryDir, 'mine-notify-active.png'), notifyActive)
+  console.log('[tab-icons] mine-notify.png / mine-notify-active.png')
 
   for (const dir of OUT_DIRS.slice(1)) {
     copyDir(primaryDir, dir)

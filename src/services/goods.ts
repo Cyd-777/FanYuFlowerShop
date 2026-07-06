@@ -1,5 +1,5 @@
 import { getCloud, getCloudCallConfig, parseCloudResult, formatCloudError } from './cloud'
-import { invalidateCacheModule, loadWithCache } from '@/utils/cache'
+import { invalidateCacheEvent, loadWithCache } from '@/utils/cache'
 import { fetchCacheVersions, getModuleVersion } from '@/utils/cache/meta'
 import { writeCacheEntry } from '@/utils/cache/storage'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
@@ -14,10 +14,9 @@ import { CACHE_KEYS, goodsPublicDetailKey } from '@/data/cacheKeys'
 import { assertLocalImageWithinLimit } from '@/utils/uploadImageLimit'
 import { resolveGoodsFormCategoryId } from '@/utils/goodsCategory'
 
-/** 商品增删改会影响分类 goodsCount / enabled，一并失效分类缓存 */
+/** 商品增删改会影响分类 goodsCount / enabled，按矩阵批量失效 */
 function invalidateGoodsAndCategoriesCache() {
-  invalidateCacheModule('goods')
-  invalidateCacheModule('categories')
+  invalidateCacheEvent('goodsCatalog')
 }
 
 /** 表单可售数：空视为 0，允许零库存建品后再进货单累加 */

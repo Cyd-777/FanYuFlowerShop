@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import { initCloud } from './services/cloud'
 import { fetchCacheVersions } from './utils/cache/meta'
 import { useCartStore } from './stores/cart'
+import { useNotificationStore } from './stores/notification'
 import { useUserStore } from './stores/user'
 import { hasToken, refreshSessionAccess } from './services/auth'
 import { cacheSyncScheduler } from './data'
@@ -17,6 +18,7 @@ const App = createApp({
   onLaunch() {
     try {
       initCloud()
+      void import('./utils/bizNotifySubscribe').then((m) => m.prefetchSubscribeTmplIds())
       void fetchCacheVersions().catch((err) => {
         console.warn('[cache] launch meta prefetch failed:', err)
       })
@@ -37,6 +39,7 @@ const App = createApp({
   onShow() {
     notifyAppResume()
     useCartStore().refreshBadge()
+    useNotificationStore().refreshBadge({ silent: true })
     cacheSyncScheduler.onAppShow()
     if (hasToken()) {
       void refreshSessionAccess({ forceExitMerchant: true }).then((session) => {

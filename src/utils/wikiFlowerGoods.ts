@@ -3,15 +3,20 @@ import { MALL_NAV_PARENT_IDS } from '@/types/category'
 import type { Goods } from '@/types/goods'
 import { inferSalesType } from '@/types/goods'
 import { mergeProfileAliasesIntoMap } from '@/data/wikiKindCommonNames'
+import {
+  absorbKindName,
+  buildWikiCategoryId,
+  normalizeWikiCategoryId,
+  parseWikiKindNameFromCategoryId,
+  WIKI_CATEGORY_PREFIX,
+} from '@/utils/flowerIdentity'
 
 export function isWikiCategoryId(categoryId: string | undefined | null): boolean {
-  return (categoryId || '').trim().startsWith('wiki:')
+  return (categoryId || '').trim().startsWith(WIKI_CATEGORY_PREFIX)
 }
 
 export function wikiKindNameFromCategoryId(categoryId: string): string {
-  const id = categoryId.trim()
-  if (!id.startsWith('wiki:')) return ''
-  return id.slice(5).trim()
+  return parseWikiKindNameFromCategoryId(categoryId)
 }
 
 /** 支/组花材（智库衍生） */
@@ -63,13 +68,14 @@ function resolveCanonicalKindName(
   const canonical = aliasToCanonical?.get(name)
   if (canonical && wikiCategoryNames.has(canonical)) return canonical
   if (canonical) return canonical
-  return name
+  return absorbKindName(name)
 }
 
 function wikiCategoryFromListItem(item: WikiKindAliasSource): Category {
+  const kindName = item.kindName.trim()
   return {
-    _id: `wiki:${item.kindName}`,
-    name: item.kindName,
+    _id: buildWikiCategoryId(kindName),
+    name: kindName,
     icon: item.icon || '🌸',
     sort: Number(item.sort) || 0,
     enabled: true,
@@ -78,6 +84,18 @@ function wikiCategoryFromListItem(item: WikiKindAliasSource): Category {
     navTier: 'secondary',
     parentId: MALL_NAV_PARENT_IDS.flower,
   }
+}
+
+function wikiCategoryIdsMatch(
+  a: string,
+  b: string,
+  aliasToCanonical?: Map<string, string>,
+): boolean {
+  if (!a || !b) return false
+  if (a === b) return true
+  const kindB = parseWikiKindNameFromCategoryId(b)
+  const canonicalB = aliasToCanonical?.get(kindB) || kindB
+  return normalizeWikiCategoryId(a) === normalizeWikiCategoryId(b, canonicalB)
 }
 
 /**
@@ -101,18 +119,24 @@ export function buildWikiFlowerMallNav(
   for (const item of wikiList) {
     const name = item.kindName.trim()
     if (!name || name === '混搭花束') continue
-    const fromPublic = publicWiki.find((c) => c.name === name)
+    const stableId = buildWikiCategoryId(name)
+    const fromPublic = publicWiki.find(
+      (c) => c.name === name || wikiCategoryIdsMatch(c._id, stableId),
+    )
     wikiCategoriesByName.set(
       name,
       fromPublic
-        ? { ...wikiCategoryFromListItem(item), ...fromPublic, _id: `wiki:${name}` }
+        ? { ...wikiCategoryFromListItem(item), ...fromPublic, _id: stableId, name }
         : wikiCategoryFromListItem(item),
     )
   }
 
   for (const cat of publicWiki) {
     if (!wikiCategoriesByName.has(cat.name)) {
-      wikiCategoriesByName.set(cat.name, cat)
+      wikiCategoriesByName.set(cat.name, {
+        ...cat,
+        _id: buildWikiCategoryId(cat.name) || cat._id,
+      })
     }
   }
 
@@ -158,8 +182,10 @@ export function isPublicWikiFlowerGoods(
 ): boolean {
   if (!isWikiStemOrGroupGoods(goods)) return false
   const categoryId = goods.categoryId?.trim() || ''
-  if (categoryId.startsWith('wiki:')) {
-    if (wikiCategoryIds.has(categoryId)) return true
+  if (isWikiCategoryId(categoryId)) {
+    if ([...wikiCategoryIds].some((id) => wikiCategoryIdsMatch(id, categoryId, aliasToCanonical))) {
+      return true
+    }
     const kindFromId = wikiKindNameFromCategoryId(categoryId)
     if (wikiCategoryNames.has(kindFromId)) return true
     const canonical = aliasToCanonical?.get(kindFromId)
@@ -205,19 +231,19 @@ export function resolveWikiFlowerKindIcon(
   return wikiCategoriesByName.get(kindName)?.icon || '🌸'
 }
 
-/** 顾客端按 wiki 衍生分类筛商品（含别名） */
+/** 顾客端按 wiki 衍生分类筛商品（含别名；兼容 legacy / stable categoryId） */
 export function goodsMatchesWikiCategory(
   goods: Goods,
   wikiCategoryId: string,
   aliasToCanonical?: Map<string, string>,
 ): boolean {
-  const canonical = wikiCategoryId.slice(5).trim()
+  const canonical = parseWikiKindNameFromCategoryId(wikiCategoryId) || wikiCategoryId.slice(5).trim()
   if (!canonical) return false
   const cid = goods.categoryId?.trim() || ''
-  if (cid === wikiCategoryId) return true
+  if (wikiCategoryIdsMatch(cid, wikiCategoryId, aliasToCanonical)) return true
   const itemKind = goods.flowerKindName?.trim() || ''
   if (itemKind === canonical) return true
-  if (cid.startsWith('wiki:')) {
+  if (isWikiCategoryId(cid)) {
     const fromId = wikiKindNameFromCategoryId(cid)
     if (fromId === canonical) return true
     if (aliasToCanonical?.get(fromId) === canonical) return true

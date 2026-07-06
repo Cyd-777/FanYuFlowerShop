@@ -9,7 +9,9 @@
       </view>
 
       <view class="section">
-        <view class="section-title">{{ uiText_a6d10d }}</view>
+        <view class="section-title-row">
+          <view class="section-title">{{ uiText_a6d10d }}</view>
+        </view>
         <view class="info-row">
           <text class="label">{{ uiText_3e8657 }}</text>
           <text>{{ order.orderNo }}</text>
@@ -110,6 +112,7 @@
 
 <script setup lang="ts">
 import { showToast } from '@/utils/feedback'
+import { navigateTo } from '@/utils/router'
 import { computed, ref } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import {
@@ -351,6 +354,19 @@ async function handleRiderAction() {
   font-size: 28rpx;
   font-weight: 600;
   margin-bottom: 16rpx;
+}
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+  .section-title {
+    margin-bottom: 0;
+  }
+}
+.notify-link {
+  font-size: 24rpx;
+  color: #667eea;
 }
 .info-row {
   display: flex;

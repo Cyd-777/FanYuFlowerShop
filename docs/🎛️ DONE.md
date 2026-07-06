@@ -5,6 +5,20 @@
 
 ---
 
+## 耦合内聚优化
+
+`2026-07-05` · **已实现待你测**
+
+- **merchantGate** — 单一鉴权；含 `login` / `staff` / order/goods/category/wiki/flower/shop/seedDemo/initDb/notify
+- **cacheInvalidation** — 云端矩阵 + 前端 `invalidateCacheEvent` + `prebuild:weapp` 跑 `check-cache-matrix.js`
+- **flower-identity** — stable `wiki:kind:*` 分类 ID；`wikiFlowerGoods.ts` 兼容 legacy `wiki:玫瑰`
+- **notify 边界** — bizNotifyEmit + subscribeMessage；**即时**订单/库存消息（**无**云端定时触发）
+- **goods 拆文件** — handlers + shared.js 路由
+- **文档** — [云开发模块-数据库](./云开发模块-数据库.md) 白名单指向 merchantGate
+- 全文：[架构耦合内聚优化](./架构耦合内聚优化.md)
+
+---
+
 ## 界面与体验优化 · 上传图片体积限制
 
 `2026-07-01` · **已实现待你测**

@@ -1,6 +1,6 @@
 const cloud = require('wx-server-sdk')
 
-const MODULES = ['categories', 'goods', 'wiki', 'flower', 'shop']
+const MODULES = ['categories', 'goods', 'wiki', 'flower', 'shop', 'notify']
 
 function getDb() {
   return cloud.database()

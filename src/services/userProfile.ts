@@ -4,6 +4,9 @@ import { getCachedUserProfile, writeCachedUserProfile } from '@/services/auth'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { assertLocalImageWithinLimit } from '@/utils/uploadImageLimit'
 import type { UserAccount } from '@/types/account'
+import { getBizNotifySubscribeTmplIds } from '@/config/subscribe'
+import { recordBizNotifySubscribe } from '@/services/notification'
+import { invokeBizNotifySubscribe } from '@/utils/bizNotifySubscribe'
 
 interface ProfileCloudResult {
   success: boolean
@@ -104,23 +107,21 @@ export async function resolveAvatarDisplayPath(raw: string) {
   return (await resolveImageDisplayPath(trimmed)) || trimmed
 }
 
-/** 订单/活动通知模板 — 未配置模板 ID 时静默跳过 */
+/** @deprecated 请用 requestBizNotifySubscribe */
 export async function requestOrderNotifySubscribe() {
-  const tmplIds = (process.env.TARO_APP_SUBSCRIBE_TMPL_IDS || '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
+  return requestBizNotifySubscribe()
+}
 
-  if (!tmplIds.length) {
-    console.info('[subscribe] no template ids configured')
-    return
-  }
-
-  await new Promise<void>((resolve, reject) => {
-    wx.requestSubscribeMessage({
-      tmplIds,
-      success: () => resolve(),
-      fail: (err) => reject(err),
-    })
-  })
+/** 业务通知 · 请求微信服务通知授权（须在用户点击回调中同步调用） */
+export function requestBizNotifySubscribe(tmplIds?: string[]): Promise<string[]> {
+  return invokeBizNotifySubscribe(tmplIds?.length ? tmplIds : getBizNotifySubscribeTmplIds()).then(
+    async (accepted) => {
+      if (accepted.length) {
+        await recordBizNotifySubscribe(accepted).catch((err) => {
+          console.warn('[subscribe] record failed:', err)
+        })
+      }
+      return accepted
+    },
+  )
 }

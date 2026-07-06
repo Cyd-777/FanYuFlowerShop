@@ -1,41 +1,13 @@
 const cloud = require('wx-server-sdk')
 const { fetchAllDocs } = require('./common/db')
-const { ensureDefaultFlowerCatalog } = require('./common/ensureFlowerCatalog')
+const { ensureDefaultFlowerCatalog, runFlowerCatalogMerge } = require('./common/ensureFlowerCatalog')
+const { isMerchant } = require('./common/merchantGate')
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
 })
 
 const db = cloud.database()
-
-const OWNER_OPENIDS = [
-  'oiDICxmmuGHJTKQzDsG9X32n2fAs',
-]
-
-function isCollectionMissingError(err) {
-  const msg = [err.errMsg, err.message, String(err.errCode), String(err.code)]
-    .filter(Boolean)
-    .join(' ')
-  return (
-    msg.includes('DATABASE_COLLECTION_NOT_EXIST') ||
-    msg.includes('collection not exists') ||
-    msg.includes('Db or Table not exist') ||
-    msg.includes('-502005') ||
-    msg.includes('50200')
-  )
-}
-
-async function isMerchant(openid) {
-  if (OWNER_OPENIDS.includes(openid)) return true
-
-  try {
-    const { data } = await db.collection('merchants').where({ openid }).limit(1).get()
-    return data.length > 0
-  } catch (err) {
-    if (isCollectionMissingError(err)) return OWNER_OPENIDS.includes(openid)
-    throw err
-  }
-}
 
 function pickKind(doc) {
   return {
@@ -186,6 +158,23 @@ exports.main = async (event) => {
       return {
         success: false,
         errMsg: err.message || err.errMsg || '获取花卉详情失败',
+      }
+    }
+  }
+
+  if (action === 'mergeCatalog') {
+    const canManage = operatorOpenid ? await isMerchant(operatorOpenid) : false
+    if (!canManage) {
+      return { success: false, errMsg: '无权限执行品种归并' }
+    }
+
+    try {
+      const stats = await runFlowerCatalogMerge(db)
+      return { success: true, stats }
+    } catch (err) {
+      return {
+        success: false,
+        errMsg: err.message || err.errMsg || '品种归并失败',
       }
     }
   }

@@ -1,14 +1,15 @@
 import { getCloud, getCloudCallConfig, parseCloudResult } from './cloud'
 import { getWikiDocFromDb } from './wikiDb'
 import { assembleFlowerWiki, reassembleFlowerWiki } from '@/utils/wikiCompose'
-import { loadWithCache, invalidateCacheModule } from '@/utils/cache'
-import { wikiPublicDetailKey } from '@/data/cacheKeys'
+import { loadWithCache, invalidateCacheEvent } from '@/utils/cache'
+import { wikiPublicDetailKey, wikiPublicMatchKey } from '@/data/cacheKeys'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
 import type { WikiQuery, WikiSearchResult } from '@/types/search'
 import type { FlowerWiki, FlowerWikiListItem } from '@/types/wiki'
+import type { WikiExternalPrefillResult } from '@/utils/wikiExternalPrefill'
 
-const PUBLIC_WIKI_LIST_KEY = 'wiki:public:list'
-const MERCHANT_WIKI_LIST_KEY = 'wiki:merchant:list'
+const PUBLIC_WIKI_LIST_KEY = 'wiki:public:list:v2'
+const MERCHANT_WIKI_LIST_KEY = 'wiki:merchant:list:v2'
 
 interface WikiCloudResult {
   success: boolean
@@ -85,7 +86,7 @@ function publicWikiDetailCacheKey(id: string) {
 }
 
 function publicWikiMatchCacheKey(kindId = '', varietyId = '') {
-  return `wiki:public:match:${kindId || '_'}:${varietyId || '_'}`
+  return wikiPublicMatchKey(kindId, varietyId)
 }
 
 export async function getPublicWiki(id: string): Promise<FlowerWiki> {
@@ -154,8 +155,7 @@ export async function matchPublicWikiCached(
 // ========== 商户端词条管理接口 ==========
 
 function invalidateWikiRelatedCaches() {
-  invalidateCacheModule('wiki')
-  invalidateCacheModule('categories')
+  invalidateCacheEvent('wikiContent')
 }
 
 /** 商户端获取全部词条（含未启用的） */
@@ -180,21 +180,39 @@ export async function listMerchantWikisCached(options?: {
   })
 }
 
-/** 获取单个词条详情（商户端） */
-export async function getMerchantWiki(id: string): Promise<FlowerWikiListItem> {
+/** 获取单个词条详情（商户端，含图鉴/花语/养护字段） */
+export async function getMerchantWiki(id: string): Promise<FlowerWiki> {
   const result = await callWiki({ action: 'get', id })
   if (!result.success || !result.wiki) {
     throw new Error(result.errMsg || '获取词条失败')
   }
-  return result.wiki as FlowerWikiListItem
+  return result.wiki as FlowerWiki
+}
+
+export interface WikiWritePayload {
+  kindName?: string
+  varietyName?: string
+  icon?: string
+  enabled?: boolean
+  sort?: number
+  plantForm?: FlowerWiki['plantForm']
+  careBaseRef?: string
+  aliases?: string[]
+  tags?: string[]
+  keywords?: string[]
+  occasions?: string[]
+  names?: FlowerWiki['names']
+  bloom?: Partial<FlowerWiki['bloom']>
+  atlas?: Partial<FlowerWiki['atlas']> & {
+    intro?: FlowerWiki['atlas']['intro']
+    featureRefs?: string[]
+  }
+  language?: Partial<FlowerWiki['language']>
+  careVase?: Partial<FlowerWiki['careVase']>
 }
 
 /** 新建词条 */
-export async function createWiki(data: {
-  kindName: string
-  varietyName?: string
-  icon?: string
-}): Promise<FlowerWikiListItem> {
+export async function createWiki(data: WikiWritePayload & { kindName: string }): Promise<FlowerWikiListItem> {
   const result = await callWiki({ action: 'add', wiki: data })
   if (!result.success || !result.wiki) {
     throw new Error(result.errMsg || '创建词条失败')
@@ -204,15 +222,7 @@ export async function createWiki(data: {
 }
 
 /** 更新词条 */
-export async function updateWiki(
-  id: string,
-  data: {
-    kindName?: string
-    varietyName?: string
-    icon?: string
-    enabled?: boolean
-  },
-): Promise<FlowerWikiListItem> {
+export async function updateWiki(id: string, data: WikiWritePayload): Promise<FlowerWikiListItem> {
   const result = await callWiki({ action: 'update', id, wiki: data })
   if (!result.success || !result.wiki) {
     throw new Error(result.errMsg || '更新词条失败')
@@ -228,4 +238,16 @@ export async function removeWiki(id: string): Promise<void> {
     throw new Error(result.errMsg || '删除词条失败')
   }
   invalidateWikiRelatedCaches()
+}
+
+/** 外部数据源预填充（维基 + GBIF，经云函数代理） */
+export async function fetchWikiExternalPrefill(query: string): Promise<WikiExternalPrefillResult> {
+  const result = await callWiki<WikiExternalPrefillResult & WikiCloudResult>({
+    action: 'externalPrefill',
+    query: query.trim(),
+  })
+  if (result.success !== true) {
+    throw new Error(result.errMsg || '外部数据拉取失败')
+  }
+  return result
 }

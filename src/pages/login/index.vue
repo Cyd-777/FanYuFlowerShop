@@ -4,10 +4,11 @@
     <view class="logo">{{ logoEmoji }}</view>
     <view class="title">{{ shopStore.shopName }}</view>
     <view class="desc">{{ descText }}</view>
+    <view class="subscribe-hint">{{ subscribeHintText }}</view>
 
     <view class="login-panel">
-      <button class="login-btn wechat" :disabled="loading" @tap="handleWechatLogin">
-        {{ loading && mode === 'wechat' ? '登录中...' : '微信一键登录' }}
+      <button class="login-btn wechat" :disabled="loading || subscribePrefetching" @tap="handleWechatLogin">
+        {{ wechatLoginBtnText }}
       </button>
 
       <template v-if="enablePhoneLogin">
@@ -45,8 +46,8 @@
               {{ countdown > 0 ? `${countdown}s` : sendingCode ? '发送中' : '获取验证码' }}
             </button>
           </view>
-          <button class="login-btn phone" :disabled="loading" @tap="handlePhoneLogin">
-            {{ loading && mode === 'phone' ? '登录中...' : '手机号登录' }}
+          <button class="login-btn phone" :disabled="loading || subscribePrefetching" @tap="handlePhoneLogin">
+            {{ phoneLoginBtnText }}
           </button>
         </view>
 
@@ -60,7 +61,7 @@
 
 <script setup lang="ts">
 import { showToast } from '@/utils/feedback'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useShopStore } from '@/stores/shop'
 import { ENABLE_PHONE_LOGIN } from '@/config/login'
@@ -68,11 +69,18 @@ import { navigateToHome, hasToken, getCachedRole, sendPhoneLoginCode } from '@/s
 import { STORAGE_KEYS } from '@/utils/constants'
 import { redirectTo } from '@/utils/router'
 import { parsePendingStaffInvite } from '@/services/staff'
+import {
+  prefetchSubscribeTmplIds,
+  requestSubscribeOnLoginTap,
+  resolveSubscribeTmplIds,
+} from '@/utils/bizNotifySubscribe'
+import { recordBizNotifySubscribe } from '@/services/notification'
 
 const orDividerText = '或'
 
 const logoEmoji = '🌷'
 const descText = '每一束花，都是一次心动'
+const subscribeHintText = '登录时将请求开启订单与配送微信通知，便于及时收花与商家履约'
 
 const enablePhoneLogin = ENABLE_PHONE_LOGIN
 
@@ -84,6 +92,19 @@ const devCodeHint = ref('')
 const phone = ref('')
 const smsCode = ref('')
 const mode = ref<'wechat' | 'phone' | ''>('')
+const subscribePrefetching = ref(resolveSubscribeTmplIds().length === 0)
+
+const wechatLoginBtnText = computed(() => {
+  if (subscribePrefetching.value) return '准备中...'
+  if (loading.value && mode.value === 'wechat') return '登录中...'
+  return '微信一键登录'
+})
+
+const phoneLoginBtnText = computed(() => {
+  if (subscribePrefetching.value) return '准备中...'
+  if (loading.value && mode.value === 'phone') return '登录中...'
+  return '手机号登录'
+})
 
 const userStore = useUserStore()
 const shopStore = useShopStore()
@@ -105,15 +126,28 @@ function redirectAfterLogin(role: ReturnType<typeof getCachedRole>) {
 
 onMounted(() => {
   void shopStore.hydrate()
-  try {
-    if (hasToken()) {
-      const role = getCachedRole()
-      redirectAfterLogin(role)
-    }
-  } catch (err) {
-    console.error('[login] auto redirect failed:', err)
-  }
+  void initLoginPage()
 })
+
+async function initLoginPage() {
+  if (hasToken()) {
+    const role = getCachedRole()
+    redirectAfterLogin(role)
+    return
+  }
+  if (resolveSubscribeTmplIds().length) {
+    subscribePrefetching.value = false
+    return
+  }
+  subscribePrefetching.value = true
+  try {
+    await prefetchSubscribeTmplIds()
+  } catch (err) {
+    console.error('[login] subscribe prefetch failed:', err)
+  } finally {
+    subscribePrefetching.value = false
+  }
+}
 
 onUnmounted(() => {
   if (countdownTimer) clearInterval(countdownTimer)
@@ -139,22 +173,54 @@ function startCountdown(seconds = 60) {
   }, 1000)
 }
 
-async function handleWechatLogin() {
-  if (loading.value) return
+/** 登录点击：同步弹订阅窗 → 登录 → 记录授权 */
+function startLoginWithSubscribe(
+  modeValue: 'wechat' | 'phone',
+  loginFn: () => Promise<{ role: ReturnType<typeof getCachedRole> }>,
+) {
+  if (loading.value || subscribePrefetching.value) return
+  mode.value = modeValue
+  errorMsg.value = ''
+
+  const tmplIds = resolveSubscribeTmplIds()
+  if (!tmplIds.length) {
+    console.warn('[login] no subscribe tmpl ids; login without subscribe prompt')
+    void runLoginAfterSubscribe(loginFn, [])
+    return
+  }
+
+  // 须在 tap 回调栈内同步发起；Promise 在弹窗关闭后继续
+  void requestSubscribeOnLoginTap(tmplIds).then((accepted) => {
+    void runLoginAfterSubscribe(loginFn, accepted)
+  })
+}
+
+async function runLoginAfterSubscribe(
+  loginFn: () => Promise<{ role: ReturnType<typeof getCachedRole> }>,
+  acceptedTmplIds: string[],
+) {
   loading.value = true
-  mode.value = 'wechat'
   errorMsg.value = ''
   try {
-    const { role } = await userStore.doLoginWechat()
+    const { role } = await loginFn()
+    if (acceptedTmplIds.length) {
+      await recordBizNotifySubscribe(acceptedTmplIds).catch((err) => {
+        console.warn('[login] record subscribe failed:', err)
+      })
+    }
     redirectAfterLogin(role)
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : '微信登录失败'
+    const msg = err instanceof Error ? err.message : '登录失败'
     errorMsg.value = msg
     wx.showModal({ title: '登录失败', content: msg, showCancel: false })
   } finally {
     loading.value = false
     mode.value = ''
   }
+}
+
+function handleWechatLogin() {
+  startLoginWithSubscribe('wechat', () => userStore.doLoginWechat())
 }
 
 async function handleSendCode() {
@@ -181,8 +247,8 @@ async function handleSendCode() {
   }
 }
 
-async function handlePhoneLogin() {
-  if (!enablePhoneLogin || loading.value) return
+function handlePhoneLogin() {
+  if (!enablePhoneLogin || loading.value || subscribePrefetching.value) return
   if (!/^1\d{10}$/.test(phone.value)) {
     showToast({ title: '请输入正确手机号', icon: 'none' })
     return
@@ -192,20 +258,9 @@ async function handlePhoneLogin() {
     return
   }
 
-  loading.value = true
-  mode.value = 'phone'
-  errorMsg.value = ''
-  try {
-    const { role } = await userStore.doLoginPhone(phone.value, smsCode.value.trim())
-    redirectAfterLogin(role)
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : '手机号登录失败'
-    errorMsg.value = msg
-    wx.showModal({ title: '登录失败', content: msg, showCancel: false })
-  } finally {
-    loading.value = false
-    mode.value = ''
-  }
+  startLoginWithSubscribe('phone', () =>
+    userStore.doLoginPhone(phone.value, smsCode.value.trim()),
+  )
 }
 </script>
 
@@ -240,6 +295,18 @@ async function handlePhoneLogin() {
   margin-top: 16rpx;
   font-size: 28rpx;
   color: @color-text-tertiary;
+}
+.subscribe-hint {
+  margin-top: 24rpx;
+  padding: 20rpx 24rpx;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: 24rpx;
+  line-height: 1.5;
+  color: @color-text-secondary;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 16rpx;
 }
 .login-panel {
   width: 100%;

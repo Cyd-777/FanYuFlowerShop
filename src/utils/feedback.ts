@@ -1,6 +1,10 @@
 import { reactive } from 'vue'
-import { NOTIFY_TONE_ICON_SRC } from '@/assets/icons/notify'
+import Taro from '@tarojs/taro'
+import { NOTIFY_TONE_ICON_SRC_ON_DARK } from '@/assets/icons/notify'
+import { getCurrentPageRoute, isTabBarRoute } from '@/config/pageNav'
+import { rpxToPx } from '@/composables/usePageSticky'
 import { getNavBarLayout } from '@/utils/navBarLayout'
+import { scrollTailTabBarInsetPx } from '@/utils/scrollListTailSpacer'
 import type {
   AppToastOptions,
   FeedbackTone,
@@ -43,7 +47,7 @@ export const feedbackBarState = reactive<BarState>({
   visible: false,
   message: '',
   tone: 'primary',
-  position: 'top',
+  position: 'head',
   duration: 2500,
 })
 
@@ -83,28 +87,28 @@ export interface FeedbackToneStyle {
 
 export const FEEDBACK_TONE_STYLES: Record<FeedbackTone, FeedbackToneStyle> = {
   primary: {
-    background: '#ffffff',
-    color: '#333333',
-    borderColor: 'rgba(229, 57, 53, 0.22)',
-    iconSrc: NOTIFY_TONE_ICON_SRC.primary,
+    background: '#e53935',
+    color: '#ffffff',
+    borderColor: 'transparent',
+    iconSrc: NOTIFY_TONE_ICON_SRC_ON_DARK.primary,
   },
   success: {
-    background: '#ffffff',
-    color: '#333333',
-    borderColor: 'rgba(46, 125, 50, 0.22)',
-    iconSrc: NOTIFY_TONE_ICON_SRC.success,
+    background: '#2e7d32',
+    color: '#ffffff',
+    borderColor: 'transparent',
+    iconSrc: NOTIFY_TONE_ICON_SRC_ON_DARK.success,
   },
   warning: {
-    background: '#ffffff',
-    color: '#333333',
-    borderColor: 'rgba(230, 81, 0, 0.22)',
-    iconSrc: NOTIFY_TONE_ICON_SRC.warning,
+    background: '#e65100',
+    color: '#ffffff',
+    borderColor: 'transparent',
+    iconSrc: NOTIFY_TONE_ICON_SRC_ON_DARK.warning,
   },
   danger: {
-    background: '#ffffff',
-    color: '#333333',
-    borderColor: 'rgba(198, 40, 40, 0.22)',
-    iconSrc: NOTIFY_TONE_ICON_SRC.danger,
+    background: '#c62828',
+    color: '#ffffff',
+    borderColor: 'transparent',
+    iconSrc: NOTIFY_TONE_ICON_SRC_ON_DARK.danger,
   },
 }
 
@@ -118,9 +122,20 @@ export function getPullRefreshTopOffsetPx() {
   return 0
 }
 
-/** 顶部提示条：固定贴在 Head 占位下沿（无论 Head 是否渲染/可见，如百科吸顶藏 Head） */
+/** 底部提示条：Tab 页抬高避开 TabBar，其余页留 safe-area */
+export function getNotifyBarBottomOffsetPx() {
+  const padding = rpxToPx(24)
+  if (isTabBarRoute(getCurrentPageRoute())) {
+    return scrollTailTabBarInsetPx() + padding
+  }
+  const info = Taro.getWindowInfo()
+  const safeBottom = Math.max(0, info.screenHeight - (info.safeArea?.bottom ?? info.screenHeight))
+  return safeBottom + padding
+}
+
+/** 系统状态栏下沿：提示条贴在设备通知栏下方 */
 export function getNotifyBarTopOffsetPx(forceLayout = false) {
-  return getNavBarLayout(forceLayout).totalHeight
+  return getNavBarLayout(forceLayout).statusBarHeight
 }
 
 let barTimer: ReturnType<typeof setTimeout> | null = null
@@ -140,14 +155,14 @@ function scheduleBarHide(duration: number) {
   }, duration)
 }
 
-/** 顶部/底部提示条，不遮挡页面阅读 */
+/** 默认贴在状态栏下沿（小浮条）；可选 bottom */
 export function showNotifyBar(options: NotifyBarOptions) {
   const message = String(options.message || '').trim()
   if (!message) return
 
   feedbackBarState.message = message
   feedbackBarState.tone = options.tone || 'primary'
-  feedbackBarState.position = options.position || 'top'
+  feedbackBarState.position = options.position || 'head'
   feedbackBarState.duration = options.duration ?? 2500
   feedbackBarState.visible = false
   feedbackBarState.visible = true

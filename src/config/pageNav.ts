@@ -58,6 +58,8 @@ export const PAGE_NAV: Record<string, PageNavConfig> = {
   'pagesCustomer/favorite/index': { title: '我的收藏' },
   'pagesCustomer/feedback/index': { title: 'Bug 反馈' },
   'pagesCustomer/other/index': { title: '关于我们' },
+  'pagesCustomer/notify/list': { title: '消息通知' },
+  'pagesCustomer/notify/send': { title: '发送通知' },
   'pagesCustomer/wiki/detail': { title: '' },
   'pagesCustomer/theme/index': { title: '专题活动' },
 

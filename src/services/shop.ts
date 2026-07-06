@@ -1,5 +1,5 @@
 import { getCloud, getCloudCallConfig } from './cloud'
-import { invalidateCacheModule, loadWithCache } from '@/utils/cache'
+import { invalidateCacheEvent, loadWithCache } from '@/utils/cache'
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
 import type { ShopSettings, ShopThemeConfig } from '@/types/shop'
 import type { ShopThemeId } from '@/types/shopTheme'
@@ -51,7 +51,7 @@ export async function saveShopSettings(settings: ShopSettings): Promise<ShopSett
   if (!result.success || !result.settings) {
     throw new Error(result.errMsg || '保存店铺设置失败')
   }
-  invalidateCacheModule('shop')
+  invalidateCacheEvent('shopSettings')
   return result.settings
 }
 
@@ -63,7 +63,7 @@ export async function saveThemeConfig(
   if (!result.success || !result.settings) {
     throw new Error(result.errMsg || '保存主题装潢失败')
   }
-  invalidateCacheModule('shop')
+  invalidateCacheEvent('shopSettings')
   return result.settings
 }
 
@@ -72,6 +72,6 @@ export async function setActiveTheme(themeId: ShopThemeId): Promise<ShopSettings
   if (!result.success || !result.settings) {
     throw new Error(result.errMsg || '切换主题失败')
   }
-  invalidateCacheModule('shop')
+  invalidateCacheEvent('shopSettings')
   return result.settings
 }

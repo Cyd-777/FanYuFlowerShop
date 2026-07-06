@@ -7,14 +7,16 @@ cloud.init({
 
 const { bumpAccessEpoch } = require('./common/accessControl')
 const { getUserById, resolveUserByWechatMp } = require('./common/account')
+const {
+  isOwner,
+  isWhitelistedOwner,
+  findMerchantByOpenid,
+  findMerchantByUserId,
+  ensureCollection,
+} = require('./common/merchantGate')
 
 const db = cloud.database()
 const _ = db.command
-
-/** 店长 OpenID 白名单（与 login 云函数保持一致，仅服务端 wxContext 使用） */
-const OWNER_OPENIDS = [
-  'oiDICxmmuGHJTKQzDsG9X32n2fAs',
-]
 
 const ASSIGNABLE_ROLES = ['manager', 'staff']
 const USER_ID_PATTERN = /^u_\d+_[a-z0-9]+$/
@@ -23,35 +25,6 @@ const INVITE_TTL_MS = 24 * 60 * 60 * 1000
 const ROLE_LABELS = {
   manager: '管理员',
   staff: '员工',
-}
-
-function isCollectionMissingError(err) {
-  const msg = [err.errMsg, err.message, String(err.errCode), String(err.code)]
-    .filter(Boolean)
-    .join(' ')
-  return (
-    msg.includes('DATABASE_COLLECTION_NOT_EXIST') ||
-    msg.includes('collection not exists') ||
-    msg.includes('Db or Table not exist') ||
-    msg.includes('-502005') ||
-    msg.includes('50200')
-  )
-}
-
-async function ensureCollection(name) {
-  try {
-    await db.createCollection(name)
-  } catch (err) {
-    const msg = [err.errMsg, err.message].filter(Boolean).join(' ')
-    const alreadyExists =
-      msg.includes('already exist') ||
-      msg.includes('已存在') ||
-      msg.includes('ResourceExist') ||
-      msg.includes('Table exist')
-    if (!alreadyExists && !msg.includes('createCollection is not a function')) {
-      throw err
-    }
-  }
 }
 
 function normalizeUserId(raw) {
@@ -122,20 +95,6 @@ function formatInvite(doc) {
   }
 }
 
-async function findMerchantByUserId(userId) {
-  if (!userId) return null
-  await ensureCollection('merchants')
-  const { data } = await db.collection('merchants').where({ userId }).limit(1).get()
-  return data[0] || null
-}
-
-async function findMerchantByOpenid(openid) {
-  if (!openid) return null
-  await ensureCollection('merchants')
-  const { data } = await db.collection('merchants').where({ openid }).limit(1).get()
-  return data[0] || null
-}
-
 async function resolveMerchantUserId(item) {
   if (item.userId) return item.userId
   if (!item.openid) return ''
@@ -151,19 +110,6 @@ async function resolveMerchantUserId(item) {
     })
   }
   return userId
-}
-
-async function isOwner(operatorOpenid) {
-  if (OWNER_OPENIDS.includes(operatorOpenid)) return true
-
-  try {
-    const operator = await resolveUserByWechatMp(operatorOpenid)
-    const merchant = await findMerchantByUserId(operator?.userId)
-    return !!(merchant && (merchant.role === 'owner' || !merchant.role))
-  } catch (err) {
-    if (isCollectionMissingError(err)) return OWNER_OPENIDS.includes(operatorOpenid)
-    throw err
-  }
 }
 
 async function findInviteByToken(token) {
@@ -207,7 +153,7 @@ async function mapStaffItemWithProfile(item) {
   if (!userId) return null
 
   const user = await getUserById(userId)
-  const role = item.role || (OWNER_OPENIDS.includes(item.openid) ? 'owner' : 'staff')
+  const role = item.role || (isWhitelistedOwner(item.openid) ? 'owner' : 'staff')
 
   return {
     _id: item._id,
@@ -369,13 +315,13 @@ exports.main = async (event) => {
       merchant = await findMerchantByOpenid(operatorOpenid)
     }
 
-    const isWhitelistedOwner = OWNER_OPENIDS.includes(operatorOpenid)
-    if (!isWhitelistedOwner && !merchant) {
+    const isWhitelistedOwnerUser = isWhitelistedOwner(operatorOpenid)
+    if (!isWhitelistedOwnerUser && !merchant) {
       return { success: false, errMsg: '非商家账号' }
     }
 
-    const role = merchant?.role || (isWhitelistedOwner ? 'owner' : 'staff')
-    const name = merchant?.name || user?.nickName || (isWhitelistedOwner ? '店长' : '工作人员')
+    const role = merchant?.role || (isWhitelistedOwnerUser ? 'owner' : 'staff')
+    const name = merchant?.name || user?.nickName || (isWhitelistedOwnerUser ? '店长' : '工作人员')
 
     return {
       success: true,

@@ -1,5 +1,6 @@
 import type { WikiVarietyOverlay } from '@/types/wikiBlocks'
 import { wikiEntryIdentityKey } from '@/types/wiki'
+import { resolveCanonicalWikiVarietyName } from '@/data/wiki/legacyVarietyMap'
 import vrose_carola from './rose-carola.json'
 import vrose_pink_floyd from './rose-pink-floyd.json'
 import vrose_aisha from './rose-aisha.json'
@@ -210,10 +211,30 @@ const OVERLAYS: Record<string, WikiVarietyOverlay> = {
   '盆栽::茉莉花': vpotted_jasmine as WikiVarietyOverlay,
 }
 
+/** overlay commonNames → canonical 品种（如 迷你向日葵 → 泰迪熊） */
+const OVERLAY_VARIETY_ALIAS_MAP: Record<string, string> = {}
+for (const [key, overlay] of Object.entries(OVERLAYS)) {
+  const sep = key.indexOf('::')
+  if (sep < 0) continue
+  const kind = key.slice(0, sep)
+  const variety = key.slice(sep + 2)
+  for (const alias of overlay.names?.commonNames || []) {
+    const text = String(alias || '').trim()
+    if (!text || text === variety) continue
+    OVERLAY_VARIETY_ALIAS_MAP[`${kind}:${text}`] = variety
+  }
+}
+
 export function getWikiVarietyOverlay(
   kindName: string,
   varietyName: string,
 ): WikiVarietyOverlay | null {
-  const key = wikiEntryIdentityKey({ kindName, varietyName })
+  const canonical = resolveCanonicalWikiVarietyName(kindName, varietyName, OVERLAY_VARIETY_ALIAS_MAP)
+  const key = wikiEntryIdentityKey({ kindName, varietyName: canonical })
   return OVERLAYS[key] || null
+}
+
+/** 品种展示名：弃用旧通用品名，统一 canonical */
+export function resolveWikiVarietyName(kindName: string, varietyName: string): string {
+  return resolveCanonicalWikiVarietyName(kindName, varietyName, OVERLAY_VARIETY_ALIAS_MAP)
 }

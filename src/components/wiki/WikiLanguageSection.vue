@@ -1,19 +1,30 @@
 <template>
   <view class="wiki-language">
-    <view v-if="fields.meaning" class="wiki-language__core">
+    <view
+      v-if="fields.meaning || editable"
+      class="wiki-language__core"
+      :class="{ 'wiki-note-editable--zone': editable }"
+      @tap="onEdit('languageMeaning')"
+    >
       <text class="wiki-language__core-label">{{ coreLabel }}</text>
       <WikiDataText
+        v-if="fields.meaning"
         :text="fields.meaning"
         source="language.meaning"
         :inline="false"
         extra-class="wiki-language__core-text"
       />
+      <text v-else-if="editable" class="wiki-language__empty">{{ emptyEditableCore }}</text>
     </view>
 
     <view
       id="wiki-anchor-language"
       class="wiki-language__body"
-      :class="{ 'wiki-language__body--highlight': highlightAnchor === 'wiki-anchor-language' }"
+      :class="{
+        'wiki-language__body--highlight': highlightAnchor === 'wiki-anchor-language',
+        'wiki-note-editable--zone': editable,
+      }"
+      @tap="onEdit('languageParagraphsText')"
     >
       <WikiArticleBody
         v-if="fields.paragraphs.length"
@@ -27,10 +38,16 @@
         :inline="false"
         extra-class="wiki-language__summary"
       />
-      <text v-else-if="!fields.meaning" class="wiki-language__empty">{{ emptyText }}</text>
+      <text v-else-if="!fields.meaning" class="wiki-language__empty">{{ editable ? emptyEditableBody : emptyText }}</text>
+      <text v-if="editable" class="wiki-note-tap-hint">{{ tapHint }}</text>
     </view>
 
-    <view v-if="fields.occasions.length" class="wiki-language__block">
+    <view
+      v-if="fields.occasions.length || editable"
+      class="wiki-language__block"
+      :class="{ 'wiki-note-editable--zone': editable }"
+      @tap="onEdit('picker:occasions')"
+    >
       <text class="wiki-language__block-title">{{ occasionsTitle }}</text>
       <view class="wiki-language__occasions">
         <WikiLanguageOccasionChip
@@ -40,6 +57,7 @@
           :source="`language.occasions[${idx}]`"
         />
       </view>
+      <text v-if="editable && !fields.occasions.length" class="wiki-language__empty">{{ tapPickOccasions }}</text>
     </view>
 
     <view v-if="fields.colorMeanings.length" class="wiki-language__block">
@@ -85,7 +103,12 @@
       </view>
     </view>
 
-    <view v-if="fields.caution" class="wiki-language__caution">
+    <view
+      v-if="fields.caution || editable"
+      class="wiki-language__caution"
+      :class="{ 'wiki-note-editable--zone': editable }"
+      @tap="onEdit('languageCaution')"
+    >
       <text class="wiki-language__caution-label">{{ cautionLabel }}</text>
       <WikiDataText
         :text="fields.caution"
@@ -105,13 +128,23 @@ import WikiLanguageColorCard from '@/components/wiki/WikiLanguageColorCard.vue'
 import WikiLanguageOccasionChip from '@/components/wiki/WikiLanguageOccasionChip.vue'
 import type { FlowerWiki } from '@/types/wiki'
 import { resolveWikiLanguage } from '@/types/wiki'
+import type { WikiNoteEditTarget } from '@/utils/wikiNoteEdit'
 
 const props = defineProps<{
   wiki: FlowerWiki
   highlightAnchor?: string
+  editable?: boolean
+}>()
+
+const emit = defineEmits<{
+  edit: [target: WikiNoteEditTarget]
 }>()
 
 const emptyText = '暂无花语介绍'
+const emptyEditableCore = '点击填写核心花语'
+const emptyEditableBody = '点击填写花语正文'
+const tapHint = '点击编辑'
+const tapPickOccasions = '点击选择适用场合'
 const coreLabel = '核心花语'
 const occasionsTitle = '适用场景'
 const colorsTitle = '色彩寓意'
@@ -119,6 +152,11 @@ const pairingTitle = '搭配建议'
 const cautionLabel = '送花注意'
 
 const fields = computed(() => resolveWikiLanguage(props.wiki))
+
+function onEdit(target: WikiNoteEditTarget) {
+  if (!props.editable) return
+  emit('edit', target)
+}
 </script>
 
 <style lang="less">
@@ -148,6 +186,13 @@ const fields = computed(() => resolveWikiLanguage(props.wiki))
   font-size: 26rpx;
   color: #999;
   line-height: 1.6;
+}
+
+.wiki-note-tap-hint {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: #a78bfa;
 }
 
 .wiki-language__core {

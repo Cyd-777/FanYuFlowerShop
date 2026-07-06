@@ -33,6 +33,8 @@ export default defineAppConfig({
         'favorite/index',
         'feedback/index',
         'other/index',
+        'notify/list',
+        'notify/send',
         'wiki/detail',
       ],
     },
