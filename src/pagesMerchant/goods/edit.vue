@@ -197,7 +197,7 @@ import {
   removeGoods,
   updateGoods,
 } from '@/services/goods'
-import { uploadAndProcessImage } from '@/services/asset'
+import { uploadAndProcessImage } from '@/modules/asset'
 import { readAssetPick, markAssetPickConsumed } from '@/types/assetPick'
 import { linkStockInLineGoods } from '@/utils/stockInSession'
 import { useMerchantCategories } from '@/composables/useMerchantCategories'

@@ -31,7 +31,7 @@ import {
   MEMBER_LEVEL_BENEFITS,
   resolveMemberLevelIndex,
   formatMemberDiscount,
-} from '@/types/member'
+} from '@/modules/member'
 
 const uiText_1d3970 = '等级权益'
 const uiText_3c8c2d = '会员等级以花卉命名，积分越高，花开越盛，礼遇越多。'

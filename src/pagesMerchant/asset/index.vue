@@ -124,7 +124,7 @@ import {
   renameAsset,
   deleteAsset,
   type AssetItem,
-} from '@/services/asset'
+} from '@/modules/asset'
 import { writeAssetPick } from '@/types/assetPick'
 import { wikiRepository } from '@/data/repository'
 import { getCloud, getCloudCallConfig, parseCloudResult } from '@/services/cloud'
@@ -371,7 +371,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
     if (!file?.tempFilePath) return
 
     wx.showLoading({ title: '上传中' })
-    const { uploadAndProcessImage: upload } = await import('@/services/asset')
+    const { uploadAndProcessImage: upload } = await import('@/modules/asset')
     const result = await upload(file.tempFilePath, `wiki_${entry._id}`, 'goods')
 
     // 调用云函数更新 wiki 的 coverImage

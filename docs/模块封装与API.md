@@ -43,16 +43,16 @@ docs/{模块名}模块-API.md   # 该模块 API 文档（前端 + 云 action）
 | 1 | 人员管理 | `@/modules/staff` | 0 | ✅ |
 | 2 | 类 OA | `@/modules/notify` | 1 · 迭代1 | ✅ |
 | 3 | 收藏 | `@/modules/favorite` | 1 · 迭代1 | ✅ |
-| 4 | 会员 | `@/modules/member` | 1 | 待做 |
+| 4 | 会员 | `@/modules/member` | 1 | ✅ |
 | 5 | 启动授权 | `@/modules/auth` | 1 · 迭代2 | ✅ |
-| 6 | 店铺设置 | `@/modules/shop` | 2 · 迭代2 | ✅ 读 API |
-| 7 | 销售策略 | `@/modules/salesStrategy` | 2 | 待做（在 shop 后） |
-| 8 | 素材 | `@/modules/asset` | 2 | 待做 |
+| 6 | 店铺设置 | `@/modules/shop` | 2 · 迭代2 | ✅ |
+| 7 | 销售策略 | `@/modules/salesStrategy` | 2 | ✅ |
+| 8 | 素材 | `@/modules/asset` | 2 | ✅ |
 | 9 | 搜索 | `@/modules/search` | 3 · 迭代3 | ✅ |
 | 10 | 花卉目录读 | `@/modules/flower` | 3 · 迭代3 | ✅ |
 | 11 | 智库读/写 | `@/modules/wiki` | 4 | ✅ 读路径 |
-| 12 | 分类 | `@/modules/category` | 4 | 待做 |
-| 13 | 可售数进货 | `@/modules/warehouse` | 5 | 待做 |
+| 12 | 分类 | `@/modules/category` | 4 | ✅ |
+| 13 | 可售数进货 | `@/modules/warehouse` | 5 | ✅ |
 | 14+ | 商品/订单/购物车等 | — | 6 · 最后 | 登记 |
 
 **不在本轮封装（基础闭环核）**：首页、商城、商品、购物车、订单、地址、自选花束——待波次 6 收口。
@@ -64,11 +64,11 @@ docs/{模块名}模块-API.md   # 该模块 API 文档（前端 + 云 action）
 | 序 | 模块 | 前端入口 | 云函数 | API 文档 | 封装状态 |
 |----|------|----------|--------|----------|----------|
 | 1 | 人员管理 | `@/modules/staff` | `staff` | [人员管理模块-API](./人员管理模块-API.md) | ✅ |
-| 2 | 销售策略 | `@/modules/salesStrategy` | `shop`（主题相关 action） | 待写 | 未开始 |
-| 3 | 店铺设置 | `@/modules/shop` | `shop` | [店铺设置模块-API](./店铺设置模块-API.md) | ✅ 读 API |
-| 4 | 素材管理 | `@/modules/asset` | `goods`（media） | 待写 | 未开始 |
-| 5 | 可售数与进货 | `@/modules/warehouse` | `goods`（inventory） | 待写 | 未开始 |
-| 6 | 分类管理 | `@/modules/category` | `category` | 待写 | 未开始（与智库读路径有耦合，放强化末） |
+| 2 | 销售策略 | `@/modules/salesStrategy` | `shop`（主题相关 action） | ✅ [API](./销售策略模块-API.md) | ✅ |
+| 3 | 店铺设置 | `@/modules/shop` | `shop` | ✅ [API](./店铺设置模块-API.md) | ✅ |
+| 4 | 素材管理 | `@/modules/asset` | `goods`（media） | ✅ [API](./素材管理模块-API.md) |
+| 5 | 可售数与进货 | `@/modules/warehouse` | `goods`（inventory） | ✅ [API](./可售数与进货模块-API.md) |
+| 6 | 分类管理 | `@/modules/category` | `category` | ✅ [API](./分类管理模块-API.md) |
 
 ### 阶段 B · 附加 / 非基础闭环
 
@@ -77,7 +77,7 @@ docs/{模块名}模块-API.md   # 该模块 API 文档（前端 + 云 action）
 | 7 | 类 OA 通知 | `@/modules/notify` | `notify` + `bizNotifyEmit` | ✅ [API](./类OA通知模块-API.md) |
 | 8 | 搜索 | `@/modules/search` | `goods` / `wiki` | 统一搜索 facade |
 | 9 | 智库 | `@/modules/wiki` | `wiki` | ✅ [读路径 API](./智库模块-API.md)；写路径 `services/wiki` 保留 |
-| 10 | 会员体系 | `@/modules/member` | 待梳理 | |
+| 10 | 会员体系 | `@/modules/member` | 待梳理 | ✅ [API](./会员体系模块-API.md) |
 | 11 | 收藏 | `@/modules/favorite` | `favorite` | ✅ [API](./收藏模块-API.md) |
 | 12 | 启动与授权 | `@/modules/auth` | `login` | ✅ [API](./启动与授权模块-API.md) |
 

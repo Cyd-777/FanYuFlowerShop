@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { navigateTo } from '@/utils/router'
-import { calcLevelProgress } from '@/types/member'
+import { calcLevelProgress } from '@/modules/member'
 
 const points = ref(120)
 

@@ -94,7 +94,7 @@ import { showToast } from '@/utils/feedback'
 import { ref, computed } from 'vue'
 import { useLoad } from '@tarojs/taro'
 import { navigateBack } from '@/utils/router'
-import { createCategory, getMerchantCategory, removeCategory, setCategoryNavTier, updateCategory } from '@/services/category'
+import { createCategory, getMerchantCategory, removeCategory, setCategoryNavTier, updateCategory } from '@/modules/category'
 import type { CategoryForm } from '@/types/category'
 import {
   MERCHANT_CATEGORY_TYPE_OPTIONS,

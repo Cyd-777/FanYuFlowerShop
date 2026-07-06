@@ -1,7 +1,7 @@
 import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
 import { hasCacheEntry } from '@/utils/cache'
-import { listMerchantCategories } from '@/services/category'
+import { listMerchantCategories } from '@/modules/category'
 import { merchantCategoriesRepository } from '@/data/repository/merchantCategoriesRepository'
 import type { Category } from '@/types/category'
 

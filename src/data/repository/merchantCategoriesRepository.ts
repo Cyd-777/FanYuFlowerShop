@@ -1,5 +1,5 @@
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
-import { listMerchantCategoriesCached } from '@/services/category'
+import { listMerchantCategoriesCached } from '@/modules/category'
 import { CACHE_KEYS } from '../cacheKeys'
 import { shouldPreemptBackground } from '../readiness'
 import { cacheSyncScheduler } from '../scheduler/CacheSyncScheduler'

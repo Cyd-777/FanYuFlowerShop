@@ -5,7 +5,7 @@ import {
   saveShopSettings,
   saveThemeConfig,
   setActiveTheme,
-} from '@/services/shop'
+} from '@/modules/shop'
 import { shopRepository } from '@/data/repository'
 import { CACHE_KEYS } from '@/data/cacheKeys'
 import { hasCacheEntry } from '@/utils/cache'

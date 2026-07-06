@@ -1,5 +1,5 @@
 import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
-import { listPublicCategoriesCached } from '@/services/category'
+import { listPublicCategoriesCached } from '@/modules/category'
 import { shouldPreemptBackground } from '../readiness'
 import { CACHE_KEYS } from '../cacheKeys'
 import { cacheSyncScheduler } from '../scheduler/CacheSyncScheduler'

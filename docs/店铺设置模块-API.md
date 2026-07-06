@@ -11,7 +11,7 @@
 
 | 做 | 不做 |
 |----|------|
-| 读取店铺配置（名称、营业时间、装潢主题、Banner URL） | 写配置（`update` / `saveThemeConfig` / `setActiveTheme` — 暂经 `services/shop`） |
+| 读取店铺配置（名称、营业时间、装潢主题、Banner URL） | 写配置（`update` / `saveThemeConfig` / `setActiveTheme` — 已收入 `@/modules/shop`） |
 | SWR 缓存读取 `fetchShopSettingsCached` | 销售策略独立模块（待 `@/modules/salesStrategy`） |
 | 类型再导出 `ShopSettings` 等 | 商品、订单业务 |
 
@@ -31,6 +31,14 @@ import {
 |------|------|------|------|
 | `fetchShopSettings()` | — | `ShopSettings` | 直连云 `get` |
 | `fetchShopSettingsCached(options?)` | `force?`, `onUpdate?` | `LoadWithCacheResult<ShopSettings>` | 模块 `shop` 缓存 + SWR |
+
+### 写 API
+
+| 函数 | 参数 | 返回 | 说明 |
+|------|------|------|------|
+| `saveShopSettings(settings)` | `ShopSettings` | `ShopSettings` | 云 `update` + 失效 `shopSettings` 缓存 |
+| `saveThemeConfig(themeId, config)` | `ShopThemeId`, `ShopThemeConfig` | `ShopSettings` | 保存主题装潢 |
+| `setActiveTheme(themeId)` | `ShopThemeId` | `ShopSettings` | 切换启用主题 |
 
 ### 公开类型
 

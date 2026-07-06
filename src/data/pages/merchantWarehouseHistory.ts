@@ -1,6 +1,6 @@
 import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
-import { listWarehouseLedger } from '@/services/warehouse'
+import { listWarehouseLedger } from '@/modules/warehouse'
 import type { WarehouseLedgerBatch, WarehouseLedgerFilter } from '@/types/stockOut'
 import type { PageEnsureContext } from '../types'
 import type { PageSetupResult } from '../pageRegistry'
