@@ -1,6 +1,6 @@
 import { getCloud, getCloudCallConfig, parseCloudResult } from './cloud'
 import { resolveImageDisplayPath } from '@/utils/goodsImage'
-import { getCachedUserProfile, writeCachedUserProfile } from '@/services/auth'
+import { getCachedUserProfile, writeCachedUserProfile } from '@/modules/auth'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { assertLocalImageWithinLimit } from '@/utils/uploadImageLimit'
 import type { UserAccount } from '@/types/account'

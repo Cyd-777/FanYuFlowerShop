@@ -1,4 +1,4 @@
-import { fetchShopSettingsCached } from '@/services/shop'
+import { fetchShopSettingsCached } from '@/modules/shop'
 import { shouldPreemptBackground } from '../readiness'
 import { CACHE_KEYS } from '../cacheKeys'
 import { cacheSyncScheduler } from '../scheduler/CacheSyncScheduler'

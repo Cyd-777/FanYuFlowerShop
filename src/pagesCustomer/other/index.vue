@@ -48,7 +48,7 @@ import { computed } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { useUserStore } from '@/stores/user'
 import { useShopStore } from '@/stores/shop'
-import { logout } from '@/services/auth'
+import { logout } from '@/modules/auth'
 
 const uiText_09a1f6 = '联系电话'
 const uiText_53cab4 = '账号信息'

@@ -1,6 +1,6 @@
 # 当前工作
 
-> 更新：`2026-07-06`（迭代 1 · staff + notify + favorite 封装）· `Cursor`  
+> 更新：`2026-07-06`（迭代 2 · auth + shop 读 API）· `Cursor`  
 > 已完成 → [🎛️ DONE.md](./🎛️%20DONE.md)（本面板不再显示）  
 > 三区：**正在做的** → **还没做的** → **暂停的**  
 > 一级 = **项目**（`[x]` 正在做 · `[ ]` 没做 · ~~`⏸` · 标题~~ 暂停）· 标题后 `**[████░░░░] done/total`**  
@@ -9,26 +9,28 @@
 
 ## 正在做的
 
-- [x] · 代码质量与模块封装 `[███░░░░░░░] 3/12`
+- [x] · 代码质量与模块封装 `[████░░░░░░] 4/12`
   - `需求`：各功能模块**仅通过公开 API** 对外暴露；模块之间**经接口调用**解耦。**强化** + **非基础闭环附加** 优先逐个封装并**写 API 文档**；基础闭环本轮只登记边界、不改行为
   - `清单`
     - **总规范** — [模块封装与API](./模块封装与API.md) · [升级策略](./模块封装-升级策略.md)
     - ~~**① 人员管理**~~ — `@/modules/staff` + [人员管理模块-API](./人员管理模块-API.md)
     - ~~**类 OA 通知（迭代1）**~~ — `@/modules/notify` + [类OA通知模块-API](./类OA通知模块-API.md)
     - ~~**收藏（迭代1）**~~ — `@/modules/favorite` + [收藏模块-API](./收藏模块-API.md)
+    - ~~**启动授权（迭代2）**~~ — `@/modules/auth` + [启动与授权模块-API](./启动与授权模块-API.md)
+    - **③ 店铺设置** — `@/modules/shop` 读 API + [店铺设置模块-API](./店铺设置模块-API.md)（写 API 待后续）
     - **② 销售策略** — `@/modules/salesStrategy` + API 文档
-    - **③ 店铺设置** — `@/modules/shop` + API 文档
     - **④ 素材管理** — `@/modules/asset` + API 文档
     - **⑤ 可售数与进货** — `@/modules/warehouse` + API 文档
     - **⑥ 分类管理** — `@/modules/category` + API 文档
     - **⑧ 搜索** — `@/modules/search` + API 文档
     - **⑨ 智库** — `@/modules/wiki` + API 文档
-    - **⑩ 会员 / 启动授权** — 各模块 API 文档
+    - **⑩ 会员** — `@/modules/member` + API 文档
     - **CI import 边界**（可选）
-  - `进度`：迭代 1 完成（staff + notify + favorite）；build 通过
+  - `进度`：迭代 2 完成（auth + shop 读 API）；build 通过；shop 写仍经 `services/shop`
   - `下步可做`
-    - **迭代 2**：auth + shop 读 API
+    - **迭代 3**：search 门面 + flower 读 API
   - `工作历史`
+    - 2026-07-06：迭代 2 — `@/modules/auth`、`@/modules/shop` 读 API + 文档；调用方迁移
     - 2026-07-06：迭代 1 — `@/modules/notify`、`@/modules/favorite` + API 文档；调用方迁移
     - 2026-07-06：staff 范式 + 升级策略定稿；检查点 `4eac500` 已推送
     - 2026-07-06：用户确认先放下智库维护与类 OA，转向封装与规范；Issue #2「代码质量检查」并入本项目

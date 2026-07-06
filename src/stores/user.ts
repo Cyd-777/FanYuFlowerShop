@@ -9,7 +9,7 @@ import {
   loginWithWechat,
   loginWithPhone,
   type AuthResult,
-} from '@/services/auth'
+} from '@/modules/auth'
 import type { UserAccount } from '@/types/account'
 
 export const useUserStore = defineStore('user', () => {

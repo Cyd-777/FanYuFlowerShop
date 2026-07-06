@@ -47,7 +47,7 @@ import { computed, ref } from 'vue'
 import { useDidShow } from '@tarojs/taro'
 import { navigateBack, navigateTo } from '@/utils/router'
 import { useUserStore } from '@/stores/user'
-import { hasToken } from '@/services/auth'
+import { hasToken } from '@/modules/auth'
 import {
   fetchUserProfile,
   saveUserProfile,

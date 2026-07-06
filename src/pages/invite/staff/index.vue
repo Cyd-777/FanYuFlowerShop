@@ -74,7 +74,7 @@ import { navigateTo, redirectTo } from '@/utils/router'
 import {
   checkAccess,
   hasToken,
-} from '@/services/auth'
+} from '@/modules/auth'
 import { acceptStaffInvite, previewStaffInvite, type StaffInvitePreview } from '@/modules/staff'
 import { STORAGE_KEYS } from '@/utils/constants'
 import { useUserStore } from '@/stores/user'

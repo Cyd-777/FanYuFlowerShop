@@ -84,7 +84,7 @@ import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
 import { navigateTo, redirectTo } from '@/utils/router'
-import { checkAccess, hasToken } from '@/services/auth'
+import { checkAccess, hasToken } from '@/modules/auth'
 import {
   acceptStaffInviteByCode,
   buildPendingStaffInviteCode,
