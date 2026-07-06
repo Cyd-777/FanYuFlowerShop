@@ -6,7 +6,7 @@ import {
   searchPublicWiki,
   getPublicWikiCached,
   matchPublicWikiCached,
-} from '@/services/wiki'
+} from '@/modules/wiki'
 import { shouldPreemptBackground } from '../readiness'
 import { CACHE_KEYS, wikiPublicDetailKey, wikiPublicMatchKey } from '../cacheKeys'
 import { cacheSyncScheduler } from '../scheduler/CacheSyncScheduler'

@@ -1,6 +1,6 @@
 import { hasCacheEntry } from '@/utils/cache'
 import { getModuleVersion, fetchCacheVersions } from '@/utils/cache/meta'
-import { getPublicWikiCached } from '@/services/wiki'
+import { getPublicWikiCached } from '@/modules/wiki'
 import { wikiPublicDetailKey } from '../cacheKeys'
 import {
   createEmptyManifest,

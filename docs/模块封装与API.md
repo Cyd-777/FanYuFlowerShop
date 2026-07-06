@@ -50,7 +50,7 @@ docs/{模块名}模块-API.md   # 该模块 API 文档（前端 + 云 action）
 | 8 | 素材 | `@/modules/asset` | 2 | 待做 |
 | 9 | 搜索 | `@/modules/search` | 3 · 迭代3 | ✅ |
 | 10 | 花卉目录读 | `@/modules/flower` | 3 · 迭代3 | ✅ |
-| 11 | 智库读/写 | `@/modules/wiki` | 4 | 待做 |
+| 11 | 智库读/写 | `@/modules/wiki` | 4 | ✅ 读路径 |
 | 12 | 分类 | `@/modules/category` | 4 | 待做 |
 | 13 | 可售数进货 | `@/modules/warehouse` | 5 | 待做 |
 | 14+ | 商品/订单/购物车等 | — | 6 · 最后 | 登记 |
@@ -76,7 +76,7 @@ docs/{模块名}模块-API.md   # 该模块 API 文档（前端 + 云 action）
 |----|------|----------|--------|------|
 | 7 | 类 OA 通知 | `@/modules/notify` | `notify` + `bizNotifyEmit` | ✅ [API](./类OA通知模块-API.md) |
 | 8 | 搜索 | `@/modules/search` | `goods` / `wiki` | 统一搜索 facade |
-| 9 | 智库 | `@/modules/wiki` | `wiki` | 维护侧暂停；读路径保留 |
+| 9 | 智库 | `@/modules/wiki` | `wiki` | ✅ [读路径 API](./智库模块-API.md)；写路径 `services/wiki` 保留 |
 | 10 | 会员体系 | `@/modules/member` | 待梳理 | |
 | 11 | 收藏 | `@/modules/favorite` | `favorite` | ✅ [API](./收藏模块-API.md) |
 | 12 | 启动与授权 | `@/modules/auth` | `login` | ✅ [API](./启动与授权模块-API.md) |
