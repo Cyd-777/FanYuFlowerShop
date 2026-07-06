@@ -35,7 +35,6 @@
 - [x] · 代码质量与模块封装 `[████████████] 12/12`
   - `需求`：各功能模块**仅通过公开 API** 对外暴露；模块之间**经接口调用**解耦。
   - `清单`
-    - **总规范** — [模块封装与API](./模块封装与API.md) · [升级策略](./模块封装-升级策略.md)
     - ~~**① 人员管理**~~ — `@/modules/staff`
     - ~~**类 OA 通知（迭代1）**~~ — `@/modules/notify`
     - ~~**收藏（迭代1）**~~ — `@/modules/favorite`
@@ -54,12 +53,13 @@
     - ~~**用户资料**~~ — `@/modules/userProfile`
     - ~~**商品**~~ — `@/modules/goods`
     - ~~**订单**~~ — `@/modules/order`
-    - ~~**CI import 边界** — `scripts/check-module-import-boundary.js` 接入 prebuild
-  - `进度`：全部计划模块封装完成（12/12）+ 闭环核商品/订单/地址/购物车/资料 + CI 检查
+    - ~~**CI import 边界**~~ — `scripts/check-module-import-boundary.js` 接入 prebuild
+    - ~~**耦合/内聚检测**~~ — `scripts/check-coupling-cohesion.js` 接入 prebuild（含 layer violation、page coupling、data/pages coupling、CF cross-context、循环依赖）
+  - `进度`：全部完成（12/12 + CI 检查 x2）
   - `下步可做`
     - 无（模块封装项目已全部完成）
   - `工作历史`
-    - 2026-07-06：CI import 边界检查 + 波次 6 闭环核（address/cart/userProfile/goods/order）封装
+    - 2026-07-06：`scripts/check-coupling-cohesion.js` 实现 5 项检测，接入 prebuild；修 login 页等违规
     - 2026-07-06：迭代 4 — `@/modules/wiki` 读路径 + API 文档；`services/wiki` 保留写 API
     - 2026-07-06：迭代 3 — `@/modules/search`、`@/modules/flower` + API 文档；修正既有 API 文档缺口
     - 2026-07-06：迭代 2 — `@/modules/auth`、`@/modules/shop` 读 API + 文档；调用方迁移
