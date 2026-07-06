@@ -3,7 +3,7 @@ import { computed, ref, type Ref } from 'vue'
 import { hasCacheEntry, readCacheEntry } from '@/utils/cache'
 import {
   MERCHANT_GOODS_LIST_CACHE_KEY,
-} from '@/services/goods'
+} from '@/modules/goods'
 import { merchantGoodsRepository } from '@/data/repository/merchantGoodsRepository'
 import {
   attachGoodsCoverImages,

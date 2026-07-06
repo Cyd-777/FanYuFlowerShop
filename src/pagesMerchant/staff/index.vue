@@ -91,7 +91,7 @@ import {
   type StaffInviteCreated,
   type StaffMember,
 } from '@/modules/staff'
-import { resolveAvatarDisplayPath } from '@/services/userProfile'
+import { resolveAvatarDisplayPath } from '@/modules/userProfile'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 
 const uiText_467876 = '请将邀请码通过微信发给对方；对方打开小程序 → 我的 → 输入邀请码。微信分享链接待正式上线后再验证'

@@ -58,7 +58,7 @@ import {
   importWechatAddressAndSave,
   removeAddress,
   handleLocationError,
-} from '@/services/address'
+} from '@/modules/address'
 import type { UserAddress } from '@/types/address'
 import { scrollTailActionBarInsetPx } from '@/utils/scrollListTailSpacer'
 

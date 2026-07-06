@@ -1,7 +1,7 @@
 import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { hasCacheEntry, readCacheEntry } from '@/utils/cache'
-import { listPublicGoods, syncPublicGoodsListFromCloud } from '@/services/goods'
+import { listPublicGoods, syncPublicGoodsListFromCloud } from '@/modules/goods'
 import { goodsRepository } from '@/data/repository'
 import { parseCustomerGoodsSearchQuery } from '@/utils/parseCustomerGoodsSearchQuery'
 import { CACHE_KEYS } from '@/data/cacheKeys'

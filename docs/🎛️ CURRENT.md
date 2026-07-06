@@ -1,6 +1,6 @@
 # 当前工作
 
-> 更新：`2026-07-06`（模块封装 10/12 完成）· `Cursor`  
+> 更新：`2026-07-06`（模块封装 12/12 · 闭环核收口 · CI 边界检查）· `Cursor`  
 > 已完成 → [🎛️ DONE.md](./🎛️%20DONE.md)（本面板不再显示）  
 > 三区：**正在做的** → **还没做的** → **暂停的**  
 > 一级 = **项目**（`[x]` 正在做 · `[ ]` 没做 · ~~`⏸` · 标题~~ 暂停）· 标题后 `**[████░░░░] done/total`**  
@@ -32,7 +32,7 @@
 
 ## 还没做的
 
-- [x] · 代码质量与模块封装 `[████████████] 10/12`
+- [x] · 代码质量与模块封装 `[████████████] 12/12`
   - `需求`：各功能模块**仅通过公开 API** 对外暴露；模块之间**经接口调用**解耦。
   - `清单`
     - **总规范** — [模块封装与API](./模块封装与API.md) · [升级策略](./模块封装-升级策略.md)
@@ -49,12 +49,17 @@
     - ~~**花卉目录读（迭代3）**~~ — `@/modules/flower`
     - ~~**⑨ 智库读路径（迭代4）**~~ — `@/modules/wiki`
     - ~~**⑩ 会员**~~ — `@/modules/member`
-    - **CI import 边界**（可选）
-  - `进度`：所有计划模块封装完成（10/12）；build 通过
+    - ~~**地址**~~ — `@/modules/address`
+    - ~~**购物车**~~ — `@/modules/cart`
+    - ~~**用户资料**~~ — `@/modules/userProfile`
+    - ~~**商品**~~ — `@/modules/goods`
+    - ~~**订单**~~ — `@/modules/order`
+    - ~~**CI import 边界** — `scripts/check-module-import-boundary.js` 接入 prebuild
+  - `进度`：全部计划模块封装完成（12/12）+ 闭环核商品/订单/地址/购物车/资料 + CI 检查
   - `下步可做`
-    - CI import 边界检查（可选收尾）
+    - 无（模块封装项目已全部完成）
   - `工作历史`
-    - 2026-07-06：shop 写 API 收口 + salesStrategy / asset / warehouse / category / member 封装 + 全部 API 文档
+    - 2026-07-06：CI import 边界检查 + 波次 6 闭环核（address/cart/userProfile/goods/order）封装
     - 2026-07-06：迭代 4 — `@/modules/wiki` 读路径 + API 文档；`services/wiki` 保留写 API
     - 2026-07-06：迭代 3 — `@/modules/search`、`@/modules/flower` + API 文档；修正既有 API 文档缺口
     - 2026-07-06：迭代 2 — `@/modules/auth`、`@/modules/shop` 读 API + 文档；调用方迁移

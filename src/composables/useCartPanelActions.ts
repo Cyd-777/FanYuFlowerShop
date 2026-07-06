@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { navigateTo, navigateToGoodsDetail, switchTab } from '@/utils/router'
 import { useCartStore } from '@/stores/cart'
-import { fetchGoodsForCartIncrease, syncCartWithServer } from '@/services/cart'
+import { fetchGoodsForCartIncrease, syncCartWithServer } from '@/modules/cart'
 import { CUSTOM_CART_GOODS_ID } from '@/types/cart'
 import type { CartLineItem } from '@/types/cart'
 

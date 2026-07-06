@@ -2,7 +2,7 @@ import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useShopDisplay } from '@/composables/useShopDisplay'
 import { usePublicCategories } from '@/composables/usePublicCategories'
-import { PUBLIC_RECOMMEND_CACHE_KEY, syncRecommendListFromCloud } from '@/services/goods'
+import { PUBLIC_RECOMMEND_CACHE_KEY, syncRecommendListFromCloud } from '@/modules/goods'
 import { hasCacheEntry, readCacheEntry } from '@/utils/cache'
 import {
   attachGoodsCoverImages,

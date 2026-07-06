@@ -1,6 +1,6 @@
 import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
-import { submitStockOut } from '@/services/goods'
+import { submitStockOut } from '@/modules/goods'
 import type { StockOutLine, StockOutSession } from '@/types/stockOut'
 import {
   clearStockOutSession,

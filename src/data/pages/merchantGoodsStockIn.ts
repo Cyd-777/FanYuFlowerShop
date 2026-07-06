@@ -1,6 +1,6 @@
 import { showToast } from '@/utils/feedback'
 import { ref } from 'vue'
-import { submitStockIn } from '@/services/goods'
+import { submitStockIn } from '@/modules/goods'
 import type { StockInLine, StockInSession } from '@/types/stockIn'
 import {
   clearStockInSession,

@@ -1,5 +1,5 @@
 import { showToast } from '@/utils/feedback'
-import { verifyPickupOrder } from '@/services/order'
+import { verifyPickupOrder } from '@/modules/order'
 import type { Order } from '@/types/order'
 
 export interface PickupVerifyScanResult {

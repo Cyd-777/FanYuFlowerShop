@@ -58,7 +58,7 @@
         </view>
         <text class="menu-arrow">{{ entryArrow }}</text>
       </view>
-      <view class="menu-item" @tap="requestSubscribe">
+      <view class="menu-item" @tap="requestSubscribe" v-if="!isSubscribed">
         <view class="menu-main">
           <view class="menu-title">{{ subscribeTitle }}</view>
           <view class="menu-desc">{{ subscribeDesc }}</view>
@@ -117,7 +117,7 @@ import { useDidShow } from '@tarojs/taro'
 import { navigateTo } from '@/utils/router'
 import { useUserStore } from '@/stores/user'
 import { hasToken } from '@/modules/auth'
-import { fetchUserProfile, resolveAvatarDisplayPath } from '@/services/userProfile'
+import { fetchUserProfile, resolveAvatarDisplayPath } from '@/modules/userProfile'
 import { getBizNotifySubscribeTmplIds } from '@/config/subscribe'
 import { invokeBizNotifySubscribe } from '@/modules/notify'
 import { useNotificationStore } from '@/stores/notification'
@@ -125,6 +125,16 @@ import { STORAGE_KEYS } from '@/utils/constants'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
 import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
+
+const SUBSCRIBED_STORAGE_KEY = 'biz_notify_subscribed'
+
+function getLocalSubscribed(): boolean {
+  return !!wx.getStorageSync(SUBSCRIBED_STORAGE_KEY)
+}
+
+function setLocalSubscribed() {
+  wx.setStorageSync(SUBSCRIBED_STORAGE_KEY, true)
+}
 
 const { statusBarHeightPx } = useNavBarLayout()
 
@@ -163,6 +173,7 @@ const subscribeTmplIds = ref<string[]>(getBizNotifySubscribeTmplIds())
 const isLoggedIn = ref(hasToken())
 const displayNickName = ref(defaultNickname)
 const avatarDisplay = ref('')
+const isSubscribed = ref(getLocalSubscribed())
 
 const isMerchant = computed(() => userStore.isMerchant())
 
@@ -191,6 +202,7 @@ async function refreshNotifySection() {
 useDidShow(() => {
   isLoggedIn.value = hasToken()
   userStore.syncCachedRole()
+  isSubscribed.value = getLocalSubscribed()
   if (isLoggedIn.value) {
     void refreshProfileDisplay()
     void refreshNotifySection()
@@ -289,25 +301,35 @@ function requestSubscribe() {
     return
   }
 
-  // 须在 tap 回调中同步发起，不可先 await 再调（微信会拦截弹窗）
-  void invokeBizNotifySubscribe(tmplIds)
-    .then(async (accepted) => {
-      if (accepted.length) {
-        const { recordBizNotifySubscribe } = await import('@/modules/notify')
-        await recordBizNotifySubscribe(accepted).catch((err) => {
-          console.warn('[mine] record subscribe failed:', err)
+  wx.showModal({
+    title: '开启服务通知',
+    content: '开启后，您将收到订单状态变更、库存预警等微信提醒。',
+    confirmText: '允许',
+    cancelText: '暂不',
+    success: (res) => {
+      if (!res.confirm) return
+      // 须在 tap 回调中同步发起，不可先 await 再调（微信会拦截弹窗）
+      void invokeBizNotifySubscribe(tmplIds)
+        .then(async (accepted) => {
+          if (accepted.length) {
+            const { recordBizNotifySubscribe } = await import('@/modules/notify')
+            await recordBizNotifySubscribe(accepted).catch((err) => {
+              console.warn('[mine] record subscribe failed:', err)
+            })
+            setLocalSubscribed()
+            isSubscribed.value = true
+          }
+          wx.showToast({
+            title: accepted.length ? '已开启' : '未授权',
+            icon: accepted.length ? 'success' : 'none',
+          })
         })
-      }
-      if (accepted.length) {
-        showToast({ title: '已开启服务通知', icon: 'success' })
-        return
-      }
-      showToast({ title: '未授权服务通知', icon: 'none' })
-    })
-    .catch((err) => {
-      console.warn('[mine] requestSubscribeMessage failed:', err)
-      showToast({ title: '未开启服务通知', icon: 'none' })
-    })
+        .catch((err) => {
+          console.warn('[mine] requestSubscribeMessage failed:', err)
+          wx.showToast({ title: '未开启', icon: 'none' })
+        })
+    },
+  })
 }
 </script>
 

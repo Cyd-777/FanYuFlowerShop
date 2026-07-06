@@ -97,8 +97,8 @@ import {
   getCheckoutAddress,
   formatAddressLine,
   toOrderAddressSnapshot,
-} from '@/services/address'
-import { buildCreateOrderInput, createOrder } from '@/services/order'
+} from '@/modules/address'
+import { buildCreateOrderInput, createOrder } from '@/modules/order'
 import { redirectTo } from '@/utils/router'
 import { useCartStore } from '@/stores/cart'
 import { useShopDisplay } from '@/composables/useShopDisplay'

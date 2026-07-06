@@ -2,7 +2,7 @@ import type { LoadWithCacheResult } from '@/utils/cache/loadWithCache'
 import {
   listMerchantGoodsCached,
   MERCHANT_GOODS_LIST_CACHE_KEY,
-} from '@/services/goods'
+} from '@/modules/goods'
 import { shouldPreemptBackground } from '../readiness'
 import { cacheSyncScheduler } from '../scheduler/CacheSyncScheduler'
 import type { EnsureOptions } from '../types'

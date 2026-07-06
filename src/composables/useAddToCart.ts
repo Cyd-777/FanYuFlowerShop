@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { addGoodsToCart } from '@/services/cart'
+import { addGoodsToCart } from '@/modules/cart'
 import { useCartStore } from '@/stores/cart'
 import type { Goods } from '@/types/goods'
 

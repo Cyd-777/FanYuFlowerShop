@@ -52,7 +52,7 @@ import {
   fetchUserProfile,
   saveUserProfile,
   resolveAvatarDisplayPath,
-} from '@/services/userProfile'
+} from '@/modules/userProfile'
 import { STORAGE_KEYS } from '@/utils/constants'
 
 const uiText_23eb0e = '昵称'

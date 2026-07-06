@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import type { OrderListTab } from '@/services/order'
+import type { OrderListTab } from '@/modules/order'
 
 const tabs: Array<{ key: OrderListTab; title: string }> = [
   { key: 'all', title: '全部' },

@@ -85,7 +85,7 @@ import {
   updateStaffRole,
   type StaffMember,
 } from '@/modules/staff'
-import { resolveAvatarDisplayPath } from '@/services/userProfile'
+import { resolveAvatarDisplayPath } from '@/modules/userProfile'
 
 const loadingTipText = '加载中…'
 

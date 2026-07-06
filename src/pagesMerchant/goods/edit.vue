@@ -196,7 +196,7 @@ import {
   parseGoodsStockField,
   removeGoods,
   updateGoods,
-} from '@/services/goods'
+} from '@/modules/goods'
 import { uploadAndProcessImage } from '@/modules/asset'
 import { readAssetPick, markAssetPickConsumed } from '@/types/assetPick'
 import { linkStockInLineGoods } from '@/utils/stockInSession'

@@ -63,7 +63,7 @@ import {
   saveAddress,
   toAddressForm,
   wechatAddressToForm,
-} from '@/services/address'
+} from '@/modules/address'
 import { chooseWechatAddress, formatRegionText, handleLocationError } from '@/utils/location'
 import type { UserAddressForm } from '@/types/address'
 

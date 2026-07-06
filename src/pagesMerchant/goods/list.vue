@@ -340,7 +340,7 @@ import { navigateTo, navigateToWithFeedback } from '@/utils/router'
 import {
   batchRemoveGoods,
   batchUpdateGoods,
-} from '@/services/goods'
+} from '@/modules/goods'
 import {
   collectFlowerKindOptions,
   collectFlowerVarietyOptions,

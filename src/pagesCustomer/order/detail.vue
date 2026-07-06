@@ -85,7 +85,7 @@
 import { showToast } from '@/utils/feedback'
 import { computed, ref } from 'vue'
 import { useDidShow, useLoad } from '@tarojs/taro'
-import { cancelMyOrder, getOrder } from '@/services/order'
+import { cancelMyOrder, getOrder } from '@/modules/order'
 import GoodsImage from '@/components/GoodsImage.vue'
 import OrderStatusSteps from '@/components/OrderStatusSteps.vue'
 import PickupCodeCard from '@/components/PickupCodeCard.vue'

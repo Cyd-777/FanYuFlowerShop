@@ -1,4 +1,4 @@
-import { listPublicGoodsPage, PUBLIC_GOODS_INDEX_PAGE_SIZE } from '@/services/goods'
+import { listPublicGoodsPage, PUBLIC_GOODS_INDEX_PAGE_SIZE } from '@/modules/goods'
 import { writeCacheEntry } from '@/utils/cache/storage'
 import { fetchCacheVersions, getModuleVersion } from '@/utils/cache/meta'
 import { CACHE_KEYS } from '@/data/cacheKeys'

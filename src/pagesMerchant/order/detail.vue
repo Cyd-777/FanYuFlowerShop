@@ -122,7 +122,7 @@ import {
   performMerchantShopAction,
   updateRiderStatus,
   updateOrderStatus,
-} from '@/services/order'
+} from '@/modules/order'
 import { scanAndVerifyPickup } from '@/utils/pickupVerifyScan'
 import GoodsImage from '@/components/GoodsImage.vue'
 import OrderStatusSteps from '@/components/OrderStatusSteps.vue'

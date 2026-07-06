@@ -5,7 +5,7 @@ import {
   getPublicGoodsCached,
   searchPublicGoods,
   PUBLIC_RECOMMEND_CACHE_KEY,
-} from '@/services/goods'
+} from '@/modules/goods'
 import type { GoodsQuery } from '@/types/search'
 import { shouldPreemptBackground } from '../readiness'
 import { CACHE_KEYS, goodsPublicDetailKey } from '../cacheKeys'
