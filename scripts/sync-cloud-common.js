@@ -42,6 +42,8 @@ const targets = [
   'notify',
   'initDb',
   'scheduler',
+  'warehouse',
+  'asset',
 ]
 
 const sharedIdentity = path.join(__dirname, '../shared/flower-identity.json')

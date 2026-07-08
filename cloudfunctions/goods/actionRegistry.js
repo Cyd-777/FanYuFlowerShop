@@ -18,20 +18,8 @@ const ACTION_GROUPS = {
     'resolveFileUrls',
   ]),
   catalogMerchant: new Set(['list', 'get', 'add', 'update', 'remove', 'batchRemove', 'batchUpdate']),
-  inventory: new Set([
-    'stockIn',
-    'stockOut',
-    'listWarehouseLedger',
-    'seedWarehouseTestData',
-    'cleanupWarehouseTestData',
-  ]),
-  media: new Set([
-    'processImageUpload',
-    'assetList',
-    'assetCleanup',
-    'assetRename',
-    'assetDelete',
-  ]),
+  inventory: new Set([]),
+  media: new Set([]),
 }
 
 function resolveGoodsActionGroup(action) {
