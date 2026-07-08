@@ -91,7 +91,7 @@ async function add(event, ctx) {
     try {
       const payload = await finalizeGoodsPayload(event.goods || {})
   
-      if (action === 'add') {
+      if (event.action === 'add') {
         const addRes = await db.collection('goods').add({
           data: {
             ...payload,
@@ -153,7 +153,7 @@ async function update(event, ctx) {
     try {
       const payload = await finalizeGoodsPayload(event.goods || {})
   
-      if (action === 'add') {
+      if (event.action === 'add') {
         const addRes = await db.collection('goods').add({
           data: {
             ...payload,

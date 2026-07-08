@@ -9,7 +9,7 @@ const {
   normalizePhone,
 } = require('./common/account')
 const { getAccessEpoch } = require('./common/accessControl')
-const { resolveMerchantActor } = require('./common/merchantGate')
+const { resolveMerchantActor, patchMerchantOpenid } = require('./common/merchantGate')
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
@@ -29,6 +29,11 @@ async function buildSession(openid, userDoc) {
   const profile = pickUser(userDoc)
   const userId = profile?.userId || ''
   const { isMerchant, merchantName } = await resolveMerchant(openid)
+  if (isMerchant && userId) {
+    await patchMerchantOpenid(userId, openid).catch((err) => {
+      console.warn('[login] patchMerchantOpenid failed:', err.message || err)
+    })
+  }
   const accessEpoch = await getAccessEpoch(userId)
   return {
     success: true,

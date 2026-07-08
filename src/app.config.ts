@@ -36,6 +36,8 @@ export default defineAppConfig({
         'notify/list',
         'notify/send',
         'wiki/detail',
+        'guide/index',
+        'guide/result',
       ],
     },
     {

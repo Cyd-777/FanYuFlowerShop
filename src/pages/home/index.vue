@@ -58,32 +58,23 @@
       </nut-swiper-item>
     </nut-swiper>
 
-    <view
-      v-if="categories.length"
-      id="home-categories-wrap"
-      class="categories-wrap page-sticky-tabs"
-      :class="tabsStuckClass"
-      :style="tabsStickyStyle"
-    >
-      <scroll-view
-        id="home-categories-scroll"
-        class="categories-scroll"
-        :scroll-x="true"
-        :style="categoriesScroll.scrollViewportStyle"
-        :show-scrollbar="false"
-      >
-        <view id="home-categories-track" class="categories-track" :style="categoriesScroll.trackStyle">
-          <view
-            v-for="cat in categories"
-            :key="cat._id"
-            class="category-item"
-            @click="goCategory(cat)"
-          >
-            <view class="cat-icon" :style="{ background: themeChipBg }">{{ cat.icon }}</view>
-            <view class="cat-name">{{ cat.name }}</view>
-          </view>
-        </view>
-      </scroll-view>
+    <view class="func-entries">
+      <view class="func-entry" @click="onSelfSelect">
+        <view class="func-icon" style="background: #fce4ec">💐</view>
+        <view class="func-label">自选花束</view>
+      </view>
+      <view class="func-entry" @click="onWikiSearch">
+        <view class="func-icon" style="background: #e3f2fd">🔍</view>
+        <view class="func-label">智库搜索</view>
+      </view>
+      <view class="func-entry" @click="onShoppingGuide">
+        <view class="func-icon" style="background: #e8f5e9">📖</view>
+        <view class="func-label">选购指南</view>
+      </view>
+      <view class="func-entry" @click="onCareKnowledge">
+        <view class="func-icon" style="background: #fff3e0">🌱</view>
+        <view class="func-label">养护知识</view>
+      </view>
     </view>
 
     <view class="section-title" :style="{ color: themePreset.primaryColor }">
@@ -144,8 +135,6 @@ import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { useStickyStack } from '@/composables/useStickyStack'
 import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
-import { rpxToPx } from '@/composables/usePageSticky'
-import { useScrollXTrack } from '@/composables/useScrollXTrack'
 import { usePageData } from '@/composables/usePageData'
 import { computed } from 'vue'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
@@ -154,6 +143,8 @@ import GoodsSalesTagRow from '@/components/GoodsSalesTagRow.vue'
 import GoodsSoldOutBadge from '@/components/GoodsSoldOutBadge.vue'
 import GoodsPriceLabel from '@/components/GoodsPriceLabel.vue'
 import { searchModalHostOpen } from '@/utils/searchModalHost'
+import { showToast } from '@/utils/feedback'
+import { navigateTo } from '@/utils/router'
 
 const {
   shopStore,
@@ -165,7 +156,6 @@ const {
   themePreset,
   sectionTitle,
   headerStyle,
-  themeChipBg,
   emptyText,
   searchPlaceholder,
   suggestTitle,
@@ -194,17 +184,12 @@ const stickyStack = useStickyStack({
       reserveCapsule: true,
       pageHorizontalPadRpx: 24,
     },
-    {
-      id: 'tabs',
-      selector: '#home-categories-wrap',
-    },
   ],
   scrollMode: 'page',
   background: '#f8f8f8',
   remeasureDeps: [
     () => loading.value,
     () => bannerUrls.value.length,
-    () => categories.value.length,
     () => themePreset.value.promoTag,
     () => shopStore.shopName,
   ],
@@ -212,9 +197,7 @@ const stickyStack = useStickyStack({
 
 const statusBarFillStyle = stickyStack.statusBarFillStyle
 const searchStickyStyle = stickyStack.stickyStyle('search')
-const tabsStickyStyle = stickyStack.stickyStyle('tabs')
 const searchStuckClass = stickyStack.stuckClass('search')
-const tabsStuckClass = stickyStack.stuckClass('tabs')
 const searchTriggerStyle = stickyStack.triggerStyle('search')
 
 const homeHeaderStyle = computed(() => ({
@@ -222,21 +205,10 @@ const homeHeaderStyle = computed(() => ({
   paddingTop: `calc(${statusBarHeightPx.value} + 24rpx)`,
 }))
 
-const categoriesScroll = useScrollXTrack({
-  heightRpx: 168,
-  measure: {
-    rowSelectors: ['#home-categories-track'],
-    horizontalPaddingRpx: 32,
-  },
-  estimateTrackWidthPx: () => {
-    const count = categories.value.length
-    const itemRpx = 128
-    const totalRpx = count * itemRpx + 32
-    const viewport = rpxToPx(750)
-    return Math.max(rpxToPx(totalRpx), viewport + 1)
-  },
-  watchSources: [categories],
-})
+const onSelfSelect = () => navigateTo({ url: '/pagesCustomer/customize/index' })
+const onWikiSearch = () => showToast({ title: '功能开发中', icon: 'none' })
+const onShoppingGuide = () => navigateTo({ url: '/pagesCustomer/guide/index' })
+const onCareKnowledge = () => showToast({ title: '功能开发中', icon: 'none' })
 </script>
 
 <style lang="less">
@@ -303,42 +275,34 @@ const categoriesScroll = useScrollXTrack({
   display: block;
   background: #f0f0f0;
 }
-.categories-wrap {
-  background: #fff;
-  width: 100%;
-  overflow: hidden;
-}
-.categories-scroll {
-  box-sizing: border-box;
-}
-.categories-track {
+.func-entries {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  justify-content: space-around;
   align-items: flex-start;
-  padding: 24rpx 16rpx;
+  background: #fff;
+  padding: 32rpx 16rpx;
+  width: 100%;
   box-sizing: border-box;
 }
-.category-item {
-  flex: none;
+.func-entry {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 16rpx;
-  .cat-icon {
-    width: 96rpx;
-    height: 96rpx;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40rpx;
-  }
-  .cat-name {
-    margin-top: 8rpx;
-    font-size: 24rpx;
-    color: #666;
-  }
+}
+.func-icon {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+}
+.func-label {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #666;
 }
 .section-title {
   padding: 32rpx 32rpx 16rpx;

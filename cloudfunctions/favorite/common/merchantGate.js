@@ -127,6 +127,25 @@ async function resolveMerchantActor(openid) {
   }
 }
 
+/**
+ * 商家登录时自动补全 merchants 记录缺失的 openid。
+ * 修复旧邀请流程未存 openid 导致的订阅消息无法发送问题。
+ */
+async function patchMerchantOpenid(userId, openid) {
+  if (!userId || !openid) return
+  try {
+    const merchant = await findMerchantByUserId(userId)
+    if (merchant && !merchant.openid) {
+      await getDb().collection('merchants').doc(merchant._id).update({
+        data: { openid, updatedAt: getDb().serverDate() },
+      })
+      console.log('[merchantGate] patched openid for merchant:', userId)
+    }
+  } catch (err) {
+    console.warn('[merchantGate] patchMerchantOpenid failed:', err.message || err)
+  }
+}
+
 module.exports = {
   OWNER_OPENIDS,
   ROLE_LABELS,
@@ -138,4 +157,5 @@ module.exports = {
   resolveMerchantActor,
   ensureCollection,
   isCollectionMissingError,
+  patchMerchantOpenid,
 }

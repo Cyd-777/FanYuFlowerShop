@@ -28,6 +28,7 @@
       :duration="0"
       position="bottom"
       custom-style="height:100vh;background:#fff;"
+      :custom-style="pageContainerStyle"
       @beforeleave="onPageContainerBeforeLeave"
     >
       <view
@@ -136,7 +137,7 @@
 
 <script setup lang="ts">
 import Taro from '@tarojs/taro'
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import AppNavBackButton from '@/components/AppNavBackButton.vue'
 import type { CustomerUnifiedSearchScope, SearchSuggestion } from '@/types/search'
 import { getNavBarLayout, type NavBarLayout } from '@/utils/navBarLayout'
@@ -198,7 +199,48 @@ const suggestEmptyText = '暂无匹配，可点「搜索」查看结果'
 
 const inputValue = ref(props.modelValue)
 const modalOpen = ref(false)
+const keyboardHeight = ref(0)
 const inputFocused = ref(false)
+
+/** 键盘高度变化时跟踪，延迟确认最终高度避免动画中途闪烁 */
+let keyboardListener: (() => void) | null = null
+let kbStableTimer: ReturnType<typeof setTimeout> | null = null
+let lastKbHeight = 0
+
+onMounted(() => {
+  try {
+    const off = wx.onKeyboardHeightChange((res) => {
+      const h = res.height || 0
+      // 键盘收起（高度归零）或高度变化过程中，延迟更新等待稳定
+      if (kbStableTimer) clearTimeout(kbStableTimer)
+      if (h === 0) {
+        // 键盘收起：立即归零
+        keyboardHeight.value = 0
+      } else {
+        lastKbHeight = h
+        // 延迟 150ms 等键盘动画稳定后再收缩容器
+        kbStableTimer = setTimeout(() => {
+          keyboardHeight.value = lastKbHeight
+        }, 150)
+      }
+    })
+    keyboardListener = off as unknown as (() => void)
+  } catch {
+    // 低版本基础库不支持
+  }
+})
+
+onBeforeUnmount(() => {
+  keyboardListener?.()
+  if (kbStableTimer) clearTimeout(kbStableTimer)
+})
+
+const pageContainerStyle = computed(() => {
+  const kb = keyboardHeight.value
+  const height = kb ? `calc(100vh - ${kb}px)` : '100vh'
+  return `height:${height};background:#fff;`
+})
+
 const historyList = ref<string[]>([])
 let tabBarHidden = false
 let focusToken = 0

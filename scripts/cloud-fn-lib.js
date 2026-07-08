@@ -159,8 +159,8 @@ function syncCloudCommon() {
 function deployOne(name, envId) {
   const fnDir = path.join(cloudRoot, name)
   console.log(`\n[push:cloud] 部署 → ${name}`)
-  execSync(`tcb fn deploy ${name} -e ${envId} --force --yes`, {
-    cwd: fnDir,
+  execSync(`tcb fn deploy ${name} -e ${envId} --force --yes --dir ${fnDir}`, {
+    cwd: cloudRoot,
     stdio: 'inherit',
   })
 }

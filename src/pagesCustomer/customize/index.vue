@@ -6,13 +6,17 @@
       <view class="tip-desc">{{ uiText_8993ec }}</view>
     </view>
 
-    <view class="section">
+    <view
+      v-for="catMeta in flowerCategorySections"
+      :key="catMeta.key"
+      class="section"
+    >
       <view class="section-head">
-        <view class="section-title">{{ uiText_aedcba }}</view>
-        <view class="link" @click="goPick('flower')">{{ uiText_53691b }}</view>
+        <view class="section-title">{{ catMeta.sectionTitle }}</view>
+        <view class="link" @click="goPick('flower', catMeta.key)">去选择 ›</view>
       </view>
-      <view v-if="draft.flowers.length" class="picked-list">
-        <view v-for="item in draft.flowers" :key="item.goodsId" class="picked-item">
+      <view v-if="catMeta.items.length" class="picked-list">
+        <view v-for="item in catMeta.items" :key="item.goodsId" class="picked-item">
           <GoodsImage :src="item.image" root-class="thumb" />
           <view class="meta">
             <view class="name">{{ item.name }}</view>
@@ -20,7 +24,7 @@
           </view>
         </view>
       </view>
-      <view v-else class="empty">{{ uiText_e82ac8 }}</view>
+      <view v-else class="empty">{{ catMeta.emptyTip }}</view>
     </view>
 
     <view class="section">
@@ -85,12 +89,15 @@ const actionBarInsetPx = scrollTailActionBarInsetPx()
 import { navigateTo } from '@/utils/router'
 import {
   CUSTOM_BOUQUET_DRAFT_KEY,
+  FLOWER_CATEGORIES,
+  FLOWER_CATEGORY_META,
   calcCustomBouquetPrice,
   createEmptyCustomBouquetDraft,
   isCustomBouquetReady,
 } from '@/types/customBouquet'
 import GoodsImage from '@/components/GoodsImage.vue'
 import type { CustomBouquetDraft } from '@/types/customBouquet'
+import type { CustomBouquetFlowerCategory } from '@/types/customBouquet'
 
 const uiText_2974a0 = '贺卡（选填）'
 const uiText_30a6ba = '定制花束'
@@ -99,13 +106,20 @@ const uiText_53691b = '去选择 ›'
 const uiText_8993ec = '花材从所有按「支」售卖的商品中选择；包装与贺卡从对应分类商品中选择，填写留言后提交订单。'
 const uiText_8faf88 = '包装（必选）'
 const uiText_9929b7 = '可不选贺卡'
-const uiText_aedcba = '花材（必选）'
 const uiText_b67961 = '贺卡留言'
-const uiText_e82ac8 = '尚未选择花材'
 
 const draft = ref<CustomBouquetDraft>(createEmptyCustomBouquetDraft())
 
 const totalPrice = computed(() => calcCustomBouquetPrice(draft.value))
+
+const flowerCategorySections = computed(() => {
+  const flowers = draft.value.flowers
+  return FLOWER_CATEGORIES.map((key) => ({
+    key,
+    ...FLOWER_CATEGORY_META[key],
+    items: flowers.filter((f) => (f.category || 'self_select_main') === key),
+  }))
+})
 
 useDidShow(() => {
   const cached = wx.getStorageSync(CUSTOM_BOUQUET_DRAFT_KEY) as CustomBouquetDraft | ''
@@ -126,9 +140,14 @@ function formatPrice(price: number) {
   return Number(price).toFixed(2).replace(/\.00$/, '')
 }
 
-function goPick(role: 'flower' | 'packaging' | 'card') {
+function goPick(
+  role: 'flower' | 'packaging' | 'card',
+  category?: CustomBouquetFlowerCategory,
+) {
   persistDraft()
-  navigateTo({ url: `/pagesCustomer/customize/pick?role=${role}` })
+  let url = `/pagesCustomer/customize/pick?role=${role}`
+  if (category) url += `&category=${category}`
+  navigateTo({ url })
 }
 
 function submitOrder() {

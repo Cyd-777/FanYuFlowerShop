@@ -25,6 +25,7 @@ export {
   markBizNotificationsRead,
   recordBizNotifySubscribe,
   sendBizNotification,
+  testSubscribeMessage,
 } from './client'
 
 export {

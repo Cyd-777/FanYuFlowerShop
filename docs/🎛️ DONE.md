@@ -5,6 +5,45 @@
 
 ---
 
+## 代码质量与模块封装
+
+`2026-07-06/07` · **全部完成**
+
+共 12 个模块 + 2 项 CI 检查；迭代 1–4 分批次封装，每模块 `@/modules/{name}` 公开 API + API 文档。
+
+- ~~**① 人员管理**~~ — `@/modules/staff` + API 文档
+- ~~**类 OA 通知（迭代1）**~~ — `@/modules/notify` + API 文档
+- ~~**收藏（迭代1）**~~ — `@/modules/favorite` + API 文档
+- ~~**启动授权（迭代2）**~~ — `@/modules/auth` + API 文档
+- ~~**② 销售策略**~~ — `@/modules/salesStrategy` + API 文档
+- ~~**③ 店铺设置**~~ — `@/modules/shop` 读 API + API 文档
+- ~~**④ 素材管理**~~ — `@/modules/asset` + API 文档
+- ~~**⑤ 可售数与进货**~~ — `@/modules/warehouse` + API 文档
+- ~~**⑥ 分类管理**~~ — `@/modules/category` + API 文档
+- ~~**⑧ 搜索（迭代3）**~~ — `@/modules/search` + API 文档
+- ~~**花卉目录读（迭代3）**~~ — `@/modules/flower` + API 文档
+- ~~**⑨ 智库读路径（迭代4）**~~ — `@/modules/wiki` + API 文档
+- ~~**⑩ 会员**~~ — `@/modules/member` + API 文档
+- ~~**地址**~~ — `@/modules/address` + API 文档
+- ~~**购物车**~~ — `@/modules/cart` + API 文档
+- ~~**用户资料**~~ — `@/modules/userProfile` + API 文档
+- ~~**商品**~~ — `@/modules/goods` + API 文档
+- ~~**订单**~~ — `@/modules/order` + API 文档
+- ~~**CI import 边界**~~ — `scripts/check-module-import-boundary.js` 接入 prebuild
+- ~~**耦合/内聚检测**~~ — `scripts/check-coupling-cohesion.js` 接入 prebuild（5 项检测）
+
+基线 `dd0ccea`（迭代1），收于 `8015715` + 后续修复 commit。
+
+**工作历史**：
+- 2026-07-06：`scripts/check-coupling-cohesion.js` 实现 5 项检测，接入 prebuild；修 login 页等违规
+- 2026-07-06：迭代 4 — `@/modules/wiki` 读路径 + API 文档
+- 2026-07-06：迭代 3 — `@/modules/search`、`@/modules/flower` + API 文档
+- 2026-07-06：迭代 2 — `@/modules/auth`、`@/modules/shop` 读 API + 文档
+- 2026-07-06：迭代 1 — `@/modules/notify`、`@/modules/favorite` + API 文档
+- 2026-07-06：staff 范式 + 升级策略定稿；检查点 `4eac500`
+
+---
+
 ## 耦合内聚优化
 
 `2026-07-05` · **已实现待你测**

@@ -5,42 +5,35 @@ import type { MallPrimarySection } from '@/utils/mallCategoryNav'
 export interface MallCategoryScrollLinkOptions {
   scrollSelector: string
   sections: MaybeRefOrGetter<MallPrimarySection[]>
-  /** 内容变化时重新量高度 */
   contentWatchKey?: MaybeRefOrGetter<unknown>
-  /** 当前分区有二阶胶囊时，scrollTop 判线额外下移（px，通常为胶囊栏高度） */
-  getPillInsetPx?: (sectionTabIndex: number) => number
+  /** L2 基线偏移(px)：胶囊按钮容器底边到搜索框底边的距离 */
+  secondaryOffsetPx?: MaybeRefOrGetter<number>
 }
 
 interface SectionMeasure {
   tabIndex: number
-  /** 分区标题距列表顶部的 scrollTop（px） */
   top: number
   groupTops: number[]
   groupAnchorIds: string[]
 }
 
 /**
- * 美团外卖店铺页同构：预量高度区间 + scroll-into-view 跳转 + scroll 查表高亮。
- * 参考：大众点评点餐联动、similar-mt-store-scroll-linkage。
+ * 预量高度区间 + scroll-into-view 跳转 + scroll 查表高亮。
  */
 export function useMallCategoryScrollLink(options: MallCategoryScrollLinkOptions) {
   const primaryActiveIndex = ref(0)
   const secondaryActiveIndex = ref(0)
   const contentScrollIntoView = ref('')
 
-  let lastScrollTop = 0
   let lastPrimaryTabIndex = 0
   let lastSecondary = 0
+  let lastL2BeforeLeaving = 0
   let tapLock = false
   let tapLockTimer: ReturnType<typeof setTimeout> | null = null
   let measures: SectionMeasure[] = []
 
   function getSections(): MallPrimarySection[] {
     return toValue(options.sections)
-  }
-
-  function pillInsetFor(tabIndex: number): number {
-    return options.getPillInsetPx?.(tabIndex) ?? 0
   }
 
   function sectionAt(tabIndex: number): MallPrimarySection | undefined {
@@ -54,9 +47,15 @@ export function useMallCategoryScrollLink(options: MallCategoryScrollLinkOptions
     return groups.length >= 2
   }
 
-  function findIndexByScrollTop(scrollTop: number, tops: number[], lineOffset: number): number {
+  function findIndexByScrollTop(scrollTop: number, tops: number[], lineOffset: number, fromTop = true): number {
     if (!tops.length) return 0
     const line = scrollTop + lineOffset
+    if (fromTop) {
+      for (let i = 0; i < tops.length; i++) {
+        if (line <= tops[i]) return i
+      }
+      return tops.length - 1
+    }
     for (let i = tops.length - 1; i >= 0; i--) {
       if (line >= tops[i]) return i
     }
@@ -147,7 +146,7 @@ export function useMallCategoryScrollLink(options: MallCategoryScrollLinkOptions
       tapLock = false
       tapLockTimer = null
       contentScrollIntoView.value = ''
-    }, 360)
+    }, 600)
   }
 
   function jumpToAnchor(anchorId: string) {
@@ -179,36 +178,45 @@ export function useMallCategoryScrollLink(options: MallCategoryScrollLinkOptions
   }
 
   function onContentScroll(event: { detail?: { scrollTop?: number } }) {
-    lastScrollTop = event.detail?.scrollTop ?? 0
+    const curTop = event.detail?.scrollTop ?? 0
     if (tapLock || !measures.length) return
 
     const primaryTops = measures.map((m) => m.top)
-    const primaryInset = pillInsetFor(lastPrimaryTabIndex)
-    const measureIdx = findIndexByScrollTop(lastScrollTop, primaryTops, primaryInset)
-    const nextPrimaryTabIndex = measures[measureIdx]?.tabIndex ?? 0
+    const l1Idx = findIndexByScrollTop(curTop, primaryTops, 0, false)
+    const l1Tab = measures[l1Idx]?.tabIndex ?? 0
+    const hasPill = secondaryPillBarActiveAt(l1Tab)
 
-    if (nextPrimaryTabIndex !== lastPrimaryTabIndex) {
-      lastPrimaryTabIndex = nextPrimaryTabIndex
-      primaryActiveIndex.value = nextPrimaryTabIndex
-      lastSecondary = 0
-      secondaryActiveIndex.value = 0
-      return
+    // L1 变化时检测胶囊区进出
+    let justReturnedToPillSection = false
+    if (l1Tab !== lastPrimaryTabIndex) {
+      const prevHadPill = secondaryPillBarActiveAt(lastPrimaryTabIndex)
+      if (prevHadPill && !hasPill) {
+        lastL2BeforeLeaving = lastSecondary
+      }
+      if (!prevHadPill && hasPill) {
+        // 刚从非胶囊区回到胶囊区 → 恢复上次离开时的 L2
+        lastSecondary = lastL2BeforeLeaving
+        secondaryActiveIndex.value = lastL2BeforeLeaving
+        justReturnedToPillSection = true
+      }
+      lastPrimaryTabIndex = l1Tab
+      primaryActiveIndex.value = l1Tab
     }
 
-    if (!secondaryPillBarActiveAt(nextPrimaryTabIndex)) return
+    if (!hasPill) return
 
-    const measure = measures[measureIdx]
+    const measure = measures[l1Idx]
     if (!measure?.groupTops.length) return
 
-    const nextSecondary = findIndexByScrollTop(
-      lastScrollTop,
-      measure.groupTops,
-      pillInsetFor(nextPrimaryTabIndex),
-    )
+    // 刚恢复时跳过首次 scroll 计算（避免 scrollTop 在顶部把 L2 拉回 0）
+    if (justReturnedToPillSection) return
 
-    if (nextSecondary !== lastSecondary) {
-      lastSecondary = nextSecondary
-      secondaryActiveIndex.value = nextSecondary
+    const l2Offset = toValue(options.secondaryOffsetPx) ?? 0
+    const l2Idx = findIndexByScrollTop(curTop, measure.groupTops, l2Offset, true)
+
+    if (l2Idx !== lastSecondary) {
+      lastSecondary = l2Idx
+      secondaryActiveIndex.value = l2Idx
     }
   }
 

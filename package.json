@@ -11,8 +11,9 @@
   },
   "scripts": {
     "build:weapp": "taro build --type weapp",
-    "prebuild:weapp": "node scripts/check-cache-matrix.js && node scripts/check-module-import-boundary.js && node scripts/check-coupling-cohesion.js && node scripts/generate-tab-icons.js && node scripts/check-mp-vue-template.js",
+    "prebuild:weapp": "node scripts/check-cache-matrix.js && node scripts/check-module-import-boundary.js && node scripts/check-coupling-cohesion.js && node scripts/check-docs.js && node scripts/generate-tab-icons.js && node scripts/check-mp-vue-template.js",
     "postbuild:weapp": "node scripts/patch-dist-config.js && node scripts/prune-sub-common.js && node scripts/sync-tab-icons.js && node scripts/check-static-hoist.js && node scripts/check-mp-vue-template.js && node scripts/check-main-package.js",
+    "check:docs": "node scripts/check-docs.js",
     "generate:tab-icons": "node scripts/generate-tab-icons.js",
     "sync:cloud": "node scripts/sync-cloud-common.js",
     "deploy:cloud": "node scripts/deploy-cloud-functions.js",

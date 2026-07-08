@@ -250,6 +250,7 @@ exports.main = async (event) => {
         userId,
         name,
         role,
+        openid: operatorOpenid,
         addedBy: invite.createdBy || operatorOpenid,
         inviteToken: token,
         createdAt: db.serverDate(),

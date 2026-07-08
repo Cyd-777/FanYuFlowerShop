@@ -26,15 +26,13 @@
     <view class="panels" :style="panelsStyle">
       <!-- 一阶：左侧 tab 栏 -->
       <ScrollAnchorNavShell layer="l1-tab-rail" root-class="left-wrap" :style="leftWrapStyle">
-        <scroll-view class="left" :scroll-y="true" :enhanced="true" :show-scrollbar="false" :style="leftInnerScrollStyle">
-          <view
-            v-for="(tab, idx) in sideTabs"
-            :key="tab.key"
-            class="left-item"
-            :class="{ active: idx === primaryActiveIndex }"
-            @tap="switchSideTab(idx)"
-          >{{ tab.name }}</view>
-        </scroll-view>
+        <AnchorNavMenu
+          type="primary"
+          :items="primaryItems"
+          :active-index="primaryActiveIndex"
+          uid="l1"
+          @select="switchSideTab"
+        />
       </ScrollAnchorNavShell>
 
       <!-- 一阶：右侧 scroll 区域 -->
@@ -42,11 +40,8 @@
         layer="l1-scroll"
         root-class="right-wrap"
         :style="rightWrapStyle"
-        @touchstart="onRightWrapTouchStart"
-        @touchend="onRightWrapTouchEnd"
-        @touchcancel="onRightWrapTouchEnd"
       >
-        <!-- 二阶：胶囊 tab 栏（v-if 只挂载一次，v-show 切换显隐，避免进花束时卸载引发 scroll 抖动） -->
+        <!-- 二阶：胶囊 tab 栏 -->
         <ScrollAnchorNavShell
           v-if="anySectionHasSecondaryPills"
           v-show="showSecondaryPill"
@@ -55,43 +50,37 @@
           :class="{ expanded: pillBarExpanded }"
           :style="pillBarBoxStyle"
           @tap.stop
+          @touchmove.stop
         >
-          <view class="pill-body" @tap.stop>
-            <scroll-view
+          <view class="pill-body" @tap.stop @touchmove.stop>
+            <AnchorNavMenu
               v-if="!pillBarExpanded"
-              id="category-pill-scroll"
-              class="pill-scroll"
-              :scroll-x="true"
-              :enable-flex="true"
-              :show-scrollbar="false"
-              :scroll-with-animation="true"
-              :scroll-left="pillScrollLeft"
-              :style="pillScroll.scrollViewportStyle"
-            >
-              <view id="category-pill-track" class="pill-track" :style="pillScroll.trackStyle">
-                <view
-                  v-for="(p, idx) in secondaryTabs"
-                  :key="p.key"
-                  class="pill-item"
-                  :class="{ active: p.key === activeSecondaryKey }"
-                  hover-class="pill-item--pressed"
-                  @tap.stop="onPillTap(idx)"
-                >{{ p.icon }} {{ p.label }}</view>
-              </view>
-            </scroll-view>
+              type="secondary"
+              :items="secondaryTabs"
+              :active-index="secondaryActiveIndex"
+              uid="l2"
+              @select="onPillTap"
+            />
             <view v-else id="category-pill-track-expanded" class="pill-track-expanded">
               <view
                 v-for="(p, idx) in secondaryTabs"
                 :key="p.key"
                 class="pill-item"
                 :class="{ active: p.key === activeSecondaryKey }"
+                :data-index="idx"
                 hover-class="pill-item--pressed"
                 @tap.stop="onPillTap(idx)"
               >{{ p.icon }} {{ p.label }}</view>
+              <view class="pill-expand-collapse-row" @tap.stop="togglePillBar">
+                <view class="pill-expand-collapse">
+                  <text class="pill-expand-collapse__text">收起</text>
+                  <AppIcon type="三角上" :size="14" />
+                </view>
+              </view>
             </view>
           </view>
           <view
-            v-if="showPillDropdown"
+            v-if="showPillDropdown && pillCollapsed"
             class="pill-dropdown"
             hover-class="pill-dropdown--pressed"
             @tap.stop="togglePillBar"
@@ -126,9 +115,10 @@
                 <GoodsCardSkeleton v-if="loading" variant="row" :count="5" />
                 <template v-else>
                   <view
-                    v-for="section in mallSections"
+                    v-for="(section, sIdx) in mallSections"
                     :key="section.primaryAnchorId"
                     class="primary-section"
+                    :style="sIdx === mallSections.length - 1 ? { minHeight: `${lastSectionMinHeightPx}px` } : undefined"
                   >
                     <ScrollAnchorNavShell
                       v-if="secondaryPillBarActiveAt(section.tabIndex)"
@@ -186,16 +176,17 @@
                         </view>
                       </template>
                     </ScrollAnchorSection>
+                    <ScrollListTailSpacer
+                      v-if="sIdx === mallSections.length - 1"
+                      content-selector="#category-list-body"
+                      scroll-container-selector="#category-content-scroll"
+                      tab-bar
+                      :watch-key="categoryTailWatchKey"
+                    />
                   </view>
                   <view v-if="!mallSections.length" class="empty-tip">{{ emptyText }}</view>
                 </template>
               </view>
-              <ScrollListTailSpacer
-                content-selector="#category-list-body"
-                scroll-container-selector="#category-content-scroll"
-                tab-bar
-                :watch-key="categoryTailWatchKey"
-              />
             </ScrollAnchorNavShell>
           </view>
         </scroll-view>
@@ -211,8 +202,7 @@ import { usePageData } from '@/composables/usePageData'
 import { mergeTouchHandlers } from '@/composables/usePullRefresh'
 import { useScrollAreaBelow } from '@/composables/useScrollAreaBelow'
 import { useMallCategoryScrollLink } from '@/composables/useMallCategoryScrollLink'
-import { useScrollXActiveAlign } from '@/composables/useScrollXActiveAlign'
-import { estimateTagChipWidthRpx, estimateTagRowsTrackWidthPx, useScrollXTrack } from '@/composables/useScrollXTrack'
+import { estimateTagChipWidthRpx } from '@/composables/useScrollXTrack'
 import { rpxToPx } from '@/composables/usePageSticky'
 import GoodsCardSkeleton from '@/components/GoodsCardSkeleton.vue'
 import GoodsImage from '@/components/GoodsImage.vue'
@@ -223,6 +213,7 @@ import AppSearchInput from '@/components/AppSearchInput.vue'
 import AppIcon from '@/components/AppIcon.vue'
 import ScrollAnchorNavShell from '@/components/ScrollAnchorNavShell.vue'
 import ScrollAnchorSection from '@/components/ScrollAnchorSection.vue'
+import AnchorNavMenu from '@/components/AnchorNavMenu.vue'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import { usePageSticky } from '@/composables/usePageSticky'
 import { useCartTabBadgeSync } from '@/composables/useCartTabBadgeSync'
@@ -285,10 +276,6 @@ function onContentTouchCancel(event: unknown) {
   contentTouchHandlers.onTouchCancel?.(event)
 }
 
-const SWIPE_THRESHOLD_PX = 40
-let touchStartX = 0
-let touchStartY = 0
-
 /** 当前一阶是否应显示胶囊栏（二阶分类 ≥2 种） */
 function sectionShowsPillBar(section: MallPrimarySection): boolean {
   return section.showSecondaryPillBar
@@ -324,11 +311,6 @@ function secondaryPillBarActiveAt(tabIndex: number): boolean {
   return allSecondaryTabs.value.filter((t) => t.scopeIndex === tabIndex).length >= 2
 }
 
-/** 浮层胶囊 + 顶留白占用 scroll 视口顶部的高度（按一阶 tab 下标） */
-function pillInsetAtTabIndex(tabIndex: number): number {
-  return secondaryPillBarActiveAt(tabIndex) ? pillRowHeightPx.value : 0
-}
-
 const {
   primaryActiveIndex,
   secondaryActiveIndex,
@@ -340,7 +322,7 @@ const {
 } = useMallCategoryScrollLink({
   scrollSelector: SCROLL_SELECTOR,
   sections: mallSections,
-  getPillInsetPx: pillInsetAtTabIndex,
+  secondaryOffsetPx: computed(() => showSecondaryPill.value ? pillRowHeightPx.value : 0),
   contentWatchKey: () =>
     `${loading.value}-${sideTabs.value.map((t) => t.key).join('|')}-${mallSections.value.map((s) => `${s.tabKey}:${s.groups.length}`).join('|')}`,
 })
@@ -355,6 +337,11 @@ const activeSecondaryKey = computed(
 )
 
 const showSecondaryPill = computed(() => secondaryPillBarActiveAt(primaryActiveIndex.value))
+
+/** 一阶选项卡（左侧 tab 栏）选项 */
+const primaryItems = computed(() =>
+  sideTabs.value.map((t) => ({ key: t.key, label: t.name })),
+)
 
 watch(
   () => loading.value,
@@ -385,45 +372,11 @@ const pillCollapsed = ref(true)
 const showPillDropdown = computed(() => secondaryTabs.value.length > maxPillsInCollapsedRow)
 const pillBarExpanded = computed(() => showPillDropdown.value && !pillCollapsed.value)
 
-const pillScroll = useScrollXTrack({
-  heightRpx: PILL_BAR_HEIGHT_RPX,
-  measure: {
-    rowSelectors: ['#category-pill-track'],
-    horizontalPaddingRpx: PILL_BODY_PAD_RPX,
-  },
-  estimateTrackWidthPx: () => {
-    const rightWidthPx = Taro.getWindowInfo().windowWidth - leftWidthPx.value
-    const rows = [secondaryTabs.value.map((p) => ({ label: p.label, icon: p.icon }))]
-    return Math.max(estimateTagRowsTrackWidthPx(rows, 8, PILL_BODY_PAD_RPX), rightWidthPx + 1)
-  },
-  watchSources: [
-    () => secondaryTabs.value.map((p) => p.key).join('|'),
-    () => primaryActiveIndex.value,
-  ],
-})
-
-/** 胶囊横向 scroll：激活项滚入可视区并对齐到第二个槽位（美团同构） */
-const pillActiveAlign = useScrollXActiveAlign({
-  scrollSelector: '#category-pill-scroll',
-  itemSelector: '#category-pill-track .pill-item',
-  activeIndex: secondaryActiveIndex,
-  anchorSlotIndex: 1,
-  itemGapRpx: 8,
-  trackPaddingRpx: 12,
-  enabled: computed(() => showSecondaryPill.value && !pillBarExpanded.value),
-  watchSources: [
-    () => secondaryTabs.value.map((p) => p.key).join('|'),
-    () => pillScroll.trackWidthPx.value,
-  ],
-})
-const { scrollLeft: pillScrollLeft, alignToActive: alignPillScroll, resetScroll: resetPillScroll } =
-  pillActiveAlign
 
 watch(
   () => primaryActiveIndex.value,
   (idx) => {
     setActiveTabIndex(idx)
-    resetPillScroll()
   },
 )
 
@@ -472,7 +425,6 @@ const categoryTailWatchKey = computed(
 
 const panelsStyle = computed(() => ({ top: `${topPx.value}px`, height: `${heightPx.value}px` }))
 const leftWrapStyle = computed(() => ({ width: `${leftWidthPx.value}px`, height: `${heightPx.value}px`, maxHeight: `${heightPx.value}px` }))
-const leftInnerScrollStyle = computed(() => ({ width: '100%', height: `${heightPx.value}px`, maxHeight: `${heightPx.value}px` }))
 const rightWrapStyle = computed(() => {
   const ww = Taro.getWindowInfo().windowWidth
   return { width: `${ww - leftWidthPx.value}px`, height: `${heightPx.value}px` }
@@ -482,43 +434,21 @@ const contentScrollStyle = computed(() => {
   return { width: `${ww - leftWidthPx.value}px`, height: `${heightPx.value}px` }
 })
 
+/** 最后一个分区 min-height = scroll-view 视口高度 - 分区标题高度。
+ *  容器总高 = 标题 + min-height = scroll-view 视口高，
+ *  使即使无商品也能让 header 被 scroll 到 anchor 线。 */
+const LAST_SECTION_HEADER_HEIGHT_RPX = 85
+const lastSectionMinHeightPx = computed(() => {
+  const viewportH = heightPx.value
+  if (viewportH <= 0) return 0
+  return Math.max(0, viewportH)
+})
+
 function togglePillBar() {
   pillCollapsed.value = !pillCollapsed.value
   if (!pillCollapsed.value) {
     void nextTick(() => remeasureScrollLink())
-  } else {
-    alignPillScroll()
   }
-}
-
-function onRightWrapTouchStart(event: { touches?: Array<{ clientX?: number; clientY?: number }> }) {
-  const touch = event.touches?.[0]
-  touchStartX = touch?.clientX || 0
-  touchStartY = touch?.clientY || 0
-}
-
-function onRightWrapTouchEnd(event: { changedTouches?: Array<{ clientX?: number; clientY?: number }> }) {
-  const touch = event.changedTouches?.[0]
-  const dx = (touch?.clientX || 0) - touchStartX
-  const dy = (touch?.clientY || 0) - touchStartY
-  if (
-    primaryActiveIndex.value >= 0
-    && Math.abs(dx) > Math.abs(dy)
-    && Math.abs(dx) >= SWIPE_THRESHOLD_PX
-  ) {
-    swipeToAdjacentTab(dx < 0 ? 1 : -1)
-  }
-}
-
-function swipeToAdjacentTab(delta: number) {
-  const current = primaryActiveIndex.value
-  if (current < 0) {
-    if (delta > 0 && sideTabs.value.length) switchSideTab(0)
-    return
-  }
-  const next = current + delta
-  if (next < 0 || next >= sideTabs.value.length) return
-  switchSideTab(next)
 }
 
 function switchSideTab(idx: number) {
@@ -530,7 +460,6 @@ function onPillTap(idx: number) {
   const pill = secondaryTabs.value[idx]
   if (pill) {
     clickSecondaryTab(pill.anchorId)
-    alignPillScroll()
   }
 }
 
@@ -547,9 +476,6 @@ function onRightScroll(event: { detail?: { scrollTop?: number } }) {
 .search-bar.search-modal-host-open { z-index: 200; }
 .panels { position: fixed; left: 0; right: 0; display: flex; flex-direction: row; overflow: hidden; z-index: 1; }
 .left-wrap { flex: none; overflow: hidden; background: #fff; }
-.left { background: #fff; }
-.left-item { padding: 28rpx 24rpx; font-size: 26rpx; color: #666; text-align: center; border-left: 4rpx solid transparent; }
-.left-item.active { color: @color-primary; border-left-color: @color-primary; background: @color-primary-light; font-weight: 600; }
 .right-wrap { flex: none; position: relative; overflow: hidden; }
 
 .pill-bar {
@@ -567,15 +493,35 @@ function onRightScroll(event: { detail?: { scrollTop?: number } }) {
 .pill-bar.expanded { overflow: visible; box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.06); }
 .pill-body { flex: 1; min-width: 0; height: 100%; overflow: hidden; }
 .pill-bar.expanded .pill-body { overflow: visible; height: auto; }
-.pill-scroll { width: 100%; height: 100%; }
-.pill-track { display: flex; flex-direction: row; align-items: center; gap: 8rpx; padding: 10rpx 12rpx; box-sizing: border-box; height: 100%; }
 .pill-track-expanded { display: flex; flex-wrap: wrap; align-content: flex-start; align-items: center; gap: 8rpx; padding: 10rpx 12rpx; box-sizing: border-box; width: 100%; min-height: 100%; }
-.pill-item { flex: none; padding: 6rpx 18rpx; background: #f5f5f5; border: 2rpx solid #eee; border-radius: 28rpx; font-size: 24rpx; color: #666; white-space: nowrap; line-height: 1.4; }
+.pill-item { flex: none; min-width: 144rpx; padding: 6rpx 12rpx; background: #f5f5f5; border: 2rpx solid #eee; border-radius: 28rpx; font-size: 24rpx; color: #666; white-space: nowrap; line-height: 1.4; text-align: center; }
 .pill-item.active { background: @color-primary-light; border-color: @color-primary-border; color: @color-primary; font-weight: 600; }
 .pill-item--pressed { opacity: 0.85; }
-.pill-dropdown { flex: none; width: 72rpx; display: flex; align-items: center; justify-content: center; align-self: stretch; background: #fff; border-left: 2rpx solid #f0f0f0; }
+.pill-dropdown { flex: none; width: 72rpx; display: flex; align-items: center; justify-content: center; align-self: stretch; background: #fff; }
 .pill-dropdown--pressed { background: #fafafa; }
 .pill-dropdown-icon { flex-shrink: 0; opacity: 0.72; }
+
+/** 展开面板收起按钮行 */
+.pill-expand-collapse-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 12rpx 0 4rpx;
+}
+.pill-expand-collapse {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 6rpx 20rpx;
+  background: transparent;
+  border: 2rpx solid #ddd;
+  border-radius: 28rpx;
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.4;
+}
+.pill-expand-collapse__text { line-height: 1.4; }
+
 .right { height: 100%; background: @color-bg-page; }
 .right-inner { padding: 24rpx; box-sizing: border-box; }
 .customize-panel { margin-bottom: 16rpx; padding: 32rpx 24rpx; background: #fff; border-radius: 16rpx; min-height: 280rpx; box-sizing: border-box; }

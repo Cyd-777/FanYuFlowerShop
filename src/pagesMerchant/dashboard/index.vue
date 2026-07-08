@@ -9,7 +9,9 @@
           :src="avatarDisplay"
           mode="aspectFill"
         />
-        <view v-else class="header-avatar placeholder">👤</view>
+        <view v-else class="header-avatar placeholder">
+          <AppIcon type="人员" :size="40" />
+        </view>
         <view class="header-text">
           <view class="greeting">👋 {{ greetingText }}，{{ displayName }}</view>
           <view class="shop-name">{{ shopStore.shopName }}</view>
@@ -36,7 +38,10 @@
     <!-- 快捷功能入口：订单 / 维护 -->
     <view class="quick-actions">
       <view v-for="group in actionGroups" :key="group.id" class="action-section">
-        <view class="section-title">{{ group.title }}</view>
+        <view class="section-title">
+          <AppIcon :type="group.iconType" :size="28" />
+          <text class="section-title__text">{{ group.title }}</text>
+        </view>
         <view class="action-grid">
           <view
             v-for="item in group.items"
@@ -45,7 +50,7 @@
             @click="handleAction(item.key)"
           >
             <view class="action-icon-wrap">
-              <view class="action-icon">{{ item.icon }}</view>
+              <AppIcon :type="item.iconType" :size="56" />
               <view v-if="item.key === 'notify' && notifyUnread > 0" class="action-badge">
                 {{ notifyUnread > 99 ? '99+' : notifyUnread }}
               </view>
@@ -58,7 +63,7 @@
 
     <!-- 商家预览客户端的入口 -->
     <view class="preview-section">
-      <nut-button block plain @click="previewCustomer">👀 预览顾客端</nut-button>
+      <nut-button block plain @click="previewCustomer">预览顾客端</nut-button>
     </view>
   </view>
 </template>
@@ -75,6 +80,7 @@ import { resolveAvatarDisplayPath } from '@/modules/userProfile'
 import { useShopDisplay } from '@/composables/useShopDisplay'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
+import AppIcon from '@/components/AppIcon.vue'
 import { useNotificationStore } from '@/stores/notification'
 import type { OrderStatus } from '@/types/order'
 
@@ -111,25 +117,27 @@ const greetingText = computed(() => {
 const actionGroups = [
   {
     id: 'orders',
-    title: '📋 订单',
+    title: '订单',
+    iconType: '订单' as const,
     items: [
-      { key: 'order', icon: '📋', label: '订单管理' },
-      { key: 'notify', icon: '🔔', label: '消息通知' },
-      { key: 'verify', icon: '📱', label: '扫码核销' },
+      { key: 'order', iconType: '订单' as const, label: '订单管理' },
+      { key: 'notify', iconType: '通知' as const, label: '消息通知' },
+      { key: 'verify', iconType: '扫码' as const, label: '扫码核销' },
     ],
   },
   {
     id: 'maintenance',
-    title: '🛠️ 维护',
+    title: '维护',
+    iconType: '维护' as const,
     items: [
-      { key: 'goods', icon: '🌷', label: '商品管理' },
-      { key: 'category', icon: '🏷️', label: '分类管理' },
-      { key: 'wiki', icon: '📚', label: '智库维护' },
-      { key: 'asset', icon: '🖼️', label: '素材管理' },
-      { key: 'warehouse', icon: '📦', label: '仓储历史' },
-      { key: 'salesStrategy', icon: '📈', label: '销售策略' },
-      { key: 'staff', icon: '👥', label: '人员管理' },
-      { key: 'setting', icon: '⚙️', label: '店铺设置' },
+      { key: 'goods', iconType: '商品' as const, label: '商品管理' },
+      { key: 'category', iconType: '分类' as const, label: '分类管理' },
+      { key: 'wiki', iconType: '智库' as const, label: '智库维护' },
+      { key: 'asset', iconType: '素材' as const, label: '素材管理' },
+      { key: 'warehouse', iconType: '仓储' as const, label: '仓储历史' },
+      { key: 'salesStrategy', iconType: '策略' as const, label: '销售策略' },
+      { key: 'staff', iconType: '人员' as const, label: '人员管理' },
+      { key: 'setting', iconType: '设置' as const, label: '店铺设置' },
     ],
   },
 ] as const
@@ -222,6 +230,7 @@ function previewCustomer() {
   // 切换预览顾客端，但保留商家身份
   wx.switchTab({ url: '/pages/home/index' })
 }
+
 </script>
 
 <style lang="less">
@@ -263,7 +272,16 @@ function previewCustomer() {
   .stat-label { margin-top: 4rpx; font-size: 22rpx; color: #999; }
   &.highlight .stat-value { color: #e53935; }
 }
-.section-title { padding: 32rpx 32rpx 16rpx; font-size: 28rpx; font-weight: 600; color: #333; }
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 32rpx 32rpx 16rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+.section-title__text { line-height: 1; }
 .action-section + .action-section .section-title { padding-top: 8rpx; }
 .action-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 16rpx; padding: 0 16rpx;
@@ -273,8 +291,9 @@ function previewCustomer() {
   .action-icon-wrap {
     position: relative;
     display: inline-block;
+    width: 56rpx;
+    height: 56rpx;
   }
-  .action-icon { font-size: 56rpx; }
   .action-badge {
     position: absolute;
     top: -8rpx;

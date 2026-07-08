@@ -301,35 +301,26 @@ function requestSubscribe() {
     return
   }
 
-  wx.showModal({
-    title: '开启服务通知',
-    content: '开启后，您将收到订单状态变更、库存预警等微信提醒。',
-    confirmText: '允许',
-    cancelText: '暂不',
-    success: (res) => {
-      if (!res.confirm) return
-      // 须在 tap 回调中同步发起，不可先 await 再调（微信会拦截弹窗）
-      void invokeBizNotifySubscribe(tmplIds)
-        .then(async (accepted) => {
-          if (accepted.length) {
-            const { recordBizNotifySubscribe } = await import('@/modules/notify')
-            await recordBizNotifySubscribe(accepted).catch((err) => {
-              console.warn('[mine] record subscribe failed:', err)
-            })
-            setLocalSubscribed()
-            isSubscribed.value = true
-          }
-          wx.showToast({
-            title: accepted.length ? '已开启' : '未授权',
-            icon: accepted.length ? 'success' : 'none',
-          })
+  // 须在 tap 回调中同步发起，不可先 await 再调（微信会拦截弹窗）
+  void invokeBizNotifySubscribe(tmplIds)
+    .then(async (accepted) => {
+      if (accepted.length) {
+        const { recordBizNotifySubscribe } = await import('@/modules/notify')
+        await recordBizNotifySubscribe(accepted).catch((err) => {
+          console.warn('[mine] record subscribe failed:', err)
         })
-        .catch((err) => {
-          console.warn('[mine] requestSubscribeMessage failed:', err)
-          wx.showToast({ title: '未开启', icon: 'none' })
-        })
-    },
-  })
+        setLocalSubscribed()
+        isSubscribed.value = true
+      }
+      wx.showToast({
+        title: accepted.length ? '已开启' : '未授权',
+        icon: accepted.length ? 'success' : 'none',
+      })
+    })
+    .catch((err) => {
+      console.warn('[mine] requestSubscribeMessage failed:', err)
+      wx.showToast({ title: '未开启', icon: 'none' })
+    })
 }
 </script>
 

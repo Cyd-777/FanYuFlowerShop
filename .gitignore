@@ -8,6 +8,7 @@ cloudfunctions/**/node_modules/
 scripts/.cloud-functions-manifest.json
 .DS_Store
 .swc
+download/
 
 # Local IDE config
 project.private.config.json

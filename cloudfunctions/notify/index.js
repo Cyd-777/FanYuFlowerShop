@@ -310,6 +310,24 @@ exports.main = async (event) => {
       return { success: true, tmplIds, tmplId: tmplIds[0] || '' }
     }
 
+    if (action === 'testSubscribe') {
+      const tmplId = getSubscribeTemplateIds()[0] || ''
+      const payload = {
+        eventKey: 'order.new',
+        title: '新订单',
+        body: '顾客 · 鲜花',
+        fromName: '梵宇花店',
+        context: {
+          orderNo: 'TEST20260706',
+          customerName: '花友',
+          summary: '红玫瑰 3枝',
+          deliveryAddress: '北京市朝阳区建国路88号',
+        },
+      }
+      const result = await sendBizSubscribeMessage(operatorOpenid, payload)
+      return { success: true, sent: result.sent, errCode: result.errCode, errMsg: result.errMsg }
+    }
+
     if (action === 'recordSubscribe') {
       const actor = await resolveNotifyActor(operatorOpenid)
       if (!actor?.userId) {

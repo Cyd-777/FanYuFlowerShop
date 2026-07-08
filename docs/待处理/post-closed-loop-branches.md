@@ -2,6 +2,9 @@
 
 # 基础闭环之上的功能分支
 
+> ⚠️ **已迁入** → [版本与发版模块.md](../版本与发版模块.md) `## 后续分支规划（闭环之上）`。本文保留对照。
+>
+
 > **来源**：[GitHub Issue #1](https://github.com/Cyd-777/FanYuFlowerShop/issues/1)  
 > **前提**：三环基础闭环已跑通（见 [closed-loop-plan.md](./closed-loop-plan.md)）。  
 > 本文档把 Issue 里**同一阶段 To-do 未纳入最小三环**、以及**问题清单 / 功能树**中的下一批工作，拆成可独立开发的 **Git 功能分支**。

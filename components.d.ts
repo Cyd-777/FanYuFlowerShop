@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AnchorNavMenu: typeof import('./src/components/AnchorNavMenu.vue')['default']
     AppFeedbackHost: typeof import('./src/components/AppFeedbackHost.vue')['default']
     AppIcon: typeof import('./src/components/AppIcon.vue')['default']
     AppNavBackButton: typeof import('./src/components/AppNavBackButton.vue')['default']
@@ -20,6 +21,8 @@ declare module 'vue' {
     GoodsPriceLabel: typeof import('./src/components/GoodsPriceLabel.vue')['default']
     GoodsSalesTagRow: typeof import('./src/components/GoodsSalesTagRow.vue')['default']
     GoodsSoldOutBadge: typeof import('./src/components/GoodsSoldOutBadge.vue')['default']
+    LoginLegalSheet: typeof import('./src/components/LoginLegalSheet.vue')['default']
+    LoginProfileSheet: typeof import('./src/components/LoginProfileSheet.vue')['default']
     NutButton: typeof import('@nutui/nutui-taro')['Button']
     NutCell: typeof import('@nutui/nutui-taro')['Cell']
     NutEmpty: typeof import('@nutui/nutui-taro')['Empty']

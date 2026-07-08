@@ -180,6 +180,7 @@ async function notifyOrderCreated(orderDoc, customerOpenid, stockApplied = []) {
   const orderNo = orderDoc.orderNo || ''
   const links = orderLinkPaths(orderId)
   const summary = summarizeOrderItems(orderDoc.items)
+  const addr = orderDoc.address || {}
 
   const customer = await resolveCustomerRecipient(customerOpenid)
   if (customer) {
@@ -197,6 +198,10 @@ async function notifyOrderCreated(orderDoc, customerOpenid, stockApplied = []) {
 
   const merchants = await listAllMerchantRecipients()
   const customerName = customer?.name || '顾客'
+  const addrParts = [addr.province, addr.city, addr.district, addr.detail || addr.address]
+    .filter(Boolean)
+  const deliveryAddress = addrParts.length ? addrParts.join(' ') : (addr.fullAddress || '到店自取')
+
   await emitToRecipients(merchants, {
     eventKey: 'order.new',
     category: 'order',
@@ -205,7 +210,14 @@ async function notifyOrderCreated(orderDoc, customerOpenid, stockApplied = []) {
     title: '新订单',
     body: `${customerName} · ${summary}`,
     idempotencyKey: `order.new:${orderId}`,
-    context: { orderId, orderNo, linkPath: links.merchant },
+    context: {
+      orderId,
+      orderNo,
+      linkPath: links.merchant,
+      customerName,
+      summary,
+      deliveryAddress,
+    },
   })
 
   for (const entry of stockApplied) {

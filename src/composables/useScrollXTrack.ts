@@ -5,6 +5,10 @@ import { rpxToPx } from '@/composables/usePageSticky'
 export interface ScrollXTrackMeasureOptions {
   /** 每一行的选择器（量最宽一行） */
   rowSelectors: string[]
+  /** 二次测量：用子项选择器逐项累加宽度（更精确，避免 track 被固定宽度误导） */
+  itemSelectors?: string[]
+  /** 子项之间的 gap（px，仅在 itemSelectors 模式下用于累加） */
+  itemGapPx?: number
   /** track 左右 padding 之和（rpx） */
   horizontalPaddingRpx?: number
 }
@@ -50,10 +54,35 @@ export function useScrollXTrack(options: {
     const pad = rpxToPx(options.measure.horizontalPaddingRpx ?? 0)
     const measured = Math.ceil(measuredContentPx + pad)
     const estimated = Math.ceil(options.estimateTrackWidthPx())
-    trackWidthPx.value = Math.max(measured, estimated, viewport + 1)
+    const min = Math.max(estimated, viewport + 1)
+    trackWidthPx.value = Math.max(measured, min)
+  }
+
+  /** 将 track width 设为 0（取消固定宽度），让 DOM 自然撑开，再测量实际内容宽度 */
+  function releaseTrackWidth() {
+    trackWidthPx.value = 0
   }
 
   function measureTrack() {
+    // 优先用 itemSelectors 逐项累加（不受 track 固定宽度影响）
+    const itemSel = options.measure.itemSelectors?.filter(Boolean)
+    if (itemSel?.length) {
+      const q = Taro.createSelectorQuery()
+      itemSel.forEach((sel) => q.selectAll(sel).boundingClientRect())
+      q.exec((res) => {
+        let maxRow = 0
+        for (const items of res) {
+          const rects = (items || []) as Array<{ width?: number }>
+          const sum = rects.reduce((s, r) => s + (r.width ?? 0), 0)
+          const gaps = Math.max(0, rects.length - 1) * (options.measure.itemGapPx ?? 0)
+          maxRow = Math.max(maxRow, sum + gaps)
+        }
+        applyTrackWidth(maxRow)
+      })
+      return
+    }
+
+    // 兜底：量 track DOM 本身（第一次量会拿到自然宽度，因为 releaseTrackWidth 已清空固定宽）
     const rowSelectors = options.measure.rowSelectors.filter(Boolean)
     if (!rowSelectors.length) {
       applyTrackWidth(0)
@@ -72,7 +101,7 @@ export function useScrollXTrack(options: {
   }
 
   async function remeasure() {
-    applyTrackWidth(0)
+    releaseTrackWidth()
     await nextTick()
     setTimeout(measureTrack, 32)
     setTimeout(measureTrack, 160)
@@ -104,12 +133,14 @@ export function useScrollXTrack(options: {
 /** Tag 胶囊宽度估算（rpx），用于 scroll-x 首屏兜底 */
 export function estimateTagChipWidthRpx(label: string, hasIcon: boolean): number {
   const chars = [...String(label || '')].length
+  // 胶囊最小宽度 144rpx；如果文本较长则按文本计算
   const textW = chars * 28
   const iconW = hasIcon ? 36 : 0
   const gap = hasIcon ? 8 : 0
   const padX = 40
   const border = 4
-  return padX + border + iconW + gap + textW
+  const computed = padX + border + iconW + gap + textW
+  return Math.max(144, computed)
 }
 
 export function estimateTagRowsTrackWidthPx(

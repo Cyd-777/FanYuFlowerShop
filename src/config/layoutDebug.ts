@@ -12,8 +12,8 @@ export const layoutDebugConfig = {
    * - 商城分类 ScrollAnchorNav 一阶：左侧 tab 栏 / scroll 外层 / scroll 内容区
    * - 商城分类 ScrollAnchorNav 二阶：分区内壳 / 胶囊浮层 / 胶囊顶留白 / 分区内容
    */
-  showLayoutDebugBg: false,
-  // showLayoutDebugBg: true,
+  // showLayoutDebugBg: false,
+  showLayoutDebugBg: true,
 
   navBackBg: '#ffe8e8',
   navTitleBg: '#e8f0ff',
@@ -33,6 +33,6 @@ export const layoutDebugConfig = {
    * 智库词条详情：模型字段下划线 + 极小来源 tag（可单独开，不必开 showLayoutDebugBg）。
    * 改完须重新编译。
    */
-  showWikiDataSourceLabels: false,
-  // showWikiDataSourceLabels: true,
+  // showWikiDataSourceLabels: false,
+  showWikiDataSourceLabels: true,
 } as const

@@ -7,10 +7,13 @@ import { navigateBack } from '@/utils/router'
 import {
   CUSTOM_BOUQUET_DRAFT_KEY,
   CUSTOM_BOUQUET_ROLE_LABELS,
+  FLOWER_CATEGORIES,
+  FLOWER_CATEGORY_META,
   createEmptyCustomBouquetDraft,
 } from '@/types/customBouquet'
 import type {
   CustomBouquetDraft,
+  CustomBouquetFlowerCategory,
   CustomBouquetGoodsItem,
   CustomBouquetPickRole,
 } from '@/types/customBouquet'
@@ -22,35 +25,65 @@ type GoodsCard = Goods & { imageUrl: string }
 
 export function setupCustomizePickPageData(): PageSetupResult & Record<string, unknown> {
   const role = ref<CustomBouquetPickRole>('flower')
+  const category = ref<CustomBouquetFlowerCategory | ''>('')
   const loading = ref(false)
   const goodsList = ref<GoodsCard[]>([])
   const selectedIds = ref<string[]>([])
   const { categories, loadCategories } = usePublicCategories()
 
   const roleLabel = computed(() => CUSTOM_BOUQUET_ROLE_LABELS[role.value])
+
+  const categoryMeta = computed(() =>
+    category.value ? FLOWER_CATEGORY_META[category.value] : null,
+  )
+
   const isMulti = computed(() => role.value === 'flower')
-  const pickTip = computed(() =>
-    role.value === 'flower'
+
+  const pickTip = computed(() => {
+    if (role.value === 'flower' && categoryMeta.value) {
+      return categoryMeta.value.pickTip
+    }
+    return role.value === 'flower'
       ? '所有按「支」售卖的商品均可作为花材'
-      : `从「${roleLabel.value}」分类商品中选择`,
-  )
-  const emptyTip = computed(() =>
-    role.value === 'flower'
+      : `从「${roleLabel.value}」分类商品中选择`
+  })
+
+  const emptyTip = computed(() => {
+    if (role.value === 'flower' && categoryMeta.value) {
+      return `暂无可用${categoryMeta.value.label}商品。请让商家上架相关花材。`
+    }
+    return role.value === 'flower'
       ? '暂无按支售卖的商品。请让商家上架论支销售的花材。'
-      : `暂无可用商品。请让商家创建「${roleLabel.value}」分类并上架商品。`,
-  )
+      : `暂无可用商品。请让商家创建「${roleLabel.value}」分类并上架商品。`
+  })
 
   function onLoad(query: Record<string, string | undefined>) {
     const rawRole = query.role as CustomBouquetPickRole | undefined
     if (rawRole === 'flower' || rawRole === 'packaging' || rawRole === 'card') {
       role.value = rawRole
     }
-    wx.setNavigationBarTitle({ title: `选择${roleLabel.value}` })
+
+    const rawCategory = query.category as CustomBouquetFlowerCategory | undefined
+    if (rawCategory && (FLOWER_CATEGORIES as readonly string[]).includes(rawCategory)) {
+      category.value = rawCategory
+    }
+
+    wx.setNavigationBarTitle({
+      title: categoryMeta.value
+        ? `选择${categoryMeta.value.label}`
+        : `选择${roleLabel.value}`,
+    })
 
     const draft = wx.getStorageSync(CUSTOM_BOUQUET_DRAFT_KEY) as CustomBouquetDraft | ''
     if (draft && typeof draft === 'object') {
       if (role.value === 'flower') {
-        selectedIds.value = draft.flowers.map((item) => item.goodsId)
+        if (category.value) {
+          selectedIds.value = draft.flowers
+            .filter((item) => item.category === category.value)
+            .map((item) => item.goodsId)
+        } else {
+          selectedIds.value = draft.flowers.map((item) => item.goodsId)
+        }
       } else if (role.value === 'packaging' && draft.packaging) {
         selectedIds.value = [draft.packaging.goodsId]
       } else if (role.value === 'card' && draft.card) {
@@ -137,7 +170,14 @@ export function setupCustomizePickPageData(): PageSetupResult & Record<string, u
     }
 
     if (role.value === 'flower') {
-      next.flowers = picked.map(toGoodsItem)
+      if (category.value) {
+        next.flowers = [
+          ...next.flowers.filter((f) => f.category !== category.value),
+          ...picked.map((item) => ({ ...toGoodsItem(item), category: category.value })),
+        ]
+      } else {
+        next.flowers = picked.map(toGoodsItem)
+      }
     } else if (role.value === 'packaging') {
       next.packaging = picked[0] ? toGoodsItem(picked[0]) : null
     } else {

@@ -112,3 +112,15 @@ export async function fetchBizNotifySubscribeConfig(): Promise<string[]> {
     ? result.tmplIds.map((id) => String(id || '').trim()).filter(Boolean)
     : []
 }
+
+/**
+ * 测试：主动向当前用户发送一条微信服务通知。
+ * 仅用于开发调试，验证订阅消息链路是否正常。
+ */
+export async function testSubscribeMessage(): Promise<{ sent: boolean; errCode?: string; errMsg?: string }> {
+  const result = await callNotify<{ sent: boolean; errCode?: string; errMsg?: string }>({ action: 'testSubscribe' })
+  if (result.success !== true) {
+    throw new Error(result.errMsg || '测试发送失败')
+  }
+  return { sent: result.sent === true, errCode: result.errCode, errMsg: result.errMsg }
+}

@@ -1,11 +1,13 @@
 /**
  * 微信订阅消息发送 — notify / bizNotifyEmit 共用。
- * 双模板：订单状态（通用）+ 订单发货（配送中）。
+ * 三模板：订单状态（顾客）· 订单发货（顾客）· 新订单提醒（商家）。
  * 部署前 npm run sync:cloud
  */
 const cloud = require('wx-server-sdk')
 
 const SUBSCRIBE_PAGE = 'pagesCustomer/notify/list'
+
+// ---- 模板 ID（环境变量优先，其次硬编码） ----
 
 const TMPL_ORDER_STATUS = String(
   process.env.BIZ_NOTIFY_SUBSCRIBE_TMPL_ORDER_STATUS ||
@@ -15,33 +17,64 @@ const TMPL_ORDER_STATUS = String(
 
 const TMPL_ORDER_SHIP = String(
   process.env.BIZ_NOTIFY_SUBSCRIBE_TMPL_ORDER_SHIP ||
-    'ybOSKzUv3HjV70sHqZJB8g-ppSx8_3gP0Ek0XGNxOjM',
+    'ybOSKzUv3HjV70sHqZJB8sO3O1S8fRByeu5SrES0xlw',
 ).trim()
 
-/** 订单状态模板字段（默认：订单编号 + 温馨提示 + 处理人） */
+const TMPL_NEW_ORDER = String(
+  process.env.BIZ_NOTIFY_SUBSCRIBE_TMPL_NEW_ORDER ||
+    'OZQrzpx-S-CfOdQ5Z90icMfzHDgjIj7gYNoivGpKBaw',
+).trim()
+
+// ---- 字段 key（环境变量可覆盖） ----
+
 const STATUS_FIELD_KEYS = parseFieldKeys(
   process.env.BIZ_NOTIFY_SUBSCRIBE_STATUS_KEYS,
-  'character_string1,thing2,name3',
+  'character_string2,thing8,phrase3,time1',
 )
 
-/** 订单发货模板字段（默认：订单编号 + 商品名称 + 发货时间） */
 const SHIP_FIELD_KEYS = parseFieldKeys(
   process.env.BIZ_NOTIFY_SUBSCRIBE_SHIP_KEYS,
-  'character_string1,thing2,time3',
+  'character_string1,name2,thing9,time4',
 )
 
-const SHIP_EVENT_KEYS = new Set(['order.delivering'])
+const NEW_ORDER_FIELD_KEYS = parseFieldKeys(
+  process.env.BIZ_NOTIFY_SUBSCRIBE_NEW_ORDER_KEYS,
+  'character_string1,thing2,thing5,thing10,time6',
+)
+
+// ---- 事件路由表 ----
+
+const ORDER_STATUS_EVENTS = new Set([
+  'order.created',
+  'order.accepted',
+  'order.ready_pickup',
+  'order.completed',
+  'order.cancelled',
+  'order.pending_timeout',
+])
+
+const SHIP_EVENTS = new Set(['order.delivering'])
+
+const NEW_ORDER_EVENTS = new Set(['order.new', 'order.daily_summary'])
+
+const STOCK_EVENTS = new Set(['stock.sold_out', 'stock.low', 'stock.slow_moving'])
+
+// ---- 工具函数 ----
 
 function parseFieldKeys(raw, fallback) {
   const source = String(raw || fallback).trim()
   const keys = source.split(',').map((s) => s.trim()).filter(Boolean)
-  return keys.length >= 3 ? keys.slice(0, 3) : fallback.split(',').map((s) => s.trim())
+  if (!keys.length) return fallback.split(',').map((s) => s.trim()).filter(Boolean)
+  return keys
 }
 
-function clipField(value, max) {
+function clipField(value, max, fieldKey) {
   const s = String(value || '').trim()
   if (!s) return '-'
   if (s.length <= max) return s
+  if (fieldKey && fieldKey.startsWith('phrase')) {
+    return s.slice(0, max)
+  }
   return `${s.slice(0, max - 1)}…`
 }
 
@@ -49,15 +82,17 @@ function resolveOrderNo(payload = {}) {
   const ctx = payload.context && typeof payload.context === 'object' ? payload.context : {}
   const fromCtx = String(ctx.orderNo || '').trim()
   if (fromCtx) return fromCtx
-
   const title = String(payload.title || '').trim()
   const match = title.match(/^订单\s*(.+)$/i)
   if (match) return match[1].trim()
-
   return title || '-'
 }
 
-function formatSubscribeTimeChina(now = new Date()) {
+function formatSubscribeTimeChina(now) {
+  if (!now || typeof now.getTime !== 'function' || Number.isNaN(now.getTime())) {
+    now = new Date()
+    if (Number.isNaN(now.getTime())) return '现在'
+  }
   const offsetMs = (8 * 60 + now.getTimezoneOffset()) * 60 * 1000
   const local = new Date(now.getTime() + offsetMs)
   const y = local.getUTCFullYear()
@@ -80,16 +115,34 @@ function buildDataFromKeys(keys, values) {
   const data = {}
   keys.forEach((key, index) => {
     const max = maxLenForFieldKey(key)
-    data[key] = { value: clipField(values[index], max) }
+    data[key] = { value: clipField(values[index], max, key) }
   })
   return data
 }
 
+// ---- 状态标签映射 ----
+
+function shortStatusLabel(eventKey) {
+  const map = {
+    'order.created': '已提交',
+    'order.accepted': '已确认',
+    'order.ready_pickup': '已备好',
+    'order.delivering': '配送中',
+    'order.completed': '已完成',
+    'order.cancelled': '已取消',
+    'order.pending_timeout': '待确认',
+  }
+  return map[eventKey] || '通知'
+}
+
+// ---- 各模板数据构建 ----
+
 function buildOrderStatusData(payload) {
   return buildDataFromKeys(STATUS_FIELD_KEYS, [
     resolveOrderNo(payload),
-    payload.body || payload.title || '-',
-    payload.fromName || '系统',
+    payload.fromName || '花店',
+    shortStatusLabel(payload.eventKey),
+    formatSubscribeTimeChina() || '现在',
   ])
 }
 
@@ -98,27 +151,55 @@ function buildOrderShipData(payload) {
   const goodsHint = String(ctx.goodsName || ctx.summary || '').trim()
   return buildDataFromKeys(SHIP_FIELD_KEYS, [
     resolveOrderNo(payload),
-    goodsHint || payload.body || '花束',
-    formatSubscribeTimeChina(),
+    ctx.carrier || '花店自送',
+    goodsHint || '鲜花',
+    formatSubscribeTimeChina() || '现在',
   ])
 }
 
+/** 新订单提醒（商家端）：订单号 + 商品信息 + 买家 + 地址 + 时间 */
+function buildNewOrderMerchantData(payload) {
+  const ctx = payload.context && typeof payload.context === 'object' ? payload.context : {}
+  return buildDataFromKeys(NEW_ORDER_FIELD_KEYS, [
+    resolveOrderNo(payload),
+    ctx.summary || ctx.goodsName || '鲜花',
+    ctx.customerName || '顾客',
+    ctx.deliveryAddress || '到店自取',
+    formatSubscribeTimeChina() || '现在',
+  ])
+}
+
+// ---- 模板路由 ----
+
 function pickTemplate(payload = {}) {
   const eventKey = String(payload.eventKey || '').trim()
-  if (SHIP_EVENT_KEYS.has(eventKey) && TMPL_ORDER_SHIP) {
-    return {
-      templateId: TMPL_ORDER_SHIP,
-      data: buildOrderShipData(payload),
-    }
+
+  if (SHIP_EVENTS.has(eventKey) && TMPL_ORDER_SHIP) {
+    return { templateId: TMPL_ORDER_SHIP, data: buildOrderShipData(payload) }
   }
+
+  if (ORDER_STATUS_EVENTS.has(eventKey) && TMPL_ORDER_STATUS) {
+    return { templateId: TMPL_ORDER_STATUS, data: buildOrderStatusData(payload) }
+  }
+
+  if (NEW_ORDER_EVENTS.has(eventKey) && TMPL_NEW_ORDER) {
+    return { templateId: TMPL_NEW_ORDER, data: buildNewOrderMerchantData(payload) }
+  }
+
+  // 库存事件暂无可用的订阅消息模板 → 跳过推送，app 内通知仍正常写入
+  if (STOCK_EVENTS.has(eventKey)) {
+    return null
+  }
+
+  // 兜底：尝试用订单状态模板
   if (TMPL_ORDER_STATUS) {
-    return {
-      templateId: TMPL_ORDER_STATUS,
-      data: buildOrderStatusData(payload),
-    }
+    return { templateId: TMPL_ORDER_STATUS, data: buildOrderStatusData(payload) }
   }
+
   return null
 }
+
+// ---- 发送入口 ----
 
 async function sendBizSubscribeMessage(openid, payload = {}) {
   const picked = pickTemplate(payload)
@@ -131,13 +212,15 @@ async function sendBizSubscribeMessage(openid, payload = {}) {
       templateId: picked.templateId,
       page: SUBSCRIBE_PAGE,
       lang: 'zh_CN',
-      miniprogramState: process.env.MINIPROGRAM_STATE || 'formal',
+      miniprogramState: process.env.MINIPROGRAM_STATE || 'trial',
       data: picked.data,
     })
     return { sent: true, templateId: picked.templateId }
   } catch (err) {
-    console.warn('[subscribeMessage] send failed:', openid, err.errCode || err.code, picked.templateId)
-    return { sent: false, errCode: err.errCode || err.code, templateId: picked.templateId }
+    const errCode = err.errCode || err.code || 'unknown'
+    const errMsg = err.errMsg || err.message || ''
+    console.warn('[subscribeMessage] send failed:', openid, errCode, errMsg, picked.templateId)
+    return { sent: false, errCode, errMsg, templateId: picked.templateId }
   }
 }
 
@@ -146,16 +229,18 @@ function getSubscribeTemplateId() {
 }
 
 function getSubscribeTemplateIds() {
-  return [...new Set([TMPL_ORDER_STATUS, TMPL_ORDER_SHIP].filter(Boolean))]
+  return [...new Set([TMPL_ORDER_STATUS, TMPL_ORDER_SHIP, TMPL_NEW_ORDER].filter(Boolean))]
 }
 
 module.exports = {
   TMPL_ORDER_STATUS,
   TMPL_ORDER_SHIP,
+  TMPL_NEW_ORDER,
   SUBSCRIBE_PAGE,
   sendBizSubscribeMessage,
   getSubscribeTemplateId,
   getSubscribeTemplateIds,
   buildOrderStatusData,
   buildOrderShipData,
+  buildNewOrderMerchantData,
 }
