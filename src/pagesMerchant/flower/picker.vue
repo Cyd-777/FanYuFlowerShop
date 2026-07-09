@@ -202,6 +202,7 @@ watch(
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-flower-picker {
   height: 100vh;
   overflow: hidden;

@@ -201,6 +201,7 @@ function goMine() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-invite-join {
   min-height: 100vh;
   padding: 32rpx;

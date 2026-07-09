@@ -124,6 +124,7 @@ async function acceptOrder(id: string) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-merchant-order {
   background: @color-bg-page;
   min-height: 100vh;

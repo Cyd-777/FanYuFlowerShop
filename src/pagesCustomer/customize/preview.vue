@@ -89,6 +89,7 @@ function submit() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-preview { background: @color-bg-page; min-height: 100vh; padding: 24rpx; }
 .summary-card { background: #fff; border-radius: 16rpx; padding: 32rpx 24rpx; }
 .title { font-size: 32rpx; font-weight: 600; color: #333; margin-bottom: 24rpx; }

@@ -1,3 +1,4 @@
+@import '@/styles/tokens.less';
 <template>
   <view
     class="app-search-input-wrap"
@@ -486,6 +487,7 @@ export default {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .app-search-input-wrap.is-modal-open {
   position: fixed;
   left: 0;

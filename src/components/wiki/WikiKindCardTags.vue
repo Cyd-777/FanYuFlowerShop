@@ -24,6 +24,7 @@ const tags = computed(() => getWikiCardTags(props.item))
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-kind-card-tags {
   display: flex;
   flex-wrap: wrap;

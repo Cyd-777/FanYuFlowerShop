@@ -48,6 +48,7 @@ function formatDiscount(discount: number) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-level { background: @color-bg-page; min-height: 100vh; padding: 32rpx; }
 .intro {
   margin-bottom: 24rpx;

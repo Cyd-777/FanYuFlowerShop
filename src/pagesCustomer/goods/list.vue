@@ -71,6 +71,7 @@ const {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-goods-list { background: @color-bg-page; min-height: 100vh; }
 .search-bar {
   padding: 16rpx 24rpx;

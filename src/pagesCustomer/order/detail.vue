@@ -213,6 +213,7 @@ async function handleCancel() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-order-detail {
   background: @color-bg-page;
   min-height: 100vh;

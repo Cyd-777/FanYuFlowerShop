@@ -187,6 +187,7 @@ function goHome() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-staff-invite {
   min-height: 100vh;
   padding: 32rpx;

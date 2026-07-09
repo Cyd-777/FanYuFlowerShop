@@ -110,6 +110,7 @@ const noteText = computed(() => String(props.note || '').trim())
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-vase-life__bar-block {
   padding: 8rpx 0 4rpx;
 }

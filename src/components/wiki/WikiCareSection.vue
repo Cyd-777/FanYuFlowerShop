@@ -318,6 +318,7 @@ function onPanelTap() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-care-panel {
   padding-bottom: 24rpx;
 

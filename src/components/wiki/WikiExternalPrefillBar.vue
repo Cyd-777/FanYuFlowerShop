@@ -145,6 +145,7 @@ function applySelected() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-ext-prefill {
   margin: 16rpx 24rpx 0;
   padding: 24rpx;

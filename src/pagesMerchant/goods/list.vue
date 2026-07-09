@@ -971,6 +971,7 @@ function editGoods(id: string) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-merchant-goods {
   min-height: 100vh;
   background: @color-bg-page;

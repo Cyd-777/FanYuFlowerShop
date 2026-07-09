@@ -327,6 +327,7 @@ async function handleRiderAction() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-merchant-order-detail {
   background: @color-bg-page;
   min-height: 100vh;

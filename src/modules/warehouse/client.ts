@@ -14,7 +14,7 @@ async function callWarehouse<T = WarehouseListResult>(data: Record<string, unkno
   let res: WechatMiniprogram.Cloud.CallFunctionResult
   try {
     res = await cloud.callFunction({
-      name: 'goods',
+      name: 'warehouse',
       data,
       ...(config ? { config } : {}),
     })

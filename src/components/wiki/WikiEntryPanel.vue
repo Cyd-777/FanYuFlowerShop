@@ -67,6 +67,7 @@ const languageSummary = computed(() => {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-entry-panel {
   margin: 16rpx 24rpx 0;
   padding: 24rpx;

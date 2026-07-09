@@ -75,6 +75,7 @@ function drawQR() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .pickup-card {
   background: #fff;
   margin: 16rpx;

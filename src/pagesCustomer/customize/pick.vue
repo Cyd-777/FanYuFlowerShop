@@ -58,6 +58,7 @@ const {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-customize-pick { min-height: 100vh; background: @color-bg-page; }
 .tip { padding: 20rpx 24rpx; font-size: 24rpx; color: #666; }
 .goods-list { padding: 0 16rpx; }

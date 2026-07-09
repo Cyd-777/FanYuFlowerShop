@@ -174,6 +174,7 @@ const hasCare = computed(
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-wiki-detail {
   height: 100vh;
   display: flex;

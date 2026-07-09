@@ -23,6 +23,7 @@ defineProps<{
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-care-ref-row {
   display: flex;
   gap: 20rpx;

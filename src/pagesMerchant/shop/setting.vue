@@ -70,6 +70,7 @@ async function save() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-shop-setting {
   background: @color-bg-page;
   min-height: 100vh;

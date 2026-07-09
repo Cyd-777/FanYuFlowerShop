@@ -43,6 +43,7 @@ const scientificName = computed(() => props.wiki.names?.scientificName?.trim() |
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-detail-hero {
   padding: 32rpx 32rpx 48rpx;
   min-height: 280rpx;

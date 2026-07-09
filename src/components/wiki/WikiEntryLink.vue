@@ -17,6 +17,7 @@ function onTap() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-entry-link {
   color: @color-danger;
   border-bottom: 2rpx dashed rgba(198, 40, 40, 0.55);

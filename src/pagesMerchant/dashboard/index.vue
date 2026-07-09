@@ -233,6 +233,7 @@ function previewCustomer() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-dashboard { background: @color-bg-page; min-height: 100vh; }
 .header {
   padding: 48rpx 32rpx 32rpx;

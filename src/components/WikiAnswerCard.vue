@@ -31,6 +31,7 @@ function onTap() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-answer-card {
   box-sizing: border-box;
   max-width: 100%;

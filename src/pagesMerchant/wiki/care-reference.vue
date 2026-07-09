@@ -51,6 +51,7 @@ const catalog = WIKI_CARE_CATALOG
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-wiki-care-ref {
   min-height: 100vh;
   padding-bottom: 48rpx;

@@ -123,6 +123,7 @@ async function confirmReplace() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-sales-strategy {
   min-height: 100vh;
   padding-bottom: 48rpx;

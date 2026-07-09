@@ -43,6 +43,7 @@ const previewRows = computed(() => parsePreview())
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-stock-in-import {
   min-height: 100vh;
   background: @color-bg-page;

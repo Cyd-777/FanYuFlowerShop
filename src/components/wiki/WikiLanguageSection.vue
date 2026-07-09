@@ -160,6 +160,7 @@ function onEdit(target: WikiNoteEditTarget) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-language {
   padding-bottom: 8rpx;
 }

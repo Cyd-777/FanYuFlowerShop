@@ -28,6 +28,7 @@ const logs = ref<{ desc: string; time: string; type: string; amount: number }[]>
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-points { background: @color-bg-page; min-height: 100vh; }
 .total-card {
   background: #fff; padding: 48rpx; text-align: center;

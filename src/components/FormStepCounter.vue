@@ -133,6 +133,7 @@ function onBlur() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 @import '@nutui/icons-vue-taro/dist/style_iconfont.css';
 
 .form-step-counter {

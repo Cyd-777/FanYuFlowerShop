@@ -107,6 +107,7 @@ function onQtyInput(lineKey: string, event: { detail: { value: string } }) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-stock-in {
   min-height: 100vh;
   background: @color-bg-page;

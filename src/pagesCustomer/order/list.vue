@@ -86,6 +86,7 @@ function goDetail(id: string) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-order-list {
   background: @color-bg-page;
   min-height: 100vh;

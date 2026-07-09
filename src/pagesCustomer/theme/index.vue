@@ -34,6 +34,7 @@ function goDetail(id: number) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-theme { background: @color-bg-page; min-height: 100vh; }
 .banner-img { width: 100%; height: 400rpx; background: @color-bg-placeholder; }
 .section-title { padding: 32rpx 32rpx 16rpx; font-size: 32rpx; font-weight: 600; color: #333; }

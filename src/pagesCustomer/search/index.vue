@@ -116,6 +116,7 @@ const {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-customer-search {
   min-height: 100vh;
   background: @color-bg-page;

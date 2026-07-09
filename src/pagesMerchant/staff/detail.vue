@@ -210,6 +210,7 @@ async function handleRemove() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-staff-detail {
   min-height: 100vh;
   padding-bottom: 48rpx;

@@ -47,6 +47,7 @@ function markClass(type: WikiIntroMarkerKind): string {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-atlas-intro {
   display: block;
   font-size: 28rpx;

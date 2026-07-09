@@ -37,6 +37,7 @@ const noteText = computed(() => String(props.note || '').trim())
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-bloom-season__months {
   display: flex;
   flex-direction: row;

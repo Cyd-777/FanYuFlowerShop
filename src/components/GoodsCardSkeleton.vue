@@ -31,6 +31,7 @@ withDefaults(
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 @keyframes goods-sk-shimmer {
   0% {
     background-position: 200% 0;

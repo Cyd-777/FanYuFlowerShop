@@ -107,6 +107,7 @@ const submergeSpecValue = computed(() =>
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 @import '@/styles/wiki-care-visual.less';
 
 .wiki-care-guide__water-tag {

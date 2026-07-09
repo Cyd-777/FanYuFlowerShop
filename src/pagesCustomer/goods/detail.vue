@@ -268,6 +268,7 @@ function buyNow() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-goods-detail { padding-bottom: 120rpx; background: @color-bg-page; }
 
 @keyframes sk-shimmer-kf {

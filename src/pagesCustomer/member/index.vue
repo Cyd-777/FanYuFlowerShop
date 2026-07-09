@@ -46,6 +46,7 @@ function goSignin() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-member { background: @color-bg-page; min-height: 100vh; }
 .member-card {
   margin: 32rpx; padding: 48rpx 32rpx; background: linear-gradient(135deg, @color-primary-light, @color-primary-border);

@@ -264,6 +264,7 @@ function onSheetConfirm(value: string) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 @import '@/styles/wiki-detail-panel.less';
 
 .wiki-merchant-note {

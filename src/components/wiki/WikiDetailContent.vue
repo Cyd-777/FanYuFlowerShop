@@ -61,6 +61,7 @@ const hasCare = computed(
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-detail-stack {
   padding: 8rpx 32rpx 0;
 }

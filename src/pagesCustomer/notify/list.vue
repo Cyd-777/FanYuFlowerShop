@@ -155,6 +155,7 @@ useDidShow(() => {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-notify-list {
   min-height: 100vh;
   background: @color-bg-muted;

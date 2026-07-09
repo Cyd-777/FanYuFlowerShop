@@ -216,6 +216,7 @@ function isRiderLineDone(index: number) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .order-status-steps { padding: 4rpx 0 0; }
 
 .flow-tip { margin-bottom: 20rpx; text-align: center; font-size: 28rpx; font-weight: 600; }

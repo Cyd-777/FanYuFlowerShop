@@ -50,6 +50,7 @@ const contentClasses = computed(() => {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-data-text {
   &--inline {
     display: inline;

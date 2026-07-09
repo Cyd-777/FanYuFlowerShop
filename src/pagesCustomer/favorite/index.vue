@@ -111,6 +111,7 @@ function goDetail(id: string, coverPreview?: string, coverFileId?: string) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-favorite {
   background: @color-bg-page;
   min-height: 100vh;

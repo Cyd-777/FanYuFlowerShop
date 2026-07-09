@@ -214,6 +214,7 @@ function copyInvitePath() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-staff {
   min-height: 100vh;
   background: @color-bg-page;

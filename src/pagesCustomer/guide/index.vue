@@ -160,6 +160,7 @@ function onComplete() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-guide {
   min-height: 100vh;
   background: @color-bg-page;

@@ -184,6 +184,7 @@ useLoad((options) => {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-notify-send {
   min-height: 100vh;
   background: @color-bg-muted;

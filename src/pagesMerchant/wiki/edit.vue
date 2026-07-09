@@ -644,6 +644,7 @@ function confirmDelete() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-merchant-wiki-edit {
   min-height: 100vh;
   background: @color-bg-page;

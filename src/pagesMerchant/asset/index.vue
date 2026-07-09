@@ -398,6 +398,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-asset {
   min-height: 100vh;
   background: @color-bg-page;

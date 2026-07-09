@@ -51,6 +51,7 @@ const dotStyle = computed(() => ({
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-language-color {
   display: flex;
   gap: 16rpx;

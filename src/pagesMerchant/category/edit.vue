@@ -363,6 +363,7 @@ async function handleDelete() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-category-edit { min-height: 100vh; padding-bottom: 48rpx; background: @color-bg-page; }
 .form-card, .preview-card { background: #fff; margin-bottom: 16rpx; }
 .preview-card { padding: 24rpx 32rpx 32rpx; }

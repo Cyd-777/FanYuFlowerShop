@@ -79,6 +79,7 @@ function onConfirm() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-note-sheet {
   position: fixed;
   inset: 0;

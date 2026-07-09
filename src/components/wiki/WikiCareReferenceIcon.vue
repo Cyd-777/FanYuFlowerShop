@@ -57,6 +57,7 @@ const angleRayStyle = computed(() => ({
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-care-ref-icon {
   flex-shrink: 0;
   width: 88rpx;

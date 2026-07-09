@@ -161,6 +161,7 @@ function showDate(batch: { createdAt?: unknown }, idx: number): boolean {
 }
 </script>
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-warehouse-history { min-height: 100vh; background: @color-bg-page; padding-bottom: 48rpx; box-sizing: border-box; }
 
 .filter-tabs {

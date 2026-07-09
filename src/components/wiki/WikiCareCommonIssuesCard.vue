@@ -45,6 +45,7 @@ const preventionLabel = '预防：'
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-care-issues {
   margin-top: 16rpx;
   padding-top: 16rpx;

@@ -51,6 +51,7 @@ function doSignin() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-signin { background: @color-bg-page; min-height: 100vh; }
 .calendar { background: #fff; margin: 32rpx; border-radius: 24rpx; padding: 32rpx; }
 .month { text-align: center; font-size: 32rpx; font-weight: 600; margin-bottom: 24rpx; }

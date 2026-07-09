@@ -161,6 +161,7 @@ function submitOrder() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-customize { padding-bottom: 140rpx; background: @color-bg-page; min-height: 100vh; }
 .tip-card {
   margin: 16rpx;

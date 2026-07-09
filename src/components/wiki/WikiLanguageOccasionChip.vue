@@ -23,6 +23,7 @@ const icon = computed(() => resolveWikiOccasionIcon(props.label))
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-language-occasion {
   display: inline-flex;
   align-items: center;

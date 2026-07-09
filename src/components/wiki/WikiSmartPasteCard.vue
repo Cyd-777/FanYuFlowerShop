@@ -194,6 +194,7 @@ function applySelected() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-smart-paste {
   margin: 16rpx;
   background: #fff;

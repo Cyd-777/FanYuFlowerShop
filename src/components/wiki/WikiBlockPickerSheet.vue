@@ -100,6 +100,7 @@ function onConfirm() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-block-sheet {
   position: fixed;
   inset: 0;

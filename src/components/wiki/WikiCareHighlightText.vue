@@ -52,6 +52,7 @@ const contentWrapClass = computed(() =>
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .wiki-care-highlight {
   font-size: inherit;
   color: inherit;

@@ -79,6 +79,7 @@ async function scan() {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-verify { background: @color-bg-page; min-height: 100vh; box-sizing: border-box; width: 100%; max-width: 100%; }
 .intro { text-align: center; padding: 80rpx 32rpx 48rpx; box-sizing: border-box; }
 .icon { font-size: 100rpx; }

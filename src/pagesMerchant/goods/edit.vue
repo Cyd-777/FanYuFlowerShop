@@ -805,6 +805,7 @@ watch(selectableCategories, () => {
 </script>
 
 <style lang="less">
+@import '@/styles/tokens.less';
 .page-merchant-goods-edit {
   min-height: 100vh;
   padding-bottom: 48rpx;
