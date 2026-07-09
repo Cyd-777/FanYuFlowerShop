@@ -81,7 +81,7 @@ function drawQR() {
   padding: 32rpx;
   border-radius: 16rpx;
   text-align: center;
-  border: 2rpx solid #fce4ec;
+  border: 2rpx solid @color-primary-light;
 }
 .pickup-title { font-size: 28rpx; font-weight: 600; color: #333; margin-bottom: 16rpx; }
 .pickup-canvas {
@@ -91,7 +91,7 @@ function drawQR() {
   border-radius: 8rpx;
 }
 .pickup-hint { font-size: 24rpx; color: #999; margin-top: 16rpx; }
-.pickup-body { border-top: 2rpx solid #f5f5f5; margin-top: 16rpx; padding-top: 16rpx; text-align: left; }
+.pickup-body { border-top: 2rpx solid @color-bg-muted; margin-top: 16rpx; padding-top: 16rpx; text-align: left; }
 .pickup-row { display: flex; gap: 12rpx; font-size: 24rpx; padding: 4rpx 0; }
 .pk-label { color: #999; width: 80rpx; flex-shrink: 0; }
 </style>

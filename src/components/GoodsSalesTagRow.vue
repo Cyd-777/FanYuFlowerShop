@@ -61,8 +61,8 @@ const tags = computed(() =>
   border-radius: 6rpx;
 
   &.new {
-    color: #2e7d32;
-    background: #e8f5e9;
+    color: @color-success;
+    background: @color-success-bg;
   }
 
   &.recommend {
@@ -76,7 +76,7 @@ const tags = computed(() =>
   }
 
   &.salesType {
-    color: #5c6bc0;
+    color: @color-tag-indigo;
     background: rgba(92, 107, 192, 0.12);
   }
 }

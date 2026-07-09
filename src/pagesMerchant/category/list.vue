@@ -183,7 +183,7 @@ function onSecondaryTap(item: Category, readOnly: boolean) {
 <style lang="less">
 @import '@/styles/tokens.less';
 
-.page-category-list { min-height: 100vh; padding-bottom: 48rpx; background: #f8f8f8; }
+.page-category-list { min-height: 100vh; padding-bottom: 48rpx; background: @color-bg-page; }
 .intro { padding: 32rpx; background: #fff; margin-bottom: 16rpx; }
 .intro .title { font-size: 34rpx; font-weight: 600; color: #333; }
 .intro .desc { margin-top: 8rpx; font-size: 24rpx; color: #999; line-height: 1.5; }
@@ -205,8 +205,8 @@ function onSecondaryTap(item: Category, readOnly: boolean) {
   color: @color-primary;
   margin-left: auto;
 }
-.section-tier { font-size: 20rpx; color: #e53935; margin-bottom: 12rpx; }
-.section-badge { font-size: 20rpx; color: #999; font-weight: 400; background: #f5f5f5; padding: 2rpx 10rpx; border-radius: 8rpx; }
+.section-tier { font-size: 20rpx; color: @color-primary; margin-bottom: 12rpx; }
+.section-badge { font-size: 20rpx; color: #999; font-weight: 400; background: @color-bg-muted; padding: 2rpx 10rpx; border-radius: 8rpx; }
 .section-desc { font-size: 24rpx; color: #999; line-height: 1.5; margin-bottom: 8rpx; }
 .secondary-block { margin-top: 8rpx; }
 .secondary-label { font-size: 22rpx; color: #bbb; margin-bottom: 12rpx; }
@@ -220,7 +220,7 @@ function onSecondaryTap(item: Category, readOnly: boolean) {
   align-items: center;
   gap: 8rpx;
   padding: 10rpx 18rpx;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border: 2rpx solid #eee;
   border-radius: 28rpx;
   font-size: 24rpx;
@@ -230,7 +230,7 @@ function onSecondaryTap(item: Category, readOnly: boolean) {
   box-sizing: border-box;
 }
 .pill-chip.readonly {
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border-color: #eee;
   color: #666;
 }

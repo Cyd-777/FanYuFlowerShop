@@ -220,9 +220,9 @@ function isRiderLineDone(index: number) {
 
 .flow-tip { margin-bottom: 20rpx; text-align: center; font-size: 28rpx; font-weight: 600; }
 .cancelled-tip { color: #999; }
-.completed-tip { color: #e53935; }
+.completed-tip { color: @color-primary; }
 
-.steps-group + .steps-group { margin-top: 28rpx; padding-top: 24rpx; border-top: 2rpx solid #f0f0f0; }
+.steps-group + .steps-group { margin-top: 28rpx; padding-top: 24rpx; border-top: 2rpx solid @color-bg-placeholder; }
 
 .group-title { margin-bottom: 16rpx; font-size: 22rpx; color: #bbb; letter-spacing: 2rpx; }
 
@@ -231,27 +231,27 @@ function isRiderLineDone(index: number) {
 .step-track { width: 100%; display: flex; align-items: center; justify-content: center; position: relative; height: 44rpx; }
 .step-line {
   position: absolute; top: 50%; right: 50%; width: 100%; height: 4rpx; margin-top: -2rpx;
-  background: #e0e0e0; z-index: 0;
-  &.done { background: #e53935; }
+  background: @color-border-dashed; z-index: 0;
+  &.done { background: @color-primary; }
 }
 .step-dot {
   position: relative; z-index: 1; width: 44rpx; height: 44rpx; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: #e0e0e0; color: #999; font-size: 22rpx; font-weight: 600;
-  &.done, &.active { background: #e53935; color: #fff; }
+  background: @color-border-dashed; color: #999; font-size: 22rpx; font-weight: 600;
+  &.done, &.active { background: @color-primary; color: #fff; }
 }
-.rider-group .step-dot.done, .rider-group .step-dot.active { background: #ff7043; }
-.rider-group .step-line.done { background: #ff7043; }
-.rider-group .step-label.done, .rider-group .step-label.active { color: #ff7043; }
-.delivery-group .step-dot.done, .delivery-group .step-dot.active { background: #667eea; }
-.delivery-group .step-line.done { background: #667eea; }
-.delivery-group .step-label.done, .delivery-group .step-label.active { color: #667eea; }
+.rider-group .step-dot.done, .rider-group .step-dot.active { background: @color-status-warm; }
+.rider-group .step-line.done { background: @color-status-warm; }
+.rider-group .step-label.done, .rider-group .step-label.active { color: @color-status-warm; }
+.delivery-group .step-dot.done, .delivery-group .step-dot.active { background: @color-merchant-start; }
+.delivery-group .step-line.done { background: @color-merchant-start; }
+.delivery-group .step-label.done, .delivery-group .step-label.active { color: @color-merchant-start; }
 .step-check { font-size: 24rpx; line-height: 1; }
 .step-num { line-height: 1; }
-.step-label { margin-top: 10rpx; font-size: 20rpx; color: #999; text-align: center; line-height: 1.3; max-width: 100%; word-break: keep-all; &.done, &.active { color: #e53935; font-weight: 600; } }
+.step-label { margin-top: 10rpx; font-size: 20rpx; color: #999; text-align: center; line-height: 1.3; max-width: 100%; word-break: keep-all; &.done, &.active { color: @color-primary; font-weight: 600; } }
 
 .order-status-steps.cancelled {
-  .step-dot, .step-line.done { background: #e0e0e0; }
+  .step-dot, .step-line.done { background: @color-border-dashed; }
   .step-dot { color: #999; }
   .step-label.done, .step-label.active { color: #999; font-weight: 400; }
 }

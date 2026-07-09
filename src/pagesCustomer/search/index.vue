@@ -118,7 +118,7 @@ const {
 <style lang="less">
 .page-customer-search {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   box-sizing: border-box;
   width: 100%;
 }
@@ -157,7 +157,7 @@ const {
   .goods-img {
     width: 100%;
     height: 280rpx;
-    background: #f0f0f0;
+    background: @color-bg-placeholder;
   }
   .goods-name {
     padding: 12rpx 16rpx 4rpx;
@@ -169,7 +169,7 @@ const {
   }
   .goods-price {
     padding: 0 16rpx 16rpx;
-    color: #e53935;
+    color: @color-primary;
   }
 }
 .wiki-section-body {
@@ -187,7 +187,7 @@ const {
   line-height: 88rpx;
   text-align: center;
   font-size: 44rpx;
-  background: #fff5f5;
+  background: @color-danger-bg-alt;
   border-radius: 16rpx;
   flex-shrink: 0;
 }
@@ -204,7 +204,7 @@ const {
 .wiki-kind {
   margin-top: 4rpx;
   font-size: 22rpx;
-  color: #e53935;
+  color: @color-primary;
 }
 .wiki-preview {
   margin-top: 8rpx;

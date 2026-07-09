@@ -51,14 +51,14 @@ function doSignin() {
 </script>
 
 <style lang="less">
-.page-signin { background: #f8f8f8; min-height: 100vh; }
+.page-signin { background: @color-bg-page; min-height: 100vh; }
 .calendar { background: #fff; margin: 32rpx; border-radius: 24rpx; padding: 32rpx; }
 .month { text-align: center; font-size: 32rpx; font-weight: 600; margin-bottom: 24rpx; }
 .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8rpx; }
 .day {
   text-align: center; padding: 12rpx 0; border-radius: 50%;
-  &.signed { background: #fce4ec; }
-  &.today { border: 2rpx solid #e53935; }
+  &.signed { background: @color-primary-light; }
+  &.today { border: 2rpx solid @color-primary; }
   .day-num { font-size: 28rpx; color: #333; display: block; }
   .day-check { font-size: 20rpx; }
 }

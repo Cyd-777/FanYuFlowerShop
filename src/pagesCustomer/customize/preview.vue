@@ -89,14 +89,14 @@ function submit() {
 </script>
 
 <style lang="less">
-.page-preview { background: #f8f8f8; min-height: 100vh; padding: 24rpx; }
+.page-preview { background: @color-bg-page; min-height: 100vh; padding: 24rpx; }
 .summary-card { background: #fff; border-radius: 16rpx; padding: 32rpx 24rpx; }
 .title { font-size: 32rpx; font-weight: 600; color: #333; margin-bottom: 24rpx; }
 .row {
-  display: flex; padding: 12rpx 0; font-size: 26rpx; border-bottom: 2rpx solid #f5f5f5;
+  display: flex; padding: 12rpx 0; font-size: 26rpx; border-bottom: 2rpx solid @color-bg-muted;
   .label { color: #999; width: 120rpx; flex-shrink: 0; }
   &.total { border: none; margin-top: 8rpx; }
-  .price { color: #e53935; font-weight: 600; font-size: 32rpx; }
+  .price { color: @color-primary; font-weight: 600; font-size: 32rpx; }
 }
 .note { margin-top: 16rpx; font-size: 22rpx; color: #999; line-height: 1.5; }
 .submit-btn { margin-top: 48rpx; border-radius: 48rpx; }

@@ -116,7 +116,7 @@ const submergeSpecValue = computed(() =>
   font-size: 16rpx;
   font-weight: 700;
   line-height: 1;
-  color: #1565c0;
+  color: @color-link;
   padding: 2rpx 6rpx;
   border-radius: 6rpx;
   background: rgba(227, 242, 253, 0.95);
@@ -136,7 +136,7 @@ const submergeSpecValue = computed(() =>
 .wiki-care-guide__submerge-line {
   width: 2rpx;
   flex: 1;
-  background: #1565c0;
+  background: @color-link;
   border-radius: 999rpx;
 }
 
@@ -145,7 +145,7 @@ const submergeSpecValue = computed(() =>
   font-size: 16rpx;
   font-weight: 700;
   line-height: 1;
-  color: #1565c0;
+  color: @color-link;
   white-space: nowrap;
   padding: 2rpx 6rpx;
   border-radius: 6rpx;

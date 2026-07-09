@@ -163,11 +163,11 @@ function onConfirm() {
   align-items: flex-start;
   gap: 16rpx;
   padding: 20rpx 16rpx;
-  border-bottom: 1rpx solid #f3f3f3;
+  border-bottom: 1rpx solid @color-wiki-gray-bg;
 }
 
 .wiki-block-sheet__item--active {
-  background: #fafafa;
+  background: @color-bg-input;
 }
 
 .wiki-block-sheet__check {
@@ -182,8 +182,8 @@ function onConfirm() {
   flex-shrink: 0;
 
   &.checked {
-    background: #e53935;
-    border-color: #e53935;
+    background: @color-primary;
+    border-color: @color-primary;
   }
 }
 

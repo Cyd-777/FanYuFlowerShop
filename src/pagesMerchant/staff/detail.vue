@@ -213,7 +213,7 @@ async function handleRemove() {
 .page-staff-detail {
   min-height: 100vh;
   padding-bottom: 48rpx;
-  background: #f8f8f8;
+  background: @color-bg-page;
 }
 .loading-tip {
   padding: 80rpx 32rpx;
@@ -235,7 +235,7 @@ async function handleRemove() {
   height: 96rpx;
   margin-right: 24rpx;
   border-radius: 50%;
-  background: #f0f0f0;
+  background: @color-bg-placeholder;
   &.placeholder {
     display: flex;
     align-items: center;
@@ -276,7 +276,7 @@ async function handleRemove() {
   font-size: 22rpx;
   border-radius: 6rpx;
   &.owner {
-    color: #667eea;
+    color: @color-merchant-start;
     background: rgba(102, 126, 234, 0.12);
   }
 }

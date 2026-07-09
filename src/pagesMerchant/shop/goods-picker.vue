@@ -62,13 +62,13 @@ const {
 </script>
 
 <style lang="less">
-.page-goods-picker { min-height: 100vh; background: #f8f8f8; padding-bottom: 120rpx; }
+.page-goods-picker { min-height: 100vh; background: @color-bg-page; padding-bottom: 120rpx; }
 .tip { padding: 20rpx 24rpx; font-size: 24rpx; color: #666; }
 .list { padding: 0 16rpx; }
 .row {
   display: flex; align-items: center; background: #fff; border-radius: 12rpx;
   padding: 16rpx; margin-bottom: 12rpx; border: 2rpx solid transparent;
-  &.selected { border-color: #e53935; background: #fff5f5; }
+  &.selected { border-color: @color-primary; background: @color-danger-bg-alt; }
 }
 .row-active { opacity: 0.88; }
 .check {
@@ -77,14 +77,14 @@ const {
   flex-shrink: 0;
 }
 .row.selected .check {
-  border-color: #e53935;
-  background: #fce4ec;
+  border-color: @color-primary;
+  background: @color-primary-light;
 }
-.check-mark { color: #e53935; font-size: 24rpx; line-height: 1; }
-.thumb { width: 96rpx; height: 96rpx; border-radius: 8rpx; background: #f0f0f0; flex-shrink: 0; }
+.check-mark { color: @color-primary; font-size: 24rpx; line-height: 1; }
+.thumb { width: 96rpx; height: 96rpx; border-radius: 8rpx; background: @color-bg-placeholder; flex-shrink: 0; }
 .info { flex: 1; margin-left: 16rpx; min-width: 0; }
 .name { font-size: 26rpx; color: #333; }
-.price { margin-top: 6rpx; color: #e53935; }
+.price { margin-top: 6rpx; color: @color-primary; }
 .action-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex; align-items: center; padding: 16rpx 24rpx;

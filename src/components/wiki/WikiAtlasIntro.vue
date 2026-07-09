@@ -71,32 +71,32 @@ function markClass(type: WikiIntroMarkerKind): string {
 }
 
 .wiki-atlas-intro__mark--taxonomy {
-  color: #2e7d32;
+  color: @color-success;
 }
 
 .wiki-atlas-intro__mark--group {
-  color: #1565c0;
+  color: @color-link;
   font-weight: 700;
 }
 
 .wiki-atlas-intro__mark--region {
-  color: #6a1b9a;
+  color: @color-tag-purple;
   font-weight: 700;
 }
 
 .wiki-atlas-intro__mark--names {
-  color: #e65100;
+  color: @color-warning;
   font-weight: 600;
 }
 
 .wiki-atlas-intro__mark--scientificName {
-  color: #546e7a;
+  color: @color-wiki-gray;
   font-style: italic;
   font-weight: 400;
 }
 
 .wiki-atlas-intro__mark--feature {
-  color: #c62828;
+  color: @color-danger;
   background: rgba(255, 235, 59, 0.35);
   font-weight: 700;
 }

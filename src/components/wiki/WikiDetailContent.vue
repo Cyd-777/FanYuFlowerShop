@@ -80,7 +80,7 @@ const hasCare = computed(
   &:not(:first-child) {
     margin-top: 16rpx;
     padding-top: 32rpx;
-    border-top: 1rpx solid #f0f0f0;
+    border-top: 1rpx solid @color-bg-placeholder;
   }
 }
 

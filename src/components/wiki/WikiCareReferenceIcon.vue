@@ -65,8 +65,8 @@ const angleRayStyle = computed(() => ({
   align-items: center;
   justify-content: center;
   border-radius: 16rpx;
-  background: #f8fafb;
-  border: 1rpx solid #eef1f4;
+  background: @color-bg-input;
+  border: 1rpx solid @color-tag-bg;
   overflow: hidden;
 }
 
@@ -79,7 +79,7 @@ const angleRayStyle = computed(() => ({
   width: 24rpx;
   height: 24rpx;
   border-radius: 8rpx;
-  background: #e0e0e0;
+  background: @color-border-dashed;
 }
 
 .wiki-care-ref-icon__mini {
@@ -94,13 +94,13 @@ const angleRayStyle = computed(() => ({
   bottom: 6rpx;
   width: 28rpx;
   height: 40rpx;
-  border: 2rpx solid #cfd8dc;
+  border: 2rpx solid @color-divider-light;
   border-top: none;
   border-radius: 0 0 10rpx 10rpx;
   background: rgba(236, 239, 241, 0.45);
 
   &--water {
-    border-color: #90caf9;
+    border-color: @color-info-bg;
     background: rgba(227, 242, 253, 0.35);
   }
 }
@@ -110,7 +110,7 @@ const angleRayStyle = computed(() => ({
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, #64b5f6 0%, #1e88e5 100%);
+  background: linear-gradient(180deg, @color-merchant-badge 0%, @color-link 100%);
 
   &--third {
     height: 33%;
@@ -128,7 +128,7 @@ const angleRayStyle = computed(() => ({
   width: 4rpx;
   height: 46rpx;
   border-radius: 999rpx;
-  background: linear-gradient(180deg, #66bb6a 0%, #43a047 100%);
+  background: linear-gradient(180deg, @color-green-mid 0%, @color-green-mid 100%);
   z-index: 1;
 
   &--upright {
@@ -176,7 +176,7 @@ const angleRayStyle = computed(() => ({
   font-size: 12rpx;
   font-weight: 700;
   line-height: 1;
-  color: #1565c0;
+  color: @color-link;
   padding: 1rpx 4rpx;
   border-radius: 4rpx;
   background: rgba(227, 242, 253, 0.95);

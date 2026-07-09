@@ -36,8 +36,8 @@ function onTap() {
   max-width: 100%;
   margin-bottom: 16rpx;
   padding: 24rpx;
-  background: linear-gradient(180deg, #fff8f8 0%, #fff 100%);
-  border: 1rpx solid #ffe0e0;
+  background: linear-gradient(180deg, @color-primary-bg-alt 0%, #fff 100%);
+  border: 1rpx solid @color-danger-bg-alt;
   border-radius: 16rpx;
 }
 
@@ -51,8 +51,8 @@ function onTap() {
   align-self: flex-start;
   padding: 4rpx 12rpx;
   font-size: 20rpx;
-  color: #e53935;
-  background: #fff0f0;
+  color: @color-primary;
+  background: @color-danger-bg-alt;
   border-radius: 8rpx;
 }
 
@@ -82,17 +82,17 @@ function onTap() {
   justify-content: flex-end;
   margin-top: 20rpx;
   padding-top: 16rpx;
-  border-top: 1rpx solid #f5e8e8;
+  border-top: 1rpx solid @color-primary-light;
 }
 
 .wiki-answer-link {
   font-size: 24rpx;
-  color: #e53935;
+  color: @color-primary;
 }
 
 .wiki-answer-arrow {
   margin-left: 4rpx;
   font-size: 32rpx;
-  color: #e53935;
+  color: @color-primary;
 }
 </style>

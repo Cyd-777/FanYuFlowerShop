@@ -325,13 +325,13 @@ function onPanelTap() {
     padding: 12rpx;
     margin: 0 -12rpx;
     border-radius: 12rpx;
-    background: #fff8f8;
+    background: @color-primary-bg-alt;
     box-shadow: 0 0 0 2rpx rgba(229, 57, 53, 0.12);
   }
 
   &--secondary {
     padding-top: 24rpx;
-    border-top: 1rpx solid #f0f0f0;
+    border-top: 1rpx solid @color-bg-placeholder;
   }
 }
 
@@ -353,7 +353,7 @@ function onPanelTap() {
 .wiki-care-panel__phase {
   margin-top: 20rpx;
   padding-top: 20rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 1rpx solid @color-bg-placeholder;
 
   &:first-child {
     margin-top: 0;
@@ -380,13 +380,13 @@ function onPanelTap() {
 .wiki-care-panel__conditions {
   margin-top: 8rpx;
   padding-top: 8rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 1rpx solid @color-bg-placeholder;
 }
 
 .wiki-care-panel__block {
   margin-top: 16rpx;
   padding-top: 16rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 1rpx solid @color-bg-placeholder;
 }
 
 .wiki-care-panel__lead {
@@ -445,7 +445,7 @@ function onPanelTap() {
 .wiki-care-panel__empty {
   display: block;
   font-size: 24rpx;
-  color: #a78bfa;
+  color: @color-wiki-purple-mid-light;
   line-height: 1.5;
 }
 

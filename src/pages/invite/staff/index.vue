@@ -190,7 +190,7 @@ function goHome() {
 .page-staff-invite {
   min-height: 100vh;
   padding: 32rpx;
-  background: #f8f8f8;
+  background: @color-bg-page;
   box-sizing: border-box;
 }
 .state-box,
@@ -233,7 +233,7 @@ function goHome() {
   margin-top: 32rpx;
   padding: 24rpx;
   text-align: left;
-  background: #fafafa;
+  background: @color-bg-input;
   border-radius: 16rpx;
 }
 .info-row {
@@ -252,7 +252,7 @@ function goHome() {
 .warn-text {
   margin-top: 32rpx;
   font-size: 26rpx;
-  color: #e65100;
+  color: @color-warning;
 }
 .action-btn {
   margin-top: 24rpx;

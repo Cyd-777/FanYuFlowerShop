@@ -625,7 +625,7 @@ function confirmDelete() {
     title: '删除词条',
     content: '删除后不可恢复，对应的衍生分类也将移除，确定继续？',
     confirmText: '删除',
-    confirmColor: '#e53935',
+    confirmColor: '@color-primary',
     success: async (res) => {
       if (!res.confirm) return
       saving.value = true
@@ -646,7 +646,7 @@ function confirmDelete() {
 <style lang="less">
 .page-merchant-wiki-edit {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   display: flex;
   flex-direction: column;
 }
@@ -669,9 +669,9 @@ function confirmDelete() {
   border-radius: 8rpx;
 
   &.active {
-    color: #e53935;
+    color: @color-primary;
     font-weight: 600;
-    background: #fff5f5;
+    background: @color-danger-bg-alt;
   }
 }
 
@@ -694,23 +694,23 @@ function confirmDelete() {
 .overlay-banner {
   margin: 16rpx 16rpx 0;
   padding: 20rpx 24rpx;
-  background: #fff8e6;
+  background: @color-warning-bg;
   border-radius: 12rpx;
-  border: 1rpx solid #ffe0a3;
+  border: 1rpx solid @color-wiki-amber-bg;
 }
 
 .overlay-banner__title {
   display: block;
   font-size: 26rpx;
   font-weight: 600;
-  color: #b36b00;
+  color: @color-wiki-amber;
 }
 
 .overlay-banner__desc {
   display: block;
   margin-top: 8rpx;
   font-size: 24rpx;
-  color: #996600;
+  color: @color-wiki-amber;
   line-height: 1.55;
 }
 
@@ -747,7 +747,7 @@ function confirmDelete() {
   align-items: flex-start;
   gap: 16rpx;
   padding: 14rpx 0;
-  border-bottom: 1rpx solid #f5f5f5;
+  border-bottom: 1rpx solid @color-bg-muted;
 
   &:last-child {
     border-bottom: none;
@@ -786,7 +786,7 @@ function confirmDelete() {
   min-height: 64rpx;
   font-size: 28rpx;
   padding: 8rpx 12rpx;
-  background: #f7f7f7;
+  background: @color-bg-surface-alt;
   border-radius: 8rpx;
 
   &--short {
@@ -812,7 +812,7 @@ function confirmDelete() {
   font-size: 28rpx;
   line-height: 1.55;
   padding: 16rpx 12rpx;
-  background: #f7f7f7;
+  background: @color-bg-surface-alt;
   border-radius: 8rpx;
   box-sizing: border-box;
 
@@ -834,7 +834,7 @@ function confirmDelete() {
   height: 64rpx;
   font-size: 26rpx;
   padding: 0 12rpx;
-  background: #f7f7f7;
+  background: @color-bg-surface-alt;
   border-radius: 8rpx;
 }
 
@@ -844,21 +844,21 @@ function confirmDelete() {
   min-height: 80rpx;
   font-size: 26rpx;
   padding: 12rpx;
-  background: #f7f7f7;
+  background: @color-bg-surface-alt;
   border-radius: 8rpx;
 }
 
 .distinguish-remove,
 .pair-remove {
   font-size: 24rpx;
-  color: #e53935;
+  color: @color-primary;
   padding: 8rpx;
 }
 
 .article-add-btn {
   margin-top: 8rpx;
   font-size: 26rpx;
-  color: #e53935;
+  color: @color-primary;
   padding: 12rpx 0;
 }
 
@@ -874,7 +874,7 @@ function confirmDelete() {
   height: 64rpx;
   font-size: 26rpx;
   padding: 0 12rpx;
-  background: #f7f7f7;
+  background: @color-bg-surface-alt;
   border-radius: 8rpx;
 
   &--wide {
@@ -886,7 +886,7 @@ function confirmDelete() {
   position: relative;
   padding: 16rpx;
   margin-bottom: 12rpx;
-  background: #fafafa;
+  background: @color-bg-input;
   border-radius: 12rpx;
   display: flex;
   flex-direction: column;
@@ -921,8 +921,8 @@ function confirmDelete() {
   margin-top: 12rpx;
   padding: 16rpx 12rpx;
   font-size: 26rpx;
-  color: #e53935;
-  background: #fff5f5;
+  color: @color-primary;
+  background: @color-danger-bg-alt;
   border-radius: 8rpx;
 }
 
@@ -943,7 +943,7 @@ function confirmDelete() {
   padding: 20rpx 0;
   text-align: center;
   font-size: 28rpx;
-  color: #e53935;
+  color: @color-primary;
   font-weight: 500;
 }
 

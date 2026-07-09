@@ -494,11 +494,11 @@ function onRightScroll(event: { detail?: { scrollTop?: number } }) {
 .pill-body { flex: 1; min-width: 0; height: 100%; overflow: hidden; }
 .pill-bar.expanded .pill-body { overflow: visible; height: auto; }
 .pill-track-expanded { display: flex; flex-wrap: wrap; align-content: flex-start; align-items: center; gap: 8rpx; padding: 10rpx 12rpx; box-sizing: border-box; width: 100%; min-height: 100%; }
-.pill-item { flex: none; min-width: 144rpx; padding: 6rpx 12rpx; background: #f5f5f5; border: 2rpx solid #eee; border-radius: 28rpx; font-size: 24rpx; color: #666; white-space: nowrap; line-height: 1.4; text-align: center; }
+.pill-item { flex: none; min-width: 144rpx; padding: 6rpx 12rpx; background: @color-bg-muted; border: 2rpx solid #eee; border-radius: 28rpx; font-size: 24rpx; color: #666; white-space: nowrap; line-height: 1.4; text-align: center; }
 .pill-item.active { background: @color-primary-light; border-color: @color-primary-border; color: @color-primary; font-weight: 600; }
 .pill-item--pressed { opacity: 0.85; }
 .pill-dropdown { flex: none; width: 72rpx; display: flex; align-items: center; justify-content: center; align-self: stretch; background: #fff; }
-.pill-dropdown--pressed { background: #fafafa; }
+.pill-dropdown--pressed { background: @color-bg-input; }
 .pill-dropdown-icon { flex-shrink: 0; opacity: 0.72; }
 
 /** 展开面板收起按钮行 */
@@ -553,7 +553,7 @@ function onRightScroll(event: { detail?: { scrollTop?: number } }) {
 .goods-item { display: flex; box-sizing: border-box; max-width: 100%; background: #fff; border-radius: 12rpx; padding: 16rpx; margin-bottom: 16rpx; }
 .goods-item.is-sold-out .thumb { opacity: 0.72; }
 .thumb-wrap { position: relative; flex-shrink: 0; }
-.thumb { width: 160rpx; height: 160rpx; border-radius: 8rpx; background: #f0f0f0; flex-shrink: 0; }
+.thumb { width: 160rpx; height: 160rpx; border-radius: 8rpx; background: @color-bg-placeholder; flex-shrink: 0; }
 .info { margin-left: 16rpx; flex: 1; min-width: 0; }
 .name { font-size: 26rpx; color: #333; }
 .price { margin-top: 8rpx; color: @color-primary; }

@@ -249,6 +249,6 @@ async function submitOrder() {
   display: flex; align-items: center; padding: 16rpx 24rpx;
   background: #fff; border-top: 2rpx solid #eee;
   .total { flex: 1; font-size: 28rpx; }
-  .price { color: #e53935; font-weight: 600; font-size: 34rpx; }
+  .price { color: @color-primary; font-weight: 600; font-size: 34rpx; }
 }
 </style>

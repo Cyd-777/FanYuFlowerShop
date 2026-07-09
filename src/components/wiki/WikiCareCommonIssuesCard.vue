@@ -48,7 +48,7 @@ const preventionLabel = '预防：'
 .wiki-care-issues {
   margin-top: 16rpx;
   padding-top: 16rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 1rpx solid @color-bg-placeholder;
 }
 
 .wiki-care-issues__lead {
@@ -65,7 +65,7 @@ const preventionLabel = '预防：'
   padding: 14rpx 0;
 
   & + & {
-    border-top: 1rpx solid #f5f5f5;
+    border-top: 1rpx solid @color-bg-muted;
   }
 }
 

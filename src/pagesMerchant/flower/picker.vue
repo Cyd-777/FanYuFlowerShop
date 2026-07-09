@@ -209,25 +209,25 @@ watch(
 }
 .cloud-banner {
   padding: 16rpx 24rpx;
-  background: #fff7e6;
-  border-bottom: 1rpx solid #ffe7ba;
+  background: @color-warning-bg;
+  border-bottom: 1rpx solid @color-wiki-amber-bg;
 }
 .cloud-label {
   display: block;
   font-size: 22rpx;
-  color: #d48806;
+  color: @color-warning;
 }
 .cloud-stats {
   display: block;
   margin-top: 6rpx;
   font-size: 22rpx;
-  color: #ad6800;
+  color: @color-wiki-amber;
   font-weight: 600;
 }
 .search-bar {
   background: #fff;
   padding: 16rpx 24rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid @color-bg-placeholder;
 }
 .loading-wrap {
   padding: 24rpx;
@@ -239,7 +239,7 @@ watch(
   100% { background-position: -200% 0; }
 }
 .sk-shimmer {
-  background: linear-gradient(90deg, #f0f0f0 0%, #e6e6e6 20%, #f5f5f5 40%, #f0f0f0 100%);
+  background: linear-gradient(90deg, @color-bg-placeholder 0%, @color-bg-surface-alt2 20%, @color-bg-muted 40%, @color-bg-placeholder 100%);
   background-size: 200% 100%;
   animation: sk-shimmer-kf 1.4s ease-in-out infinite;
   border-radius: 8rpx;
@@ -308,7 +308,7 @@ watch(
 .kind-panel {
   flex: none;
   box-sizing: border-box;
-  background: #fafafa;
+  background: @color-bg-input;
 }
 .kind-item {
   display: flex;
@@ -320,9 +320,9 @@ watch(
   box-sizing: border-box;
   &.active {
     background: #fff;
-    border-left-color: #e53935;
+    border-left-color: @color-primary;
     .kind-name {
-      color: #e53935;
+      color: @color-primary;
       font-weight: 600;
     }
   }
@@ -343,7 +343,7 @@ watch(
 .kind-intro {
   margin-bottom: 20rpx;
   padding: 24rpx 24rpx 16rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid @color-bg-placeholder;
 }
 .intro-title {
   font-size: 30rpx;
@@ -360,14 +360,14 @@ watch(
   margin: 0 24rpx 12rpx;
   padding: 20rpx 24rpx;
   border-radius: 12rpx;
-  background: #f8f8f8;
+  background: @color-bg-page;
   border: 2rpx solid transparent;
   box-sizing: border-box;
   &.active {
-    background: #fce4ec;
-    border-color: #f8bbd0;
+    background: @color-primary-light;
+    border-color: @color-primary-border;
     .variety-name {
-      color: #e53935;
+      color: @color-primary;
       font-weight: 600;
     }
   }

@@ -48,7 +48,7 @@ function formatDiscount(discount: number) {
 </script>
 
 <style lang="less">
-.page-level { background: #f8f8f8; min-height: 100vh; padding: 32rpx; }
+.page-level { background: @color-bg-page; min-height: 100vh; padding: 32rpx; }
 .intro {
   margin-bottom: 24rpx;
   font-size: 26rpx;
@@ -59,14 +59,14 @@ function formatDiscount(discount: number) {
 .level-card {
   flex-shrink: 0; width: 200rpx; background: #fff; border-radius: 16rpx;
   padding: 32rpx 16rpx; text-align: center; border: 2rpx solid transparent;
-  &.current { border-color: #e53935; background: #fce4ec; }
+  &.current { border-color: @color-primary; background: @color-primary-light; }
   .lv-icon { font-size: 64rpx; }
   .lv-name { margin-top: 8rpx; font-size: 28rpx; font-weight: 600; }
-  .lv-flower { margin-top: 4rpx; font-size: 22rpx; color: #e53935; }
+  .lv-flower { margin-top: 4rpx; font-size: 22rpx; color: @color-primary; }
   .lv-condition { margin-top: 8rpx; font-size: 22rpx; color: #999; }
-  .lv-discount { margin-top: 12rpx; font-size: 40rpx; font-weight: 700; color: #e53935; }
+  .lv-discount { margin-top: 12rpx; font-size: 40rpx; font-weight: 700; color: @color-primary; }
 }
 .benefits { background: #fff; border-radius: 16rpx; padding: 32rpx; margin-top: 24rpx; }
 .title { font-size: 28rpx; font-weight: 600; margin-bottom: 16rpx; }
-.benefit-item { padding: 12rpx 0; font-size: 26rpx; color: #666; border-bottom: 2rpx solid #f5f5f5; }
+.benefit-item { padding: 12rpx 0; font-size: 26rpx; color: #666; border-bottom: 2rpx solid @color-bg-muted; }
 </style>

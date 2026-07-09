@@ -7,7 +7,7 @@
       class="swiper-wrap"
       :style="heroBgStyle"
     >
-      <nut-swiper :init-page="0" :pagination-visible="imageFileIds.length > 1" pagination-color="#e53935">
+      <nut-swiper :init-page="0" :pagination-visible="imageFileIds.length > 1" pagination-color="@color-primary">
         <nut-swiper-item v-for="(fileId, idx) in imageFileIds" :key="fileId || idx">
           <GoodsImage
             :src="standardImages[idx] || images[idx] || ''"
@@ -268,14 +268,14 @@ function buyNow() {
 </script>
 
 <style lang="less">
-.page-goods-detail { padding-bottom: 120rpx; background: #f8f8f8; }
+.page-goods-detail { padding-bottom: 120rpx; background: @color-bg-page; }
 
 @keyframes sk-shimmer-kf {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 .sk-shimmer {
-  background: linear-gradient(90deg, #f0f0f0 0%, #e6e6e6 20%, #f5f5f5 40%, #f0f0f0 100%);
+  background: linear-gradient(90deg, @color-bg-placeholder 0%, @color-bg-surface-alt2 20%, @color-bg-muted 40%, @color-bg-placeholder 100%);
   background-size: 200% 100%;
   animation: sk-shimmer-kf 1.4s ease-in-out infinite;
 }
@@ -336,26 +336,26 @@ function buyNow() {
   text-align: center;
   font-size: 40rpx;
   color: #ccc;
-  &.active { color: #e53935; }
+  &.active { color: @color-primary; }
 }
-.price { font-size: 40rpx; font-weight: 700; color: #e53935; margin-top: 12rpx; }
+.price { font-size: 40rpx; font-weight: 700; color: @color-primary; margin-top: 12rpx; }
 .flower-tags { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 12rpx; }
 .flower-tag {
   padding: 4rpx 16rpx;
-  background: #fff5f5;
-  color: #e53935;
+  background: @color-danger-bg-alt;
+  color: @color-primary;
   font-size: 22rpx;
   border-radius: 20rpx;
 }
 .desc { margin-top: 8rpx; font-size: 26rpx; color: #999; line-height: 1.5; }
 .stock { margin-top: 12rpx; font-size: 24rpx; color: #666; }
-.in-cart-tip { color: #e53935; }
+.in-cart-tip { color: @color-primary; }
 .status-tip {
   margin-top: 12rpx;
   font-size: 24rpx;
   line-height: 1.5;
   &.off-sale { color: #999; }
-  &.sold-out { color: #e53935; }
+  &.sold-out { color: @color-primary; }
   &.muted { color: #999; }
 }
 .qty-section {
@@ -374,7 +374,7 @@ function buyNow() {
   line-height: 52rpx;
   text-align: center;
   border-radius: 8rpx;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   font-size: 32rpx;
   color: #333;
   &.disabled { opacity: 0.4; }

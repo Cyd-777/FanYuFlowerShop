@@ -54,7 +54,7 @@ const catalog = WIKI_CARE_CATALOG
 .page-wiki-care-ref {
   min-height: 100vh;
   padding-bottom: 48rpx;
-  background: #f8f8f8;
+  background: @color-bg-page;
 }
 
 .intro {
@@ -103,7 +103,7 @@ const catalog = WIKI_CARE_CATALOG
 
 .section-head {
   padding: 16rpx 0 8rpx;
-  border-bottom: 1rpx solid #f5f5f5;
+  border-bottom: 1rpx solid @color-bg-muted;
 }
 
 .section-title {

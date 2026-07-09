@@ -289,8 +289,8 @@
                   :max="priceBounds.ceil"
                   :step="priceBounds.step"
                   :value="priceSliderMin"
-                  activeColor="#667eea"
-                  backgroundColor="#e8e8e8"
+                  activeColor="@color-merchant-start"
+                  backgroundColor="@color-bg-surface-alt2"
                   block-size="20"
                   @changing="onPriceMinChanging"
                   @change="onPriceMinChange"
@@ -304,8 +304,8 @@
                   :max="priceBounds.ceil"
                   :step="priceBounds.step"
                   :value="priceSliderMax"
-                  activeColor="#667eea"
-                  backgroundColor="#e8e8e8"
+                  activeColor="@color-merchant-start"
+                  backgroundColor="@color-bg-surface-alt2"
                   block-size="20"
                   @changing="onPriceMaxChanging"
                   @change="onPriceMaxChange"
@@ -973,7 +973,7 @@ function editGoods(id: string) {
 <style lang="less">
 .page-merchant-goods {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   padding-bottom: 160rpx;
   box-sizing: border-box;
   width: 100%;
@@ -1028,13 +1028,13 @@ function editGoods(id: string) {
   gap: 8rpx;
   padding: 10rpx 20rpx;
   font-size: 24rpx;
-  color: #667eea;
+  color: @color-merchant-start;
   background: rgba(102, 126, 234, 0.08);
   border-radius: 999rpx;
   box-sizing: border-box;
   &.is-active {
     color: #fff;
-    background: #667eea;
+    background: @color-merchant-start;
     .tool-btn__count {
       color: #fff;
       background: rgba(255, 255, 255, 0.22);
@@ -1055,7 +1055,7 @@ function editGoods(id: string) {
   font-weight: 600;
   line-height: 32rpx;
   text-align: center;
-  color: #667eea;
+  color: @color-merchant-start;
   background: rgba(102, 126, 234, 0.18);
   border-radius: 999rpx;
   box-sizing: border-box;
@@ -1119,7 +1119,7 @@ function editGoods(id: string) {
   display: flex;
   gap: 16rpx;
   padding: 16rpx 24rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 1rpx solid @color-bg-placeholder;
   background: #fff;
   box-sizing: border-box;
 }
@@ -1172,12 +1172,12 @@ function editGoods(id: string) {
   font-size: 24rpx;
   line-height: 1.2;
   color: #666;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border: 2rpx solid #eee;
   border-radius: 999rpx;
   box-sizing: border-box;
   &.active {
-    color: #667eea;
+    color: @color-merchant-start;
     font-weight: 600;
     background: rgba(102, 126, 234, 0.1);
     border-color: rgba(102, 126, 234, 0.35);
@@ -1230,7 +1230,7 @@ function editGoods(id: string) {
 }
 .reset-btn {
   font-size: 24rpx;
-  color: #667eea;
+  color: @color-merchant-start;
 }
 .goods-body {
   padding: 16rpx;
@@ -1247,7 +1247,7 @@ function editGoods(id: string) {
   overflow: hidden;
   border: 2rpx solid transparent;
   &.selected {
-    border-color: #667eea;
+    border-color: @color-merchant-start;
   }
 }
 .select-badge {
@@ -1265,8 +1265,8 @@ function editGoods(id: string) {
   line-height: 36rpx;
   text-align: center;
   &.checked {
-    background: #667eea;
-    border-color: #667eea;
+    background: @color-merchant-start;
+    border-color: @color-merchant-start;
   }
 }
 .img-wrap {
@@ -1276,7 +1276,7 @@ function editGoods(id: string) {
 .goods-img {
   width: 100%;
   height: 280rpx;
-  background: #f0f0f0;
+  background: @color-bg-placeholder;
 }
 .status-badge {
   position: absolute;
@@ -1320,7 +1320,7 @@ function editGoods(id: string) {
   padding: 0 16rpx 16rpx;
 }
 .goods-price {
-  color: #e53935;
+  color: @color-primary;
 }
 .goods-stock {
   font-size: 22rpx;
@@ -1366,7 +1366,7 @@ function editGoods(id: string) {
 }
 .batch-link {
   font-size: 24rpx;
-  color: #667eea;
+  color: @color-merchant-start;
   padding: 8rpx 0 8rpx 16rpx;
 }
 .batch-link--active {
@@ -1383,11 +1383,11 @@ function editGoods(id: string) {
   flex-shrink: 0;
   padding: 12rpx 24rpx;
   font-size: 24rpx;
-  color: #667eea;
+  color: @color-merchant-start;
   background: rgba(102, 126, 234, 0.08);
   border-radius: 999rpx;
   &.danger {
-    color: #e53935;
+    color: @color-primary;
     background: rgba(229, 57, 53, 0.08);
   }
   &.is-disabled {

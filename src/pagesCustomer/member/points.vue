@@ -28,17 +28,17 @@ const logs = ref<{ desc: string; time: string; type: string; amount: number }[]>
 </script>
 
 <style lang="less">
-.page-points { background: #f8f8f8; min-height: 100vh; }
+.page-points { background: @color-bg-page; min-height: 100vh; }
 .total-card {
   background: #fff; padding: 48rpx; text-align: center;
   .label { font-size: 26rpx; color: #999; }
-  .value { font-size: 64rpx; font-weight: 700; color: #e53935; margin-top: 8rpx; }
+  .value { font-size: 64rpx; font-weight: 700; color: @color-primary; margin-top: 8rpx; }
 }
 .log-item {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 24rpx 32rpx; background: #fff; border-bottom: 2rpx solid #f5f5f5;
+  padding: 24rpx 32rpx; background: #fff; border-bottom: 2rpx solid @color-bg-muted;
   .log-desc { font-size: 26rpx; color: #333; }
   .log-time { font-size: 22rpx; color: #ccc; margin-top: 4rpx; }
-  .log-points { font-size: 28rpx; font-weight: 600; &.income { color: #e53935; } &.expense { color: #999; } }
+  .log-points { font-size: 28rpx; font-weight: 600; &.income { color: @color-primary; } &.expense { color: #999; } }
 }
 </style>

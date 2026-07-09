@@ -150,7 +150,7 @@ const {
 
 const stickyStack = useStickyStack({
   scrollMode: 'page',
-  background: '#fff5f5',
+  background: '@color-danger-bg-alt',
   order: [
     {
       id: 'search',
@@ -198,7 +198,7 @@ function toggleKindCollapse(kindName: string) {
   right: 0;
   z-index: 95;
   padding: 12rpx 24rpx;
-  background: linear-gradient(180deg, #fff5f5 0%, @color-bg-page 100%);
+  background: linear-gradient(180deg, @color-danger-bg-alt 0%, @color-bg-page 100%);
   box-sizing: border-box;
 
   &.is-stuck {
@@ -237,7 +237,7 @@ function toggleKindCollapse(kindName: string) {
   100% { background-position: -200% 0; }
 }
 .sk-shimmer {
-  background: linear-gradient(90deg, #f0f0f0 0%, #e6e6e6 20%, #f5f5f5 40%, #f0f0f0 100%);
+  background: linear-gradient(90deg, @color-bg-placeholder 0%, @color-bg-surface-alt2 20%, @color-bg-muted 40%, @color-bg-placeholder 100%);
   background-size: 200% 100%;
   animation: ws-shimmer-kf 1.4s ease-in-out infinite;
 }
@@ -300,9 +300,9 @@ function toggleKindCollapse(kindName: string) {
   gap: 8rpx;
   padding: 22rpx 24rpx;
   margin-bottom: 12rpx;
-  background: #fff5f5;
+  background: @color-danger-bg-alt;
   border-radius: 16rpx;
-  border: 2rpx solid #fce4ec;
+  border: 2rpx solid @color-primary-light;
   cursor: pointer;
   user-select: none;
 }
@@ -353,7 +353,7 @@ function toggleKindCollapse(kindName: string) {
   height: 96rpx;
   line-height: 96rpx;
   font-size: 52rpx;
-  background: #fff5f5;
+  background: @color-danger-bg-alt;
   border-radius: @radius-lg;
   flex-shrink: 0;
 }

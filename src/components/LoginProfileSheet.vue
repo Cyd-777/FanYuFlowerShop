@@ -190,7 +190,7 @@ function noop() {}
   width: 144rpx;
   height: 144rpx;
   border-radius: 50%;
-  background: #f5f5f5;
+  background: @color-bg-muted;
 }
 .login-profile-sheet__avatar-placeholder {
   font-size: 64rpx;
@@ -208,7 +208,7 @@ function noop() {}
   margin-top: 32rpx;
   padding: 24rpx;
   border-radius: 16rpx;
-  background: #f8f8f8;
+  background: @color-bg-page;
 }
 .login-profile-sheet__label {
   width: 96rpx;
@@ -243,7 +243,7 @@ function noop() {}
   }
   &--plain {
     color: @color-text-secondary;
-    background: #f0f0f0;
+    background: @color-bg-placeholder;
   }
   &--ghost {
     color: @color-primary;

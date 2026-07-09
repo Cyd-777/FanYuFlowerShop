@@ -1,75 +1,263 @@
 /**
- * 设计令牌 — 后期换肤只改本文件
- * 页面样式请使用 @变量名，不要写死色值
+ * 设计令牌 — 三层架构
+ * ================================
+ * L1  原始令牌  — 色阶（基于 Tailwind CSS palette）
+ * L2  语义令牌  — 品牌/功能/UI 含义
+ * L3  组件令牌  — 具体组件引用
+ *
+ * 换肤：改 L1 或 L2 引用。组件级颜色用 L3。
+ * 页面样式请使用 @变量名，不要写死色值。
  */
 
-// 布局（自定义导航栏，由 useNavBarLayout / navBarCssVars 注入）
-// --nav-status-bar-height / --nav-capsule-height / --nav-capsule-top-gap
-// --nav-bar-height / --nav-total-height
-// Tab overlay 页根节点加 .page-nav-overlay-safe 避开浮层 Head
+// ============================================================
+// L1  原始色阶 — Tailwind CSS palette
+// ============================================================
 
+// Red
+@red-50:  #fef2f2;
+@red-100: #fee2e2;
+@red-200: #fecaca;
+@red-300: #fca5a5;
+@red-400: #f87171;
+@red-500: #ef4444;
+@red-600: #e53935;
+@red-700: #c62828;
+@red-800: #b91c1c;
+@red-900: #991b1b;
+
+// Pink（品牌辅助）
+@pink-50:  #fdf2f8;
+@pink-100: #fce7f3;
+@pink-200: #fbcfe8;
+@pink-300: #f9a8d4;
+@pink-400: #f472b6;
+@pink-500: #ec4899;
+@pink-600: #db2777;
+@pink-700: #be185d;
+@pink-800: #9d174d;
+@pink-900: #831843;
+
+// Green
+@green-50:  #f0fdf4;
+@green-100: #dcfce7;
+@green-200: #bbf7d0;
+@green-300: #86efac;
+@green-400: #4ade80;
+@green-500: #22c55e;
+@green-600: #43a047;
+@green-700: #2e7d32;
+@green-800: #166534;
+@green-900: #14532d;
+
+// Orange（警告）
+@orange-50:  #fff7ed;
+@orange-100: #ffedd5;
+@orange-200: #fed7aa;
+@orange-300: #fdba74;
+@orange-400: #fb923c;
+@orange-500: #f97316;
+@orange-600: #e65100;
+@orange-700: #c2410c;
+@orange-800: #9a3412;
+@orange-900: #7c2d12;
+
+// Amber
+@amber-50:  #fffbeb;
+@amber-100: #fef3c7;
+@amber-200: #fde68a;
+@amber-300: #fcd34d;
+@amber-400: #fbbf24;
+@amber-500: #f59e0b;
+@amber-600: #d97706;
+@amber-700: #b45309;
+@amber-800: #92400e;
+@amber-900: #78350f;
+
+// Blue（链接 / 信息）
+@blue-50:  #eff6ff;
+@blue-100: #dbeafe;
+@blue-200: #bfdbfe;
+@blue-300: #93c5fd;
+@blue-400: #60a5fa;
+@blue-500: #3b82f6;
+@blue-600: #2563eb;
+@blue-700: #1d4ed8;
+@blue-800: #1e40af;
+@blue-900: #1e3a8a;
+
+// Indigo（商家）
+@indigo-50:  #eef2ff;
+@indigo-100: #e0e7ff;
+@indigo-200: #c7d2fe;
+@indigo-300: #a5b4fc;
+@indigo-400: #818cf8;
+@indigo-500: #6366f1;
+@indigo-600: #4f46e5;
+@indigo-700: #4338ca;
+@indigo-800: #3730a3;
+@indigo-900: #312e81;
+
+// Violet（Wiki / AI）
+@violet-50:  #f5f3ff;
+@violet-100: #ede9fe;
+@violet-200: #ddd6fe;
+@violet-300: #c4b5fd;
+@violet-400: #a78bfa;
+@violet-500: #8b5cf6;
+@violet-600: #7c3aed;
+@violet-700: #6d28d9;
+@violet-800: #5b21b6;
+@violet-900: #4c1d95;
+
+// Gray（中性色）
+@gray-50:  #f9fafb;
+@gray-100: #f3f4f6;
+@gray-200: #e5e7eb;
+@gray-300: #d1d5db;
+@gray-400: #9ca3af;
+@gray-500: #6b7280;
+@gray-600: #4b5563;
+@gray-700: #374151;
+@gray-800: #1f2937;
+@gray-900: #111827;
+
+// Slate（备用灰）
+@slate-50:  #f8fafc;
+@slate-100: #f1f5f9;
+@slate-200: #e2e8f0;
+@slate-300: #cbd5e1;
+@slate-400: #94a3b8;
+@slate-500: #64748b;
+@slate-600: #475569;
+@slate-700: #334155;
+@slate-800: #1e293b;
+@slate-900: #0f172a;
+
+// ============================================================
+// L2  语义令牌
+// ============================================================
+
+// ── 品牌 ──
+@color-brand:              @red-600;
+@color-brand-light:        @red-50;
+@color-brand-border:       @red-200;
+@color-brand-bg-alt:       @red-50;
+
+// ── 功能色 ──
+@color-success:            @green-700;
+@color-success-bg:         @green-50;
+@color-success-mid:        @green-600;
+
+@color-warning:            @orange-600;
+@color-warning-bg:         @amber-50;
+
+@color-danger:             @red-700;
+@color-danger-bg:          @red-50;
+@color-danger-bg-alt:      @red-50;
+
+@color-info-bg:            @blue-50;
+@color-link:               @blue-600;
+
+// ── 商家端 ──
+@color-merchant-start:     @indigo-400;
+@color-merchant-end:       @violet-700;  // 渐变终点
+@color-merchant-badge:     @indigo-400;
+@color-merchant-badge-bg:  rgba(102, 126, 234, 0.12);
+
+// ── 中性色 ──
+@color-text-primary:       @gray-800;
+@color-text-secondary:     @gray-500;
+@color-text-tertiary:      @gray-400;
+@color-text-placeholder:   @gray-300;
+@color-text-disabled:      @gray-300;
+
+// ── 背景 ──
+@color-bg-page:            @gray-50;
+@color-bg-card:            #ffffff;
+@color-bg-muted:           @gray-100;
+@color-bg-placeholder:     @gray-200;
+@color-bg-input:           @gray-50;
+@color-bg-surface-alt:     @gray-100;
+@color-bg-surface-alt2:    @gray-200;
+
+// ── 边框 ──
+@color-border:             @gray-200;
+@color-border-dashed:      @gray-300;
+@color-divider-light:      @gray-200;
+
+// ── Wiki / AI 色系 ──
+@color-wiki-purple:         @violet-600;
+@color-wiki-purple-dark:    @violet-800;
+@color-wiki-purple-mid:     @violet-700;
+@color-wiki-purple-light:   @violet-300;
+@color-wiki-purple-mid-light: @violet-400;
+@color-wiki-purple-bg:         @violet-50;
+@color-wiki-purple-bg-alt:     @violet-100;
+@color-wiki-purple-bg-lighter: @violet-50;
+
+@color-wiki-green:         @green-800;
+@color-wiki-green-bg:      @green-100;
+@color-wiki-green-dark:    @green-800;
+
+@color-wiki-amber:         @amber-800;
+@color-wiki-amber-bg:      @amber-100;
+
+@color-wiki-gray:          @gray-500;
+@color-wiki-gray-bg:       @gray-100;
+
+// ── Wiki 标签色 ──
+@color-tag-blue-gray:  @slate-700;
+@color-tag-indigo:     @indigo-500;
+@color-tag-brown:      @amber-900;
+@color-tag-purple:     @violet-700;
+@color-tag-bg:         @slate-100;
+
+// ── 状态 ──
+@color-status-warm:    @orange-400;
+
+// ============================================================
+// L3  组件令牌（示例 — 后续按需扩展）
+// ============================================================
+
+// TabBar
+@color-tab-selected:    @color-brand;
+
+// 圆角
+@radius-sm:   8rpx;
+@radius-md:   16rpx;
+@radius-lg:   24rpx;
+@radius-pill: 48rpx;
+@radius-round: 50%;
+
+// 间距
+@spacing-xs:  8rpx;
+@spacing-sm:  16rpx;
+@spacing-md:  24rpx;
+@spacing-lg:  32rpx;
+@spacing-xl:  48rpx;
+
+// 字号
+@font-size-xs:    22rpx;
+@font-size-sm:    24rpx;
+@font-size-md:    26rpx;
+@font-size-lg:    28rpx;
+@font-size-xl:    32rpx;
+@font-size-2xl:   36rpx;
+@font-size-price: 40rpx;
+
+// ── 布局 ──
 .page-nav-overlay-safe {
   box-sizing: border-box;
   padding-top: var(--nav-total-height, 0px);
 }
 
-// 品牌色
-@color-primary: #e53935;
-@color-primary-light: #fce4ec;
-@color-primary-border: #f8bbd0;
+// ============================================================
+// 兼容别名 — 旧名 → L2 令牌（组件平滑迁移用，无需修改组件代码）
+// ============================================================
 
-// 功能色（通知条 / 模态）
-@color-success: #2e7d32;
-@color-success-bg: #e8f5e9;
-@color-warning: #e65100;
-@color-warning-bg: #fff8e1;
-@color-danger: #c62828;
-@color-danger-bg: #ffebee;
-
-// 商家端强调色
-@color-merchant-start: #667eea;
-@color-merchant-end: #764ba2;
-@color-merchant-badge: #667eea;
-@color-merchant-badge-bg: rgba(102, 126, 234, 0.12);
-
-// 中性色
-@color-text-primary: #333;
-@color-text-secondary: #666;
-@color-text-tertiary: #999;
-@color-text-placeholder: #bbb;
-@color-text-disabled: #ccc;
-
-// 背景 / 边框
-@color-bg-page: #f8f8f8;
-@color-bg-card: #fff;
-@color-bg-muted: #f5f5f5;
-@color-bg-placeholder: #f0f0f0;
-@color-bg-input: #fafafa;
-@color-border: #eee;
-@color-border-dashed: #e0e0e0;
-
-// 圆角
-@radius-sm: 8rpx;
-@radius-md: 16rpx;
-@radius-lg: 24rpx;
-@radius-pill: 48rpx;
-@radius-round: 50%;
-
-// 间距
-@spacing-xs: 8rpx;
-@spacing-sm: 16rpx;
-@spacing-md: 24rpx;
-@spacing-lg: 32rpx;
-@spacing-xl: 48rpx;
-
-// 字号
-@font-size-xs: 22rpx;
-@font-size-sm: 24rpx;
-@font-size-md: 26rpx;
-@font-size-lg: 28rpx;
-@font-size-xl: 32rpx;
-@font-size-2xl: 36rpx;
-@font-size-price: 40rpx;
-
-// TabBar / 导航（与 app.config.ts 保持同步，改主题时两处一起改）
-@color-tab-selected: @color-primary;
+@color-primary:            @color-brand;
+@color-primary-light:      @color-brand-light;
+@color-primary-border:     @color-brand-border;
+@color-primary-bg-alt:     @color-brand-bg-alt;
+@color-green-mid:          @color-success-mid;
+@color-danger-bg-alt:      @red-50;

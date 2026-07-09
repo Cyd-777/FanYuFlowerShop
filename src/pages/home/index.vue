@@ -44,7 +44,7 @@
       class="theme-banner-swiper"
       :init-page="0"
       :pagination-visible="bannerUrls.length > 1"
-      pagination-color="#e53935"
+      pagination-color="@color-primary"
       :loop="false"
       :autoplay="false"
     >
@@ -60,19 +60,19 @@
 
     <view class="func-entries">
       <view class="func-entry" @click="onSelfSelect">
-        <view class="func-icon" style="background: #fce4ec">💐</view>
+        <view class="func-icon" style="background: @color-primary-light">💐</view>
         <view class="func-label">自选花束</view>
       </view>
       <view class="func-entry" @click="onWikiSearch">
-        <view class="func-icon" style="background: #e3f2fd">🔍</view>
+        <view class="func-icon" style="background: @color-info-bg">🔍</view>
         <view class="func-label">智库搜索</view>
       </view>
       <view class="func-entry" @click="onShoppingGuide">
-        <view class="func-icon" style="background: #e8f5e9">📖</view>
+        <view class="func-icon" style="background: @color-success-bg">📖</view>
         <view class="func-label">选购指南</view>
       </view>
       <view class="func-entry" @click="onCareKnowledge">
-        <view class="func-icon" style="background: #fff3e0">🌱</view>
+        <view class="func-icon" style="background: @color-warning-bg">🌱</view>
         <view class="func-label">养护知识</view>
       </view>
     </view>
@@ -186,7 +186,7 @@ const stickyStack = useStickyStack({
     },
   ],
   scrollMode: 'page',
-  background: '#f8f8f8',
+  background: '@color-bg-page',
   remeasureDeps: [
     () => loading.value,
     () => bannerUrls.value.length,
@@ -216,7 +216,7 @@ const onCareKnowledge = () => showToast({ title: '功能开发中', icon: 'none'
 
 .page-home {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   box-sizing: border-box;
   width: 100%;
 }
@@ -244,11 +244,11 @@ const onCareKnowledge = () => showToast({ title: '功能开发中', icon: 'none'
 }
 .home-search {
   padding: 12rpx 24rpx;
-  background: #f8f8f8;
+  background: @color-bg-page;
 }
 .theme-banner-swiper {
   width: 100%;
-  background: #f0f0f0;
+  background: @color-bg-placeholder;
 }
 .theme-banner-ph {
   position: relative;
@@ -257,7 +257,7 @@ const onCareKnowledge = () => showToast({ title: '功能开发中', icon: 'none'
 .theme-banner-shimmer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, #ececec 0%, #f5f5f5 45%, #ececec 100%);
+  background: linear-gradient(90deg, @color-divider-light 0%, @color-bg-muted 45%, @color-divider-light 100%);
   background-size: 200% 100%;
   animation: home-banner-shimmer 1.4s ease-in-out infinite;
 }
@@ -273,7 +273,7 @@ const onCareKnowledge = () => showToast({ title: '功能开发中', icon: 'none'
   width: 100%;
   height: 320rpx;
   display: block;
-  background: #f0f0f0;
+  background: @color-bg-placeholder;
 }
 .func-entries {
   display: flex;
@@ -328,7 +328,7 @@ const onCareKnowledge = () => showToast({ title: '功能开发中', icon: 'none'
   .goods-img {
     width: 100%;
     height: 340rpx;
-    background: #f0f0f0;
+    background: @color-bg-placeholder;
   }
   .goods-name {
     padding: 12rpx 16rpx 4rpx;

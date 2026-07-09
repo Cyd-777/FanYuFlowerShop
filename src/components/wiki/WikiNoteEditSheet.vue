@@ -124,7 +124,7 @@ function onConfirm() {
   box-sizing: border-box;
   font-size: 28rpx;
   line-height: 1.6;
-  background: #f7f7f7;
+  background: @color-bg-surface-alt;
   border-radius: 12rpx;
 }
 
@@ -134,7 +134,7 @@ function onConfirm() {
   padding: 0 20rpx;
   box-sizing: border-box;
   font-size: 28rpx;
-  background: #f7f7f7;
+  background: @color-bg-surface-alt;
   border-radius: 12rpx;
 }
 
@@ -145,7 +145,7 @@ function onConfirm() {
   line-height: 88rpx;
   font-size: 30rpx;
   color: #fff;
-  background: #e53935;
+  background: @color-primary;
   border-radius: 44rpx;
   border: none;
 

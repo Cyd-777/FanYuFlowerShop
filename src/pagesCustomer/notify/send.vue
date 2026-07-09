@@ -186,7 +186,7 @@ useLoad((options) => {
 <style lang="less">
 .page-notify-send {
   min-height: 100vh;
-  background: #f5f5f7;
+  background: @color-bg-muted;
   padding-bottom: 140rpx;
 }
 
@@ -214,7 +214,7 @@ useLoad((options) => {
   padding: 16rpx 20rpx;
   margin-bottom: 20rpx;
   box-sizing: border-box;
-  background: #f7f7f8;
+  background: @color-bg-surface-alt;
   border-radius: 12rpx;
   font-size: 28rpx;
 }
@@ -224,7 +224,7 @@ useLoad((options) => {
   min-height: 220rpx;
   padding: 16rpx 20rpx;
   box-sizing: border-box;
-  background: #f7f7f8;
+  background: @color-bg-surface-alt;
   border-radius: 12rpx;
   font-size: 28rpx;
   line-height: 1.6;
@@ -240,12 +240,12 @@ useLoad((options) => {
   min-width: 160rpx;
   padding: 16rpx 20rpx;
   border-radius: 12rpx;
-  background: #f7f7f8;
+  background: @color-bg-surface-alt;
   border: 2rpx solid transparent;
 
   &.active {
-    background: #f0f3ff;
-    border-color: #667eea;
+    background: @color-wiki-purple-bg-lighter;
+    border-color: @color-merchant-start;
   }
 }
 

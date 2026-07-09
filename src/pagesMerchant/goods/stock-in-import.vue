@@ -45,7 +45,7 @@ const previewRows = computed(() => parsePreview())
 <style lang="less">
 .page-stock-in-import {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   padding: 24rpx 24rpx 160rpx;
   box-sizing: border-box;
 }
@@ -90,7 +90,7 @@ const previewRows = computed(() => parsePreview())
   align-items: center;
   gap: 12rpx;
   padding: 12rpx 0;
-  border-top: 1rpx solid #f5f5f5;
+  border-top: 1rpx solid @color-bg-muted;
   font-size: 26rpx;
   color: #333;
 }
@@ -100,7 +100,7 @@ const previewRows = computed(() => parsePreview())
 }
 .preview-row .qty {
   margin-left: auto;
-  color: #e53935;
+  color: @color-primary;
   font-weight: 600;
 }
 .footer {

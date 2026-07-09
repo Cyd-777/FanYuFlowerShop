@@ -278,18 +278,18 @@ function onSheetConfirm(value: string) {
   align-items: center;
   justify-content: space-between;
   padding: 12rpx 24rpx;
-  background: #f5f3ff;
-  border-bottom: 1rpx solid #e9e0ff;
+  background: @color-wiki-purple-bg-lighter;
+  border-bottom: 1rpx solid @color-wiki-purple-bg-alt;
 }
 
 .wiki-merchant-note__hint {
   font-size: 22rpx;
-  color: #6d28d9;
+  color: @color-wiki-purple-mid;
 }
 
 .wiki-merchant-note__switch {
   font-size: 24rpx;
-  color: #7c3aed;
+  color: @color-wiki-purple;
   padding: 8rpx 12rpx;
 }
 

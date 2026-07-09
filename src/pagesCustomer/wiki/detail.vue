@@ -188,7 +188,7 @@ const hasCare = computed(
   100% { background-position: -200% 0; }
 }
 .sk-shimmer {
-  background: linear-gradient(90deg, #f0f0f0 0%, #e6e6e6 20%, #f5f5f5 40%, #f0f0f0 100%);
+  background: linear-gradient(90deg, @color-bg-placeholder 0%, @color-bg-surface-alt2 20%, @color-bg-muted 40%, @color-bg-placeholder 100%);
   background-size: 200% 100%;
   animation: sk-shimmer-kf 1.4s ease-in-out infinite;
 }
@@ -267,7 +267,7 @@ const hasCare = computed(
   width: 72rpx;
   height: 8rpx;
   border-radius: 4rpx;
-  background: #e0e0e0;
+  background: @color-border-dashed;
 }
 
 .wiki-detail-nav {
@@ -275,7 +275,7 @@ const hasCare = computed(
   flex-shrink: 0;
   padding: 12rpx 24rpx;
   background: #fff;
-  border-bottom: 1rpx solid #f5f5f5;
+  border-bottom: 1rpx solid @color-bg-muted;
 }
 
 .wiki-floating-panel__body {
@@ -295,9 +295,9 @@ const hasCare = computed(
   border-radius: 10rpx;
 
   &.active {
-    color: #e53935;
+    color: @color-primary;
     font-weight: 600;
-    background: #fff5f5;
+    background: @color-danger-bg-alt;
   }
 }
 
@@ -324,7 +324,7 @@ const hasCare = computed(
   &:not(:first-child) {
     margin-top: 16rpx;
     padding-top: 32rpx;
-    border-top: 1rpx solid #f0f0f0;
+    border-top: 1rpx solid @color-bg-placeholder;
   }
 }
 

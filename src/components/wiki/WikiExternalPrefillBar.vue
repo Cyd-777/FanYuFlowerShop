@@ -201,7 +201,7 @@ function applySelected() {
 
   &__bulk-btn {
     font-size: 24rpx;
-    color: #2d5016;
+    color: @color-wiki-green-dark;
   }
 
   &__row {
@@ -210,7 +210,7 @@ function applySelected() {
     padding: 16rpx;
     margin-bottom: 12rpx;
     border-radius: 12rpx;
-    background: #f8f8f8;
+    background: @color-bg-page;
     border: 2rpx solid transparent;
 
     &--selected {
@@ -231,8 +231,8 @@ function applySelected() {
     flex-shrink: 0;
 
     &.checked {
-      background: #2d5016;
-      border-color: #2d5016;
+      background: @color-wiki-green-dark;
+      border-color: @color-wiki-green-dark;
       color: #fff;
     }
   }

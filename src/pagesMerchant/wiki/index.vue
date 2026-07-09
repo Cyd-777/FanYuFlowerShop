@@ -123,7 +123,7 @@ function goCareReference() {
 .page-merchant-wiki {
   min-height: 100vh;
   padding-bottom: 48rpx;
-  background: #f8f8f8;
+  background: @color-bg-page;
 }
 
 .intro {
@@ -151,8 +151,8 @@ function goCareReference() {
   gap: 16rpx;
   margin-top: 20rpx;
   padding: 20rpx;
-  background: #fff8f8;
-  border: 1rpx solid #ffe0e0;
+  background: @color-primary-bg-alt;
+  border: 1rpx solid @color-danger-bg-alt;
   border-radius: 12rpx;
 }
 
@@ -174,7 +174,7 @@ function goCareReference() {
 .intro-link__title {
   font-size: 26rpx;
   font-weight: 600;
-  color: #e53935;
+  color: @color-primary;
 }
 
 .intro-link__desc {
@@ -220,7 +220,7 @@ function goCareReference() {
 
 .section-tier {
   font-size: 20rpx;
-  color: #e53935;
+  color: @color-primary;
   margin-bottom: 12rpx;
 }
 
@@ -228,7 +228,7 @@ function goCareReference() {
   font-size: 20rpx;
   color: #999;
   font-weight: 400;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   padding: 2rpx 10rpx;
   border-radius: 8rpx;
 }
@@ -266,7 +266,7 @@ function goCareReference() {
   align-items: center;
   gap: 8rpx;
   padding: 10rpx 18rpx;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border: 2rpx solid #eee;
   border-radius: 28rpx;
   font-size: 24rpx;

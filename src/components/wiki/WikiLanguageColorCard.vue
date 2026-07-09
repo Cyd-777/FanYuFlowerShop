@@ -71,7 +71,7 @@ const dotStyle = computed(() => ({
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.12);
 
   &--light {
-    border: 2rpx solid #e0e0e0;
+    border: 2rpx solid @color-border-dashed;
   }
 }
 

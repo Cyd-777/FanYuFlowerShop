@@ -80,14 +80,14 @@ const contentWrapClass = computed(() =>
 
 .wiki-care-highlight__value {
   font-weight: 700;
-  color: #c62828;
+  color: @color-danger;
   background: rgba(255, 235, 238, 0.85);
   border-radius: 6rpx;
   padding: 0 6rpx;
 }
 
 .wiki-care-highlight--water .wiki-care-highlight__value {
-  color: #1565c0;
+  color: @color-link;
   background: rgba(227, 242, 253, 0.95);
 }
 
@@ -96,13 +96,13 @@ const contentWrapClass = computed(() =>
 }
 
 .wiki-care-highlight--muted .wiki-care-highlight__value {
-  color: #e53935;
+  color: @color-primary;
 }
 
 .wiki-data-text__tag {
   font-size: 18rpx;
   line-height: 1.2;
-  color: #c62828;
+  color: @color-danger;
   margin-left: 4rpx;
   opacity: 0.88;
   font-weight: 500;

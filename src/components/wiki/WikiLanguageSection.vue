@@ -192,13 +192,13 @@ function onEdit(target: WikiNoteEditTarget) {
   display: block;
   margin-top: 8rpx;
   font-size: 20rpx;
-  color: #a78bfa;
+  color: @color-wiki-purple-mid-light;
 }
 
 .wiki-language__core {
   margin-bottom: 24rpx;
   padding: 20rpx 24rpx;
-  border-left: 6rpx solid #e53935;
+  border-left: 6rpx solid @color-primary;
   border-radius: 0 12rpx 12rpx 0;
   background: linear-gradient(90deg, rgba(255, 245, 245, 0.95) 0%, rgba(255, 255, 255, 0) 100%);
 }
@@ -207,7 +207,7 @@ function onEdit(target: WikiNoteEditTarget) {
   display: block;
   font-size: 22rpx;
   font-weight: 600;
-  color: #e53935;
+  color: @color-primary;
   letter-spacing: 1rpx;
 }
 
@@ -222,7 +222,7 @@ function onEdit(target: WikiNoteEditTarget) {
 
 .wiki-language__block {
   padding-top: 20rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 1rpx solid @color-bg-placeholder;
 
   & + & {
     margin-top: 4rpx;
@@ -255,7 +255,7 @@ function onEdit(target: WikiNoteEditTarget) {
   padding: 14rpx 0;
 
   & + & {
-    border-top: 1rpx solid #f5f5f5;
+    border-top: 1rpx solid @color-bg-muted;
   }
 }
 
@@ -281,7 +281,7 @@ function onEdit(target: WikiNoteEditTarget) {
   margin-top: 20rpx;
   padding: 16rpx 20rpx;
   border-radius: 12rpx;
-  background: #fafafa;
+  background: @color-bg-input;
 }
 
 .wiki-language__caution-label {

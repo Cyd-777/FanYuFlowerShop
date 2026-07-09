@@ -199,7 +199,7 @@ function applySelected() {
   background: #fff;
   border-radius: 16rpx;
   overflow: hidden;
-  border: 1rpx solid #f0e6ff;
+  border: 1rpx solid @color-wiki-purple-bg-alt;
 }
 
 .wiki-smart-paste__head {
@@ -207,14 +207,14 @@ function applySelected() {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx;
-  background: linear-gradient(135deg, #faf5ff 0%, #fff 100%);
+  background: linear-gradient(135deg, @color-wiki-purple-bg 0%, #fff 100%);
 }
 
 .wiki-smart-paste__title {
   display: block;
   font-size: 30rpx;
   font-weight: 600;
-  color: #5b21b6;
+  color: @color-wiki-purple-dark;
 }
 
 .wiki-smart-paste__subtitle {
@@ -226,7 +226,7 @@ function applySelected() {
 
 .wiki-smart-paste__toggle {
   font-size: 24rpx;
-  color: #7c3aed;
+  color: @color-wiki-purple;
   flex-shrink: 0;
 }
 
@@ -241,7 +241,7 @@ function applySelected() {
   gap: 16rpx;
   margin-bottom: 16rpx;
   padding: 16rpx;
-  background: #f5f3ff;
+  background: @color-wiki-purple-bg-lighter;
   border-radius: 12rpx;
 }
 
@@ -249,7 +249,7 @@ function applySelected() {
   flex: 1;
   font-size: 22rpx;
   line-height: 1.5;
-  color: #6d28d9;
+  color: @color-wiki-purple-mid;
 }
 
 .wiki-smart-paste__textarea {
@@ -260,7 +260,7 @@ function applySelected() {
   font-size: 26rpx;
   line-height: 1.6;
   color: #333;
-  background: #f9f9fb;
+  background: @color-bg-input;
   border-radius: 12rpx;
 }
 
@@ -301,7 +301,7 @@ function applySelected() {
 
 .wiki-smart-paste__bulk-btn {
   font-size: 24rpx;
-  color: #7c3aed;
+  color: @color-wiki-purple;
 }
 
 .wiki-smart-paste__row {
@@ -309,13 +309,13 @@ function applySelected() {
   gap: 16rpx;
   padding: 16rpx;
   margin-bottom: 12rpx;
-  background: #fafafa;
+  background: @color-bg-input;
   border-radius: 12rpx;
   border: 2rpx solid transparent;
 
   &--selected {
-    background: #f5f3ff;
-    border-color: #c4b5fd;
+    background: @color-wiki-purple-bg-lighter;
+    border-color: @color-wiki-purple-light;
   }
 }
 
@@ -331,8 +331,8 @@ function applySelected() {
   flex-shrink: 0;
 
   &.checked {
-    background: #7c3aed;
-    border-color: #7c3aed;
+    background: @color-wiki-purple;
+    border-color: @color-wiki-purple;
   }
 }
 
@@ -365,18 +365,18 @@ function applySelected() {
   border-radius: 999rpx;
 
   &.is-high {
-    color: #166534;
-    background: #dcfce7;
+    color: @color-wiki-green;
+    background: @color-wiki-green-bg;
   }
 
   &.is-medium {
-    color: #92400e;
-    background: #fef3c7;
+    color: @color-wiki-amber;
+    background: @color-wiki-amber-bg;
   }
 
   &.is-low {
-    color: #6b7280;
-    background: #f3f4f6;
+    color: @color-wiki-gray;
+    background: @color-wiki-gray-bg;
   }
 }
 

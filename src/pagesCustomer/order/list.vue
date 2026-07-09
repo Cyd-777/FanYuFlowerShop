@@ -87,7 +87,7 @@ function goDetail(id: string) {
 
 <style lang="less">
 .page-order-list {
-  background: #f8f8f8;
+  background: @color-bg-page;
   min-height: 100vh;
   padding-bottom: 32rpx;
 }

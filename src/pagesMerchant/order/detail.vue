@@ -328,7 +328,7 @@ async function handleRiderAction() {
 
 <style lang="less">
 .page-merchant-order-detail {
-  background: #f8f8f8;
+  background: @color-bg-page;
   min-height: 100vh;
   &.has-footer {
     padding-bottom: 120rpx;
@@ -366,7 +366,7 @@ async function handleRiderAction() {
 }
 .notify-link {
   font-size: 24rpx;
-  color: #667eea;
+  color: @color-merchant-start;
 }
 .info-row {
   display: flex;
@@ -380,16 +380,16 @@ async function handleRiderAction() {
   flex-shrink: 0;
 }
 .info-row .status {
-  color: #e53935;
+  color: @color-primary;
   font-weight: 600;
 }
 .info-row .price {
-  color: #e53935;
+  color: @color-primary;
   font-weight: 600;
 }
 .badge { font-size: 22rpx; font-weight: 600; padding: 4rpx 12rpx; border-radius: 8rpx; }
-.badge--pickup { background: #fff3e0; color: #e65100; }
-.badge--home { background: #e3f2fd; color: #1565c0; }
+.badge--pickup { background: @color-warning-bg; color: @color-warning; }
+.badge--home { background: @color-info-bg; color: @color-link; }
 .address-row {
   align-items: flex-start;
 }
@@ -453,8 +453,8 @@ async function handleRiderAction() {
   border-radius: 48rpx;
 }
 .action-btn.secondary {
-  border-color: #ff7043;
-  color: #ff7043;
+  border-color: @color-status-warm;
+  color: @color-status-warm;
 }
 .delivery-prompt {
   text-align: center;
