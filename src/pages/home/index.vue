@@ -206,9 +206,9 @@ const homeHeaderStyle = computed(() => ({
 }))
 
 const onSelfSelect = () => navigateTo({ url: '/pagesCustomer/customize/index' })
-const onWikiSearch = () => showToast({ title: '功能开发中', icon: 'none' })
+const onWikiSearch = () => navigateTo({ url: '/pages/wiki/index' })
 const onShoppingGuide = () => navigateTo({ url: '/pagesCustomer/guide/index' })
-const onCareKnowledge = () => showToast({ title: '功能开发中', icon: 'none' })
+const onCareKnowledge = () => navigateTo({ url: '/pagesCustomer/wiki/detail?tab=care' })
 </script>
 
 <style lang="less">

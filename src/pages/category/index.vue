@@ -499,6 +499,7 @@ function onRightScroll(event: { detail?: { scrollTop?: number } }) {
 .pill-item--pressed { opacity: 0.85; }
 .pill-dropdown { flex: none; width: 72rpx; display: flex; align-items: center; justify-content: center; align-self: stretch; background: #fff; }
 .pill-dropdown--pressed { background: @color-bg-input; }
+.pill-dropdown--pressed { background: @color-bg-placeholder; }
 .pill-dropdown-icon { flex-shrink: 0; opacity: 0.72; }
 
 /** 展开面板收起按钮行 */

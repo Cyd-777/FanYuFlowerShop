@@ -33,7 +33,8 @@ const iconStyle = computed(() => ({
 
 <style lang="less">
 .app-icon {
-  display: block;
+  display: inline-block;
   flex-shrink: 0;
+  vertical-align: middle;
 }
 </style>

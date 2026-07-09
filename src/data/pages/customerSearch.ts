@@ -15,6 +15,7 @@ import type { FlowerWikiListItem } from '@/types/wiki'
 import type { Goods } from '@/types/goods'
 import type { CustomerUnifiedSearchScope, SearchSuggestion, WikiAnswerSnippet } from '@/types/search'
 import { navigateTo, navigateToGoodsDetail } from '@/utils/router'
+import { searchWithAI } from '@/utils/searchWithAI'
 import type { PageEnsureContext } from '../types'
 import type { PageSetupResult } from '../pageRegistry'
 
@@ -101,7 +102,15 @@ export function setupCustomerSearchPageData(): PageSetupResult & Record<string, 
 
     loading.value = true
     try {
-      const { goods, wiki, wikiAnswer: answer } = await searchCustomerUnified(trimmed, {
+      // AI 语义解析：口语 → 关键词（仅长查询，短词直接跳过）
+      let searchText = trimmed
+      const aiResult = await searchWithAI(trimmed, { minConfidence: 0.6 })
+      if (aiResult.aiHandled && aiResult.parsed) {
+        console.log('[search] AI parsed:', trimmed, '→', aiResult.parsed.text)
+        searchText = aiResult.parsed.text || trimmed
+      }
+
+      const { goods, wiki, wikiAnswer: answer } = await searchCustomerUnified(searchText, {
         exactName: exactName.value,
       })
       goodsResults.value = await attachGoodsCoverImages(goods)

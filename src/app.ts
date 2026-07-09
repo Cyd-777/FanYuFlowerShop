@@ -26,6 +26,31 @@ const App = createApp({
       setTimeout(() => {
         prefetchHomeFirstScreen()
       }, 0)
+      // 首屏后加载 AI 小文件（词条向量，~1.2MB）
+      setTimeout(() => {
+        void import('@/utils/wikiVectorSearch').then((m) => {
+          m.preloadEmbeddings().catch((err) => {
+            console.warn('[app] preload AI embeddings failed:', err)
+          })
+        })
+      }, 100)
+      // 空闲时加载 AI 模型（23MB ONNX）
+      if (typeof requestIdleCallback !== 'undefined') {
+        requestIdleCallback(() => {
+          void import('@/utils/wikiVectorSearch').then((m) => {
+            m.preloadModel().catch((err) => {
+              console.warn('[app] idle preload AI model failed:', err)
+            })
+          })
+        }, { timeout: 10000 })
+      } else {
+        // 不支持 requestIdleCallback 的旧版本，延迟 5s 后加载
+        setTimeout(() => {
+          void import('@/utils/wikiVectorSearch').then((m) => {
+            m.preloadModel().catch(() => {})
+          })
+        }, 5000)
+      }
     } catch (err) {
       console.error('[cloud] init failed:', err)
     }

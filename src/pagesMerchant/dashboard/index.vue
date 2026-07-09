@@ -10,7 +10,7 @@
           mode="aspectFill"
         />
         <view v-else class="header-avatar placeholder">
-          <AppIcon type="人员" :size="40" />
+          <text class="header-avatar-emoji">👤</text>
         </view>
         <view class="header-text">
           <view class="greeting">👋 {{ greetingText }}，{{ displayName }}</view>
@@ -39,7 +39,7 @@
     <view class="quick-actions">
       <view v-for="group in actionGroups" :key="group.id" class="action-section">
         <view class="section-title">
-          <AppIcon :type="group.iconType" :size="28" />
+          <text class="section-title__emoji">{{ group.emoji }}</text>
           <text class="section-title__text">{{ group.title }}</text>
         </view>
         <view class="action-grid">
@@ -50,7 +50,7 @@
             @click="handleAction(item.key)"
           >
             <view class="action-icon-wrap">
-              <AppIcon :type="item.iconType" :size="56" />
+              <text class="action-emoji">{{ item.emoji }}</text>
               <view v-if="item.key === 'notify' && notifyUnread > 0" class="action-badge">
                 {{ notifyUnread > 99 ? '99+' : notifyUnread }}
               </view>
@@ -80,7 +80,6 @@ import { resolveAvatarDisplayPath } from '@/modules/userProfile'
 import { useShopDisplay } from '@/composables/useShopDisplay'
 import { useNavBarLayout } from '@/composables/useNavBarLayout'
 import AppFeedbackHost from '@/components/AppFeedbackHost.vue'
-import AppIcon from '@/components/AppIcon.vue'
 import { useNotificationStore } from '@/stores/notification'
 import type { OrderStatus } from '@/types/order'
 
@@ -118,26 +117,26 @@ const actionGroups = [
   {
     id: 'orders',
     title: '订单',
-    iconType: '订单' as const,
+    iconType: '订单' as const, emoji: '📋',
     items: [
-      { key: 'order', iconType: '订单' as const, label: '订单管理' },
-      { key: 'notify', iconType: '通知' as const, label: '消息通知' },
-      { key: 'verify', iconType: '扫码' as const, label: '扫码核销' },
+      { key: 'order', iconType: '订单' as const, emoji: '📋', label: '订单管理' },
+      { key: 'notify', iconType: '通知' as const, emoji: '🔔', label: '消息通知' },
+      { key: 'verify', iconType: '扫码' as const, emoji: '📱', label: '扫码核销' },
     ],
   },
   {
     id: 'maintenance',
     title: '维护',
-    iconType: '维护' as const,
+    iconType: '维护' as const, emoji: '🔧',
     items: [
-      { key: 'goods', iconType: '商品' as const, label: '商品管理' },
-      { key: 'category', iconType: '分类' as const, label: '分类管理' },
-      { key: 'wiki', iconType: '智库' as const, label: '智库维护' },
-      { key: 'asset', iconType: '素材' as const, label: '素材管理' },
-      { key: 'warehouse', iconType: '仓储' as const, label: '仓储历史' },
-      { key: 'salesStrategy', iconType: '策略' as const, label: '销售策略' },
-      { key: 'staff', iconType: '人员' as const, label: '人员管理' },
-      { key: 'setting', iconType: '设置' as const, label: '店铺设置' },
+      { key: 'goods', iconType: '商品' as const, emoji: '🌸', label: '商品管理' },
+      { key: 'category', iconType: '分类' as const, emoji: '📂', label: '分类管理' },
+      { key: 'wiki', iconType: '智库' as const, emoji: '📚', label: '智库维护' },
+      { key: 'asset', iconType: '素材' as const, emoji: '🖼️', label: '素材管理' },
+      { key: 'warehouse', iconType: '仓储' as const, emoji: '🏭', label: '仓储历史' },
+      { key: 'salesStrategy', iconType: '策略' as const, emoji: '🎯', label: '销售策略' },
+      { key: 'staff', iconType: '人员' as const, emoji: '👥', label: '人员管理' },
+      { key: 'setting', iconType: '设置' as const, emoji: '⚙️', label: '店铺设置' },
     ],
   },
 ] as const
@@ -308,6 +307,14 @@ function previewCustomer() {
     font-weight: 600;
   }
   .action-label { margin-top: 8rpx; font-size: 24rpx; color: #666; }
+.section-title__emoji { font-size: 28rpx; line-height: 1; flex-shrink: 0; }
+.action-emoji {
+  display: block;
+  font-size: 52rpx;
+  line-height: 56rpx;
+  text-align: center;
+}
+.header-avatar-emoji { font-size: 48rpx; line-height: 88rpx; }
 }
 .preview-section { padding: 48rpx 32rpx; }
 </style>
