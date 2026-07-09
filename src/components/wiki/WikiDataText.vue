@@ -67,7 +67,7 @@ const contentClasses = computed(() => {
 .wiki-data-text__tag {
   font-size: 18rpx;
   line-height: 1.25;
-  color: #c62828;
+  color: @color-danger;
   margin-left: 6rpx;
   opacity: 0.92;
   font-weight: 500;

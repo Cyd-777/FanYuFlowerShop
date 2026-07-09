@@ -126,7 +126,7 @@ async function confirmReplace() {
 .page-sales-strategy {
   min-height: 100vh;
   padding-bottom: 48rpx;
-  background: #f8f8f8;
+  background: @color-bg-page;
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
@@ -148,7 +148,7 @@ async function confirmReplace() {
 .replace-tip {
   padding: 0 24rpx 16rpx;
   font-size: 24rpx;
-  color: #e53935;
+  color: @color-primary;
 }
 .theme-grid {
   display: grid;
@@ -162,8 +162,8 @@ async function confirmReplace() {
   padding: 16rpx;
   border: 2rpx solid transparent;
   position: relative;
-  &.active { border-color: #43a047; }
-  &.replacing { border-color: #e53935; box-shadow: 0 4rpx 16rpx rgba(229, 57, 53, 0.15); }
+  &.active { border-color: @color-green-mid; }
+  &.replacing { border-color: @color-primary; box-shadow: 0 4rpx 16rpx rgba(229, 57, 53, 0.15); }
 }
 .theme-preview {
   height: 120rpx;
@@ -185,8 +185,8 @@ async function confirmReplace() {
   font-size: 22rpx;
   text-align: center;
 }
-.theme-tag { color: #e53935; }
-.active-badge { color: #43a047; font-weight: 600; }
+.theme-tag { color: @color-primary; }
+.active-badge { color: @color-green-mid; font-weight: 600; }
 .replace-actions {
   padding: 32rpx 16rpx 0;
   box-sizing: border-box;

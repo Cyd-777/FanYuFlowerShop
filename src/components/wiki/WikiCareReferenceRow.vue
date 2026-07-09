@@ -28,7 +28,7 @@ defineProps<{
   gap: 20rpx;
   align-items: flex-start;
   padding: 20rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid @color-bg-placeholder;
 
   &:last-child {
     border-bottom: none;

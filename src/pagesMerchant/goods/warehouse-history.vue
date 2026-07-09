@@ -161,7 +161,7 @@ function showDate(batch: { createdAt?: unknown }, idx: number): boolean {
 }
 </script>
 <style lang="less">
-.page-warehouse-history { min-height: 100vh; background: #f8f8f8; padding-bottom: 48rpx; box-sizing: border-box; }
+.page-warehouse-history { min-height: 100vh; background: @color-bg-page; padding-bottom: 48rpx; box-sizing: border-box; }
 
 .filter-tabs {
   display: flex; gap: 16rpx; padding: 16rpx 24rpx;
@@ -170,8 +170,8 @@ function showDate(batch: { createdAt?: unknown }, idx: number): boolean {
 }
 .filter-tab {
   padding: 12rpx 28rpx; border-radius: 999rpx;
-  font-size: 26rpx; color: #666; background: #f5f5f5;
-  &.active { color: #fff; background: #667eea; font-weight: 600; }
+  font-size: 26rpx; color: #666; background: @color-bg-muted;
+  &.active { color: #fff; background: @color-merchant-start; font-weight: 600; }
 }
 .loading-tip, .empty-tip { padding: 80rpx 32rpx; text-align: center; font-size: 26rpx; color: #999; }
 
@@ -188,7 +188,7 @@ function showDate(batch: { createdAt?: unknown }, idx: number): boolean {
   top: var(--nav-total-height, 0px);
   bottom: 0;
   width: 4rpx;
-  background: #e0e0e0;
+  background: @color-border-dashed;
   z-index: 0;
   pointer-events: none;
 }
@@ -235,12 +235,12 @@ function showDate(batch: { createdAt?: unknown }, idx: number): boolean {
   width: 16rpx;
   height: 16rpx;
   border-radius: 50%;
-  background: #e0e0e0;
+  background: @color-border-dashed;
   margin-top: 32rpx;
   z-index: 2;
   position: relative;
-  &.dot-in { background: #2e7d32; }
-  &.dot-out { background: #c62828; }
+  &.dot-in { background: @color-success; }
+  &.dot-out { background: @color-danger; }
 }
 
 /* 第 3 列：卡片占剩余空间 */
@@ -249,19 +249,19 @@ function showDate(batch: { createdAt?: unknown }, idx: number): boolean {
 .batch-head { display: flex; align-items: center; justify-content: space-between; gap: 12rpx; }
 .batch-head-left { display: flex; align-items: center; gap: 10rpx; flex: 1; min-width: 0; }
 .batch-operator { display: flex; align-items: center; gap: 10rpx; }
-.avatar-circle { width: 40rpx; height: 40rpx; line-height: 40rpx; text-align: center; border-radius: 50%; background: #667eea; color: #fff; font-size: 22rpx; font-weight: 600; flex-shrink: 0; }
-.avatar-img { width: 40rpx; height: 40rpx; border-radius: 50%; flex-shrink: 0; background: #f0f0f0; }
+.avatar-circle { width: 40rpx; height: 40rpx; line-height: 40rpx; text-align: center; border-radius: 50%; background: @color-merchant-start; color: #fff; font-size: 22rpx; font-weight: 600; flex-shrink: 0; }
+.avatar-img { width: 40rpx; height: 40rpx; border-radius: 50%; flex-shrink: 0; background: @color-bg-placeholder; }
 .opt-name { font-size: 26rpx; color: #333; font-weight: 500; }
 .batch-order-line { display: flex; align-items: center; gap: 6rpx; }
 .batch-order-icon { font-size: 28rpx; }
-.batch-order-no { font-size: 24rpx; color: #667eea; }
+.batch-order-no { font-size: 24rpx; color: @color-merchant-start; }
 .batch-tag { font-size: 22rpx; padding: 6rpx 16rpx; border-radius: 8rpx; font-weight: 500; flex-shrink: 0; }
-.batch-tag--in { background: #e8f5e9; color: #2e7d32; }
-.batch-tag--out { background: #ffebee; color: #c62828; }
-.batch-items { margin-top: 10rpx; border-top: 2rpx solid #f5f5f5; padding-top: 8rpx; }
+.batch-tag--in { background: @color-success-bg; color: @color-success; }
+.batch-tag--out { background: @color-danger-bg; color: @color-danger; }
+.batch-items { margin-top: 10rpx; border-top: 2rpx solid @color-bg-muted; padding-top: 8rpx; }
 .batch-item { display: flex; justify-content: space-between; align-items: center; padding: 6rpx 0; }
 .item-name { font-size: 26rpx; color: #333; font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .item-right { display: flex; align-items: center; gap: 12rpx; flex-shrink: 0; }
-.item-delta { font-size: 24rpx; font-weight: 600; color: #333; &.is-in { color: #2e7d32; } &.is-out { color: #c62828; } }
+.item-delta { font-size: 24rpx; font-weight: 600; color: #333; &.is-in { color: @color-success; } &.is-out { color: @color-danger; } }
 .item-stock { font-size: 20rpx; color: #bbb; }
 </style>

@@ -58,24 +58,24 @@ const {
 </script>
 
 <style lang="less">
-.page-customize-pick { min-height: 100vh; background: #f8f8f8; }
+.page-customize-pick { min-height: 100vh; background: @color-bg-page; }
 .tip { padding: 20rpx 24rpx; font-size: 24rpx; color: #666; }
 .goods-list { padding: 0 16rpx; }
 .goods-item {
   display: flex; align-items: center; background: #fff; border-radius: 12rpx;
   padding: 16rpx; margin-bottom: 12rpx; border: 2rpx solid transparent;
-  &.selected { border-color: #e53935; background: #fff5f5; }
+  &.selected { border-color: @color-primary; background: @color-danger-bg-alt; }
   &.is-sold-out { opacity: 0.5; }
 }
 .check {
   width: 40rpx; height: 40rpx; border-radius: 50%; border: 2rpx solid #ddd;
   margin-right: 12rpx; display: flex; align-items: center; justify-content: center;
-  font-size: 24rpx; color: #e53935;
+  font-size: 24rpx; color: @color-primary;
 }
-.thumb { width: 120rpx; height: 120rpx; border-radius: 8rpx; background: #f0f0f0; }
+.thumb { width: 120rpx; height: 120rpx; border-radius: 8rpx; background: @color-bg-placeholder; }
 .info { flex: 1; margin-left: 16rpx; }
 .name { font-size: 26rpx; color: #333; }
-.price { margin-top: 8rpx; color: #e53935; }
+.price { margin-top: 8rpx; color: @color-primary; }
 .empty { padding: 80rpx 32rpx; text-align: center; font-size: 26rpx; color: #999; line-height: 1.6; }
 .action-bar {
   position: fixed; bottom: 0; left: 0; right: 0;

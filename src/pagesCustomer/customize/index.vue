@@ -161,7 +161,7 @@ function submitOrder() {
 </script>
 
 <style lang="less">
-.page-customize { padding-bottom: 140rpx; background: #f8f8f8; min-height: 100vh; }
+.page-customize { padding-bottom: 140rpx; background: @color-bg-page; min-height: 100vh; }
 .tip-card {
   margin: 16rpx;
   padding: 24rpx;
@@ -173,13 +173,13 @@ function submitOrder() {
 .section { background: #fff; padding: 24rpx; margin-bottom: 16rpx; }
 .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16rpx; }
 .section-title { font-size: 28rpx; font-weight: 600; color: #333; }
-.link { font-size: 26rpx; color: #e53935; }
+.link { font-size: 26rpx; color: @color-primary; }
 .picked-list { display: flex; flex-direction: column; gap: 12rpx; }
-.picked-item { display: flex; align-items: center; padding: 12rpx; background: #fafafa; border-radius: 12rpx; }
-.thumb { width: 96rpx; height: 96rpx; border-radius: 8rpx; background: #f0f0f0; margin-right: 16rpx; }
+.picked-item { display: flex; align-items: center; padding: 12rpx; background: @color-bg-input; border-radius: 12rpx; }
+.thumb { width: 96rpx; height: 96rpx; border-radius: 8rpx; background: @color-bg-placeholder; margin-right: 16rpx; }
 .meta { flex: 1; }
 .name { font-size: 26rpx; color: #333; }
-.price { margin-top: 4rpx; font-size: 24rpx; color: #e53935; }
+.price { margin-top: 4rpx; font-size: 24rpx; color: @color-primary; }
 .empty { font-size: 24rpx; color: #bbb; }
 .message-box { margin-top: 20rpx; }
 .message-label { font-size: 24rpx; color: #666; margin-bottom: 8rpx; }
@@ -187,6 +187,6 @@ function submitOrder() {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex; align-items: center; padding: 16rpx 24rpx;
   background: #fff; border-top: 2rpx solid #eee;
-  .total { flex: 1; font-size: 32rpx; font-weight: 600; color: #e53935; }
+  .total { flex: 1; font-size: 32rpx; font-weight: 600; color: @color-primary; }
 }
 </style>

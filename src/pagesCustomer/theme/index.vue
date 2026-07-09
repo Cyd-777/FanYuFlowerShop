@@ -1,7 +1,7 @@
 <template>
   <view class="page-theme">
     <AppNavBar />
-    <nut-swiper :init-page="0" :pagination-visible="true" pagination-color="#e53935">
+    <nut-swiper :init-page="0" :pagination-visible="true" pagination-color="@color-primary">
       <nut-swiper-item v-for="(banner, idx) in banners" :key="idx">
         <image class="banner-img" :src="banner.image" mode="aspectFill" />
       </nut-swiper-item>
@@ -34,20 +34,20 @@ function goDetail(id: number) {
 </script>
 
 <style lang="less">
-.page-theme { background: #f8f8f8; min-height: 100vh; }
-.banner-img { width: 100%; height: 400rpx; background: #f0f0f0; }
+.page-theme { background: @color-bg-page; min-height: 100vh; }
+.banner-img { width: 100%; height: 400rpx; background: @color-bg-placeholder; }
 .section-title { padding: 32rpx 32rpx 16rpx; font-size: 32rpx; font-weight: 600; color: #333; }
 .goods-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 16rpx; padding: 0 16rpx 32rpx;
 }
 .goods-card {
   background: #fff; border-radius: 16rpx; overflow: hidden; position: relative;
-  .goods-img { width: 100%; height: 340rpx; background: #f0f0f0; }
+  .goods-img { width: 100%; height: 340rpx; background: @color-bg-placeholder; }
   .goods-name { padding: 12rpx 16rpx 4rpx; font-size: 26rpx; color: #333; }
-  .goods-price { padding: 0 16rpx 16rpx; color: #e53935; }
+  .goods-price { padding: 0 16rpx 16rpx; color: @color-primary; }
   .goods-tag {
     position: absolute; top: 8rpx; left: 8rpx;
-    background: #e53935; color: #fff; font-size: 20rpx;
+    background: @color-primary; color: #fff; font-size: 20rpx;
     padding: 4rpx 12rpx; border-radius: 8rpx;
   }
 }

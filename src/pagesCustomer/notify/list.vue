@@ -157,7 +157,7 @@ useDidShow(() => {
 <style lang="less">
 .page-notify-list {
   min-height: 100vh;
-  background: #f5f5f7;
+  background: @color-bg-muted;
   padding-bottom: 120rpx;
 }
 
@@ -175,7 +175,7 @@ useDidShow(() => {
   font-size: 26rpx;
 
   &--active {
-    background: #2d5016;
+    background: @color-wiki-green-dark;
     color: #fff;
   }
 }
@@ -198,7 +198,7 @@ useDidShow(() => {
   margin-bottom: 16rpx;
 
   &--unread {
-    border-left: 6rpx solid #2d5016;
+    border-left: 6rpx solid @color-wiki-green-dark;
   }
 
   &__head {
@@ -210,7 +210,7 @@ useDidShow(() => {
 
   &__type {
     font-size: 22rpx;
-    color: #2d5016;
+    color: @color-wiki-green-dark;
     background: rgba(45, 80, 22, 0.08);
     padding: 4rpx 12rpx;
     border-radius: 8rpx;

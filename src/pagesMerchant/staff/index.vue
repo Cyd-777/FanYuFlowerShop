@@ -216,7 +216,7 @@ function copyInvitePath() {
 <style lang="less">
 .page-staff {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   box-sizing: border-box;
   width: 100%;
   overflow-x: hidden;
@@ -240,8 +240,8 @@ function copyInvitePath() {
     padding: 12rpx 16rpx;
     font-size: 24rpx;
     line-height: 1.45;
-    color: #e65100;
-    background: #fff8e1;
+    color: @color-warning;
+    background: @color-warning-bg;
     border-radius: 12rpx;
   }
 }
@@ -265,15 +265,15 @@ function copyInvitePath() {
 .invite-panel {
   margin: 24rpx 0 0;
   padding: 24rpx;
-  background: #fff8f8;
-  border: 2rpx solid #ffe0e0;
+  background: @color-primary-bg-alt;
+  border: 2rpx solid @color-danger-bg-alt;
   border-radius: 16rpx;
   box-sizing: border-box;
 }
 .invite-panel-title {
   font-size: 26rpx;
   font-weight: 600;
-  color: #c62828;
+  color: @color-danger;
 }
 .invite-code {
   margin-top: 16rpx;
@@ -306,7 +306,7 @@ function copyInvitePath() {
   line-height: 88rpx;
   font-size: 30rpx;
   color: #fff;
-  background: #e53935;
+  background: @color-primary;
   border: none;
   box-sizing: border-box;
 }
@@ -340,7 +340,7 @@ function copyInvitePath() {
   height: 80rpx;
   margin-right: 20rpx;
   border-radius: 50%;
-  background: #f0f0f0;
+  background: @color-bg-placeholder;
   &.placeholder {
     display: flex;
     align-items: center;
@@ -369,16 +369,16 @@ function copyInvitePath() {
   font-size: 20rpx;
   border-radius: 6rpx;
   &.owner {
-    color: #667eea;
+    color: @color-merchant-start;
     background: rgba(102, 126, 234, 0.12);
   }
   &.manager {
-    color: #e65100;
+    color: @color-warning;
     background: rgba(230, 81, 0, 0.1);
   }
   &.staff {
     color: #999;
-    background: #f5f5f5;
+    background: @color-bg-muted;
   }
 }
 .item-arrow {

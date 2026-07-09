@@ -112,7 +112,7 @@ function goDetail(id: string, coverPreview?: string, coverFileId?: string) {
 
 <style lang="less">
 .page-favorite {
-  background: #f8f8f8;
+  background: @color-bg-page;
   min-height: 100vh;
 }
 .loading-tip {
@@ -140,7 +140,7 @@ function goDetail(id: string, coverPreview?: string, coverFileId?: string) {
   width: 100%;
   height: 260rpx;
   border-radius: 8rpx;
-  background: #f0f0f0;
+  background: @color-bg-placeholder;
 }
 .goods-name {
   margin-top: 8rpx;
@@ -151,7 +151,7 @@ function goDetail(id: string, coverPreview?: string, coverFileId?: string) {
   white-space: nowrap;
 }
 .goods-price {
-  color: #e53935;
+  color: @color-primary;
   margin: 8rpx 0;
 }
 </style>

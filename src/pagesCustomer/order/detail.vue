@@ -184,7 +184,7 @@ function confirmCancel() {
   wx.showModal({
     title: '取消订单',
     content: '确定取消该订单？取消后库存将恢复。',
-    confirmColor: '#e53935',
+    confirmColor: '@color-primary',
     success: (res) => {
       if (res.confirm) {
         void handleCancel()
@@ -214,7 +214,7 @@ async function handleCancel() {
 
 <style lang="less">
 .page-order-detail {
-  background: #f8f8f8;
+  background: @color-bg-page;
   min-height: 100vh;
   &.has-footer {
     padding-bottom: 120rpx;
@@ -257,10 +257,10 @@ async function handleCancel() {
 .remark-text { font-size: 26rpx; color: #666; line-height: 1.5; }
 .info-row { display: flex; justify-content: space-between; padding: 8rpx 0; font-size: 26rpx; gap: 24rpx; }
 .info-row .label { color: #999; flex-shrink: 0; }
-.info-row .price { color: #e53935; font-weight: 600; }
+.info-row .price { color: @color-primary; font-weight: 600; }
 .badge { font-size: 22rpx; font-weight: 600; padding: 4rpx 12rpx; border-radius: 8rpx; }
-.badge--pickup { background: #fff3e0; color: #e65100; }
-.badge--home { background: #e3f2fd; color: #1565c0; }
+.badge--pickup { background: @color-warning-bg; color: @color-warning; }
+.badge--home { background: @color-info-bg; color: @color-link; }
 .action-bar {
   position: fixed;
   bottom: 0;

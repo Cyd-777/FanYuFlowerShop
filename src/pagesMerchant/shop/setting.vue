@@ -71,7 +71,7 @@ async function save() {
 
 <style lang="less">
 .page-shop-setting {
-  background: #f8f8f8;
+  background: @color-bg-page;
   min-height: 100vh;
   box-sizing: border-box;
   width: 100%;

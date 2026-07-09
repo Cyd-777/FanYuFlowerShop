@@ -79,7 +79,7 @@ async function scan() {
 </script>
 
 <style lang="less">
-.page-verify { background: #f8f8f8; min-height: 100vh; box-sizing: border-box; width: 100%; max-width: 100%; }
+.page-verify { background: @color-bg-page; min-height: 100vh; box-sizing: border-box; width: 100%; max-width: 100%; }
 .intro { text-align: center; padding: 80rpx 32rpx 48rpx; box-sizing: border-box; }
 .icon { font-size: 100rpx; }
 .title { margin-top: 16rpx; font-size: 36rpx; font-weight: 600; }
@@ -91,12 +91,12 @@ async function scan() {
   margin: 24rpx 32rpx 0; padding: 24rpx; border-radius: 16rpx;
   background: #fff; text-align: center;
 }
-.result-status { font-size: 32rpx; font-weight: 600; &.success { color: #2e7d32; } &.fail { color: #c62828; } }
+.result-status { font-size: 32rpx; font-weight: 600; &.success { color: @color-success; } &.fail { color: @color-danger; } }
 .result-msg { margin-top: 8rpx; font-size: 24rpx; color: #666; }
 
 .history { margin-top: 48rpx; padding: 0 32rpx; box-sizing: border-box; }
 .section-title { font-size: 28rpx; font-weight: 600; margin-bottom: 16rpx; }
-.record-item { display: flex; justify-content: space-between; align-items: center; padding: 16rpx 0; border-bottom: 2rpx solid #f5f5f5; }
+.record-item { display: flex; justify-content: space-between; align-items: center; padding: 16rpx 0; border-bottom: 2rpx solid @color-bg-muted; }
 .order-no { font-size: 26rpx; color: #333; }
 .order-hint { margin-top: 4rpx; font-size: 22rpx; color: #999; }
 .time { font-size: 22rpx; color: #999; flex-shrink: 0; margin-left: 16rpx; }

@@ -35,7 +35,7 @@ defineProps<{
   align-items: center;
   justify-content: center;
   border-radius: 16rpx;
-  background: #f5f7fa;
+  background: @color-bg-surface-alt;
 }
 
 .wiki-care-condition__icon {

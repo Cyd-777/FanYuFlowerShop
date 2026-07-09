@@ -215,7 +215,7 @@ function goSelfSelect() {
 <style lang="less">
 .page-guide-result {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   padding-bottom: 140rpx;
 }
 
@@ -241,10 +241,10 @@ function goSelfSelect() {
 
 .tag {
   padding: 8rpx 20rpx;
-  background: #fce4ec;
+  background: @color-primary-light;
   border-radius: 24rpx;
   font-size: 24rpx;
-  color: #e53935;
+  color: @color-primary;
 }
 
 .section {
@@ -263,7 +263,7 @@ function goSelfSelect() {
 
 .loading-placeholder {
   height: 200rpx;
-  background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, @color-bg-placeholder 25%, @color-bg-page 50%, @color-bg-placeholder 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
   border-radius: 12rpx;
@@ -284,7 +284,7 @@ function goSelfSelect() {
   display: inline-block;
   width: 280rpx;
   margin-right: 16rpx;
-  background: #fafafa;
+  background: @color-bg-input;
   border-radius: 12rpx;
   overflow: hidden;
   vertical-align: top;
@@ -297,7 +297,7 @@ function goSelfSelect() {
 .bouquet-img {
   width: 280rpx;
   height: 280rpx;
-  background: #f0f0f0;
+  background: @color-bg-placeholder;
   display: block;
 }
 
@@ -313,7 +313,7 @@ function goSelfSelect() {
 .bouquet-price {
   padding: 0 12rpx 12rpx;
   font-size: 24rpx;
-  color: #e53935;
+  color: @color-primary;
   font-weight: 500;
 }
 
@@ -341,7 +341,7 @@ function goSelfSelect() {
 
 .flower-item {
   width: calc(50% - 6rpx);
-  background: #fafafa;
+  background: @color-bg-input;
   border-radius: 12rpx;
   padding: 16rpx;
   box-sizing: border-box;
@@ -350,7 +350,7 @@ function goSelfSelect() {
 .flower-img {
   width: 100%;
   height: 180rpx;
-  background: #f0f0f0;
+  background: @color-bg-placeholder;
   border-radius: 8rpx;
   display: block;
 }
@@ -363,7 +363,7 @@ function goSelfSelect() {
 
 .flower-price {
   font-size: 24rpx;
-  color: #e53935;
+  color: @color-primary;
   margin-top: 4rpx;
 }
 

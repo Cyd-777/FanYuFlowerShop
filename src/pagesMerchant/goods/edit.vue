@@ -769,7 +769,7 @@ async function handleDelete() {
     wx.showModal({
       title: '删除商品',
       content: '删除后无法恢复，确定继续？',
-      confirmColor: '#e53935',
+      confirmColor: '@color-primary',
       success: (r) => resolve({ confirm: r.confirm }),
     })
   })
@@ -808,7 +808,7 @@ watch(selectableCategories, () => {
 .page-merchant-goods-edit {
   min-height: 100vh;
   padding-bottom: 48rpx;
-  background: #f8f8f8;
+  background: @color-bg-page;
 }
 .images-section,
 .form-card {
@@ -824,7 +824,7 @@ watch(selectableCategories, () => {
   padding: 16rpx 20rpx;
   font-size: 28rpx;
   color: #333;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border-radius: 12rpx;
   box-sizing: border-box;
 }
@@ -835,7 +835,7 @@ watch(selectableCategories, () => {
   font-size: 28rpx;
   color: #333;
   line-height: 1.5;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border-radius: 12rpx;
   box-sizing: border-box;
 }
@@ -857,14 +857,14 @@ watch(selectableCategories, () => {
 .unit-option {
   padding: 12rpx 24rpx;
   border-radius: 32rpx;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   font-size: 26rpx;
   color: #666;
   border: 2rpx solid transparent;
   &.active {
-    background: #fce4ec;
-    border-color: #f8bbd0;
-    color: #e53935;
+    background: @color-primary-light;
+    border-color: @color-primary-border;
+    color: @color-primary;
     font-weight: 600;
   }
 }
@@ -889,14 +889,14 @@ watch(selectableCategories, () => {
   height: 200rpx;
   border-radius: 12rpx;
   overflow: hidden;
-  background: #fafafa;
+  background: @color-bg-input;
 }
 .image-add {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2rpx dashed #e0e0e0;
+  border: 2rpx dashed @color-border-dashed;
   color: #bbb;
   .plus {
     font-size: 48rpx;
@@ -912,10 +912,10 @@ watch(selectableCategories, () => {
   padding: 18rpx 0;
   text-align: center;
   font-size: 26rpx;
-  color: #e53935;
-  background: #fff5f5;
+  color: @color-primary;
+  background: @color-danger-bg-alt;
   border-radius: 12rpx;
-  border: 2rpx solid #ffcdd2;
+  border: 2rpx solid @color-primary-border;
 }
 .slot-img {
   width: 100%;
@@ -1000,7 +1000,7 @@ watch(selectableCategories, () => {
 }
 .switch-section {
   padding: 8rpx 32rpx 24rpx;
-  border-top: 2rpx solid #f5f5f5;
+  border-top: 2rpx solid @color-bg-muted;
 }
 .switch-row {
   display: flex;
@@ -1036,7 +1036,7 @@ watch(selectableCategories, () => {
 }
 .card-link {
   font-size: 24rpx;
-  color: #e53935;
+  color: @color-primary;
 }
 .category-list {
   display: flex;
@@ -1048,13 +1048,13 @@ watch(selectableCategories, () => {
   align-items: center;
   padding: 16rpx 24rpx;
   border-radius: 32rpx;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border: 2rpx solid transparent;
   &.active {
-    background: #fce4ec;
-    border-color: #f8bbd0;
+    background: @color-primary-light;
+    border-color: @color-primary-border;
     .option-name {
-      color: #e53935;
+      color: @color-primary;
       font-weight: 600;
     }
   }

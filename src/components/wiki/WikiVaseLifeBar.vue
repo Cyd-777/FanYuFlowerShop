@@ -119,7 +119,7 @@ const noteText = computed(() => String(props.note || '').trim())
   flex-direction: row;
   align-items: stretch;
   height: 20rpx;
-  background: #eceff1;
+  background: @color-tag-bg;
   border-radius: 10rpx;
   overflow: hidden;
 }
@@ -129,12 +129,12 @@ const noteText = computed(() => String(props.note || '').trim())
   min-width: 4rpx;
 
   &--min {
-    background: linear-gradient(90deg, #66bb6a 0%, #43a047 100%);
+    background: linear-gradient(90deg, @color-green-mid 0%, @color-green-mid 100%);
     border-radius: 10rpx 0 0 10rpx;
   }
 
   &--float {
-    background: linear-gradient(90deg, #a5d6a7 0%, #c8e6c9 100%);
+    background: linear-gradient(90deg, @color-wiki-green-bg 0%, @color-success-bg 100%);
     border-left: 2rpx solid rgba(255, 255, 255, 0.85);
     border-radius: 0 10rpx 10rpx 0;
   }

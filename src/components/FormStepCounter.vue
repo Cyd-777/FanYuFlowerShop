@@ -151,7 +151,7 @@ function onBlur() {
   width: 52rpx;
   height: 52rpx;
   border-radius: 12rpx;
-  background: #f5f5f5;
+  background: @color-bg-muted;
 }
 .counter-input {
   flex-shrink: 0;
@@ -161,7 +161,7 @@ function onBlur() {
   font-size: 28rpx;
   font-weight: 600;
   color: #333;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border-radius: 12rpx;
 }
 </style>

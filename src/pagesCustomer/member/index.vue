@@ -46,16 +46,16 @@ function goSignin() {
 </script>
 
 <style lang="less">
-.page-member { background: #f8f8f8; min-height: 100vh; }
+.page-member { background: @color-bg-page; min-height: 100vh; }
 .member-card {
-  margin: 32rpx; padding: 48rpx 32rpx; background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+  margin: 32rpx; padding: 48rpx 32rpx; background: linear-gradient(135deg, @color-primary-light, @color-primary-border);
   border-radius: 24rpx; text-align: center;
   .level-icon { font-size: 80rpx; }
   .level-name { margin-top: 16rpx; font-size: 36rpx; font-weight: 600; color: #333; }
   .level-tagline { margin-top: 8rpx; font-size: 24rpx; color: #888; }
   .points { margin-top: 16rpx; font-size: 28rpx; color: #666; }
   .progress-bar { margin-top: 24rpx; height: 12rpx; background: rgba(255,255,255,0.5); border-radius: 6rpx; overflow: hidden; }
-  .progress-fill { height: 100%; background: #e53935; border-radius: 6rpx; }
+  .progress-fill { height: 100%; background: @color-primary; border-radius: 6rpx; }
   .progress-text { margin-top: 8rpx; font-size: 22rpx; color: #999; }
 }
 .actions { background: #fff; }

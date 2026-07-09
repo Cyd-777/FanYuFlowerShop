@@ -46,7 +46,7 @@ const scientificName = computed(() => props.wiki.names?.scientificName?.trim() |
 .wiki-detail-hero {
   padding: 32rpx 32rpx 48rpx;
   min-height: 280rpx;
-  background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
+  background: linear-gradient(180deg, @color-danger-bg-alt 0%, #fff 100%);
   text-align: center;
   box-sizing: border-box;
 }
@@ -74,7 +74,7 @@ const scientificName = computed(() => props.wiki.names?.scientificName?.trim() |
 
 .wiki-detail-hero-kind {
   font-size: 24rpx;
-  color: #e53935;
+  color: @color-primary;
 }
 
 .wiki-detail-hero-scientific-wrap {

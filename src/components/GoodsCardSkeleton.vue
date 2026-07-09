@@ -41,7 +41,7 @@ withDefaults(
 }
 
 .sk-shimmer {
-  background: linear-gradient(90deg, #f0f0f0 0%, #e6e6e6 20%, #f5f5f5 40%, #f0f0f0 100%);
+  background: linear-gradient(90deg, @color-bg-placeholder 0%, @color-bg-surface-alt2 20%, @color-bg-muted 40%, @color-bg-placeholder 100%);
   background-size: 200% 100%;
   animation: goods-sk-shimmer 1.4s ease-in-out infinite;
 }

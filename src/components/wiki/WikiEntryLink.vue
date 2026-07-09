@@ -18,7 +18,7 @@ function onTap() {
 
 <style lang="less">
 .wiki-entry-link {
-  color: #c62828;
+  color: @color-danger;
   border-bottom: 2rpx dashed rgba(198, 40, 40, 0.55);
   padding-bottom: 2rpx;
 }

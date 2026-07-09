@@ -164,7 +164,7 @@ async function saveProfile() {
   min-height: 100vh;
   padding: 32rpx 24rpx 48rpx;
   box-sizing: border-box;
-  background: #f8f8f8;
+  background: @color-bg-page;
 }
 .avatar-section {
   display: flex;

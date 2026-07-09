@@ -533,7 +533,7 @@ function onProfileNotify() {
   }
   &.wechat {
     color: #fff;
-    background: #07c160;
+    background: @color-green-mid;
   }
   &.phone {
     margin-top: 24rpx;
@@ -600,7 +600,7 @@ function onProfileNotify() {
 .dev-hint {
   margin-top: 24rpx;
   font-size: 22rpx;
-  color: #e65100;
+  color: @color-warning;
   text-align: center;
 }
 .tip {

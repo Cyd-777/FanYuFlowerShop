@@ -234,10 +234,10 @@ function previewCustomer() {
 </script>
 
 <style lang="less">
-.page-dashboard { background: #f8f8f8; min-height: 100vh; }
+.page-dashboard { background: @color-bg-page; min-height: 100vh; }
 .header {
   padding: 48rpx 32rpx 32rpx;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, @color-merchant-start, @color-merchant-end);
   .header-row {
     display: flex;
     align-items: center;
@@ -270,7 +270,7 @@ function previewCustomer() {
   box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
   .stat-value { font-size: 40rpx; font-weight: 700; color: #333; }
   .stat-label { margin-top: 4rpx; font-size: 22rpx; color: #999; }
-  &.highlight .stat-value { color: #e53935; }
+  &.highlight .stat-value { color: @color-primary; }
 }
 .section-title {
   display: flex;
@@ -301,7 +301,7 @@ function previewCustomer() {
     min-width: 32rpx;
     padding: 0 8rpx;
     border-radius: 999rpx;
-    background: #e53935;
+    background: @color-primary;
     color: #fff;
     font-size: 20rpx;
     line-height: 32rpx;

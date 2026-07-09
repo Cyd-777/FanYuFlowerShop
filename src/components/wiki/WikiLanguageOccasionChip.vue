@@ -39,7 +39,7 @@ const icon = computed(() => resolveWikiOccasionIcon(props.label))
 
 .wiki-language-occasion__text {
   font-size: 24rpx;
-  color: #c62828;
+  color: @color-danger;
   line-height: 1.3;
 }
 </style>

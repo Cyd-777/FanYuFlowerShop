@@ -38,12 +38,12 @@ withDefaults(
 
   &--empty .wiki-field-slot__box {
     border-style: dashed;
-    background: #fafafa;
+    background: @color-bg-input;
   }
 
   &--highlight .wiki-field-slot__box {
-    border-color: #ffcdd2;
-    background: #fff8f8;
+    border-color: @color-primary-border;
+    background: @color-primary-bg-alt;
     box-shadow: 0 0 0 2rpx rgba(229, 57, 53, 0.12);
   }
 }

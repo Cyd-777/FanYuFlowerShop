@@ -125,7 +125,7 @@ async function acceptOrder(id: string) {
 
 <style lang="less">
 .page-merchant-order {
-  background: #f8f8f8;
+  background: @color-bg-page;
   min-height: 100vh;
   padding-bottom: 32rpx;
 }

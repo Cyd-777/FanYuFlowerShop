@@ -221,7 +221,7 @@ function onEdit(target: WikiNoteEditTarget) {
 .wiki-section__feature-chip {
   padding: 8rpx 16rpx;
   font-size: 24rpx;
-  color: #c62828;
+  color: @color-danger;
   background: rgba(229, 57, 53, 0.08);
   border-radius: 999rpx;
   line-height: 1.3;
@@ -231,7 +231,7 @@ function onEdit(target: WikiNoteEditTarget) {
   display: block;
   margin-top: 8rpx;
   font-size: 20rpx;
-  color: #a78bfa;
+  color: @color-wiki-purple-mid-light;
 }
 
 .wiki-section__empty {
@@ -280,7 +280,7 @@ function onEdit(target: WikiNoteEditTarget) {
   padding: 12rpx 0;
 
   & + & {
-    border-top: 1rpx solid #f5f5f5;
+    border-top: 1rpx solid @color-bg-muted;
   }
 }
 

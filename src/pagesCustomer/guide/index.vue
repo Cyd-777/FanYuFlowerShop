@@ -162,7 +162,7 @@ function onComplete() {
 <style lang="less">
 .page-guide {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   display: flex;
   flex-direction: column;
 }
@@ -176,14 +176,14 @@ function onComplete() {
 .progress-track {
   flex: 1;
   height: 8rpx;
-  background: #e0e0e0;
+  background: @color-border-dashed;
   border-radius: 4rpx;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: #e53935;
+  background: @color-primary;
   border-radius: 4rpx;
   transition: width 0.3s ease;
 }
@@ -258,7 +258,7 @@ function onComplete() {
 .pill {
   padding: 20rpx 36rpx;
   background: #fff;
-  border: 2rpx solid #e0e0e0;
+  border: 2rpx solid @color-border-dashed;
   border-radius: 48rpx;
   font-size: 28rpx;
   color: #666;
@@ -266,9 +266,9 @@ function onComplete() {
 }
 
 .pill.active {
-  background: #fce4ec;
-  border-color: #e53935;
-  color: #e53935;
+  background: @color-primary-light;
+  border-color: @color-primary;
+  color: @color-primary;
   font-weight: 500;
 }
 

@@ -142,7 +142,7 @@ watch(
   gap: 6rpx;
   min-width: 144rpx;
   padding: 6rpx 12rpx;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border: 2rpx solid #eee;
   border-radius: 28rpx;
   font-size: 24rpx;

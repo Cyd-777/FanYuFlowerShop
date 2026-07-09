@@ -55,23 +55,23 @@ const noteText = computed(() => String(props.note || '').trim())
 .wiki-bloom-season__bar {
   width: 100%;
   height: 48rpx;
-  background: #eceff1;
+  background: @color-tag-bg;
   border-radius: 8rpx;
 }
 
 .wiki-bloom-season__month--active .wiki-bloom-season__bar {
-  background: linear-gradient(180deg, #ff8a80 0%, #e53935 100%);
+  background: linear-gradient(180deg, @color-danger-bg 0%, @color-primary 100%);
   box-shadow: 0 4rpx 8rpx rgba(229, 57, 53, 0.25);
 }
 
 .wiki-bloom-season__label {
   font-size: 18rpx;
-  color: #90a4ae;
+  color: @color-wiki-gray;
   line-height: 1;
 }
 
 .wiki-bloom-season__month--active .wiki-bloom-season__label {
-  color: #c62828;
+  color: @color-danger;
   font-weight: 600;
 }
 
@@ -85,7 +85,7 @@ const noteText = computed(() => String(props.note || '').trim())
 }
 
 .wiki-bloom-season__caption-dot {
-  color: #e53935;
+  color: @color-primary;
   font-weight: 700;
 }
 

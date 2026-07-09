@@ -296,7 +296,7 @@ const alertDialogClass = computed(
 
 .app-feedback-dialog__confirm {
   color: @color-text-secondary;
-  background: #f5f5f5;
+  background: @color-bg-muted;
 }
 
 .app-feedback-dialog__cancel {

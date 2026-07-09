@@ -70,7 +70,7 @@ const languageSummary = computed(() => {
 .wiki-entry-panel {
   margin: 16rpx 24rpx 0;
   padding: 24rpx;
-  border: 2rpx solid #fce4ec;
+  border: 2rpx solid @color-primary-light;
 }
 
 .wiki-entry-head {
@@ -82,16 +82,16 @@ const languageSummary = computed(() => {
 
 .wiki-entry-icon {
   width: 72rpx; height: 72rpx; line-height: 72rpx; text-align: center;
-  font-size: 36rpx; background: #fff5f5; border-radius: 12rpx; flex-shrink: 0;
+  font-size: 36rpx; background: @color-danger-bg-alt; border-radius: 12rpx; flex-shrink: 0;
 }
 
 .wiki-entry-titles { flex: 1; min-width: 0; }
 .wiki-entry-name { font-size: 30rpx; font-weight: 600; color: #333; }
-.wiki-entry-sub { margin-top: 4rpx; font-size: 22rpx; color: #e53935; }
+.wiki-entry-sub { margin-top: 4rpx; font-size: 22rpx; color: @color-primary; }
 .wiki-entry-scientific { margin-top: 4rpx; font-size: 22rpx; font-style: italic; color: #888; }
 
 .wiki-entry-summary {
-  background: #fafafa;
+  background: @color-bg-input;
   border-radius: 12rpx;
   padding: 16rpx;
 }
@@ -124,11 +124,11 @@ const languageSummary = computed(() => {
   justify-content: flex-end;
   margin-top: 16rpx;
   padding-top: 14rpx;
-  border-top: 1rpx solid #f5e8e8;
+  border-top: 1rpx solid @color-primary-light;
 }
 
 .wiki-entry-foot-text {
   font-size: 24rpx;
-  color: #e53935;
+  color: @color-primary;
 }
 </style>

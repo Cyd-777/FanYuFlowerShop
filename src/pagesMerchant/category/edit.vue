@@ -346,7 +346,7 @@ async function demoteToSecondary() {
 async function handleDelete() {
   const { confirm } = await new Promise<{ confirm: boolean }>((resolve) => {
     wx.showModal({
-      title: '删除', content: '删除后无法恢复，确定继续？', confirmColor: '#e53935',
+      title: '删除', content: '删除后无法恢复，确定继续？', confirmColor: '@color-primary',
       success: (r) => resolve({ confirm: r.confirm }),
     })
   })
@@ -363,12 +363,12 @@ async function handleDelete() {
 </script>
 
 <style lang="less">
-.page-category-edit { min-height: 100vh; padding-bottom: 48rpx; background: #f8f8f8; }
+.page-category-edit { min-height: 100vh; padding-bottom: 48rpx; background: @color-bg-page; }
 .form-card, .preview-card { background: #fff; margin-bottom: 16rpx; }
 .preview-card { padding: 24rpx 32rpx 32rpx; }
 .preview-label { font-size: 26rpx; color: #999; margin-bottom: 16rpx; }
 .preview-item { display: inline-flex; flex-direction: column; align-items: center; }
-.preview-icon { width: 96rpx; height: 96rpx; border-radius: 50%; background: #fce4ec; display: flex; align-items: center; justify-content: center; font-size: 40rpx; }
+.preview-icon { width: 96rpx; height: 96rpx; border-radius: 50%; background: @color-primary-light; display: flex; align-items: center; justify-content: center; font-size: 40rpx; }
 .preview-name { margin-top: 8rpx; font-size: 24rpx; color: #666; }
 .preview-type-tag { margin-top: 4rpx; font-size: 20rpx; color: #999; }
 .actions { padding: 0 32rpx; }
@@ -377,7 +377,7 @@ async function handleDelete() {
 .type-readonly { color: #999; }
 .status-row { display: flex; align-items: center; gap: 16rpx; }
 .status-tag { font-size: 26rpx; color: #999; }
-.status-tag.on { color: #4caf50; }
+.status-tag.on { color: @color-green-mid; }
 .status-count { font-size: 24rpx; color: #999; }
 .status-hint { margin-top: 8rpx; font-size: 22rpx; color: #bbb; line-height: 1.4; }
 .switch-row { display: flex; align-items: center; gap: 16rpx; }

@@ -5,13 +5,13 @@
       <view class="section-title">{{ themeColorLabelText }}</view>
       <nut-form>
         <nut-form-item label="主色">
-          <nut-input v-model="form.primaryColor" placeholder="如 #e53935" />
+          <nut-input v-model="form.primaryColor" placeholder="如 @color-primary" />
         </nut-form-item>
         <nut-form-item label="渐变起">
-          <nut-input v-model="form.gradientStart" placeholder="如 #fce4ec" />
+          <nut-input v-model="form.gradientStart" placeholder="如 @color-primary-light" />
         </nut-form-item>
         <nut-form-item label="渐变止">
-          <nut-input v-model="form.gradientEnd" placeholder="如 #f8bbd0" />
+          <nut-input v-model="form.gradientEnd" placeholder="如 @color-primary-border" />
         </nut-form-item>
         <nut-form-item label="副标题">
           <nut-input v-model="form.homeSubtitle" placeholder="首页副标题" />
@@ -370,7 +370,7 @@ async function save() {
 <style lang="less">
 .page-theme-edit {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   padding-bottom: 48rpx;
   box-sizing: border-box;
   width: 100%;
@@ -380,7 +380,7 @@ async function save() {
 .section-head { display: flex; justify-content: space-between; align-items: center; }
 .link-group { display: flex; gap: 16rpx; }
 .section-title { font-size: 28rpx; font-weight: 600; color: #333; margin-bottom: 16rpx; }
-.link { font-size: 26rpx; color: #e53935; }
+.link { font-size: 26rpx; color: @color-primary; }
 .link.disabled { color: #ccc; }
 .banner-empty {
   padding: 48rpx 0; text-align: center; color: #bbb; font-size: 26rpx;
@@ -390,7 +390,7 @@ async function save() {
 }
 .banner-thumb {
   position: relative; width: calc((100% - 32rpx) / 3); height: 180rpx;
-  border-radius: 12rpx; overflow: hidden; background: #fafafa;
+  border-radius: 12rpx; overflow: hidden; background: @color-bg-input;
 }
 .banner-thumb-img { width: 100%; height: 100%; }
 .banner-thumb-remove {
@@ -401,13 +401,13 @@ async function save() {
 .banner-hint { margin-top: 12rpx; font-size: 22rpx; color: #999; }
 .empty { font-size: 24rpx; color: #999; }
 .discount-card {
-  margin-top: 16rpx; padding: 16rpx; background: #fafafa; border-radius: 12rpx;
+  margin-top: 16rpx; padding: 16rpx; background: @color-bg-input; border-radius: 12rpx;
 }
 .discount-row { display: flex; align-items: center; margin-bottom: 12rpx; }
 .label { width: 160rpx; font-size: 24rpx; color: #666; flex-shrink: 0; }
-.goods-pick { flex: 1; font-size: 26rpx; color: #e53935; text-align: right; }
+.goods-pick { flex: 1; font-size: 26rpx; color: @color-primary; text-align: right; }
 .goods-names { font-size: 22rpx; color: #999; line-height: 1.5; }
-.remove { margin-top: 8rpx; font-size: 24rpx; color: #e53935; text-align: right; }
+.remove { margin-top: 8rpx; font-size: 24rpx; color: @color-primary; text-align: right; }
 .page-actions {
   padding: 24rpx 16rpx 0;
   box-sizing: border-box;

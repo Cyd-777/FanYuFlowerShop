@@ -233,7 +233,7 @@ async function batchDelete() {
   const { confirm } = await wx.showModal({
     title: '批量删除',
     content: `确定删除 ${selectedIds.value.size} 个素材？删除后不可恢复。`,
-    confirmText: '删除', confirmColor: '#e53935',
+    confirmText: '删除', confirmColor: '@color-primary',
   })
   if (!confirm) return
 
@@ -317,7 +317,7 @@ function showDeleteConfirm(item: AssetItem) {
   wx.showModal({
     title: '删除素材',
     content: `确定删除「${item.name}」？删除后不可恢复。`,
-    confirmText: '删除', confirmColor: '#e53935',
+    confirmText: '删除', confirmColor: '@color-primary',
     success: async (res) => {
       if (!res.confirm) return
       try {
@@ -400,7 +400,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 <style lang="less">
 .page-asset {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   box-sizing: border-box;
   width: 100%;
   padding-bottom: 120rpx;
@@ -409,7 +409,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 .asset-tabs {
   display: flex;
   background: #fff;
-  border-bottom: 2rpx solid #f0f0f0;
+  border-bottom: 2rpx solid @color-bg-placeholder;
   position: sticky;
   top: var(--nav-total-height, 0px);
   z-index: 10;
@@ -426,8 +426,8 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 }
 
 .asset-tab.active {
-  color: #e53935;
-  border-bottom-color: #e53935;
+  color: @color-primary;
+  border-bottom-color: @color-primary;
 }
 
 .page-asset-loading,
@@ -457,7 +457,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 
 .asset-card:active { opacity: 0.85; }
 .asset-card.is-picker { border: 2rpx solid transparent; }
-.asset-card.is-picker:active { border-color: #e53935; opacity: 1; }
+.asset-card.is-picker:active { border-color: @color-primary; opacity: 1; }
 .asset-card.is-used {
   opacity: 0.5;
   pointer-events: none;
@@ -467,7 +467,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 .asset-img {
   width: 100%;
   height: 240rpx;
-  background: #f0f0f0;
+  background: @color-bg-placeholder;
   display: block;
 }
 
@@ -479,10 +479,10 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 .asset-type-badge {
   font-size: 18rpx; padding: 3rpx 8rpx; border-radius: 6rpx; line-height: 1.3;
 }
-.asset-type-badge--banner { background: #1565c0; color: #fff; }
-.asset-type-badge--goods { background: #e53935; color: #fff; }
+.asset-type-badge--banner { background: @color-link; color: #fff; }
+.asset-type-badge--goods { background: @color-primary; color: #fff; }
 
-.asset-tier-label--fmt { background: #43a047; color: #fff; }
+.asset-tier-label--fmt { background: @color-green-mid; color: #fff; }
 .asset-tier-label {
   font-size: 18rpx; padding: 3rpx 8rpx; border-radius: 6rpx;
   background: rgba(0,0,0,0.55); color: #fff; line-height: 1.3;
@@ -503,7 +503,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 .asset-bottom-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex; gap: 16rpx; padding: 16rpx 24rpx;
-  background: #fff; border-top: 2rpx solid #f0f0f0;
+  background: #fff; border-top: 2rpx solid @color-bg-placeholder;
   justify-content: center;
 }
 
@@ -512,26 +512,26 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
   font-size: 26rpx; font-weight: 500; line-height: 1.3;
 }
 
-.asset-tag--goods { background: #fce4ec; color: #e53935; border: 2rpx solid #f8bbd0; }
-.asset-tag--banner { background: #e3f2fd; color: #1565c0; border: 2rpx solid #90caf9; }
+.asset-tag--goods { background: @color-primary-light; color: @color-primary; border: 2rpx solid @color-primary-border; }
+.asset-tag--banner { background: @color-info-bg; color: @color-link; border: 2rpx solid @color-info-bg; }
 .asset-tag:active { opacity: 0.7; }
 
 .asset-tag--delete {
-  background: #fbe9e7;
-  color: #bf360c;
-  border: 2rpx solid #ffab91;
+  background: @color-primary-light;
+  color: @color-danger;
+  border: 2rpx solid @color-danger-bg;
 }
 
 .asset-tag--cancel {
-  background: #f5f5f5;
+  background: @color-bg-muted;
   color: #666;
-  border: 2rpx solid #e0e0e0;
+  border: 2rpx solid @color-border-dashed;
 }
 
 .asset-batch-bar {
   position: fixed; bottom: 100rpx; left: 0; right: 0;
   display: flex; gap: 16rpx; padding: 16rpx 24rpx;
-  background: #fff; border-top: 2rpx solid #f0f0f0;
+  background: #fff; border-top: 2rpx solid @color-bg-placeholder;
   justify-content: center; align-items: center;
   z-index: 10;
 }
@@ -542,7 +542,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 }
 
 .asset-card.is-selected {
-  border: 4rpx solid #e53935;
+  border: 4rpx solid @color-primary;
 }
 
 .asset-card.is-batch {
@@ -553,7 +553,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
   position: absolute; top: 8rpx; left: 8rpx;
   width: 36rpx; height: 36rpx; line-height: 36rpx;
   text-align: center; border-radius: 50%;
-  background: #e53935; color: #fff;
+  background: @color-primary; color: #fff;
   font-size: 22rpx; font-weight: bold;
   z-index: 2;
 }
@@ -575,7 +575,7 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
 .rename-img-tag--del {
   top: 12rpx;
   right: 12rpx;
-  background: #e53935;
+  background: @color-primary;
   color: #fff;
 }
 
@@ -585,8 +585,8 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
   padding: 10rpx 14rpx; font-size: 24rpx; color: #333; font-weight: 500;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.wiki-no-img { padding: 0 14rpx 10rpx; font-size: 22rpx; color: #e53935; }
-.wiki-has-img { padding: 0 14rpx 10rpx; font-size: 22rpx; color: #43a047; }
+.wiki-no-img { padding: 0 14rpx 10rpx; font-size: 22rpx; color: @color-primary; }
+.wiki-has-img { padding: 0 14rpx 10rpx; font-size: 22rpx; color: @color-green-mid; }
 
 /* 重命名模态 */
 .rename-overlay {
@@ -594,14 +594,14 @@ async function assignWikiImage(entry: FlowerWikiListItem) {
   z-index: 999; display: flex; align-items: center; justify-content: center;
 }
 .rename-modal { width: 560rpx; background: #fff; border-radius: 20rpx; overflow: hidden; }
-.rename-img { width: 100%; height: 320rpx; background: #f0f0f0; display: block; }
+.rename-img { width: 100%; height: 320rpx; background: @color-bg-placeholder; display: block; }
 .rename-form { padding: 24rpx; }
 .rename-input {
   width: 100%; height: 72rpx; font-size: 28rpx;
-  border: 2rpx solid #e0e0e0; border-radius: 12rpx; padding: 0 16rpx; box-sizing: border-box;
+  border: 2rpx solid @color-border-dashed; border-radius: 12rpx; padding: 0 16rpx; box-sizing: border-box;
 }
 .rename-actions { display: flex; gap: 16rpx; margin-top: 20rpx; }
 .rename-btn { flex: 1; height: 72rpx; line-height: 72rpx; text-align: center; border-radius: 36rpx; font-size: 28rpx; }
-.rename-btn--cancel { background: #f5f5f5; color: #666; }
-.rename-btn--confirm { background: #e53935; color: #fff; }
+.rename-btn--cancel { background: @color-bg-muted; color: #666; }
+.rename-btn--confirm { background: @color-primary; color: #fff; }
 </style>

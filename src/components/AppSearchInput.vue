@@ -175,7 +175,7 @@ const props = withDefaults(
     suggestTitle: '输入预判',
     sticky: true,
     stickyTop: '0',
-    stickyBackground: '#f8f8f8',
+    stickyBackground: '@color-bg-page',
     stickyBleed: '24rpx',
     historyDualChannel: false,
     triggerStyle: () => ({}),
@@ -505,7 +505,7 @@ export default {
   z-index: 120;
   padding-top: 12rpx;
   padding-bottom: 12rpx;
-  background: var(--search-sticky-bg, #f8f8f8);
+  background: var(--search-sticky-bg, @color-bg-page);
   box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
 }
 
@@ -514,8 +514,8 @@ export default {
   align-items: center;
   height: 72rpx;
   padding: 0 20rpx;
-  background: #f5f5f5;
-  border: 1rpx solid #e0e0e0;
+  background: @color-bg-muted;
+  border: 1rpx solid @color-border-dashed;
   border-radius: 36rpx;
   box-sizing: border-box;
 }
@@ -607,7 +607,7 @@ export default {
 .search-modal__search-bar {
   flex-shrink: 0;
   padding: 12rpx 24rpx 16rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid @color-bg-placeholder;
   box-sizing: border-box;
 }
 
@@ -616,8 +616,8 @@ export default {
   align-items: center;
   height: 72rpx;
   padding: 0 20rpx;
-  background: #f5f5f5;
-  border: 1rpx solid #e0e0e0;
+  background: @color-bg-muted;
+  border: 1rpx solid @color-border-dashed;
   border-radius: 36rpx;
   box-sizing: border-box;
 }
@@ -636,7 +636,7 @@ export default {
   padding: 0 8rpx;
   font-size: 26rpx;
   font-weight: 600;
-  color: #e53935;
+  color: @color-primary;
   line-height: 72rpx;
 }
 
@@ -684,7 +684,7 @@ export default {
   margin: 0 16rpx 16rpx 0;
   padding: 12rpx 24rpx;
   max-width: 100%;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border-radius: 999rpx;
   box-sizing: border-box;
 }
@@ -712,7 +712,7 @@ export default {
   justify-content: space-between;
   gap: 16rpx;
   padding: 24rpx 32rpx;
-  border-bottom: 1rpx solid #f5f5f5;
+  border-bottom: 1rpx solid @color-bg-muted;
 }
 
 .suggest-item--active {
@@ -763,13 +763,13 @@ export default {
 }
 
 .suggest-tag--wiki {
-  color: #5c6bc0;
+  color: @color-tag-indigo;
   background: rgba(92, 107, 192, 0.1);
   border: 1rpx solid rgba(92, 107, 192, 0.25);
 }
 
 .suggest-tag--goods {
-  color: #e53935;
+  color: @color-primary;
   background: rgba(229, 57, 53, 0.08);
   border: 1rpx solid rgba(229, 57, 53, 0.22);
 }

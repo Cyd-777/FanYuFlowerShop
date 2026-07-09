@@ -71,7 +71,7 @@ const {
 </script>
 
 <style lang="less">
-.page-goods-list { background: #f8f8f8; min-height: 100vh; }
+.page-goods-list { background: @color-bg-page; min-height: 100vh; }
 .search-bar {
   padding: 16rpx 24rpx;
   background: #fff;
@@ -113,5 +113,5 @@ const {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.goods-price { padding: 0 16rpx 16rpx; color: #e53935; }
+.goods-price { padding: 0 16rpx 16rpx; color: @color-primary; }
 </style>

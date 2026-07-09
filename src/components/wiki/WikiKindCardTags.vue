@@ -54,56 +54,56 @@ const tags = computed(() => getWikiCardTags(props.item))
 }
 
 .wiki-kind-card-tag--plant_form {
-  color: #6d4c41;
+  color: @color-tag-brown;
   background: rgba(109, 76, 65, 0.1);
 
   .wiki-kind-card-tag__text {
-    color: #6d4c41;
+    color: @color-tag-brown;
   }
 }
 
 .wiki-kind-card-tag--identity {
-  color: #455a64;
-  background: #eceff1;
+  color: @color-tag-blue-gray;
+  background: @color-tag-bg;
 
   .wiki-kind-card-tag__text {
-    color: #455a64;
+    color: @color-tag-blue-gray;
   }
 }
 
 .wiki-kind-card-tag--flower_form {
-  color: #c62828;
+  color: @color-danger;
   background: rgba(198, 40, 40, 0.08);
 
   .wiki-kind-card-tag__text {
-    color: #c62828;
+    color: @color-danger;
   }
 }
 
 .wiki-kind-card-tag--horticulture {
-  color: #5c6bc0;
+  color: @color-tag-indigo;
   background: rgba(92, 107, 192, 0.1);
 
   .wiki-kind-card-tag__text {
-    color: #5c6bc0;
+    color: @color-tag-indigo;
   }
 }
 
 .wiki-kind-card-tag--vase_life {
-  color: #2e7d32;
+  color: @color-success;
   background: rgba(46, 125, 50, 0.1);
 
   .wiki-kind-card-tag__text {
-    color: #2e7d32;
+    color: @color-success;
   }
 }
 
 .wiki-kind-card-tag--scent {
-  color: #7b1fa2;
+  color: @color-tag-purple;
   background: rgba(123, 31, 162, 0.1);
 
   .wiki-kind-card-tag__text {
-    color: #7b1fa2;
+    color: @color-tag-purple;
   }
 }
 </style>

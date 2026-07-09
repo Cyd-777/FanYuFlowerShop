@@ -95,7 +95,7 @@ function onQtyInput(lineKey: string, event: { detail: { value: string } }) {
 <style lang="less">
 .page-stock-out {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
   padding: 16rpx 16rpx 180rpx;
   box-sizing: border-box;
 }
@@ -145,10 +145,10 @@ function onQtyInput(lineKey: string, event: { detail: { value: string } }) {
   color: #999;
 }
 .line-status.ok {
-  color: #667eea;
+  color: @color-merchant-start;
 }
 .line-status.warn {
-  color: #e53935;
+  color: @color-primary;
 }
 .counter {
   display: flex;
@@ -162,7 +162,7 @@ function onQtyInput(lineKey: string, event: { detail: { value: string } }) {
   line-height: 52rpx;
   text-align: center;
   border-radius: 12rpx;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   font-size: 32rpx;
   color: #333;
   &.disabled {
@@ -174,7 +174,7 @@ function onQtyInput(lineKey: string, event: { detail: { value: string } }) {
   height: 56rpx;
   text-align: center;
   font-size: 28rpx;
-  background: #f5f5f5;
+  background: @color-bg-muted;
   border-radius: 12rpx;
 }
 .disabled-counter {

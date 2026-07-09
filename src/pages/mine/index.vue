@@ -329,13 +329,13 @@ function requestSubscribe() {
 
 .page-mine {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: @color-bg-page;
 }
 .user-card {
   display: flex;
   align-items: center;
   padding: 48rpx 32rpx;
-  background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+  background: linear-gradient(135deg, @color-primary-light, @color-primary-border);
   .avatar,
   .avatar-img {
     width: 100rpx;
@@ -379,7 +379,7 @@ function requestSubscribe() {
     margin-top: 8rpx;
     padding: 2rpx 12rpx;
     font-size: 20rpx;
-    color: #667eea;
+    color: @color-merchant-start;
     background: rgba(102, 126, 234, 0.12);
     border-radius: 8rpx;
   }
@@ -389,7 +389,7 @@ function requestSubscribe() {
   align-items: center;
   margin: 16rpx 16rpx 0;
   padding: 28rpx 32rpx;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, @color-merchant-start, @color-merchant-end);
   border-radius: 16rpx;
   color: #fff;
   box-sizing: border-box;
@@ -464,7 +464,7 @@ function requestSubscribe() {
   height: 36rpx;
   padding: 0 10rpx;
   border-radius: 999rpx;
-  background: #e53935;
+  background: @color-primary;
   color: #fff;
   font-size: 22rpx;
   line-height: 36rpx;

@@ -117,18 +117,18 @@ function formatLineText(item: { name: string; count: number }) {
 }
 
 .delivery-badge--pickup {
-  background: #fff3e0;
-  color: #e65100;
+  background: @color-warning-bg;
+  color: @color-warning;
 }
 
 .delivery-badge--merchant {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: @color-success-bg;
+  color: @color-success;
 }
 
 .delivery-badge--third_party {
-  background: #e3f2fd;
-  color: #1565c0;
+  background: @color-info-bg;
+  color: @color-link;
 }
 
 .order-no {
@@ -169,7 +169,7 @@ function formatLineText(item: { name: string; count: number }) {
   width: 120rpx;
   height: 120rpx;
   border-radius: 8rpx;
-  background: #f0f0f0;
+  background: @color-bg-placeholder;
 }
 
 .order-list-card__info {
@@ -222,6 +222,6 @@ function formatLineText(item: { name: string; count: number }) {
   justify-content: flex-end;
   margin-top: 16rpx;
   padding-top: 16rpx;
-  border-top: 2rpx solid #f5f5f5;
+  border-top: 2rpx solid @color-bg-muted;
 }
 </style>
